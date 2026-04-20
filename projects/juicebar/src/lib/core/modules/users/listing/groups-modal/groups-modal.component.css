@@ -1,0 +1,19 @@
+:host ::ng-deep .ngx-datatable .datatable-body .datatable-body-row {
+    cursor: auto;
+    background: none;
+    padding-top: 10px;
+}
+
+.custom-disabled {
+    cursor: not-allowed !important;
+
+    button {
+        cursor: not-allowed !important;
+    }
+}
+
+.custom-disabled-child {
+    opacity: 0.65;
+    pointer-events: none;
+}
+

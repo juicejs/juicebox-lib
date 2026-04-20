@@ -1,0 +1,47 @@
+<div class="filter-bar">
+
+  <div class="filter-button"
+       *ngFor="let filter of filters; let i = index"
+       [class.active]="filter.selectedValue">
+    <button mat-button
+            class="filter-btn"
+            (click)="filterInput.focus()">
+      <mat-icon class="filter-icon">{{filter.icon}}</mat-icon>
+      <span class="filter-label">
+        {{getDisplayValue(filter)}}
+      </span>
+      <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+    </button>
+
+    <input matInput
+           [matAutocomplete]="filterAutocomplete"
+           (input)="onFilterSearch(filter.key, $event.target.value)"
+           (focus)="onFilterSearch(filter.key, '')"
+           [id]="'filter-input-' + i"
+           #filterInput
+           #filterTrigger="matAutocompleteTrigger"
+           class="hidden-autocomplete-input">
+
+    <mat-autocomplete #filterAutocomplete
+                      (optionSelected)="onFilterSelected(filter.key, $event.option.value)"
+                      [displayWith]="displayFunction">
+      <div class="autocomplete-search-container">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input class="autocomplete-search-input"
+               [placeholder]="filter.placeholder"
+               (input)="onFilterSearch(filter.key, $event.target.value)"
+               (click)="$event.stopPropagation()"
+               #filterSearchInput>
+      </div>
+
+      <mat-option [value]="null">Clear</mat-option>
+      <mat-option *ngFor="let option of filter.options" [value]="option">
+        <span>{{filter.displayProperty ? option[filter.displayProperty] : option}}</span>
+      </mat-option>
+      <mat-option *ngIf="filter.options.length === 0" disabled>
+        <span>No results found</span>
+      </mat-option>
+    </mat-autocomplete>
+  </div>
+
+</div>

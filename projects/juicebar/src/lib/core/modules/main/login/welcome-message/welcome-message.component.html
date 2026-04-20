@@ -1,0 +1,6 @@
+<mat-dialog-content>
+    <div [innerText]="data?.message || message"></div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="primary" (click)="dialogRef.close(true)">OK</button>
+</mat-dialog-actions>

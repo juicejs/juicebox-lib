@@ -1,0 +1,40 @@
+<div class="parent">
+    <mat-card class="mb-3">
+        <mat-card-content>
+            <div class="alert alert-warning">{{'channel_access_roles_disclaimer' | translate}}</div>
+            <div class="alert alert-warning">{{ 'channel_access_refresh_disclaimer' | translate}}</div>
+        </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+        <mat-table [dataSource]="rows" class="mat-elevation-0">
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef>{{'name' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <span class="user-select-none">{{row.key | translate}}</span>
+                </mat-cell>
+            </ng-container>
+
+            <!-- Permissions Column -->
+            <ng-container matColumnDef="permissions">
+                <mat-header-cell *matHeaderCellDef>{{'permissions' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let row" class="permissions-cell">
+                    <div class="d-flex flex-wrap user-select-none pt-1">
+                        <mat-checkbox 
+                            *ngFor="let permission of allPermissions"
+                            [(ngModel)]="row.permissions[permission.key]"
+                            (change)="togglePermission(row)"
+                            [hasPermissions]="'users:role#updated|update'"
+                            class="permission-checkbox mb-1 mr-2">
+                            {{permission.key | translate}}
+                        </mat-checkbox>
+                    </div>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+    </mat-card>
+</div>

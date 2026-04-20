@@ -1,0 +1,44 @@
+@import "../../../assets/theme";
+
+::ng-deep .dragula-container {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    width: 46%;
+    user-select: none;
+}
+
+::ng-deep .dragula-controls {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    width: fit-content;
+    padding: 0 0.5rem;
+}
+
+::ng-deep .dragula-label {
+    display: flex;
+    font-size: .9rem;
+    padding: 0.05rem 0.25rem;
+    margin: 0.25rem;
+    border: 1px solid rgba(206, 212, 218, 0.53);
+    border-radius: 0.25rem;
+    color: #495057;
+    background-color: white;
+    cursor: grab;
+}
+::ng-deep .dragula-label:active {
+    cursor: grabbing;
+}
+::ng-deep .dragula-label:hover {
+    border-color: #ced4da;
+}
+
+::ng-deep .column-sortable {
+    color: blue;
+    font-size: smaller;
+}
+
+::ng-deep .column-filterable {
+    color: purple;
+    font-size: smaller;
+}

@@ -1,0 +1,157 @@
+<!-- Action buttons now handled by main component actionButtons system -->
+
+<div class="parent">
+
+  <filter-bar 
+    [filters]="filterConfigs" 
+    (filterChanged)="onFilterChanged($event)" 
+    (filterSearched)="onFilterSearched($event)">
+  </filter-bar>
+
+
+  <div class="w-100 p-0">
+
+    <mat-table [dataSource]="rows" matSort (matSortChange)="onSort($event)">
+
+      <ng-container matColumnDef="firstname">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="header-wrap">
+            <input class="filter-input"
+                   type="text"
+                   [placeholder]="'firstname' | translate"
+                   debounceKeyUp
+                   [debounceTime]="500"
+                   (onEvent)="onFilter('firstname', $event.target['value'])"
+                   (click)="$event.stopPropagation()"
+                   (focus)="$event.stopPropagation()"
+                   (mousedown)="$event.stopPropagation()">
+          </div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          {{row.firstname}}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="lastname">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="header-wrap">
+            <input class="filter-input"
+                   type="text"
+                   [placeholder]="'lastname' | translate"
+                   debounceKeyUp
+                   [debounceTime]="500"
+                   (onEvent)="onFilter('lastname', $event.target['value'])"
+                   (click)="$event.stopPropagation()"
+                   (focus)="$event.stopPropagation()"
+                   (mousedown)="$event.stopPropagation()">
+          </div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          {{row.lastname}}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="header-wrap">
+            <input class="filter-input"
+                   type="text"
+                   [placeholder]="'email' | translate"
+                   debounceKeyUp
+                   [debounceTime]="500"
+                   (onEvent)="onFilter('email', $event.target['value'])"
+                   (click)="$event.stopPropagation()"
+                   (focus)="$event.stopPropagation()"
+                   (mousedown)="$event.stopPropagation()">
+          </div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <span class="hidden-email">{{row.email}}</span>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="active">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="col-width-80">{{'active' | translate}}</mat-header-cell>
+        <mat-cell *matCellDef="let row" class="col-width-80">
+          <mat-icon *ngIf="row.active == false" class="status-icon inactive">block</mat-icon>
+          <mat-icon *ngIf="row.active == true" class="status-icon active">check_circle</mat-icon>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="roles_count">
+        <mat-header-cell *matHeaderCellDef class="col-width-120">{{'roles_count' | translate}}</mat-header-cell>
+        <mat-cell *matCellDef="let row" class="col-width-120">
+          <span class="roles-count">
+            {{row.roles_count}}
+            <mat-icon *ngIf="!row.roles_count" class="warning-icon">warning</mat-icon>
+          </span>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="groups">
+        <mat-header-cell *matHeaderCellDef class="col-width-200">{{'groups' | translate}}</mat-header-cell>
+        <mat-cell  *matCellDef="let row" class="col-width-200">
+                    <span *ngIf="row.groups && objectValues(row.groups) && objectValues(row.groups).length && objectValues(row.groups)[0].length; else elseBlock"
+                          [matTooltip]="getGroupsTooltip(row.groups)"
+                          matTooltipClass="multi-line-tooltip"
+                          class="has-popover">
+                        {{getGroups(row.groups)}}
+                    </span>
+          <ng-template #elseBlock>
+            <span class="grey-italic">{{'no_groups' | translate}}</span>
+          </ng-template>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="lastLogin">
+        <mat-header-cell *matHeaderCellDef class="col-width-140">{{'last_login' | translate}}</mat-header-cell>
+        <mat-cell *matCellDef="let row" class="col-width-140">
+          {{row.lastLogin | timeAgo}}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="loginCount">
+        <mat-header-cell *matHeaderCellDef class="col-width-120">{{'login_count' | translate}}</mat-header-cell>
+        <mat-cell *matCellDef="let row" class="col-width-120">
+          {{row.loginCount}}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef class="col-width-120">{{'actions' | translate}}</mat-header-cell>
+        <mat-cell *matCellDef="let row" class="col-width-120">
+          <div class="action-buttons">
+            <button mat-icon-button
+                    *ngIf="juicebox.getUser().attributes?.settings?.twoFactor === 'totp'"
+                    (click)="openModalToLoginAsAnotherUser(row);$event.stopPropagation();"
+                    [hasPermissionsHide]="'users:role#super-admin'"
+                    [matTooltip]="'login' | translate"
+                    class="action-btn login-btn">
+              <mat-icon>login</mat-icon>
+            </button>
+            <button mat-icon-button
+                    (click)="delete(row);$event.stopPropagation();"
+                    [hasPermissions]="'users:role#delete'"
+                    [matTooltip]="'delete' | translate"
+                    class="action-btn delete-btn">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onSelect({type: 'click', row: row})"></mat-row>
+    </mat-table>
+
+    <mat-paginator
+      [length]="count"
+      [pageSize]="itemsPerPage"
+      [pageIndex]="page - 1"
+      [pageSizeOptions]="[10, 20, 30, 50]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+
+  </div>
+</div>

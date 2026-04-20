@@ -1,0 +1,13 @@
+<mat-tab-group mat-stretch-tabs="false" class="p-3">
+    <mat-tab label="{{'main' | translate}}" disabled="true"></mat-tab>
+
+    <mat-tab *ngIf="juicebox.hasPermission('customers:role#read')"
+             label="{{'customers' | translate}}"
+             disabled="true"></mat-tab>
+
+    <mat-tab *ngIf="juicebox.hasPermission('customers:role#allowed-types')"
+             label="{{'allowed_types' | translate}}"
+             disabled="true"></mat-tab>
+</mat-tab-group>
+
+<router-outlet></router-outlet>

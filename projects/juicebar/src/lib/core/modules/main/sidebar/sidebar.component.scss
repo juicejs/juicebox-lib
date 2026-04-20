@@ -1,0 +1,393 @@
+@import "../../../../../../src/lib/styles.scss";
+
+// Modern Sidebar Container
+.modern-sidebar-container {
+  width: 220px;
+  height: 100vh;
+  transition: width 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
+
+  &.collapsed {
+    width: 64px;
+  }
+}
+
+// Modern Sidebar
+.modern-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  background: white;
+  border-right: 1px solid #e0e0e0;
+  box-shadow: none;
+
+  // Header Section with Logo
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    min-height: 72px;
+    transition: all 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
+
+    &.collapsed {
+      padding: 16px 8px;
+      min-height: 64px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
+
+      .company-logo {
+        max-width: 160px;
+        max-height: 36px;
+        object-fit: contain;
+        transition: all 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
+      }
+    }
+
+    &.collapsed .logo-container {
+      .company-logo {
+        max-width: 28px;
+        max-height: 28px;
+      }
+    }
+  }
+
+  // Navigation Menu Container
+  .sidebar-menu {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+
+    // Custom scrollbar
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 2px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .menu-section {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .menu-item-container {
+      margin: 0 8px;
+      border-radius: 8px;
+      transition: all 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
+
+      .menu-item {
+        position: relative;
+        border-radius: 8px;
+        transition: all 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
+        cursor: pointer;
+        user-select: none;
+
+        .menu-item-content {
+          display: flex;
+          align-items: center;
+          padding: 12px 16px;
+          height: 44px;
+          gap: 12px;
+
+          .menu-icon-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            min-width: 20px;
+            height: 20px;
+
+            .menu-icon {
+              font-size: 18px;
+              width: 18px;
+              height: 18px;
+              color: #5f6368;
+              transition: color 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
+            }
+
+            .drag-handle {
+              font-size: 16px;
+              width: 16px;
+              height: 16px;
+              color: #9aa0a6;
+              cursor: grab;
+            }
+          }
+
+          .menu-label {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 400;
+            color: #3c4043;
+            line-height: 20px;
+            transition: all 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            &.collapsed {
+              opacity: 0;
+              width: 0;
+              margin-left: 0;
+            }
+          }
+        }
+
+        // Hover state
+        &:hover:not(.active):not(.dragging) {
+          background-color: rgba(60, 64, 67, 0.04);
+
+          .menu-icon {
+            color: #1a73e8;
+          }
+
+          .menu-label {
+            color: #1a73e8;
+          }
+        }
+
+        // Active state
+        &.active {
+          background-color: rgba(26, 115, 232, 0.12);
+
+          .menu-icon {
+            color: #1a73e8;
+          }
+
+          .menu-label {
+            color: #1a73e8;
+            font-weight: 500;
+          }
+        }
+
+        // Dragging state
+        &.dragging {
+          background-color: rgba(26, 115, 232, 0.08);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+          transform: rotate(2deg);
+        }
+      }
+    }
+  }
+
+  // Footer Section
+  .sidebar-footer {
+    border-top: 1px solid #f0f0f0;
+    padding: 12px;
+    display: flex;
+    justify-content: center;
+
+    .collapse-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      color: #5f6368;
+      transition: all 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
+
+      &:hover {
+        background-color: rgba(60, 64, 67, 0.08);
+        color: #1a73e8;
+      }
+
+      .collapse-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        transition: transform 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
+      }
+    }
+  }
+}
+
+// Collapsed state adjustments
+.modern-sidebar-container.collapsed {
+  .modern-sidebar {
+    .sidebar-menu {
+      .menu-item-container .menu-item .menu-item-content {
+        justify-content: center;
+        padding: 12px 8px;
+      }
+    }
+  }
+}
+
+// CDK Drag & Drop Styles
+.cdk-drop-list {
+  min-height: 40px;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: white;
+  border: 1px solid #e0e0e0;
+  transform: rotate(2deg);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+  background: rgba(26, 115, 232, 0.08);
+  border: 2px dashed rgba(26, 115, 232, 0.3);
+  border-radius: 8px;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .modern-sidebar-container {
+    width: 220px;
+
+    &.collapsed {
+      width: 56px;
+    }
+
+    .modern-sidebar {
+      .sidebar-header {
+        padding: 16px 12px;
+        min-height: 64px;
+
+        &.collapsed {
+          padding: 12px 8px;
+          min-height: 56px;
+        }
+
+        .logo-container .company-logo {
+          max-width: 140px;
+          max-height: 32px;
+        }
+
+        &.collapsed .logo-container .company-logo {
+          max-width: 24px;
+          max-height: 24px;
+        }
+      }
+
+      .sidebar-menu {
+        .menu-item-container .menu-item .menu-item-content {
+          padding: 10px 12px;
+          height: 40px;
+
+          .menu-label {
+            font-size: 13px;
+          }
+        }
+      }
+
+      .sidebar-footer {
+        padding: 8px;
+
+        .collapse-btn {
+          width: 36px;
+          height: 36px;
+
+          .collapse-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Profile Picture Dialog Styles
+.profile-upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+  padding: $spacing-md 0;
+
+  .file-input {
+    padding: $spacing-sm;
+    border: 2px dashed $gray-200;
+    border-radius: $border-radius-md;
+    background: $gray-50;
+    cursor: pointer;
+    transition: all 200ms ease;
+
+    &:hover {
+      border-color: $primary;
+      background: rgba($primary, 0.05);
+    }
+  }
+
+  .cropper-section {
+    display: flex;
+    justify-content: center;
+    margin: $spacing-md 0;
+  }
+
+  .preview-section {
+    display: flex;
+    justify-content: center;
+
+    .user-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid $gray-200;
+
+      .user-placeholder {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@include responsive(md) {
+  .sidebar-container {
+    width: 200px;
+
+    &.collapsed {
+      width: 56px;
+    }
+
+    .company-section {
+      padding: $spacing-md;
+      min-height: 64px;
+
+      &.collapsed {
+        padding: $spacing-sm;
+        min-height: 56px;
+      }
+    }
+  }
+}
+
+// Material Dialog overrides
+::ng-deep .mat-mdc-dialog-content {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+::ng-deep .mat-mdc-dialog-actions {
+  padding: $spacing-md $spacing-lg;
+  gap: $spacing-sm;
+}

@@ -1,0 +1,42 @@
+<div *ngIf="!isLoading">
+    <h2 mat-dialog-title>{{"confirm_export" | translate}}</h2>
+
+    <mat-dialog-content class="p-3">
+        <mat-form-field appearance="outline" class="w-100">
+            <mat-label>{{"file_name" | translate}}</mat-label>
+            <input matInput
+                   type="text"
+                   [(ngModel)]="fileName"
+                   [placeholder]="'file_name' | translate">
+        </mat-form-field>
+
+        <!-- Future filters implementation -->
+        <div class="form-group mt-3" *ngIf="allowFiltersEditOnConfirm && filters">
+            <app-export-filters (filtersValueChange)="onFiltersValueChange($event)"
+                                [filters]="filters">
+            </app-export-filters>
+        </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end" class="p-3">
+        <button mat-button (click)="cancel()">
+            {{"cancel" | translate}}
+        </button>
+        <button mat-raised-button
+                color="primary"
+                [matPromiseBtn]="promiseBtn"
+                (click)="export()">
+            {{"download" | translate}}
+        </button>
+    </mat-dialog-actions>
+</div>
+
+<div *ngIf="isLoading" class="loading-container">
+    <mat-dialog-content class="text-center p-4">
+        <mat-progress-spinner
+            mode="indeterminate"
+            diameter="40">
+        </mat-progress-spinner>
+        <p class="mt-2">{{"loading" | translate}}</p>
+    </mat-dialog-content>
+</div>

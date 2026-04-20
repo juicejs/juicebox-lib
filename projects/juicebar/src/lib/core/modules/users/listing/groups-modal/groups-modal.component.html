@@ -1,0 +1,110 @@
+<h2 mat-dialog-title>
+    {{'groups_editor' | translate}}
+    <button mat-icon-button mat-dialog-close class="close-button" (click)="close()">
+        <mat-icon>close</mat-icon>
+    </button>
+</h2>
+
+<div mat-dialog-content>
+    <div class="filter-bar">
+        <div class="form-group d-flex" style="width:100%;">
+            <mat-form-field *ngIf="groups && groups.length" appearance="outline" style="width: 400px; padding-right: 24px">
+                <mat-label>{{'groups' | translate}}</mat-label>
+                <mat-select (selectionChange)="groupChanged($event.value)">
+                    <mat-option *ngFor="let group of groups" [value]="group">
+                        {{group.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" [hasPermissions]="'groups:role#super-admin'"
+                    (click)="createGroup()">{{'create' | translate}}</button>
+        </div>
+
+        <div class="form-group d-flex" *ngIf="this.selectedGroup">
+            <mat-form-field *ngIf="roles && roles.length && this.selectedGroup" appearance="outline" style="width: 400px; padding-right: 24px">
+                <mat-label>{{'add_role' | translate}}</mat-label>
+                <mat-select [(value)]="selectedRole" name="role">
+                    <mat-option *ngFor="let role of roles" [value]="role.key" [disabled]="role.disabled">
+                        {{role.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" [matPromiseBtn]="promiseBtn"
+                    [hasPermissions]="'groups:role#super-admin'"
+                    (click)="addRole()">{{'add' | translate}}</button>
+
+            <button *ngIf="selectedGroup" mat-raised-button color="primary" class="ml-2" [hasPermissions]="'groups:role#super-admin'"
+                    (click)="updateSelectedGroup()">{{'edit' | translate}}</button>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <mat-table [dataSource]="rows" class="mat-elevation-0">
+            
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef>{{'name' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let row">{{row.role | translate}}</mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="visibility" *ngIf="hasVisibilityFeature">
+                <mat-header-cell *matHeaderCellDef>{{'visibility' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <div class="d-flex flex-wrap user-select-none pt-1">
+                        <mat-slide-toggle 
+                            [checked]="row.permissions['juicebox:visible']"
+                            (change)="toggleVisibility(row, $event.checked)"
+                            [disabled]="!hasPermission('groups:role#super-admin')">
+                        </mat-slide-toggle>
+                    </div>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="permissions">
+                <mat-header-cell *matHeaderCellDef>{{'permissions' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <div class="d-flex flex-wrap pt-1">
+                        <mat-checkbox 
+                            *ngFor="let permission of getRolePermissions(row)"
+                            [(ngModel)]="row.permissions[permission.key]"
+                            [disabled]="!hasPermission('groups:role#super-admin')"
+                            (change)="updateGroupRolePermission(row)"
+                            class="mb-1 mr-1">
+                            {{permission.key}}
+                        </mat-checkbox>
+                    </div>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef>{{'actions' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <button mat-icon-button
+                            [hasPermissions]="'groups:role#super-admin'" [matPromiseBtn]="promiseBtn"
+                            [matTooltip]="'delete' | translate"
+                            (click)="deleteRole(row);">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </mat-cell>
+            </ng-container>
+            
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+
+        <mat-paginator 
+            *ngIf="count > itemsPerPage"
+            [length]="count"
+            [pageSize]="itemsPerPage"
+            [pageSizeOptions]="[5, 10, 25, 100]"
+            (page)="changePage($event, config)">
+        </mat-paginator>
+    </div>
+</div>
+
+<div mat-dialog-actions align="end">
+    <button mat-button (click)="close()">
+        {{"close" | translate}}
+    </button>
+</div>

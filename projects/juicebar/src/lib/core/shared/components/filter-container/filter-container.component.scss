@@ -1,0 +1,46 @@
+::ng-deep app-filter-container {
+    background-color: #eaeaea;
+    height: 2.3rem;
+    border-radius: 5px;
+}
+
+#label {
+    font-size: .9rem;
+    line-height: 1.4rem;
+    border: none;
+}
+:host ::ng-deep .input-group-prepend {
+    height: 2.1rem;
+}
+:host ::ng-deep .input-group-append {
+    height: 2.1rem;
+}
+:host ::ng-deep .input-group-text {
+    width: auto;
+    display: block;
+    height: 2.1rem;
+    background-color: transparent;
+}
+
+// ng-select
+:host ::ng-deep .ng-select-container {
+    background-color: #F5F5F5;
+    border-radius: .25rem;
+    border: 1px solid #F5F5F5;
+    min-height: 2.3rem;
+    height: auto;
+}
+:host ::ng-deep ng-select:not(:last-child) > .ng-select-container {
+    border-radius: 0;
+    border-right: none;
+}
+
+// ui-switch
+:host ::ng-deep ui-switch {
+    padding: 0.3rem;
+    border: none;
+    background: #F5F5F5;
+    height: 2.3rem;
+    width: 80px;
+    padding-left: 1rem;
+}

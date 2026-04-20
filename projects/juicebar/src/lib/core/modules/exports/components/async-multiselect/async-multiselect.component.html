@@ -1,0 +1,46 @@
+<div class="form-group" [formGroup]="formGroup">
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ filter.label | translate }}</mat-label>
+        <mat-chip-grid #chipGrid [formControlName]="filter.id" multiple>
+            <mat-chip-row *ngFor="let item of selectedItems; trackBy: trackByFn"
+                         (removed)="removeItem(item)"
+                         [editable]="false">
+                {{ item.label }}
+                <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                </button>
+            </mat-chip-row>
+        </mat-chip-grid>
+        <input matInput
+               #searchInput
+               [matAutocomplete]="auto"
+               [matChipInputFor]="chipGrid"
+               (input)="onSearchInput($event)"
+               (blur)="clearOptions()"
+               [placeholder]="selectedItems.length === 0 ? ('select_options' | translate) : ''"
+               autocomplete="off">
+        <mat-progress-spinner *ngIf="loading" 
+                            matSuffix 
+                            diameter="20" 
+                            mode="indeterminate">
+        </mat-progress-spinner>
+        <mat-icon *ngIf="!loading && selectedItems.length > 0" 
+                  matSuffix 
+                  (click)="clearAll()" 
+                  class="clear-icon">
+            clear
+        </mat-icon>
+        <mat-autocomplete #auto="matAutocomplete" 
+                         (optionSelected)="onOptionSelected($event)"
+                         [displayWith]="displayWith">
+            <mat-option *ngIf="(items$ | async)?.length === 0 && !loading" disabled>
+                {{ 'no_data_to_display' | translate }}
+            </mat-option>
+            <mat-option *ngFor="let item of filteredItems$ | async; trackBy: trackByFn" 
+                       [value]="item"
+                       [disabled]="isSelected(item)">
+                {{ item.label }}
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+</div>

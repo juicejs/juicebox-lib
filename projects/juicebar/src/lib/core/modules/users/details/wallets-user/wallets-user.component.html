@@ -1,0 +1,52 @@
+<div class="parent" style="max-height: 85vh; border-radius: 25px;">
+
+    <div class="menu-bar">
+
+        <button mat-raised-button
+                color="primary"
+                (click)="openDialog()"
+                routerLinkActive="active"
+                [hasPermissions]="'assets:role'"
+                style="float:right;">
+            <mat-icon>add_circle</mat-icon>
+            {{"add_new" | translate}}
+        </button>
+
+    </div>
+
+    <div class="col-sm-12 col-md-12" style="max-height: 85vh;padding:0!important;">
+        <mat-card>
+            <mat-table [dataSource]="rows" class="mat-elevation-0">
+                <!-- Name Column -->
+                <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef>{{"name" | translate}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <div *ngIf="!row.active; else inactiveWallet">{{row.name}}</div>
+                        <ng-template #inactiveWallet>
+                            <mat-icon style="color:red;">block</mat-icon>
+                            {{row.name}}
+                        </ng-template>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Address Column -->
+                <ng-container matColumnDef="address">
+                    <mat-header-cell *matHeaderCellDef>{{"address" | translate}}</mat-header-cell>
+                    <mat-cell *matCellDef="let row">{{row.address}}</mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+
+            <mat-paginator
+                *ngIf="length > itemsPerPage"
+                [length]="length"
+                [pageSize]="itemsPerPage"
+                [pageSizeOptions]="[5, 10, 20]"
+                [showFirstLastButtons]="true"
+                (page)="changePage($event.pageIndex + 1, config)">
+            </mat-paginator>
+        </mat-card>
+    </div>
+</div>

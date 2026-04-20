@@ -1,0 +1,82 @@
+<div [ngClass]="juicebox.nextUi ? 'main-container-new-ui' : 'main-container-old-ui'">
+    <app-navigation *ngIf="navigationVisible" (helpTextUpdatedEventEmitter)="helpTextUpdated()"></app-navigation>
+    <app-sidebar *ngIf="navigationVisible"></app-sidebar>
+
+    <div class="content-container" [ngStyle]="getContentContainerStyle()">
+        <div class="flex-column navigation-container next" [ngStyle]="{ display: juicebox.searchActive ? 'none' : 'flex' }">
+            <div class="location-container" *ngIf="navigationVisible">
+                <div class="location ellipsis">
+                    <div class="title">
+                        <div class="d-flex align-center">
+                            <button mat-icon-button class="back-nav-btn" (click)="goTo(locationLink)">
+                                <mat-icon>keyboard_arrow_left</mat-icon>
+                            </button>
+                            <div class="label">{{locationTitle}} <small>{{locationSubject}}</small></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button *ngIf="text"
+                        type="button"
+                        class="question-mark"
+                        mat-icon-button
+                        [matTooltip]="text"
+                        matTooltipPosition="left"
+                        matTooltipClass="help-tooltip"
+                        (click)="openHelpModal()">
+                    ?
+                </button>
+
+                <div class="button-bar" *ngIf="juicebox.actionButtons && juicebox.actionButtons.length">
+                    <button *ngFor="let button of juicebox.actionButtons"
+                            (click)="button.callAction()"
+                            [matPromiseBtn]="button.promise"
+                            [disabled]="button.disabled"
+                            [hasPermissions]="button.permissions ? button.permissions : null"
+                            [hasPermissionsHide]="button.permissionsHide ? button.permissionsHide : null"
+                            mat-raised-button
+                            [color]="getButtonColor(button.type)"
+                            class="action-button">
+                        <mat-icon>{{getButtonIcon(button.icon)}}</mat-icon>
+                        {{button.title}}
+                    </button>
+                </div>
+            </div>
+            <div class="router-container">
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+
+        <div class="navigation-container next searchResults" [ngStyle]="{ display: juicebox.searchActive ? 'block' : 'none' }">
+            <div class="search-container">
+                <div class="location ellipsis">
+                    <div class="title">
+                        <div class="d-flex align-center">
+                            <button mat-icon-button class="back-nav-btn">
+                                <mat-icon>keyboard_arrow_left</mat-icon>
+                            </button>
+                            <div class="label">{{ "search_results" | translate }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="parent" *ngIf="juicebox.searchResults && juicebox.searchResults.length">
+                <div class="jc-module" *ngFor="let module of juicebox.searchResults">
+                    <div class="title">
+                        <i class="fas" [ngClass]="module.icon"></i> {{module.name}}
+                        <small>
+                            (found {{module.results && module.results.length ? module.results.length : '0'}} matching items)
+                        </small>
+                    </div>
+                    <div class="results">
+                        <div class="result" *ngFor="let result of module.results" (click)="openResult(result)">
+                            <div class="name">{{ result.title }}</div>
+                            <div class="details">{{ result.details }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,165 @@
+{
+    "help": [
+        {
+            "key": "marketing",
+            "text": {
+                "en_GB": "Here you can generate a QR code for your tickets, coupons and vouchers. When scanning this QR code, your customers will receive them automatically and free of charge directly on their smartphone in the VisitorApp. You can embed this QR code, for example, on your posters, flyers, digital advertising spaces, etc.",
+                "de_DE": "Hier können Sie für Ihre Tickets, Coupons und Gutscheine einen QR-Code erzeugen. Beim Abscannen dieses QR-Codes erhalten Ihre Kunden diese automatisch und kostenfrei direkt aufs Smartphone in die VisitorApp zugestellt. Diesen QR-Code können Sie zum Beispiel auf Ihren Plakate, Flyern, digitale Werbeflächen usw. einbinden."
+            }
+        },
+        {
+            "key": "billboards",
+            "text": {
+                "en_GB": "The Billboard is the online showcase that displays your offers and services in your VisitorApp store. It allows users to find out about your company and provides an overview of all the offers you provide. You can maintain data and information via the individual tabs \"Details\", \"Content\", \"Offers\" and Media.",
+                "de_DE": "Das Billboard ist das Online- Schaufenster, welches Ihre Angebote und Leistungen in Ihrem VisitorApp-Shop darstellt. Hierüber können sich Nutzer über Ihr Unternehmen informieren und bietet eine Übersicht zu allen Angeboten, welche Sie anbieten. Über die einzelnen Reiter \"Einzelheiten\", \"Inhalte\", \"Angebote\" und Medien können Sie Daten und Informationen pflegen. "
+            }
+        },
+        {
+            "key": "offers",
+            "text": {
+                "en_GB": "In the Offers section you can offer your available and created items. You can assign several items to one offer. ",
+                "de_DE": "Im Bereich Angebote können Sie Ihre verfügbaren und angelegten Artikel anbieten. Sie können mehrere Artikel einem Angebot zuordnen. "
+            }
+        },
+        {
+            "key": "article",
+            "text": {
+                "en_GB": "In the Articles tab you can assign tickets, coupons and vouchers that have already been created to an article that can then be sold in your VisitorApp store. You can maintain the name, price and description of a created article, which will then be displayed to your customers for purchase. For example, several articles with different prices can refer to the same ticket.",
+                "de_DE": "Über den Reiter Artikel können Sie bereits angelegte Tickets, Coupons und Wertgutscheine einem Artikel zuordnen, der dann in Ihrem VisitorApp-Shop verkauft werden kann. An einem angelegten Artikel können Sie Bezeichnung, Preis und Beschreibung pflegen, die Ihren Kunden dann so zum Kauf angezeigt werden. Es können sich z.B. auch mehrere Artikel mit unterschiedlichen Preisen auf das gleiche Ticket beziehen. "
+            }
+        },
+        {
+            "key": "ticket-management",
+            "text": {
+                "en_GB": "You can choose between the following ticket types: Standard ticket (simple ticket), time slot ticket (calendar function - a calendar must be created in advance for this), group time slot ticket (group ticket + calendar function - a calendar must be created for this) and seating ticket (seating plan function - a seating plan must be stored for this).",
+                "de_DE": "Sie können zwischen folgenden Ticketarten wählen: Standart-Ticket (einfaches Ticket), Zeitslot-Ticket (Kalenderfunktion – dafür muss vorab ein Kalender erstellt werden), Gruppen-Zeitslot-Ticket (Gruppenticket + Kalenderfunktion - dafür muss ein Kalender erstellt werden) und Sitzplatz-Ticket (Saalplanfunktion – dafür muss ein Saalplan hinterlegt sein). "
+            }
+        },
+        {
+            "key": "vouchers",
+            "text": {
+                "en_GB": "Here you can create value vouchers to redeem on site, with fixed or dynamic amount in euros. With a dynamic value voucher, the customer can decide for themselves at the time of purchase how high the voucher value should be.",
+                "de_DE": "Hier können Sie Wertgutscheine zum Einlösen vor Ort, mit festem oder dynamischem Betrag in Euro anlegen. Bei einem dynamischen Wertgutschein kann der Kunde beim Kauf selbst entscheiden, wie hoch der Gutscheinwert sein soll."
+            }
+        },
+        {
+            "key": "coupons",
+            "text": {
+                "en_GB": "Here you can create coupons for promotions (free cup of coffee) or a % coupon (20% off...) to redeem on the spot. ",
+                "de_DE": "Hier können Sie Coupons für Promotion-Aktionen (Gratis Tasse Kaffee) oder einen %- Gutschein (20% Rabatt auf...) zum Einlösen vor Ort erstellen."
+            }
+        },
+        {
+            "key": "template",
+            "text": {
+                "en_GB": "You can customize the design and additional content of the invoice that your customers receive when they make a purchase by using a template.",
+                "de_DE": "Über Vorlagen können Sie das Design und den zusätzlichen Inhalt der Rechnung, welche Ihre Kunden beim Kauf erhalten anpassen. "
+            }
+        },
+        {
+            "key": "calendar",
+            "text": {
+                "en_GB": "If you need a time-related ticket (calendar ticket, appointment booking, calendar group ticket or time slot ticket) you must first create a calendar here, for which you create the validity period and the bookable time slots. Then you can create a corresponding ticket and select the created calendar.",
+                "de_DE": "Falls Sie ein zeitbezogenes Ticket (Kalenderticket, Terminbuchung, Kalender-Gruppenticket oder Zeitslot-Ticket) benötigen, müssen Sie hier zunächst einen Kalender anlegen, bei welchem Sie den Gültigkeitszeitraum und die buchbaren Zeitslots anlegen. Anschließend können Sie ein entsprechendes Ticket anlegen und den erstellten Kalender auswählen. "
+            }
+        },
+        {
+            "key": "accreditation",
+            "text": {
+                "en_GB": "In order to scan and validate your tickets/coupons/vouchers, an  Accreditation must be created and linked to the corresponding tickets. The (6-digit) code created by the installation must be entered in the validation app (download Visitor Validation from the App Store/ Google Play Store). The QR-Code of the linked tickets can then be validated. ",
+                "de_DE": "Damit Sie Ihre Tickets/Coupons/Wertgutscheine scannen und validieren können, muss eine  Akkreditierung angelegt und mit den entsprechenden Tickets verknüpft werden. Der durch die Anlage erstellte (6-stellige) Code, muss in der Validierungs-App eingegeben werden (Dazu Visitor Validation im App Store/ Google Play Store downloaden). Dann können die QR-Codes der der verbundenen Tickets validiert werden."
+            }
+        },
+        {
+            "key": "commerce",
+            "text": {
+                "en_GB": "Via Orders you can view which orders have been received via your VisitorApp store. By selecting an order you can view and download again all information about the customer, the ordered items and the invoice.",
+                "de_DE": "Über Bestellungen können Sie einsehen, welche Bestellungen über Ihren VisitorApp-Shop eingegangen sind. Durch Auswahl einer Bestellung können Sie alle Informationen zum Kunden, den bestellten Artikeln sowie der Rechnung erneut einsehen und herunterladen."
+            }
+        },
+        {
+            "key": "entities",
+            "text": {
+                "en_GB": "Here you can view all customer data, retrieve information and track individual customer purchases.",
+                "de_DE": "Hier können Sie alle Kundedaten einsehen, Informationen abrufen sowie einzelne Käufe des Kunden nachvollziehen."
+            }
+        },
+        {
+            "key": "users",
+            "text": {
+                "en_GB": "Here you can create additional users for your VisitorApp customer area and manage their permissions and roles.",
+                "de_DE": "Hier können Sie zusätzliche Benutzer für Ihren VisitorApp Kundenbereich anlegen und deren Berechtigungen und Rollen managen."
+            }
+        },
+        {
+            "key": "room-plan",
+            "text": {
+                "en_GB": "Here you can upload already created seating plans/hall plans in svg format. You can create different seating categories and assign them to the seats in the plan. A created seating plan can then be assigned to a location/ venue.",
+                "de_DE": "Hier können Sie bereits erstellte Sitzpläne/ Saalpläne im svg-Format hochladen. Sie können verschiedene Sitzplatzkategorien erstellen und den Sitzplätzen im Plan zuweisen. Ein erstellter Sitzplan kann dann einem Standort/einer Veranstaltungsstätte zugewiesen werden."
+            }
+        },
+        {
+            "key": "seatings-visitor",
+            "text": {
+                "en_GB": "To create a hall plan booking you must create a guest placement for your event. To do this, select the venue and the seating plan associated with the venue that you want guests to be booked into. You can then use the guest seating to see who has already purchased a seating ticket. You can also make manual changes here, such as removing the customer or re-seating them.",
+                "de_DE": "Zur Anlage einer Saalplanbuchung müssen Sie eine Gästeplatzierung für Ihr Event erstellen. Hierzu wählen Sie den Veranstaltungsort und den mit dem Standort verbundenen Saalplan aus, in den die Gäste eingebucht werden sollen. Über die Gästeplatzierungen können Sie dann einsehen, wer bereits ein Sitzplatzticket erworben hat. Sie können hier ebenfalls manuelle Änderungen, wie das Entfernen des Kunden oder das Umplatzieren vornehmen."
+            }
+        },
+        {
+            "key": "exports",
+            "text": {
+                "en_GB": "Here you can create and download export lists (Excel format) with selected KPIs. To do this, select the desired data source such as “customer data” or “sold items” with the respective time period. Also payment lists from Stripe with all transactions of your customer account can be exported here for your accounting at any time.",
+                "de_DE": "Hier können Sie Exportlisten (Excel-Format) mit ausgewählten KPIs erstellen und downloaden. Wählen Sie dazu die gewünschte Datenquelle wie „Kundendaten“ oder „verkaufte Artikel“ mit jeweiligem Zeitraum aus. Auch Zahlungslisten aus Stripe mit allen Transaktionen Ihres Kundenkontos können hier jederzeit für Ihre Buchhaltung exportiert werden."
+            }
+        },
+        {
+            "key": "location",
+            "text": {
+                "en_GB": "Here you can create new locations or event venues and enter their address data, information, images and if applicable, a hall plan of the location/ event venue.",
+                "de_DE": "Hier können Sie neue Standorte oder Eventlocations anlegen und deren Adressdaten, Informationen, Bilder und ggf. einen Saalplan des Standortes/ der Veranstaltungsstätte einpflegen."
+            }
+        },
+        {
+            "key": "categories",
+            "text": {
+                "en_GB": "To be added...",
+                "de_DE": "To be added..."
+            }
+        },
+        {
+            "key": "communications",
+            "text": {
+                "en_GB": "To be added...",
+                "de_DE": "To be added..."
+            }
+        },
+        {
+            "key": "communications",
+            "text": {
+                "en_GB": "To be added...",
+                "de_DE": "To be added..."
+            }
+        },
+        {
+            "key": "assets",
+            "text": {
+                "en_GB": "To be added...",
+                "de_DE": "To be added..."
+            }
+        },
+        {
+            "key": "company-profile",
+            "text": {
+                "en_GB": "To be added...",
+                "de_DE": "To be added..."
+            }
+        },
+        {
+            "key": "marketplace",
+            "text": {
+                "en_GB": "To be added...",
+                "de_DE": "To be added..."
+            }
+        }
+    ]
+}

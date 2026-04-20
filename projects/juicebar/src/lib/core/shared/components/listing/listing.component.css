@@ -1,0 +1,26 @@
+.table td {
+  padding: 0.3rem !important;
+}
+
+input, textarea {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/*
+.btn-icon {
+    border-radius: 20px;
+    width: 30px;
+    background: #cfcfcf;
+    color: #292929;
+    font-size: 1.1rem;
+}
+.btn-icon:hover {
+    background: $primary;
+    color: white;
+}*/
+
+/*# sourceMappingURL=listing.component.css.map */

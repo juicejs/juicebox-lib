@@ -1,0 +1,30 @@
+.calendar-border-fix {
+    height: 2rem;
+}
+
+.help-text {
+    color: rgb(226, 0, 26);
+    font-size: 0.8rem;
+}
+
+// Add vertical spacing between filter items
+.filter-item {
+  margin-bottom: 1rem;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// Ensure all filter fields are full width
+mat-form-field {
+  width: 100%;
+}
+
+// Standalone error styling for async multiselect
+.mat-error-standalone {
+  font-size: 12px;
+  color: #f44336;
+  margin-top: 0.25rem;
+  display: block;
+}

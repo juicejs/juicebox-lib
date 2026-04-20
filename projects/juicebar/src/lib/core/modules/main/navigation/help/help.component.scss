@@ -1,0 +1,72 @@
+.help-dialog {
+  min-width: 500px;
+  max-width: 700px;
+}
+
+.dialog-content {
+  padding: 20px 0;
+}
+
+.section-title {
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.section-divider {
+  margin: 24px 0;
+}
+
+.file-upload-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  .file-input {
+    flex: 1;
+    cursor: pointer;
+  }
+}
+
+.file-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  .file-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .no-file {
+    flex: 1;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+.textarea-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .full-width {
+    width: 100%;
+  }
+
+  .update-button {
+    align-self: flex-end;
+    width: auto;
+    min-width: 120px;
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 0 0 0;
+}

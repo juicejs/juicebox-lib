@@ -1,0 +1,93 @@
+<div class="menu-bar clear" style="padding: 16px;">
+    <mat-form-field appearance="outline" style="width: 300px; margin-right: 1rem;">
+        <mat-label>{{'organisation' | translate}}</mat-label>
+        <mat-select [(ngModel)]="selectedOrganisation"
+                    (selectionChange)="organisationChanged($event.value)"
+                    name="organisations">
+            <mat-option *ngFor="let org of organisations" [value]="org._id">
+                {{org.name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" style="width: 300px; margin-right: 1rem;">
+        <mat-label>{{'roles' | translate}}</mat-label>
+        <mat-select [(ngModel)]="selectedRole"
+                    name="role">
+            <mat-option *ngFor="let role of availableRoles"
+                        [value]="role.key"
+                        [disabled]="role.disabled">
+                {{role.key | translate}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <button mat-raised-button
+            color="primary"
+            (click)="addSingleRole()"
+            [hasPermissionsHide]="'users:role#update|updated'"
+            [matPromiseBtn]="promiseBtn">
+        <mat-icon>add</mat-icon>
+        {{'add' | translate}}
+    </button>
+</div>
+
+<div class="parent">
+    <mat-card>
+        <mat-table [dataSource]="rows" class="mat-elevation-0">
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef>{{'name' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <span class="user-select-none">{{row.role | translate}}</span>
+                </mat-cell>
+            </ng-container>
+
+            <!-- Visibility Column -->
+            <ng-container matColumnDef="visibility" *ngIf="hasVisibilityFeature">
+                <mat-header-cell *matHeaderCellDef>{{'visibility' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <div class="d-flex flex-wrap user-select-none">
+                        <mat-slide-toggle
+                            [checked]="row.permissions['juicebox:visible']"
+                            (change)="toggleVisibility(row.role, $event.checked, row.permissions)">
+                        </mat-slide-toggle>
+                    </div>
+                </mat-cell>
+            </ng-container>
+
+            <!-- Permissions Column -->
+            <ng-container matColumnDef="permissions">
+                <mat-header-cell *matHeaderCellDef>{{'permissions' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <div class="d-flex flex-wrap user-select-none" style="gap: 0.5rem;">
+                        <mat-checkbox
+                            *ngFor="let permission of getRolePermissions(row)"
+                            [(ngModel)]="row.permissions[permission.key]"
+                            [hasPermissions]="'users:role#updated|update'"
+                            (change)="togglePermission(row.role, row.permissions)"
+                            class="permission-checkbox">
+                            {{permission.key}}
+                        </mat-checkbox>
+                    </div>
+                </mat-cell>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef>{{'actions' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <button mat-icon-button
+                            [hasPermissions]="'users:role#updated|update'"
+                            [matTooltip]="'remove' | translate"
+                            (click)="removeRole(row); $event.stopPropagation();">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+    </mat-card>
+</div>

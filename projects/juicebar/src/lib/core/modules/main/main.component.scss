@@ -1,0 +1,345 @@
+@import "../../../assets/theme";
+
+
+.main-container-old-ui {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    background-color: #F7F7F7;
+    font-family: "Nunito", sans-serif !important;
+
+    .content-container {
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        background-color: #ffffff;
+        margin-top: 3.7rem;
+
+        .navigation-container  {
+            height: calc(100% - 4rem);
+
+            .location-container, .search-container {
+                display: flex;
+                width: 100%;
+                padding-left: 1.5rem;
+                padding-top: 1rem;
+
+                .location {
+                    flex-grow: 1;
+
+                    .title {
+                        font-size: 1.7rem;
+                        margin-bottom: 0rem;
+                        color: #525252;
+
+                        .icon-container {
+                            padding-bottom: 5px;
+
+                            &.cursor {
+                                cursor: pointer;
+                            }
+
+                            i {
+                                font-size: 1.1rem;
+                                color: $primary;
+                            }
+                        }
+
+                        .label {
+                            margin-left: 5px;
+                        }
+                    }
+                }
+
+                .question-mark {
+                    background-color: $primary;
+                    color: white;
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1rem;
+                    font-weight: bold;
+                    margin-top: -5px;
+                    cursor: pointer;
+                }
+
+                .button-bar {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+
+                    .action-button {
+                        display: flex;
+                        align-items: center;
+                        gap: 0.25rem;
+
+                        mat-icon {
+                            font-size: 18px !important;
+                            height: 18px !important;
+                            width: 18px !important;
+                        }
+                    }
+                }
+            }
+
+            &.searchResults {
+                .parent {
+                    padding: 1rem 0rem 1rem 1.5rem;
+
+                    .jc-module {
+                        margin-bottom: 1rem;
+
+                        .title {
+                            font-size: 1rem;
+                            color: #525252;
+                            font-weight: 500;
+                            margin-bottom: 0.5rem;
+
+                            i {
+                                margin-right: 0.5rem;
+                                font-size: 0.9rem;
+                                color: $primary;
+                            }
+
+                            small {
+                                color: #888;
+                                font-weight: normal;
+                                margin-left: 0.5rem;
+                            }
+                        }
+
+                        .results {
+                            .result {
+                                padding: 0.5rem;
+                                margin-bottom: 0.5rem;
+                                border: 1px solid #e0e0e0;
+                                border-radius: 4px;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+
+                                &:hover {
+                                    background-color: rgba($primary, 0.05);
+                                    border-color: $primary;
+                                }
+
+                                .name {
+                                    font-size: 1rem;
+                                    font-weight: 500;
+                                    color: #525252;
+                                    margin-bottom: 0.25rem;
+                                }
+
+                                .details {
+                                    font-size: 0.875rem;
+                                    color: #888;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .router-container {
+                flex: 1;
+            }
+        }
+    }
+}
+
+.main-container-new-ui {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(135deg, lighten($primary, 10%) 0%, $primary 100%);
+    font-family: "Nunito", sans-serif !important;
+
+    .content-container {
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        background: white;
+        margin-top: 3.7rem;
+
+        .navigation-container {
+            height: calc(100% - 4rem);
+
+            .location-container, .search-container {
+                display: flex;
+                width: 100%;
+                padding: 1.5rem;
+                background: white;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+                .location {
+                    flex-grow: 1;
+
+                    .title {
+                        font-size: 1.7rem;
+                        margin-bottom: 0rem;
+                        color: #333;
+
+                        .icon-container {
+                            padding-bottom: 5px;
+
+                            &.cursor {
+                                cursor: pointer;
+                            }
+
+                            i {
+                                font-size: 1.1rem;
+                                color: $primary;
+                            }
+                        }
+
+                        .label {
+                            margin-left: 5px;
+                        }
+                    }
+                }
+
+                .question-mark {
+                    background: linear-gradient(135deg, lighten($primary, 10%), $primary);
+                    color: white;
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1rem;
+                    font-weight: bold;
+                    cursor: pointer;
+                    box-shadow: 0 2px 8px rgba($primary, 0.3);
+                    transition: all 0.3s ease;
+
+                    &:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 15px rgba($primary, 0.4);
+                    }
+                }
+
+                .button-bar {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+
+                    .action-button {
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        padding: 0.5rem 1rem;
+                        border-radius: 8px;
+                        transition: all 0.3s ease;
+
+                        &.mat-mdc-raised-button {
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+
+                            &:hover {
+                                transform: translateY(-1px);
+                                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                            }
+                        }
+
+                        mat-icon {
+                            font-size: 18px !important;
+                            height: 18px !important;
+                            width: 18px !important;
+                        }
+                    }
+                }
+            }
+
+            &.searchResults {
+                .parent {
+                    padding: 1.5rem;
+                    background: #f8f9fa;
+
+                    .jc-module {
+                        margin-bottom: 2rem;
+                        background: white;
+                        border-radius: 12px;
+                        padding: 1.5rem;
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+
+                        .title {
+                            font-size: 1.1rem;
+                            color: #333;
+                            font-weight: 600;
+                            margin-bottom: 1rem;
+
+                            i {
+                                margin-right: 0.5rem;
+                                font-size: 1rem;
+                                color: $primary;
+                            }
+
+                            small {
+                                color: #666;
+                                font-weight: normal;
+                                margin-left: 0.5rem;
+                            }
+                        }
+
+                        .results {
+                            .result {
+                                padding: 1rem;
+                                margin-bottom: 0.75rem;
+                                background: #f8f9fa;
+                                border-radius: 8px;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+                                border: 2px solid transparent;
+
+                                &:hover {
+                                    background: rgba($primary, 0.05);
+                                    border-color: $primary;
+                                    transform: translateY(-2px);
+                                    box-shadow: 0 4px 15px rgba($primary, 0.2);
+                                }
+
+                                .name {
+                                    font-size: 1rem;
+                                    font-weight: 500;
+                                    color: #333;
+                                    margin-bottom: 0.5rem;
+                                }
+
+                                .details {
+                                    font-size: 0.875rem;
+                                    color: #666;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .router-container {
+                flex: 1;
+            }
+        }
+    }
+}
+
+// Back navigation button styling
+.back-nav-btn {
+    width: 36px !important;
+    height: 36px !important;
+    margin-right: 8px;
+    margin-left: -8px;
+    color: #666;
+
+    &:hover {
+        color: $primary;
+        background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    mat-icon {
+        font-size: 24px !important;
+        width: 24px;
+        height: 24px;
+    }
+}

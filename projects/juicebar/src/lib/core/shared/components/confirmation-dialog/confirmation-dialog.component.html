@@ -1,0 +1,21 @@
+<h2 mat-dialog-title [innerHTML]="title || ''"></h2>
+
+<div mat-dialog-content>
+  <p [innerHTML]="(completeMessage ?  (excludeQuestionMark ? completeMessage : completeMessage + '?') :  (message || ('are_you_sure' | translate)) + ' ' + (action || '') + ' ' + (subject || '') + '?')"></p>
+  <p *ngIf="info" class="dialog-info" [innerHTML]="info"></p>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button 
+          color="primary" 
+          (click)="dialogRef.close(false)"
+          type="button">
+    {{cancel | translate}}
+  </button>
+  <button mat-raised-button 
+          color="primary" 
+          (click)="dialogRef.close(true)"
+          type="button">
+    {{confirm | translate}}
+  </button>
+</div>

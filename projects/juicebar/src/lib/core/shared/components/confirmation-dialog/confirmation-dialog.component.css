@@ -1,0 +1,23 @@
+.confirmation-dialog h2::first-letter,
+.dialog-content p::first-letter {
+    text-transform: uppercase;
+}
+
+.confirmation-dialog {
+    min-width: 300px;
+}
+
+.dialog-content {
+    margin: 20px 0;
+}
+
+.dialog-info {
+    margin-top: 10px;
+    opacity: 0.7;
+    font-style: italic;
+}
+
+mat-dialog-actions {
+    padding: 16px 0;
+    gap: 8px;
+}

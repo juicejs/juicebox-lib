@@ -1,3 +1,4 @@
+
 {
   "name": "juicebar",
   "version": "0.0.1",
@@ -13,5 +14,13 @@
   "dependencies": {
     "tslib": "^2.3.0"
   },
+  "overrides": {
+    "ng2-dragula": {
+      "@angular/common": "$@angular/common",
+      "@angular/core": "$@angular/core",
+      "@angular/animations": "$@angular/animations"
+    }
+  },
+
   "sideEffects": false
 }

@@ -1,0 +1,200 @@
+// Match original layout styles
+.template-form-container {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  padding-bottom: 3rem;
+  gap: 1.5rem;
+}
+
+.template-form-field {
+  width: 400px;
+}
+
+// Section styling to match original
+.section-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 8px;
+  display: block;
+}
+
+// Columns section - recreate dragula look  
+.columns-section {
+  width: 400px;
+}
+
+.columns-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch; // This ensures equal height
+  gap: 16px;
+  min-height: 200px; // Minimum height for the container
+}
+
+.grouped-columns-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.group-section {
+  .group-label {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 8px;
+    display: block;
+  }
+}
+
+// Use exact original dragula styling
+::ng-deep .dragula-container {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  width: 46%;
+  user-select: none;
+  min-height: 200px;
+  flex: 1; // This makes both containers equal height
+  display: flex;
+  flex-direction: column;
+}
+
+::ng-deep .dragula-label {
+  display: flex;
+  font-size: 0.9rem;
+  padding: 0.05rem 0.25rem;
+  margin: 0.25rem;
+  border: 1px solid rgba(206, 212, 218, 0.53);
+  border-radius: 0.25rem;
+  color: #495057;
+  background-color: white;
+  cursor: grab;
+  align-items: center;
+  
+  &:hover {
+    border-color: #ced4da;
+  }
+  
+  &:active {
+    cursor: grabbing;
+  }
+  
+  &.cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+  
+  .column-label {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// Original color styling for badges
+:ng-deep .column-sortable,
+.column-sortable {
+  color: blue !important;
+  font-size: smaller !important;
+}
+
+:ng-deep .column-filterable,
+.column-filterable {
+  color: purple !important;  
+  font-size: smaller !important;
+}
+
+// Column controls - match original button style
+.column-controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  
+  button {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border: 1px solid #6c757d;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    
+    &:hover {
+      background: #e9ecef;
+    }
+    
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: #6c757d;
+      line-height: 1;
+    }
+  }
+}
+
+// Sort section styling
+.sort-section {
+  width: 400px;
+}
+
+.sort-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; // Add vertical spacing between sort dropdowns
+  
+  .sort-field,
+  .sort-direction {
+    width: 400px; // Full width for each dropdown
+  }
+}
+
+// Filters section
+.filters-section {
+  width: 400px;
+  
+  // Make all filter fields equal width
+  ::ng-deep mat-form-field {
+    width: 400px;
+    
+    &.filter-field {
+      width: 400px;
+    }
+  }
+}
+
+// Actions section
+.actions-section {
+  display: flex;
+  justify-content: flex-end;
+  width: 400px;
+  
+  button {
+    min-width: 100px;
+  }
+}
+
+// CDK Drag drop styling
+.cdk-drop-list {
+  min-height: 60px;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+              0 8px 10px 1px rgba(0, 0, 0, 0.14),
+              0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.4;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}

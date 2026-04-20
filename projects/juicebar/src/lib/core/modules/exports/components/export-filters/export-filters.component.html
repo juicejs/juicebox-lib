@@ -1,0 +1,77 @@
+<div *ngIf="filters.length; else dummy" [formGroup]="filterForm">
+    <div *ngFor="let filter of filters" [ngSwitch]="filter.type" class="filter-item">
+
+        <mat-form-field appearance="outline" class="full-width" *ngSwitchCase="'string'">
+            <mat-label>{{ getFilterLabel(filter) }}</mat-label>
+            <input matInput type="text" [formControlName]="filter.id">
+            <mat-error *ngIf="getFilterError(filter) as error">
+                {{ error }}
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width" *ngSwitchCase="'number'">
+            <mat-label>{{ getFilterLabel(filter) }}</mat-label>
+            <input matInput type="number" [formControlName]="filter.id">
+            <mat-error *ngIf="getFilterError(filter) as error">
+                {{ error }}
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width" *ngSwitchCase="'date'">
+            <mat-label>{{ getFilterLabel(filter) }}</mat-label>
+            <input matInput 
+                   [matDatepicker]="picker"
+                   [formControlName]="filter.id"
+                   placeholder="DD.MM.YYYY"
+                   readonly>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error *ngIf="getFilterError(filter) as error">
+                {{ error }}
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width" *ngSwitchCase="'multiselect'">
+            <mat-label>{{ getFilterLabel(filter) }}</mat-label>
+            <mat-select [formControlName]="filter.id" multiple>
+                <mat-option>{{ 'clear_selection' | translate }}</mat-option>
+                <mat-option *ngFor="let item of filter.items" [value]="item.id">
+                    {{ item.label | autoLanguage }}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="getFilterError(filter) as error">
+                {{ error }}
+            </mat-error>
+        </mat-form-field>
+
+        <ng-container *ngSwitchCase="'multiselect-async'">
+            <app-export-multiselect-async [formGroup]="filterForm"
+                                          [selectedDataSourceKey]="selectedDataSourceKey"
+                                          [filter]="filter"></app-export-multiselect-async>
+            <mat-error *ngIf="getFilterError(filter) as error" class="mat-error-standalone">
+                {{ error }}
+            </mat-error>
+        </ng-container>
+
+        <mat-form-field appearance="outline" class="full-width" *ngSwitchCase="'select'">
+            <mat-label>{{ getFilterLabel(filter) }}</mat-label>
+            <mat-select [formControlName]="filter.id">
+                <mat-option>{{ 'clear_selection' | translate }}</mat-option>
+                <mat-option *ngFor="let item of filter.items" [value]="item.id">
+                    {{ item.label | autoLanguage }}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="getFilterError(filter) as error">
+                {{ error }}
+            </mat-error>
+        </mat-form-field>
+
+    </div>
+</div>
+
+<ng-template #dummy>
+    <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'filters' | translate }}</mat-label>
+        <input matInput disabled [value]="'no_filters_available' | translate">
+    </mat-form-field>
+</ng-template>

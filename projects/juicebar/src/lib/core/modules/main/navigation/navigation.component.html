@@ -1,0 +1,130 @@
+<mat-toolbar class="modern-navigation"
+             [ngStyle]="getComponentWidth()">
+
+  <!-- Left Section - Logo & Menu -->
+  <div class="nav-left-section">
+    <!-- Hamburger menu (optional for future use) -->
+    <!-- <button mat-icon-button class="menu-button">
+      <mat-icon>menu</mat-icon>
+    </button> -->
+
+    <!-- Logo -->
+    <div class="logo-container">
+      <img [src]="organisationLogo" [alt]="projectTitle" class="company-logo">
+    </div>
+  </div>
+
+  <!-- Center Section - Enhanced Search -->
+  <div class="search-section">
+    <div class="search-container">
+      <button mat-icon-button class="search-icon-btn">
+        <mat-icon class="search-icon">
+          <span class="fa" [ngClass]="{ 'fa-search' : !searching, 'fa-spinner fa-spin': searching}"></span>
+        </mat-icon>
+      </button>
+      <input type="text"
+             class="search-input"
+             placeholder="Search"
+             debounceKeyUp
+             [debounceTime]="500"
+             (onEvent)="doSearch($event)">
+      <button mat-icon-button class="search-options-btn" *ngIf="false">
+        <mat-icon>tune</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Right Section - User Actions -->
+  <div class="nav-right-section">
+
+    <!-- Help Button -->
+    <button mat-icon-button
+            class="action-button help-btn"
+            (click)="getHelp()"
+            *ngIf="fileInfo || this.juicebox.hasPermission('juicebox:role#edit-help-document')"
+            [matTooltip]="'help' | translate">
+      <mat-icon>help_outline</mat-icon>
+    </button>
+
+    <!-- Language Switcher -->
+    <button mat-icon-button
+            class="action-button language-btn"
+            *ngIf="languages && languages.length > 1"
+            [matMenuTriggerFor]="languageMenu"
+            [matTooltip]="'change_language' | translate">
+      <mat-icon>language</mat-icon>
+    </button>
+
+    <mat-menu #languageMenu="matMenu" class="menu-dropdown">
+      <div class="menu-header">
+        <span class="menu-title">Language</span>
+      </div>
+      <button *ngFor="let language of languages"
+              (click)="changeLanguage(language)"
+              mat-menu-item
+              class="language-menu-item">
+        <div class="menu-item-content">
+          <mat-icon class="menu-item-icon">language</mat-icon>
+          <span class="menu-item-label">{{language.name | translate}}</span>
+        </div>
+      </button>
+    </mat-menu>
+
+    <!-- Organization Switcher (Google Drive-like) -->
+    <button mat-button
+            class="org-switcher-btn"
+            [matMenuTriggerFor]="orgMenu"
+            *ngIf="userOrganisations && userOrganisations.length > 1">
+      <mat-icon class="org-icon">business</mat-icon>
+      <span class="org-label">{{ organisationName }}</span>
+      <mat-icon class="dropdown-arrow">keyboard_arrow_down</mat-icon>
+    </button>
+
+    <mat-menu #orgMenu="matMenu" class="menu-dropdown">
+      <div class="menu-header">
+        <span class="menu-title">Switch Organization</span>
+      </div>
+      <button *ngFor="let org of userOrganisations"
+              (click)="onOrganisationSwitch(org._id)"
+              mat-menu-item
+              class="org-menu-item">
+        <div class="menu-item-content">
+          <mat-icon class="menu-item-icon">business</mat-icon>
+          <span class="menu-item-label">{{ org.name }}</span>
+        </div>
+      </button>
+    </mat-menu>
+
+    <!-- User Profile -->
+    <button mat-button
+            class="profile-button"
+            [matMenuTriggerFor]="profileMenu"
+            [matTooltip]="'user_profile' | translate">
+      <div class="user-avatar">
+        <mat-icon class="avatar-icon">account_circle</mat-icon>
+      </div>
+    </button>
+
+    <mat-menu #profileMenu="matMenu" class="menu-dropdown profile-menu">
+      <div class="profile-menu-header">
+        <div class="profile-info">
+          <mat-icon class="profile-avatar">account_circle</mat-icon>
+          <div class="profile-details">
+            <div class="profile-name">{{ userName }}</div>
+            <div class="profile-email">{{ userEmail || 'user@example.com' }}</div>
+          </div>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="goToUserProfile()" class="profile-menu-item">
+        <mat-icon class="menu-item-icon">person</mat-icon>
+        <span class="menu-item-label">{{'user_profile' | translate}}</span>
+      </button>
+      <button mat-menu-item (click)="logout()" class="profile-menu-item logout-item">
+        <mat-icon class="menu-item-icon">logout</mat-icon>
+        <span class="menu-item-label">{{'logout' | translate}}</span>
+      </button>
+    </mat-menu>
+
+  </div>
+</mat-toolbar>

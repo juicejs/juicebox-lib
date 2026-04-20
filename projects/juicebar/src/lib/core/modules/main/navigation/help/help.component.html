@@ -1,0 +1,79 @@
+<h2 mat-dialog-title>{{'help' | translate}}</h2>
+
+<div mat-dialog-content>
+    <div class="help-file">
+      <h4 class="section-title">{{'help_document' | translate}}</h4>
+      <div class="file-upload-section">
+        <input #input
+               (change)="file = $event.target.files[0]"
+               type="file"
+               class="file-input"
+               [hasPermissions]="'juicebox:role#edit-help-document'"
+               accept="application/pdf">
+        <button mat-raised-button
+                color="primary"
+                (click)="uploadFile(input)"
+                [hasPermissions]="'juicebox:role#edit-help-document'"
+                [matPromiseBtn]="promiseBtn">
+          {{'upload' | translate}}
+        </button>
+      </div>
+
+      <div class="file-actions">
+        <div *ngIf="fileInfo else noFile" class="file-name">
+          {{fileInfo.name}}{{fileInfo.extension}}
+        </div>
+        <ng-template #noFile>
+          <span class="no-file">-</span>
+        </ng-template>
+
+        <div class="action-buttons">
+          <button mat-button
+                  color="primary"
+                  (click)="downloadFile()"
+                  [disabled]="!fileInfo">
+            Download
+          </button>
+          <button mat-button
+                  color="primary"
+                  (click)="deleteFile()"
+                  [hasPermissions]="'juicebox:role#edit-help-document'">
+            {{'delete' | translate}}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <mat-divider class="section-divider"></mat-divider>
+
+    <div class="help-text">
+      <h4 class="section-title">{{'help_text' | translate}}</h4>
+      <div class="textarea-container">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{'help_text' | translate}}</mat-label>
+          <textarea matInput
+                    #text
+                    [(ngModel)]="helpData"
+                    rows="6"
+                    placeholder="Enter help text..."></textarea>
+        </mat-form-field>
+
+        <button mat-raised-button
+                color="primary"
+                type="submit"
+                class="update-button"
+                [hasPermissions]="'juicebox:role#edit-help-document'"
+                (click)="addHelpText(text.value)"
+                [matPromiseBtn]="promiseBtn">
+          {{ 'update' | translate }}
+        </button>
+      </div>
+    </div>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button
+          (click)="dialogRef.close(helpTextUpdated)">
+    {{'close' | translate}}
+  </button>
+</div>

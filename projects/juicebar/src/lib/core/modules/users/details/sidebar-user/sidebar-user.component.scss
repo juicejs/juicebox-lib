@@ -1,0 +1,28 @@
+@import "../../../../../assets/theme";
+
+.wrapper {
+    display: table;
+}
+.container {
+    display: table-cell;
+    background-color: rgba(255, 255, 255, 0.2);
+    width: 50%;
+    border-radius: 5px;
+    text-align: left;
+}
+.container div, .gu-mirror:not(.container) {
+    margin: 10px;
+    padding: 10px;
+    background-color: #e0e0e0;
+    transition: opacity 0.4s ease-in-out;
+    border-radius: 5px;
+}
+.container div {
+    cursor: move;
+}
+.SidebarItem {
+    background-color: $primary !important;
+    color: #fff;
+}
+
+

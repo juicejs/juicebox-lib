@@ -1,0 +1,61 @@
+<div class="parent">
+    <div class="menu-bar" style="justify-content: flex-start; align-items: center; gap: 16px;">
+        <mat-form-field appearance="outline" style="width: 15rem;">
+            <mat-label>Select organisation</mat-label>
+            <mat-select [(ngModel)]="selectedOrganisation" 
+                        name="organisations"
+                        (selectionChange)="organisationChanged($event.value)">
+                <mat-option *ngFor="let org of organisations" [value]="org">
+                    {{org.name}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" [matPromiseBtn]="promiseBtn"
+                [disabled]="!juicebox.hasPermission('users:role#update') || !selectedOrganisation"
+                (click)="add()" style="margin-left: 16px;">
+            <mat-icon>add</mat-icon>
+            {{'add' | translate}}
+        </button>
+
+        <button mat-raised-button color="primary" [matPromiseBtn]="promiseBtn"
+                [hasPermissionsHide]="'users:role#super-admin'"
+                (click)="createNewOrg()" 
+                style="margin-left: auto;">
+            <mat-icon>business</mat-icon>
+            {{'create' | translate}}
+        </button>
+    </div>
+
+    <div class="col-sm-12 col-md-12" style="max-height: 100vh; padding:0 !important;">
+
+        <mat-table [dataSource]="rows" class="mat-elevation-2 fullscreen">
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef>{{'name' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <strong>{{row.name}}</strong>
+                </mat-cell>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef>{{'actions' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <button *ngIf="row._id !== loggedInOrganisationId || loggedInUserId !== userId" 
+                            mat-icon-button
+                            [hasPermissions]="'users:role#update'"
+                            [matTooltip]="'delete' | translate"
+                            (click)="delete(row);">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+
+    </div>
+
+</div>

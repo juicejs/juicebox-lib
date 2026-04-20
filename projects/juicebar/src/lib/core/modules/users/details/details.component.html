@@ -1,0 +1,33 @@
+<mat-tab-group [(selectedIndex)]="selectedTabIndex" mat-stretch-tabs="false" (selectedTabChange)="onTabChange($event)">
+    <mat-tab label="{{'details' | translate}}"></mat-tab>
+
+    <mat-tab *ngIf="projectTitle !== 'Equipments' && projectTitle !== 'CSJuicEcommerce' && projectTitle !== 'CSWP' && projectTitle !== 'Carl Stahl Configurator'"
+             label="{{'organisations' | translate}}"></mat-tab>
+
+    <mat-tab [disabled]="!juicebox.hasPermission('users:role#roles')"
+             *ngIf="juicebox.hasPermission('users:role#roles')"
+             label="{{'roles' | translate}}"></mat-tab>
+
+    <mat-tab [disabled]="!juicebox.hasPermission('groups:role#read')"
+             *ngIf="juicebox.hasPermission('groups:role#read')"
+             label="{{'groups' | translate}}"></mat-tab>
+
+    <mat-tab *ngIf="!deprecated()"
+             label="{{'sidebar' | translate}}"></mat-tab>
+
+    <mat-tab [disabled]="!juicebox.hasPermission('customers:role#read')"
+             *ngIf="juicebox.hasPermission('customers:role#read')"
+             label="{{'customers' | translate}}"></mat-tab>
+
+    <mat-tab [disabled]="!juicebox.hasPermission('customers:role#allowed-types')"
+             *ngIf="juicebox.hasPermission('customers:role#allowed-types')"
+             label="{{'allowed_types' | translate}}"></mat-tab>
+
+    <mat-tab *ngIf="juicebox.hasPermission('clients:role#super-admin') && juicebox.hasPermission('pdf:role')"
+             label="{{'clients' | translate}}"></mat-tab>
+
+    <mat-tab *ngIf="channels && channels.length > 1 && juicebox.hasPermission('users:role#roles')"
+             label="{{'channels' | translate}}"></mat-tab>
+</mat-tab-group>
+
+<router-outlet></router-outlet>

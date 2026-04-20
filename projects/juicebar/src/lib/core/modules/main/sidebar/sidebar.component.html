@@ -1,0 +1,114 @@
+<mat-sidenav-container class="modern-sidebar-container"
+                       [ngClass]="{ 'collapsed': juicebox.collapsed }">
+
+  <mat-sidenav opened mode="side" class="modern-sidebar">
+
+    <!-- Logo Section -->
+    <div class="sidebar-header" [ngClass]="{ 'collapsed': juicebox.collapsed }">
+      <div class="logo-container">
+        <img [src]="organisationLogo" [alt]="'Company Logo'" class="company-logo">
+      </div>
+    </div>
+
+    <!-- Navigation Menu with Drag & Drop -->
+    <div class="sidebar-menu" 
+         cdkDropList
+         (cdkDropListDropped)="onMenuDrop($event)"
+         [cdkDropListDisabled]="!juicebox.getOptions().sidebarPermissions">
+         
+      <div class="menu-section">
+        <div *ngFor="let menuItem of this.menu; trackBy: trackByRole" 
+             class="menu-item-container"
+             cdkDrag
+             [cdkDragDisabled]="!juicebox.getOptions().sidebarPermissions"
+             (cdkDragStarted)="onMenuDragStarted()">
+             
+          <div class="menu-item"
+               [ngClass]="{ 'active': isActiveRoute(menuItem.router), 'dragging': isDragging }"
+               (click)="menuItemClicked($event, menuItem.router)"
+               [matTooltip]="juicebox.collapsed ? menuItem.label : ''"
+               matTooltipPosition="right">
+               
+            <div class="menu-item-content">
+              <div class="menu-icon-container">
+                <mat-icon class="menu-icon" *ngIf="!isDragging">
+                  {{getMatIcon(menuItem.icon)}}
+                </mat-icon>
+                <mat-icon class="drag-handle" *ngIf="isDragging">
+                  drag_indicator
+                </mat-icon>
+              </div>
+              
+              <span class="menu-label" [ngClass]="{ 'collapsed': juicebox.collapsed }">
+                {{menuItem.label}}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+      <button mat-icon-button
+              class="collapse-btn"
+              (click)="collapse()"
+              [matTooltip]="juicebox.collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+              matTooltipPosition="right">
+        <mat-icon class="collapse-icon">
+          {{juicebox.collapsed ? 'menu_open' : 'menu'}}
+        </mat-icon>
+      </button>
+    </div>
+
+  </mat-sidenav>
+
+</mat-sidenav-container>
+
+<!-- Profile Picture Dialog -->
+<ng-template #picture let-modal>
+  <mat-dialog-content>
+    <h2 mat-dialog-title>
+      {{userName}} - {{'profile_picture' | translate}}
+    </h2>
+
+    <div class="profile-upload-section">
+      <input (change)="fileChangeEvent($event)"
+             accept="image/*"
+             type="file"
+             class="file-input"/>
+
+      <div *ngIf="imageChangedEvent" class="cropper-section">
+        <image-cropper
+          [imageChangedEvent]="imageChangedEvent"
+          [maintainAspectRatio]="true"
+          [aspectRatio]="1"
+          [resizeToWidth]="128"
+          [resizeToHeight]="128"
+          [roundCropper]="true"
+          format="png"
+          (imageCropped)="imageCropped($event)">
+        </image-cropper>
+      </div>
+
+      <div *ngIf="croppedImage" class="preview-section">
+        <div class="user-logo">
+          <img [src]="croppedImage" class="user-placeholder" alt="Profile Preview" />
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="modal.close()">
+      {{'cancel' | translate}}
+    </button>
+    <button mat-raised-button
+            color="primary"
+            (click)="updateProfilePicture(modal)"
+            [matPromiseBtn]="promiseBtn"
+            [disabled]="!croppedImage">
+      {{'save' | translate}}
+    </button>
+  </mat-dialog-actions>
+</ng-template>

@@ -1,0 +1,48 @@
+<mat-dialog-title>
+    {{'groups_name_editor' | translate}}
+    <button mat-icon-button mat-dialog-close class="close-button" (click)="close()">
+        <mat-icon>close</mat-icon>
+    </button>
+</mat-dialog-title>
+
+<mat-dialog-content>
+    <form *ngIf="groupForm" class="m-0" [formGroup]="groupForm">
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{'name' | translate}}*</mat-label>
+            <input matInput type="text" formControlName="name">
+            <mat-error *ngIf="groupForm.get('name')?.hasError('required')">
+                {{'name' | translate}} is required
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{'key' | translate}}*</mat-label>
+            <span matTextPrefix>group:</span>
+            <input matInput type="text" formControlName="key"
+                   (keydown.space)="$event.preventDefault()"
+                   placeholder="{{'group key' | translate}}" [readonly]="!!group">
+            <mat-error *ngIf="groupForm.get('key')?.hasError('required')">
+                {{'key' | translate}} is required
+            </mat-error>
+        </mat-form-field>
+
+        <div [hasPermissionsHide]="'superAdmin:role#read'" class="full-width d-flex align-center">
+            <mat-slide-toggle formControlName="superAdmin" [(ngModel)]="enable">
+                {{'superAdminEdit' | translate}}
+            </mat-slide-toggle>
+        </div>
+
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="close()">
+        {{"cancel" | translate}}
+    </button>
+    <button mat-raised-button color="primary" (click)="submit()"
+            [disabled]="!groupForm || !groupForm.valid || !juicebox.hasPermission('groups:role#updated|update')"
+            [matPromiseBtn]="promiseBtn">
+        {{"save" | translate}}
+    </button>
+</mat-dialog-actions>

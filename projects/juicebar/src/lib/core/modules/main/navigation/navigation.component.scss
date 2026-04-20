@@ -1,0 +1,406 @@
+@import "../../../../../../src/lib/styles.scss";
+
+// Modern Clean Navigation
+.modern-navigation {
+  position: fixed !important;
+  top: 0;
+  z-index: 1050;
+  height: 64px;
+  width: 100%;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  gap: 20px;
+
+  // Left Section - Logo
+  .nav-left-section {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 16px;
+
+    .menu-button {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      color: #5f6368;
+      
+      &:hover {
+        background-color: #f1f3f4;
+      }
+      
+      mat-icon {
+        font-size: 20px;
+      }
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      
+      .company-logo {
+        max-height: 40px;
+        max-width: 180px;
+        object-fit: contain;
+      }
+    }
+  }
+
+  // Center Section - Enhanced Search
+  .search-section {
+    flex: 1;
+    max-width: 720px;
+    margin: 0 40px;
+
+    .search-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 48px;
+      background-color: #f1f3f4;
+      border-radius: 24px;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background-color: #e8eaed;
+        box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+      }
+      
+      &:focus-within {
+        background-color: white;
+        box-shadow: 0 2px 8px rgba(32, 33, 36, 0.28);
+      }
+
+      .search-icon-btn {
+        width: 40px;
+        height: 40px;
+        margin-left: 4px;
+        border-radius: 50%;
+        color: #5f6368;
+        
+        &:hover {
+          background-color: rgba(60, 64, 67, 0.08);
+        }
+        
+        .search-icon {
+          font-size: 20px;
+          
+          .fa {
+            font-size: 16px;
+          }
+        }
+      }
+
+      .search-input {
+        flex: 1;
+        height: 100%;
+        border: none;
+        background: transparent;
+        outline: none;
+        font-size: 16px;
+        color: #202124;
+        padding: 0 16px 0 8px;
+        
+        &::placeholder {
+          color: #5f6368;
+          font-size: 16px;
+        }
+      }
+
+      .search-options-btn {
+        width: 40px;
+        height: 40px;
+        margin-right: 4px;
+        border-radius: 50%;
+        color: #5f6368;
+        
+        &:hover {
+          background-color: rgba(60, 64, 67, 0.08);
+        }
+        
+        mat-icon {
+          font-size: 20px;
+        }
+      }
+    }
+  }
+
+  // Right Section - Actions & Profile
+  .nav-right-section {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+
+    // Organization Switcher
+    .org-switcher-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: transparent;
+      border: 1px solid #dadce0;
+      color: #3c4043;
+      font-weight: 500;
+      text-transform: none;
+      min-width: auto;
+      height: 40px;
+      
+      &:hover {
+        background-color: #f8f9fa;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+
+      .org-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+      
+      .org-label {
+        font-size: 14px;
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      
+      .dropdown-arrow {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        color: #5f6368;
+      }
+    }
+
+    // Action Buttons (Language, Help, Apps)
+    .action-button {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      color: #5f6368;
+      
+      &:hover {
+        background-color: #f1f3f4;
+      }
+      
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+      
+      &.apps-btn mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    // Profile Button
+    .profile-button {
+      min-width: auto;
+      padding: 0;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #1a73e8;
+        
+        .avatar-icon {
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+          color: white;
+        }
+      }
+      
+      &:hover .user-avatar {
+        box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+      }
+    }
+  }
+}
+
+// Menu Styling
+::ng-deep .menu-dropdown {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #dadce0;
+  margin-top: 8px;
+  min-width: 200px;
+  
+  .mat-mdc-menu-content {
+    padding: 8px 0;
+  }
+
+  // Menu Headers
+  .menu-header {
+    padding: 12px 16px 8px;
+    border-bottom: 1px solid #e8eaed;
+    margin-bottom: 8px;
+    
+    .menu-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #5f6368;
+    }
+  }
+
+  // Menu Items
+  .mat-mdc-menu-item {
+    height: 48px;
+    padding: 0 16px;
+    
+    &:hover {
+      background-color: #f8f9fa;
+    }
+    
+    .menu-item-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      
+      .menu-item-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #5f6368;
+      }
+      
+      .menu-item-label {
+        font-size: 14px;
+        color: #3c4043;
+        line-height: 20px;
+      }
+    }
+  }
+
+  // Profile Menu Specific
+  &.profile-menu {
+    min-width: 300px;
+    
+    .profile-menu-header {
+      padding: 16px;
+      
+      .profile-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        
+        .profile-avatar {
+          font-size: 32px;
+          width: 32px;
+          height: 32px;
+          color: #1a73e8;
+        }
+        
+        .profile-details {
+          .profile-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #3c4043;
+            line-height: 24px;
+          }
+          
+          .profile-email {
+            font-size: 14px;
+            color: #5f6368;
+            line-height: 20px;
+          }
+        }
+      }
+    }
+    
+    .mat-mdc-menu-item.logout-item {
+      &:hover {
+        background-color: #fce8e6;
+        
+        .menu-item-icon,
+        .menu-item-label {
+          color: #d93025;
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .modern-navigation {
+    padding: 0 12px;
+    gap: 12px;
+    
+    .nav-left-section {
+      .logo-container .company-logo {
+        max-height: 32px;
+        max-width: 120px;
+      }
+    }
+    
+    .search-section {
+      margin: 0 16px;
+      max-width: none;
+      
+      .search-container {
+        height: 40px;
+        
+        .search-input {
+          font-size: 14px;
+          
+          &::placeholder {
+            font-size: 14px;
+          }
+        }
+      }
+    }
+    
+    .nav-right-section {
+      .org-switcher-btn {
+        .org-label {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .modern-navigation {
+    height: 56px;
+    
+    .search-section {
+      margin: 0 8px;
+      
+      .search-container {
+        height: 36px;
+      }
+    }
+    
+    .nav-right-section {
+      gap: 2px;
+      
+      .action-button,
+      .profile-button {
+        width: 36px;
+        height: 36px;
+      }
+    }
+  }
+}
