@@ -30,6 +30,8 @@ import {ExportsModule} from './core/modules/exports/exports.module';
 import {ExportsRoute} from './core/modules/exports/exports.route';
 import {Router} from '@angular/router';
 import {ModuleCustomizationService} from './core/shared/services/module-customization.service';
+import {AuthGuard} from './core/shared/guards/auth.guard';
+import {environment} from "./environments/environment.development";
 
 export function provideJuicebar(config: BaseAppConfig): ApplicationConfig {
   const routes = generateRoutes(config.modules, config.mainRoutes, config);
@@ -74,6 +76,7 @@ export function provideJuicebar(config: BaseAppConfig): ApplicationConfig {
         deps: [ModuleCustomizationService, Router],
         multi: true
       },
+      AuthGuard,
       ...(config.providers || [])
     ]
   };
@@ -95,31 +98,33 @@ function addMenuItems(config: BaseAppConfig, navigationService: NavigationServic
 
 export function JuiceboxProviderFactory(juice: Juice, juiceboxService: JuiceboxService, sidebarService: SidebarService, router: Router) {
 
-  const config = inject(BASE_APP_CONFIG);
+  if (isDevMode()) juice.setEndPoint(environment.apiUrl);
 
-  // QC
-  if (!isDevMode()) {
-    juice.setEndPoint(window.location.protocol + '//' + window.location.host);
-  } else {
-    juice.setEndPoint('https://staging.quality-circle.com');
+  switch (juice.getEndPoint()) {
+      case 'http://localhost:3022' :
+         juiceboxService.setAuthenticator('juicebox:css:user');
+          break;
+      case 'http://localhost:4001' :
+          juiceboxService.setAuthenticator('juicebox:cse:user');
+          break;
+      case 'http://localhost:3024':
+          juiceboxService.setAuthenticator('juicebox:csc:user');
+          break;
   }
 
-  juiceboxService.setAuthenticator('juicebox:user');
-
-  // switch (juice.getEndPoint()) {
-  //     case 'http://localhost:3022' :
-  //        juiceboxService.setAuthenticator('juicebox:user');
-  //         break;
-  //     case 'http://localhost:4001' :
-  //         juiceboxService.setAuthenticator('juicebox:cse:user');
-  //         break;
-  //     case 'http://localhost:3024':
-  //         juiceboxService.setAuthenticator('juicebox:csc:user');
-  //         break;
-  // }
-
   return async () => {
-    juice.setEndPoint('https://staging.quality-circle.com');
+    if (!isDevMode()) {
+      const config: any = await juice.loadConfiguration('config.json');
+
+      if (config.authenticator)
+          juiceboxService.setAuthenticator(config.authenticator);
+
+      if ((<any>config).url === 'auto') {
+          juice.setEndPoint(window.location.protocol + '//' + window.location.host);
+      } else {
+          juice.setEndPoint((<any>config).url);
+      }
+    }
 
     return await juiceboxService.init().then(async success => {
       console.log('Juicebox Initalized', success);
@@ -180,17 +185,17 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], co
       path: '',
       redirectTo: 'main',
       pathMatch: 'full' as const,
-      //canActivate:[AuthGuardService]
     },
     {
       path: 'main',
       component: MainComponent,
+      canActivate: [AuthGuard],
       children: mainChildren
     },
     ...modules.map(module => ({
       path: module.path,
       ...(module.component ? { loadComponent: module.component } : { loadChildren: module.loadChildren }),
-      canActivate: module.guards || []
+      canActivate: module.guards || [AuthGuard]
     }))
   ];
 

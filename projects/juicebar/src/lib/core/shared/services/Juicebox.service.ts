@@ -230,33 +230,29 @@ export class JuiceboxService {
             let headers = new HttpHeaders();
             headers = headers.append('juice-token', token);
 
-            let _params;
             const body: any = {
                 'service': 'juicebox:authentication:service',
                 'method': 'validateToken',
                 'params': []
             };
 
-            if (typeof token !== 'undefined' || token != null) {
-
-                this.http.post(this.juice.getEndPoint() + '/gateway', body, {
-                    headers: headers,
-                    params: null,
-                    observe: 'response'
-                }).subscribe(response => {
-                    if ((response.body as any).success) {
-                        return resolve((response.body as any).user);
-                    } else {
-                        localStorage.removeItem('juice_token');
-                        return resolve(null);
-                    }
-                }, err => {
-                    if (err.status === 200) {
-                        resolve(false);
-                    }
-                    reject(err);
-                });
-            }
+            this.http.post(this.juice.getEndPoint() + '/gateway', body, {
+                headers: headers,
+                params: null,
+                observe: 'response'
+            }).subscribe(response => {
+                if ((response.body as any).success) {
+                    return resolve((response.body as any).user);
+                } else {
+                    localStorage.removeItem('juice_token');
+                    return resolve(null);
+                }
+            }, err => {
+                if (err.status === 200) {
+                    resolve(false);
+                }
+                reject(err);
+            });
         });
     }
 
@@ -632,7 +628,11 @@ export class JuiceboxService {
     }
 
     hasRole(role): boolean {
-        const hasRole = this.getUser().roles.find(_role => {
+        const user = this.getUser();
+        if (!user || !user.roles) {
+            return false;
+        }
+        const hasRole = user.roles.find(_role => {
             return _role.role === role;
         });
         return !!hasRole;
@@ -642,7 +642,12 @@ export class JuiceboxService {
         const role = permission.split('#')[0];
         const perm = permission.split('#')[1];
 
-        const hasRole = this.getUser().roles.find(_role => {
+        const user = this.getUser();
+        if (!user || !user.roles) {
+            return false;
+        }
+
+        const hasRole = user.roles.find(_role => {
             return _role.role == role;
         });
 
@@ -697,7 +702,11 @@ export class JuiceboxService {
     }
 
     getAllSystemLanguages(): Array<string> {
-        return (this.getOptions().languages).map(language => language.code);
+        const options = this.getOptions();
+        if (!options || !options.languages) {
+            return [];
+        }
+        return options.languages.map(language => language.code);
     }
 
     getUserLanguage(onlyCountryCode = false): string {

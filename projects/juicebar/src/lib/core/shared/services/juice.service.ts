@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class Juice {
 
-    private endpoint: string = 'https://staging.quality-circle.com';
+    private endpoint!: string;
     private httpUtil: HttpUtil;
 
     private eventListener: any;
