@@ -43,11 +43,9 @@ export interface BuiltInModules {
 export interface BaseAppConfig {
   apiUrl: string;
   appName: string;
-  production: boolean;
   modules: ModuleConfig[];
   mainRoutes?: ModuleConfig[];
   providers?: (Provider | EnvironmentProviders)[];
-  stage?: string;
 
   // Control over built-in modules
   builtInModules?: BuiltInModules;
