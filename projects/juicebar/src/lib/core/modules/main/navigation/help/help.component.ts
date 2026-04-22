@@ -1,5 +1,5 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {Component, Inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
 
 export interface HelpDialogData {
   text?: string;
@@ -9,11 +9,24 @@ import {HelperService} from '../../../../shared/services/helper.service';
 import {ConfirmationDialogComponent, ConfirmationDialogData} from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {Router} from '@angular/router';
+import {CommonModule} from '@angular/common';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {SharedModule} from '../../../../shared/shared.module';
 
 @Component({
     selector: 'app-help',
     templateUrl: './help.component.html',
-    styleUrls: ['./help.component.scss']
+    styleUrls: ['./help.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatIconModule,
+        SharedModule,
+        MainTranslationPipe
+    ]
 })
 export class HelpComponent implements OnInit {
 

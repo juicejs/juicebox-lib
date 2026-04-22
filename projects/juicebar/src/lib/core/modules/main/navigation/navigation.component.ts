@@ -1,12 +1,18 @@
-import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit, output, ChangeDetectionStrategy} from '@angular/core';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
-import {Router} from '@angular/router';
-import {Location} from '@angular/common';
+import {Router, RouterLink} from '@angular/router';
+import {CommonModule, Location} from '@angular/common';
 import {MatDialog} from '@angular/material/dialog';
 import {HelpComponent} from './help/help.component';
 import {MainTranslationPipe} from '../i18n/main.translation';
 import {Subscription} from 'rxjs';
 import {ClientRoutesService} from '../../../shared/services/client-routes.service';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {SharedModule} from '../../../shared/shared.module';
 
 export interface Language {
   name: string,
@@ -16,7 +22,19 @@ export interface Language {
 @Component({
   selector: 'app-navigation',
   templateUrl: './navigation.component.html',
-  styleUrls: ['./navigation.component.scss']
+  styleUrls: ['./navigation.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    RouterLink,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    MatTooltipModule,
+    SharedModule,
+    MainTranslationPipe
+  ]
 })
 
 export class NavigationComponent implements OnInit, OnDestroy {
@@ -47,7 +65,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
   public projectTitle: string;
 
-  @Output() helpTextUpdatedEventEmitter: EventEmitter<any> = new EventEmitter<any>()
+  helpTextUpdatedEventEmitter = output<any>();
 
   constructor(public juicebox: JuiceboxService,
               public router: Router,

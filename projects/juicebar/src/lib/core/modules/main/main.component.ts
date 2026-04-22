@@ -1,41 +1,63 @@
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, NavigationEnd, NavigationStart, Router, RouterEvent } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, NavigationStart, Router, RouterEvent, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { JuiceboxService} from '../../shared/services/Juicebox.service';
 import { SocketService} from '../../shared/services/socket.service';
 import { isNumber} from '../../shared/util';
-import {OnInit, Component, ViewEncapsulation, ChangeDetectorRef, AfterViewInit} from '@angular/core';
+import {OnInit, Component, ViewEncapsulation, signal, computed, effect, Signal, ChangeDetectionStrategy} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {HelpComponent} from './navigation/help/help.component';
 import {MatDialog} from '@angular/material/dialog';
 import {SidebarService} from '../../shared/services/sidebar.service';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {CommonModule} from '@angular/common';
+import {MatIconModule} from '@angular/material/icon';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {NavigationComponent} from './navigation/navigation.component';
+import {SidebarComponent} from './sidebar/sidebar.component';
+import {SharedModule} from '../../shared/shared.module';
+import {GlobalTranslationPipe} from '../../i18n/global.translation';
 
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
   styles:[`.my-custom-class { max-width: 500px; width: 400px; background: #F2F2F2; border: 2px solid #F66802; border-radius: 20px; } .my-custom-class > .arrow { right: 0.5em !important; }`],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    MatIconModule,
+    MatTooltipModule,
+    NavigationComponent,
+    SidebarComponent,
+    SharedModule,
+    GlobalTranslationPipe
+  ]
 })
-export class MainComponent implements OnInit, AfterViewInit {
+export class MainComponent implements OnInit {
 
-    public locationLink: any;
-    public locationTitle: any;
-    public locationSubject: any;
-    public breadcrumps: Array<any> = null;
-    public text: string;
-    public module: string;
-    navigationVisible = true;
+    public locationLink = signal<any>(null);
+    public locationTitle = signal<any>(null);
+    public locationSubject = signal<any>(null);
+    public breadcrumps = signal<Array<any>>(null);
+    public text = signal<string>(null);
+    public module = signal<string>(null);
+    public navigationVisible!: Signal<boolean>;
 
     private subscription$: Subscription = new Subscription();
+
     constructor(private titleService: Title,
                 private router: Router,
                 public juicebox: JuiceboxService,
                 public socketService: SocketService,
                 private dialog: MatDialog,
                 public route: ActivatedRoute,
-                public sidebarService: SidebarService,
-                private cdr: ChangeDetectorRef) {
+                public sidebarService: SidebarService) {
+
+        // Convert observable to signal - must be done in constructor after sidebarService is injected
+        this.navigationVisible = toSignal(this.sidebarService.navigationVisible$, { initialValue: true });
 
         // Initialize empty arrays to prevent "changed after checked" errors
         this.juicebox.actionButtons = [];
@@ -45,10 +67,10 @@ export class MainComponent implements OnInit, AfterViewInit {
             if(event instanceof NavigationEnd) {
                 const url = event.url;
                 const splitUrl = url.split('/');
-                const module = splitUrl[2];
-                if(module != this.module)
+                const currentModule = splitUrl[2];
+                if(currentModule != this.module())
                     await this.getHelpText();
-                this.module = module;
+                this.module.set(currentModule);
             }
         })
 
@@ -65,10 +87,10 @@ export class MainComponent implements OnInit, AfterViewInit {
         });
 
         this.subscription$ = this.juicebox.navigationEvent$.subscribe(async event => {
-            this.locationTitle = await (<any>event).location;
-            this.breadcrumps = await (<any>event).breadcrumps;
-            this.locationSubject = await (<any>event).subject;
-            this.locationLink = await (<any>event).link;
+            this.locationTitle.set(await (<any>event).location);
+            this.breadcrumps.set(await (<any>event).breadcrumps);
+            this.locationSubject.set(await (<any>event).subject);
+            this.locationLink.set(await (<any>event).link);
         });
 
         // show 2fa warning after succesfull login
@@ -81,20 +103,7 @@ export class MainComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-        this.subscription$.add(
-            this.sidebarService.navigationVisible$.subscribe(show => {
-                this.navigationVisible = show;
-                // Ensure change detection runs after updating visibility
-                this.cdr.detectChanges();
-            })
-        );
-    }
-
-    ngAfterViewInit() {
-        // Run a change detection cycle after view init to ensure everything is in sync
-        setTimeout(() => {
-            this.cdr.detectChanges();
-        }, 0);
+        // No manual subscriptions needed - navigationVisible is already a signal from toSignal()
     }
 
     private setTitle() {
@@ -140,7 +149,7 @@ export class MainComponent implements OnInit, AfterViewInit {
         const dialogRef = this.dialog.open(HelpComponent, {
             width: '800px',
             maxWidth: '90vw',
-            data: { text: this.text }
+            data: { text: this.text() }
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -165,7 +174,7 @@ export class MainComponent implements OnInit, AfterViewInit {
         const module = splitUrl[2]
         const result = await this.juicebox.getHelpText(module)
         const language = this.juicebox.getLanguage()
-        this.text = result && result.success ? result.payload.text[language] : null;
+        this.text.set(result && result.success ? result.payload.text[language] : null);
     }
 
     async helpTextUpdated() {
@@ -174,7 +183,7 @@ export class MainComponent implements OnInit, AfterViewInit {
 
     getContentContainerStyle() {
         return {
-            'margin-top': this.navigationVisible ? '3.5rem' : '0'
+            'margin-top': this.navigationVisible() ? '3.5rem' : '0'
         };
     }
 

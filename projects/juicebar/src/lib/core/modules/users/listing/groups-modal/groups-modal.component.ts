@@ -1,20 +1,43 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {ListingComponent} from '../../../../shared/components/listing/listing.component';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {UsersService} from '../../users.service';
 import {ActivatedRoute} from '@angular/router';
 import {ConfigurationService} from '../../../../shared/services/configuration.service';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {MatDialog, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {UserTranslationPipe} from '../../i18n/user.translation';
 import {HelperService} from '../../../../shared/services/helper.service';
 import {GroupsNameEditorComponent} from './groups-name-editor.component/groups-name-editor.component';
 import {ConfirmationDialogComponent} from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import {MatTableModule} from '@angular/material/table';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatSelectModule} from '@angular/material/select';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {FormsModule} from '@angular/forms';
+import {SharedModule} from '../../../../shared/shared.module';
 
 @Component({
     selector: 'groups-modal',
     templateUrl: './groups-modal.component.html',
-    styleUrls: ['./groups-modal.component.css']
+    styleUrls: ['./groups-modal.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        FormsModule,
+        MatDialogModule,
+        MatTableModule,
+        MatButtonModule,
+        MatIconModule,
+        MatSelectModule,
+        MatFormFieldModule,
+        MatCheckboxModule,
+        SharedModule,
+        UserTranslationPipe
+    ]
 })
 export class GroupsModalComponent extends ListingComponent {
 

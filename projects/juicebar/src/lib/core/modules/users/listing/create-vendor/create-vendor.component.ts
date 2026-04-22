@@ -1,16 +1,34 @@
-import {Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
-import {MatDialogRef} from '@angular/material/dialog';
+import {MatDialogRef, MatDialogModule} from '@angular/material/dialog';
 import {ConfigurationService} from '../../../../shared/services/configuration.service';
 import {UsersService} from '../../users.service';
 import {UserTranslationPipe} from '../../i18n/user.translation';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
+import {MatSelectModule} from '@angular/material/select';
+import {SharedModule} from '../../../../shared/shared.module';
 
 
 @Component({
     selector: 'create-vendor',
-    templateUrl: './create-vendor.component.html'
+    templateUrl: './create-vendor.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatSelectModule,
+        SharedModule,
+        UserTranslationPipe
+    ]
 })
 export class CreateVendorComponent implements OnInit {
 

@@ -1,18 +1,41 @@
-import {Component, Inject, OnDestroy, OnInit, TemplateRef} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit, TemplateRef, ChangeDetectionStrategy} from '@angular/core';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {SidebarItem, SidebarService} from '../../../shared/services/sidebar.service';
 import {SocketService} from '../../../shared/services/socket.service';
-import {MatDialog} from '@angular/material/dialog';
-import {ImageCroppedEvent} from 'ngx-image-cropper';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {ImageCroppedEvent, ImageCropperComponent} from 'ngx-image-cropper';
 import {MainTranslationPipe} from '../i18n/main.translation';
-import { Router } from '@angular/router';
-import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import {CdkDragDrop, moveItemInArray, DragDropModule} from '@angular/cdk/drag-drop';
 import {Subscription} from 'rxjs/internal/Subscription';
+import {CommonModule} from '@angular/common';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatListModule} from '@angular/material/list';
+import {MatIconModule} from '@angular/material/icon';
+import {MatButtonModule} from '@angular/material/button';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {SharedModule} from '../../../shared/shared.module';
 
 @Component({
     selector: 'app-sidebar',
     templateUrl: './sidebar.component.html',
-    styleUrls: ['./sidebar.component.scss']
+    styleUrls: ['./sidebar.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        RouterLink,
+        RouterLinkActive,
+        MatSidenavModule,
+        MatListModule,
+        MatIconModule,
+        MatButtonModule,
+        MatTooltipModule,
+        MatDialogModule,
+        DragDropModule,
+        ImageCropperComponent,
+        SharedModule,
+        MainTranslationPipe
+    ]
 })
 export class SidebarComponent implements OnInit, OnDestroy{
 

@@ -1,23 +1,43 @@
-import {Component, Input} from '@angular/core';
+import {Component, input, ChangeDetectionStrategy, OnInit, effect} from '@angular/core';
 import {Subject, of, Observable, combineLatest} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map, startWith, switchMap, filter, tap} from 'rxjs/operators';
-import {FormGroup} from '@angular/forms';
-import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
+import {FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {MatAutocompleteSelectedEvent, MatAutocompleteModule} from '@angular/material/autocomplete';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {ExportsTranslationPipe} from '../../i18n/exports.translation';
 import {ExportFilter, FilterOptions} from '../../types/ExportFilter';
 import {ExportStrategy} from '../../types/ExportStrategy';
 import {ExportsService} from '../../exports.service';
 import {Result} from '../../../../shared/types/Result';
+import {CommonModule} from '@angular/common';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatIconModule} from '@angular/material/icon';
+import {SharedModule} from '../../../../shared/shared.module';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @Component({
     selector: 'app-export-multiselect-async',
     templateUrl: './async-multiselect.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatAutocompleteModule,
+        MatChipsModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        SharedModule,
+        ExportsTranslationPipe
+    ]
 })
-export class AsyncMultiselectComponent {
-    @Input() filter!: ExportFilter;
-    @Input() selectedDataSourceKey!: ExportStrategy;
-    @Input() formGroup!: FormGroup;
+export class AsyncMultiselectComponent implements OnInit {
+    filter = input.required<ExportFilter>();
+    selectedDataSourceKey = input.required<ExportStrategy>();
+    formGroup = input.required<FormGroup>();
 
     constructor(private readonly exportsService: ExportsService,
                 private readonly juicebox: JuiceboxService) {
@@ -58,18 +78,22 @@ export class AsyncMultiselectComponent {
         tap(() => this.loading = false)
     );
 
-    filteredItems$: Observable<FilterOptions[]> = combineLatest([
-        this.items$,
-        this.formGroup.get(this.filter.id)?.valueChanges.pipe(startWith([])) || of([])
-    ]).pipe(
-        map(([items, selectedIds]) => {
-            this.updateSelectedItems(selectedIds, items);
-            return items.filter(item => !this.isSelected(item));
-        })
-    );
+    filteredItems$!: Observable<FilterOptions[]>;
+
+    ngOnInit() {
+        this.filteredItems$ = combineLatest([
+            this.items$,
+            this.formGroup().get(this.filter().id)?.valueChanges.pipe(startWith([])) || of([])
+        ]).pipe(
+            map(([items, selectedIds]) => {
+                this.updateSelectedItems(selectedIds, items);
+                return items.filter(item => !this.isSelected(item));
+            })
+        );
+    }
 
     get allFilterValues(): Array<{ id: string, value: any }> {
-        const objectValue = this.formGroup.getRawValue();
+        const objectValue = this.formGroup().getRawValue();
         let allValues = [];
         for (const key in objectValue) {
             allValues.push({
@@ -81,7 +105,7 @@ export class AsyncMultiselectComponent {
     }
 
     private getFilterOptions(term: string, page: number, initialData = false) {
-        return this.exportsService.getFilterOptions(this.filter.id, this.selectedDataSourceKey.key, this.allFilterValues, {
+        return this.exportsService.getFilterOptions(this.filter().id, this.selectedDataSourceKey().key, this.allFilterValues, {
             term,
             page,
             pageSize: this.PAGE_SIZE,
@@ -100,17 +124,17 @@ export class AsyncMultiselectComponent {
 
     onOptionSelected(event: MatAutocompleteSelectedEvent): void {
         const selectedItem = event.option.value as FilterOptions;
-        const currentValue = this.formGroup.get(this.filter.id)?.value || [];
+        const currentValue = this.formGroup().get(this.filter().id)?.value || [];
         const newValue = [...currentValue, selectedItem.id];
-        
-        this.formGroup.get(this.filter.id)?.setValue(newValue);
-        
+
+        this.formGroup().get(this.filter().id)?.setValue(newValue);
+
         // Clear the input
         const input = event.option.getLabel();
         if (event.option.viewValue) {
             (event.option as any)._element.nativeElement.querySelector('input')?.focus();
         }
-        
+
         // Clear search input
         setTimeout(() => {
             const searchInput = document.querySelector('input[matChipInputFor]') as HTMLInputElement;
@@ -122,18 +146,18 @@ export class AsyncMultiselectComponent {
     }
 
     removeItem(item: FilterOptions): void {
-        const currentValue = this.formGroup.get(this.filter.id)?.value || [];
+        const currentValue = this.formGroup().get(this.filter().id)?.value || [];
         const newValue = currentValue.filter((id: string) => id !== item.id);
-        this.formGroup.get(this.filter.id)?.setValue(newValue);
+        this.formGroup().get(this.filter().id)?.setValue(newValue);
     }
 
     clearAll(): void {
-        this.formGroup.get(this.filter.id)?.setValue([]);
+        this.formGroup().get(this.filter().id)?.setValue([]);
         this.selectedItems = [];
     }
 
     isSelected(item: FilterOptions): boolean {
-        const currentValue = this.formGroup.get(this.filter.id)?.value || [];
+        const currentValue = this.formGroup().get(this.filter().id)?.value || [];
         return currentValue.includes(item.id);
     }
 

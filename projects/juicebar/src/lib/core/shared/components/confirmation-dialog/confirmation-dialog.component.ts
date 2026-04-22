@@ -1,7 +1,9 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, Inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
 import {JuiceboxService} from '../../services/Juicebox.service';
 import { SharedTranslationPipe} from '../../i18n/shared-translation.pipe';
+import {CommonModule} from '@angular/common';
+import {MatButtonModule} from '@angular/material/button';
 
 export interface ConfirmationDialogData {
   action?: string;
@@ -18,7 +20,14 @@ export interface ConfirmationDialogData {
 @Component({
     selector: 'app-confirmation-dialog',
     templateUrl: './confirmation-dialog.component.html',
-    styleUrls: ['./confirmation-dialog.component.css']
+    styleUrls: ['./confirmation-dialog.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        MatDialogModule,
+        MatButtonModule,
+        SharedTranslationPipe
+    ]
 })
 export class ConfirmationDialogComponent implements OnInit {
 

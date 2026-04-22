@@ -1,5 +1,5 @@
-import {Component, OnInit, Inject} from '@angular/core';
-import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {Component, OnInit, Inject, ChangeDetectionStrategy} from '@angular/core';
+import {MatDialogRef, MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
 import moment from 'moment';
 import {ExportsService} from '../../exports.service';
 import {HelperService} from '../../../../shared/services/helper.service';
@@ -7,6 +7,9 @@ import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {ExportsTranslationPipe} from "../../i18n/exports.translation";
 import {FormGroup} from "@angular/forms";
 import {ConfigurationService} from '../../../../shared/services/configuration.service';
+import {CommonModule} from '@angular/common';
+import {MatButtonModule} from '@angular/material/button';
+import {SharedModule} from '../../../../shared/shared.module';
 
 export interface ExcelExportConfirmDialogData {
     fileName?: string;
@@ -17,7 +20,15 @@ export interface ExcelExportConfirmDialogData {
 @Component({
     selector: 'export-confirm',
     styleUrls: [],
-    templateUrl: './excel-export-confirm.component.html'
+    templateUrl: './excel-export-confirm.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        MatDialogModule,
+        MatButtonModule,
+        SharedModule,
+        ExportsTranslationPipe
+    ]
 })
 export class ExcelExportConfirmComponent implements OnInit {
     promiseBtn;

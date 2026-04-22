@@ -1,26 +1,26 @@
 <div [ngClass]="juicebox.nextUi ? 'main-container-new-ui' : 'main-container-old-ui'">
-    <app-navigation *ngIf="navigationVisible" (helpTextUpdatedEventEmitter)="helpTextUpdated()"></app-navigation>
-    <app-sidebar *ngIf="navigationVisible"></app-sidebar>
+    <app-navigation *ngIf="navigationVisible()" (helpTextUpdatedEventEmitter)="helpTextUpdated()"></app-navigation>
+    <app-sidebar *ngIf="navigationVisible()"></app-sidebar>
 
     <div class="content-container" [ngStyle]="getContentContainerStyle()">
         <div class="flex-column navigation-container next" [ngStyle]="{ display: juicebox.searchActive ? 'none' : 'flex' }">
-            <div class="location-container" *ngIf="navigationVisible">
+            <div class="location-container" *ngIf="navigationVisible()">
                 <div class="location ellipsis">
                     <div class="title">
                         <div class="d-flex align-center">
-                            <button mat-icon-button class="back-nav-btn" (click)="goTo(locationLink)">
+                            <button mat-icon-button class="back-nav-btn" (click)="goTo(locationLink())">
                                 <mat-icon>keyboard_arrow_left</mat-icon>
                             </button>
-                            <div class="label">{{locationTitle}} <small>{{locationSubject}}</small></div>
+                            <div class="label">{{locationTitle()}} <small>{{locationSubject()}}</small></div>
                         </div>
                     </div>
                 </div>
 
-                <button *ngIf="text"
+                <button *ngIf="text()"
                         type="button"
                         class="question-mark"
                         mat-icon-button
-                        [matTooltip]="text"
+                        [matTooltip]="text()"
                         matTooltipPosition="left"
                         matTooltipClass="help-tooltip"
                         (click)="openHelpModal()">

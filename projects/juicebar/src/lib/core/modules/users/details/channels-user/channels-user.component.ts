@@ -1,14 +1,28 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
+import { CommonModule } from "@angular/common";
 import { ActivatedRoute } from "@angular/router";
 import { ConfigurationService} from '../../../../shared/services/configuration.service';
 import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import { UsersService } from "../../users.service";
 import { UserTranslationPipe } from "../../i18n/user.translation";
 import DefaultChannelAccess from "./channel-access-default";
+import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { FormsModule } from '@angular/forms';
+import { SharedModule } from '../../../../shared/shared.module';
 
 @Component({
     selector: "app-channels-user",
     templateUrl: "./channels-user.component.html",
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        FormsModule,
+        MatTableModule,
+        MatCheckboxModule,
+        SharedModule,
+        UserTranslationPipe
+    ]
 })
 export class ChannelsUserComponent implements OnInit {
 

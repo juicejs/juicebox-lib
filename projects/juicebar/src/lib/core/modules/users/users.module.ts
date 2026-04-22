@@ -33,25 +33,7 @@ import { ModuleCustomizationService } from '../../shared/services/module-customi
 
 @NgModule({
     declarations: [
-        UsersComponent,
-        UserListingComponent,
-        DetailsUsersComponent,
-        DetailsUserComponent,
-        DocumentsUserComponent,
-        WalletsUserComponent,
-        UserWizardComponent,
-        AddWalletUserComponent,
-        RolesUserComponent,
-        ChannelsUserComponent,
-        UserTranslationPipe,
-        GroupsUserComponent,
-        GroupsModalComponent,
-        GroupsNameEditorComponent,
-        SidebarUserComponent,
-        CreateVendorComponent,
-        MainWizardComponent,
-        OrganisationsUserComponent,
-        LoginAsAnotherUserComponent
+        // Moved to imports - standalone is default in Angular v20+
     ],
   imports: [
     RouterModule,
@@ -61,6 +43,26 @@ import { ModuleCustomizationService } from '../../shared/services/module-customi
     FormsModule,
     SharedModule,
     DragulaModule,
+    // Standalone components (default in Angular v20+)
+    UsersComponent,
+    UserListingComponent,
+    DetailsUsersComponent,
+    DetailsUserComponent,
+    DocumentsUserComponent,
+    WalletsUserComponent,
+    UserWizardComponent,
+    AddWalletUserComponent,
+    RolesUserComponent,
+    ChannelsUserComponent,
+    UserTranslationPipe,
+    GroupsUserComponent,
+    GroupsModalComponent,
+    GroupsNameEditorComponent,
+    CreateVendorComponent,
+    MainWizardComponent,
+    OrganisationsUserComponent,
+    SidebarUserComponent,
+    LoginAsAnotherUserComponent
     // UsersExtensionsModule
   ],
     exports: [RouterModule, SidebarUserComponent],

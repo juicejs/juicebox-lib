@@ -1,16 +1,34 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {Component, Inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
+import {MatDialogRef, MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UsersService} from '../../../users.service';
 import {UserTranslationPipe} from '../../../i18n/user.translation';
 import {CustomValidators} from '../../../../../shared/CustomValidators';
 import {JuiceboxService} from '../../../../../shared/services/Juicebox.service';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
+import {MatSelectModule} from '@angular/material/select';
+import {SharedModule} from '../../../../../shared/shared.module';
 
 
 @Component({
     selector: 'app-add-wallet-user',
-    templateUrl: './add-wallet-user.component.html'
+    templateUrl: './add-wallet-user.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatSelectModule,
+        SharedModule,
+        UserTranslationPipe
+    ]
 })
 export class AddWalletUserComponent implements OnInit {
 

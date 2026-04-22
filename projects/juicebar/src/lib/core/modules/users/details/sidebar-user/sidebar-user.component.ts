@@ -1,21 +1,32 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, input, OnInit, ChangeDetectionStrategy, inject} from '@angular/core';
 import {SidebarItem, SidebarService} from '../../../../shared/services/sidebar.service';
 import {UsersService} from '../../users.service';
 import {UserTranslationPipe} from '../../i18n/user.translation';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {Subscription} from 'rxjs';
-import {DragulaService} from 'ng2-dragula';
+import {DragulaService, DragulaModule} from 'ng2-dragula';
 import {MainTranslationPipe} from '../../../main/i18n/main.translation';
 import {ActivatedRoute, Router} from '@angular/router';
 import {User} from '../../models/user.model';
 import {Result} from '../../../../shared/types/Result';
+import {CommonModule} from '@angular/common';
+import {SharedModule} from '../../../../shared/shared.module';
 
 @Component({
     selector: 'app-sidebar-user',
     templateUrl: './sidebar-user.component.html',
-    styleUrls: ['./sidebar-user.component.scss']
+    styleUrls: ['./sidebar-user.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, SharedModule, DragulaModule]
 })
 export class SidebarUserComponent implements OnInit {
+    private sidebarService = inject(SidebarService);
+    private usersService = inject(UsersService);
+    private juicebox = inject(JuiceboxService);
+    private dragulaService = inject(DragulaService);
+    private router = inject(Router);
+    private route = inject(ActivatedRoute);
+
     i18n: UserTranslationPipe;
     i18nMain: MainTranslationPipe;
     DRAGULA_SIDEBAR = 'DRAGULA_SIDEBAR';
@@ -27,21 +38,16 @@ export class SidebarUserComponent implements OnInit {
     selectedOrganisation: string;
     disabledDragAndDrop = false;
     // component is reusable, depending of the context where is it used, calls are different
-    @Input() context?: 'user-profile' | null;
-    @Input() allowHidden?: boolean = true;
+    context = input<'user-profile' | null>();
+    allowHidden = input<boolean>(true);
 
-    public constructor(private dragulaService:DragulaService,
-                       private sidebarService: SidebarService,
-                       private userService: UsersService,
-                       private juicebox: JuiceboxService,
-                       public route: ActivatedRoute,
-                       public router: Router) {
+    constructor() {
       this.i18n = new UserTranslationPipe(this.juicebox);
       this.i18nMain = new MainTranslationPipe(this.juicebox);
     }
 
     async ngOnInit() {
-        if (this.context === 'user-profile') {
+        if (this.context() === 'user-profile') {
             this.userId = this.juicebox.getUserId();
         }
         else {
@@ -72,11 +78,11 @@ export class SidebarUserComponent implements OnInit {
                 this.disabledDragAndDrop = false;
             })
         );
-        const getUser = await this.userService.getUser(this.userId);
+        const getUser = await this.usersService.getUser(this.userId);
         this.juicebox.navigationEvent({
-            location: this.context === 'user-profile' ? this.i18nMain.transform('user_profile') : this.i18n.transform('users'),
+            location: this.context() === 'user-profile' ? this.i18nMain.transform('user_profile') : this.i18n.transform('users'),
             subject: getUser.payload.email + ' - ' + this.i18n.transform('sidebar'),
-            link: this.context === 'user-profile' ? null : '/main/users'
+            link: this.context() === 'user-profile' ? null : '/main/users'
         });
         this.getSidebarItems();
     }
@@ -97,11 +103,11 @@ export class SidebarUserComponent implements OnInit {
     // only organisations in which users has roles
     async getOrganisations(): Promise<any> {
         let getUser: Result<User>;
-        if (this.context === 'user-profile') {
+        if (this.context() === 'user-profile') {
             getUser = await this.juicebox.getJuiceboxUser();
         }
         else {
-            getUser = await this.userService.getUser(this.userId);
+            getUser = await this.usersService.getUser(this.userId);
         }
        const userRoles = Object.keys(getUser.payload.roles);
 

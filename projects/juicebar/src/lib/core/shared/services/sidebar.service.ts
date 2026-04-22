@@ -1,10 +1,11 @@
-import {Injectable, OnDestroy, OnInit} from '@angular/core';
+import {Injectable, OnDestroy, signal, Signal} from '@angular/core';
 // import setup from '../../generator/setup.json';
 import {Juice} from './juice.service';
 import {Result} from '../types/Result';
 import {BehaviorSubject, Subject, Subscription} from 'rxjs';
 import {MainTranslationPipe} from '../../modules/main/i18n/main.translation';
 import {JuiceboxService} from './Juicebox.service';
+import {toObservable} from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root'
@@ -17,13 +18,19 @@ export class SidebarService implements OnDestroy {
     private $sub = new Subscription();
     private mainTranslationPipe: MainTranslationPipe;
 
+    // Signals for reactive state
+    private navigationVisibleSignal = signal<boolean>(true);
+    private sidebarCollapsedSignal = signal<boolean>(false);
     private toggleSidebarSubject = new Subject<void>();
-    private navigationVisibleSubject = new BehaviorSubject<boolean>(true);
-    private sidebarCollapsedSubject = new BehaviorSubject<boolean>(false);
 
+    // Expose signals as readonly
+    navigationVisible = this.navigationVisibleSignal.asReadonly();
+    sidebarCollapsed = this.sidebarCollapsedSignal.asReadonly();
+
+    // Provide observables for backward compatibility
     toggleSidebar$ = this.toggleSidebarSubject.asObservable();
-    navigationVisible$ = this.navigationVisibleSubject.asObservable();
-    sidebarCollapsed$ = this.sidebarCollapsedSubject.asObservable();
+    navigationVisible$ = toObservable(this.navigationVisibleSignal);
+    sidebarCollapsed$ = toObservable(this.sidebarCollapsedSignal);
 
     constructor(private juice: Juice, private juicebox: JuiceboxService) {
         this.mainTranslationPipe = new MainTranslationPipe(this.juicebox);
@@ -162,19 +169,19 @@ export class SidebarService implements OnDestroy {
     }
 
     setSidebarCollapsed(isCollapsed: boolean) {
-        this.sidebarCollapsedSubject.next(isCollapsed);
+        this.sidebarCollapsedSignal.set(isCollapsed);
     }
 
     showNavigation(show: boolean) {
-        this.navigationVisibleSubject.next(show);
+        this.navigationVisibleSignal.set(show);
     }
 
     isNavigationVisible(): boolean {
-        return this.navigationVisibleSubject.value;
+        return this.navigationVisibleSignal();
     }
 
     isSidebarCollapsed(): boolean {
-        return this.sidebarCollapsedSubject.value;
+        return this.sidebarCollapsedSignal();
     }
 }
 

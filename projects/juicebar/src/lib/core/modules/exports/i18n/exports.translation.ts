@@ -8,7 +8,7 @@ export class ExportsTranslationPipe extends TranslationPipe {
     constructor(protected override juicebox: JuiceboxService) {
         super(juicebox);
 
-        this.setDefault(juicebox.getLanguage());
+        this.setDefault(this.juicebox.getLanguage());
         this.addDictionary(exportsDictionary);
     }
 }

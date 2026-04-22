@@ -28,10 +28,7 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "tsConfig": "projects/juicebar/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
+            "polyfills": []
           }
         }
       }
@@ -42,5 +39,8 @@
     "cache": {
       "enabled": false
     }
+  },
+  "experimental": {
+    "zoneless": true
   }
 }

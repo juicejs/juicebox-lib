@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { UsersService } from '../users.service';
 import { ListingComponent } from '../../../shared/components/listing/listing.component';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { UserTranslationPipe } from '../i18n/user.translation';
 import { MatDialog } from '@angular/material/dialog';
 import { Sort } from '@angular/material/sort';
-import { PageEvent } from '@angular/material/paginator';
+import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import { GroupsModalComponent } from './groups-modal/groups-modal.component';
 import { HelperService} from '../../../shared/services/helper.service';
 import { ISearchTerm} from '../../../shared/interfaces/ISearchTerm';
@@ -16,12 +16,35 @@ import { JuiceboxService} from '../../../shared/services/Juicebox.service';
 import { ActionButton} from '../../../shared/types/ActionButton';
 import { User } from '../models/user.model';
 import { LoginAsAnotherUserComponent } from './login-as-another-user/login-as-another-user.component';
-import { FilterConfig } from '../../../shared/components/filter-bar/filter-bar.component';
+import { FilterConfig, FilterBarComponent } from '../../../shared/components/filter-bar/filter-bar.component';
+import {CommonModule} from '@angular/common';
+import {MatTableModule} from '@angular/material/table';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {SharedModule} from '../../../shared/shared.module';
+import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 
 @Component({
     selector: 'app-ng-table',
     styleUrls: ['./user-listing.component.scss'],
-    templateUrl: './user-listing.component.html'
+    templateUrl: './user-listing.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        RouterLink,
+        MatTableModule,
+        MatPaginatorModule,
+        MatButtonModule,
+        MatIconModule,
+        MatTooltipModule,
+        MatCheckboxModule,
+        FilterBarComponent,
+        SharedModule,
+        UserTranslationPipe,
+        AutoLanguagePipe
+    ]
 })
 export class UserListingComponent extends ListingComponent implements OnInit {
 

@@ -18,16 +18,7 @@ import {AsyncMultiselectComponent} from './components/async-multiselect/async-mu
 
 @NgModule({
     declarations: [
-        ExportTemplateListingComponent,
-        ExportTemplateEditComponent,
-        ExportTemplateCreateComponent,
-        ExportsTranslationPipe,
-        ExportsComponent,
-        // ExportPreviewComponent,
-        ExportFiltersComponent,
-        ExcelExportConfirmComponent,
-        PdfExportConfirmComponent,
-        AsyncMultiselectComponent,
+        // Moved to imports - standalone is default in Angular v20+
     ],
   imports: [
     RouterModule,
@@ -36,7 +27,17 @@ import {AsyncMultiselectComponent} from './components/async-multiselect/async-mu
     ReactiveFormsModule,
     DragulaModule,
     FormsModule,
-    AutoLanguagePipe
+    AutoLanguagePipe,
+    // Standalone components
+    ExportTemplateListingComponent,
+    ExportTemplateEditComponent,
+    ExportTemplateCreateComponent,
+    ExportsTranslationPipe,
+    ExportsComponent,
+    ExportFiltersComponent,
+    ExcelExportConfirmComponent,
+    PdfExportConfirmComponent,
+    AsyncMultiselectComponent,
   ],
     exports: [
         RouterModule

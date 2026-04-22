@@ -1,9 +1,17 @@
-import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {Component, EventEmitter, input, OnInit, output, ChangeDetectionStrategy} from "@angular/core";
+import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
+import {CommonModule} from '@angular/common';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 @Component({
     selector: 'page-size-selector',
-    templateUrl: './page-size-selector.component.html'
+    templateUrl: './page-size-selector.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatButtonToggleModule
+    ]
 })
 export class PageSizeSelectorComponent implements OnInit {
     public radioGroupForm: FormGroup
@@ -11,22 +19,23 @@ export class PageSizeSelectorComponent implements OnInit {
     public _sizes: Array<number>  =   [10,20,50];
     public pageSize = 10;
 
-    @Input('sizes')
-    public set sizes(sizes){
-        if(!sizes) return;
-        this._sizes = sizes;
+    sizes = input<number[]>();
+
+    ngOnChanges() {
+        if(this.sizes()) {
+            this._sizes = this.sizes();
+        }
     }
 
+    defaultSize = input<number>();
 
-
-    @Input('defaultSize')
-    public set defaultSize(size){
-        if(!size) return;
-        this.pageSize = size;
+    ngOnInit2() {
+        if(this.defaultSize()) {
+            this.pageSize = this.defaultSize();
+        }
     }
 
-    @Output('pageSizeChanged')
-    onChange: EventEmitter<number> = new EventEmitter<number>()
+    onChange = output<number>()
 
     constructor(private formBuilder: FormBuilder) {}
 

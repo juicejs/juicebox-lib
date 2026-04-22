@@ -1,4 +1,5 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {UsersService} from '../../users.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ListingComponent} from '../../../../shared/components/listing/listing.component';
@@ -7,11 +8,24 @@ import {AddWalletUserComponent} from './add-wallet-user/add-wallet-user-componen
 import {UserTranslationPipe} from '../../i18n/user.translation';
 import {DetailsUsersComponent} from '../details.component';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
+import {MatTableModule} from '@angular/material/table';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {SharedModule} from '../../../../shared/shared.module';
 
 @Component({
     selector: 'app-wallets-user',
     styleUrls: ['wallets-user.component.css'],
-    templateUrl: './wallets-user.component.html'
+    templateUrl: './wallets-user.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        MatTableModule,
+        MatButtonModule,
+        MatIconModule,
+        SharedModule,
+        UserTranslationPipe
+    ]
 })
 export class WalletsUserComponent extends ListingComponent{
 

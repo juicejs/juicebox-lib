@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ListingComponent} from '../../../../shared/components/listing/listing.component';
 import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import { ISearchTerm} from '../../../../shared/interfaces/ISearchTerm';
@@ -9,11 +10,29 @@ import { UsersService } from '../../users.service';
 import { ConfirmationDialogComponent} from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { UserTranslationPipe } from '../../i18n/user.translation';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { SharedModule } from '../../../../shared/shared.module';
 
 @Component({
     selector: 'app-organisations-user',
     templateUrl: './organisations-user.component.html',
-    styleUrls: ['./organisations-user.component.scss']
+    styleUrls: ['./organisations-user.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatTableModule,
+        MatButtonModule,
+        MatIconModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        SharedModule,
+        UserTranslationPipe
+    ]
 })
 export class OrganisationsUserComponent extends ListingComponent implements OnInit {
 

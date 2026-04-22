@@ -1,16 +1,32 @@
-import {Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
 
 // import {UsersService} from '../../../users/users.service';
 import {HelperService} from '../../../../shared/services/helper.service';
-import {MatDialogRef} from '@angular/material/dialog';
+import {MatDialogRef, MatDialogModule} from '@angular/material/dialog';
 import {GlobalTranslationPipe} from '../../../../i18n/global.translation';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
+import {CommonModule} from '@angular/common';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
+import {SharedModule} from '../../../../shared/shared.module';
 
 @Component({
     selector: 'app-forgot-password',
     templateUrl: './forgot-password.component.html',
-    styleUrls: ['./forgot-password.component.css']
+    styleUrls: ['./forgot-password.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        SharedModule,
+        GlobalTranslationPipe
+    ]
 })
 export class ForgotPasswordComponent implements OnInit {
 

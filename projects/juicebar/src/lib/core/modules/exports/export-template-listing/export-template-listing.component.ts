@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ExportsTranslationPipe} from "../i18n/exports.translation";
-import {Router} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import {ExportsService} from '../exports.service';
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmationDialogComponent} from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -9,13 +9,31 @@ import {HelperService, TableFilter, TableSort} from '../../../shared/services/he
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {ExcelExportConfirmComponent} from '../export-confirm/excel-confirm/excel-export-confirm.component';
 import {PdfExportConfirmComponent} from '../export-confirm/pdf-confirm/pdf-export-confirm.component';
-import {MatTableDataSource} from '@angular/material/table';
-import {PageEvent} from '@angular/material/paginator';
+import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {PageEvent, MatPaginatorModule} from '@angular/material/paginator';
+import {CommonModule} from '@angular/common';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {SharedModule} from '../../../shared/shared.module';
 
 @Component({
     selector: 'app-export-template-listing',
     templateUrl: './export-template-listing.component.html',
-    styleUrls: ['./export-template-listing.component.scss']
+    styleUrls: ['./export-template-listing.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        RouterLink,
+        MatTableModule,
+        MatPaginatorModule,
+        MatButtonModule,
+        MatIconModule,
+        MatTooltipModule,
+        SharedModule,
+        ExportsTranslationPipe,
+        AutoLanguagePipe
+    ]
 })
 export class ExportTemplateListingComponent implements OnInit {
 

@@ -50,15 +50,7 @@ import {Inject, Optional} from '@angular/core';
 
 @NgModule({
     declarations: [
-        MainComponent,
-        HelpComponent,
-        MainTranslationPipe,
-        WelcomeMessageComponent,
-      ResetPasswordComponent,
-      ForgotPasswordComponent,
-      LoginComponent,
-      NavigationComponent,
-      SidebarComponent
+        // Moved to imports - standalone is default in Angular v20+
      ],
   imports: [
     CommonModule,
@@ -88,7 +80,17 @@ import {Inject, Optional} from '@angular/core';
     MatSidenavContainer,
     MatSidenav,
     MatNavList,
-    MatListItem
+    MatListItem,
+    // Standalone components (default in Angular v20+)
+    MainComponent,
+    HelpComponent,
+    MainTranslationPipe,
+    WelcomeMessageComponent,
+    ResetPasswordComponent,
+    ForgotPasswordComponent,
+    LoginComponent,
+    NavigationComponent,
+    SidebarComponent
   ],
     exports: [RouterModule, MainTranslationPipe],
     providers: [],

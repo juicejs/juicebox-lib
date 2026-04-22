@@ -1,21 +1,30 @@
-import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
-import {Location} from '@angular/common';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Component, EventEmitter, OnDestroy, OnInit, output, ChangeDetectionStrategy} from '@angular/core';
+import {CommonModule, Location} from '@angular/common';
+import {ActivatedRoute, Router, RouterOutlet} from '@angular/router';
 import {Subscription} from 'rxjs';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import { ConfigurationService} from '../../../shared/services/configuration.service';
-import { MatTabChangeEvent } from '@angular/material/tabs';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
+import {SharedModule} from '../../../shared/shared.module';
+import {UserTranslationPipe} from '../i18n/user.translation';
 
 @Component({
   selector: 'app-details',
   templateUrl: './details.component.html',
-  styleUrls: ['./details.component.css']
+  styleUrls: ['./details.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    MatTabsModule,
+    SharedModule,
+    UserTranslationPipe
+  ]
 })
 export class DetailsUsersComponent implements OnInit, OnDestroy {
 
     //@Input() name:any ;
-    @Output()
-    backButton: EventEmitter<any> = new EventEmitter<any>();
+    backButton = output<any>();
     public data: Array<any> = [];
     public email: Array<any> = [];
     private sub: Subscription;

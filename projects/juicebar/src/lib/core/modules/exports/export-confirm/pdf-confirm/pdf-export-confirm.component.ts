@@ -1,11 +1,18 @@
-import {Component, OnInit, Inject} from '@angular/core';
-import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {Component, OnInit, Inject, ChangeDetectionStrategy} from '@angular/core';
+import {MatDialogRef, MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
 import moment from 'moment';
 import {ExportsService} from '../../exports.service';
 import {HelperService} from '../../../../shared/services/helper.service';
 import {MultiLanguageObject} from '../../../../shared/pipes/auto-language.pipe';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {ExportsTranslationPipe} from "../../i18n/exports.translation";
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatSelectModule} from '@angular/material/select';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
+import {SharedModule} from '../../../../shared/shared.module';
 
 export interface PdfExportConfirmDialogData {
     fileName?: string;
@@ -17,7 +24,19 @@ export interface PdfExportConfirmDialogData {
 @Component({
     selector: 'export-confirm',
     styleUrls: [],
-    templateUrl: './pdf-export-confirm.component.html'
+    templateUrl: './pdf-export-confirm.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        FormsModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatInputModule,
+        MatButtonModule,
+        SharedModule,
+        ExportsTranslationPipe
+    ]
 })
 export class PdfExportConfirmComponent implements OnInit {
     promiseBtn;

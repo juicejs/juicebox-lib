@@ -4,10 +4,11 @@ import {CommonModule} from '@angular/common';
 
 @NgModule({
     declarations: [
-        AutoLanguageComponent
+        // Moved to imports - standalone is default in Angular v20+
     ],
     imports: [
-        CommonModule
+        CommonModule,
+        AutoLanguageComponent
     ],
     exports: [AutoLanguageComponent],
     providers: [],
