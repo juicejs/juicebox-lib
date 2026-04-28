@@ -1,0 +1,11 @@
+<label class="app-checkbox">
+  <input
+    type="checkbox"
+    [checked]="checked()"
+    [disabled]="disabled()"
+    (change)="onCheckboxChange($event)"
+  />
+  <span class="app-checkbox-label">
+    <ng-content></ng-content>
+  </span>
+</label>

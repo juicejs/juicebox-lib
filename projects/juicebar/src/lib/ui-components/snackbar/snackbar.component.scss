@@ -1,0 +1,31 @@
+@import '../styles/variables.scss';
+
+.app-snackbar {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-grey-800);
+  color: var(--color-primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+
+  .message {
+    font-size: 14px;
+  }
+
+  .action {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: none;
+    background: transparent;
+    color: var(--color-secondary);
+    cursor: pointer;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+}

@@ -1,0 +1,138 @@
+.form-group {
+  width: 100%;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  min-height: 2rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background-color: var(--color-grey-200);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  color: var(--color-grey-900);
+
+  &-text {
+    line-height: 1.5;
+  }
+
+  &-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    color: var(--color-grey-600);
+    transition: color 0.2s;
+
+    &:hover {
+      color: var(--color-grey-900);
+    }
+
+    app-icon {
+      font-size: 1rem;
+    }
+  }
+}
+
+.autocomplete-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input-suffix {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.clear-button {
+  pointer-events: all;
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-grey-600);
+  transition: color 0.2s;
+
+  &:hover {
+    color: var(--color-grey-900);
+  }
+
+  app-icon {
+    font-size: 1.25rem;
+  }
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-grey-300);
+  border-top-color: var(--color-secondary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.autocomplete-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  max-height: 250px;
+  overflow-y: auto;
+  background-color: var(--color-primary);
+  border: 1px solid var(--color-grey-300);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: 1000;
+}
+
+.autocomplete-option {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover:not(.disabled) {
+    background-color: var(--color-grey-100);
+  }
+
+  &.selected,
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.disabled:not(.selected) {
+    cursor: default;
+  }
+}

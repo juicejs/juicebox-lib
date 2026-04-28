@@ -1,0 +1,36 @@
+@import '../styles/variables.scss';
+
+.app-dialog-panel {
+  background: var(--color-primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  padding: var(--spacing-lg);
+  min-width: 300px;
+  max-width: 80vw;
+  max-height: 80vh;
+}
+
+.app-dialog-title {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--color-text-primary);
+}
+
+.app-dialog-content {
+  display: block;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.app-dialog-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: flex-end;
+  margin-top: var(--spacing-md);
+}
+
+.cdk-overlay-backdrop {
+  background: rgba(0, 0, 0, 0.32);
+}

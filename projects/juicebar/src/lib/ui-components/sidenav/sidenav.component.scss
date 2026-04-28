@@ -1,0 +1,25 @@
+@import '../styles/variables.scss';
+
+.app-sidenav-container {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+.app-sidenav {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  background: var(--color-primary);
+  border-right: 1px solid var(--color-border);
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+
+  &:not(.app-sidenav-opened) {
+    transform: translateX(-100%);
+  }
+
+  &.app-sidenav-opened {
+    transform: translateX(0);
+  }
+}

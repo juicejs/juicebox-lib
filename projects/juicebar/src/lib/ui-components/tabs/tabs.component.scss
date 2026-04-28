@@ -1,0 +1,32 @@
+@import '../styles/variables.scss';
+
+.app-tabs {
+  display: block;
+}
+
+.app-tabs-header {
+  display: flex;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.app-tab {
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: var(--color-text-primary);
+  }
+
+  &.app-tab-active {
+    color: var(--color-secondary);
+    border-bottom-color: var(--color-secondary);
+  }
+}
+
+.app-tabs-content {
+  padding: var(--spacing-md) 0;
+}

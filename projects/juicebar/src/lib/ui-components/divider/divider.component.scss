@@ -1,0 +1,7 @@
+@import '../styles/variables.scss';
+
+:host {
+  display: block;
+  border-top: 1px solid var(--color-border);
+  margin: var(--spacing-md) 0;
+}

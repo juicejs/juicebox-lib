@@ -1,0 +1,12 @@
+@import '../styles/variables.scss';
+
+:host {
+  display: block;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-grey-800);
+  color: var(--color-primary);
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+  max-width: 200px;
+  word-wrap: break-word;
+}

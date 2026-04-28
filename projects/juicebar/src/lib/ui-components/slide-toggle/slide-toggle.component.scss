@@ -1,0 +1,56 @@
+@import '../styles/variables.scss';
+
+.app-slide-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+
+  &:checked + .toggle-slider {
+    background: var(--color-secondary);
+
+    &::before {
+      transform: translateX(20px);
+    }
+  }
+
+  &:disabled + .toggle-slider {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.toggle-slider {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  background: var(--color-grey-400);
+  border-radius: 24px;
+  transition: background 0.3s;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 2px;
+    top: 2px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    transition: transform 0.3s;
+  }
+}
+
+.toggle-label {
+  color: var(--color-text-primary);
+  font-size: 14px;
+}

@@ -1,0 +1,7 @@
+<div class="app-paginator">
+  <span class="paginator-range">
+    {{ pageIndex() * pageSize() + 1 }} - {{ Math.min((pageIndex() + 1) * pageSize(), length()) }} of {{ length() }}
+  </span>
+  <button (click)="previousPage()" [disabled]="pageIndex() === 0">Previous</button>
+  <button (click)="nextPage()" [disabled]="pageIndex() >= totalPages - 1">Next</button>
+</div>

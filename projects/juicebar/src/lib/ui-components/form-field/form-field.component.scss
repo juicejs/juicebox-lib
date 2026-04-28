@@ -1,0 +1,22 @@
+@import '../styles/variables.scss';
+
+.app-form-field {
+  display: block;
+  margin-bottom: var(--spacing-md);
+  position: relative;
+}
+
+.app-label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.app-error {
+  display: block;
+  margin-top: var(--spacing-xs);
+  color: var(--color-error);
+  font-size: 0.75rem;
+}

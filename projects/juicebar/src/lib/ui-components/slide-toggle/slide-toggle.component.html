@@ -1,0 +1,13 @@
+<label class="app-slide-toggle">
+  <input
+    type="checkbox"
+    class="toggle-input"
+    [checked]="checked()"
+    [disabled]="disabled()"
+    (change)="onToggleChange($event)"
+  />
+  <span class="toggle-slider"></span>
+  <span class="toggle-label">
+    <ng-content></ng-content>
+  </span>
+</label>

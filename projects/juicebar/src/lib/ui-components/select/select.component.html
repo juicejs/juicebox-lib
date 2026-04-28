@@ -1,0 +1,16 @@
+<div class="app-select" cdkOverlayOrigin #trigger="cdkOverlayOrigin">
+  <div class="app-select-trigger" (click)="toggle()" [class.disabled]="disabled()">
+    <span class="app-select-value">{{ displayValue() || placeholder() }}</span>
+    <span class="app-select-arrow">▼</span>
+  </div>
+</div>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="trigger"
+  [cdkConnectedOverlayOpen]="isOpen()"
+  (backdropClick)="close()">
+  <div class="app-select-panel">
+    <ng-content></ng-content>
+  </div>
+</ng-template>
