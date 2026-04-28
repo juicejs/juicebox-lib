@@ -1,60 +1,64 @@
 <div class="parent">
     <div class="menu-bar" style="justify-content: flex-start; align-items: center; gap: 16px;">
-        <mat-form-field appearance="outline" style="width: 15rem;">
-            <mat-label>Select organisation</mat-label>
-            <mat-select [(ngModel)]="selectedOrganisation" 
+        <app-form-field appearance="outline" style="width: 15rem;">
+            <app-label>Select organisation</app-label>
+            <app-select [(ngModel)]="selectedOrganisation"
                         name="organisations"
                         (selectionChange)="organisationChanged($event.value)">
-                <mat-option *ngFor="let org of organisations" [value]="org">
-                    {{org.name}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
+                @for (org of organisations; track org._id) {
+                    <app-option [value]="org">
+                        {{org.name}}
+                    </app-option>
+                }
+            </app-select>
+        </app-form-field>
 
-        <button mat-raised-button color="primary" [matPromiseBtn]="promiseBtn"
+        <button app-button appearance="raised" color="primary" [matPromiseBtn]="promiseBtn"
                 [disabled]="!juicebox.hasPermission('users:role#update') || !selectedOrganisation"
                 (click)="add()" style="margin-left: 16px;">
-            <mat-icon>add</mat-icon>
+            <app-icon [icon]="'add'"></app-icon>
             {{'add' | translate}}
         </button>
 
-        <button mat-raised-button color="primary" [matPromiseBtn]="promiseBtn"
+        <button app-button appearance="raised" color="primary" [matPromiseBtn]="promiseBtn"
                 [hasPermissionsHide]="'users:role#super-admin'"
-                (click)="createNewOrg()" 
+                (click)="createNewOrg()"
                 style="margin-left: auto;">
-            <mat-icon>business</mat-icon>
+            <app-icon [icon]="'business'"></app-icon>
             {{'create' | translate}}
         </button>
     </div>
 
     <div class="col-sm-12 col-md-12" style="max-height: 100vh; padding:0 !important;">
 
-        <mat-table [dataSource]="rows" class="mat-elevation-2 fullscreen">
+        <table cdk-table [dataSource]="rows" class="data-table fullscreen">
             <!-- Name Column -->
-            <ng-container matColumnDef="name">
-                <mat-header-cell *matHeaderCellDef>{{'name' | translate}}</mat-header-cell>
-                <mat-cell *matCellDef="let row">
+            <ng-container cdkColumnDef="name">
+                <th cdk-header-cell *cdkHeaderCellDef>{{'name' | translate}}</th>
+                <td cdk-cell *cdkCellDef="let row">
                     <strong>{{row.name}}</strong>
-                </mat-cell>
+                </td>
             </ng-container>
 
             <!-- Actions Column -->
-            <ng-container matColumnDef="actions">
-                <mat-header-cell *matHeaderCellDef>{{'actions' | translate}}</mat-header-cell>
-                <mat-cell *matCellDef="let row">
-                    <button *ngIf="row._id !== loggedInOrganisationId || loggedInUserId !== userId" 
-                            mat-icon-button
-                            [hasPermissions]="'users:role#update'"
-                            [matTooltip]="'delete' | translate"
-                            (click)="delete(row);">
-                        <mat-icon>delete</mat-icon>
-                    </button>
-                </mat-cell>
+            <ng-container cdkColumnDef="actions">
+                <th cdk-header-cell *cdkHeaderCellDef>{{'actions' | translate}}</th>
+                <td cdk-cell *cdkCellDef="let row">
+                    @if (row._id !== loggedInOrganisationId || loggedInUserId !== userId) {
+                        <button app-button
+                                appearance="icon"
+                                [hasPermissions]="'users:role#update'"
+                                [title]="'delete' | translate"
+                                (click)="delete(row);">
+                            <app-icon [icon]="'delete'"></app-icon>
+                        </button>
+                    }
+                </td>
             </ng-container>
 
-            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-        </mat-table>
+            <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
+            <tr cdk-row *cdkRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
 
     </div>
 

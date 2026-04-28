@@ -1,5 +1,5 @@
 import {Component, OnInit, Inject, ChangeDetectionStrategy} from '@angular/core';
-import {MatDialogRef, MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
+import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
 import moment from 'moment';
 import {ExportsService} from '../../exports.service';
 import {HelperService} from '../../../../shared/services/helper.service';
@@ -8,10 +8,6 @@ import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {ExportsTranslationPipe} from "../../i18n/exports.translation";
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatSelectModule} from '@angular/material/select';
-import {MatInputModule} from '@angular/material/input';
-import {MatButtonModule} from '@angular/material/button';
 import {SharedModule} from '../../../../shared/shared.module';
 
 export interface PdfExportConfirmDialogData {
@@ -29,11 +25,6 @@ export interface PdfExportConfirmDialogData {
     imports: [
         CommonModule,
         FormsModule,
-        MatDialogModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatInputModule,
-        MatButtonModule,
         SharedModule,
         ExportsTranslationPipe
     ]
@@ -52,8 +43,8 @@ export class PdfExportConfirmComponent implements OnInit {
                 private helper: HelperService,
                 private exports: ExportsService,
                 private juicebox: JuiceboxService,
-                public dialogRef: MatDialogRef<PdfExportConfirmComponent>,
-                @Inject(MAT_DIALOG_DATA) public data: PdfExportConfirmDialogData) {
+                public dialogRef: DialogRef<boolean>,
+                @Inject(DIALOG_DATA) public data: PdfExportConfirmDialogData) {
         this.i18n = new ExportsTranslationPipe(this.juicebox);
 
         // Initialize properties from injected data

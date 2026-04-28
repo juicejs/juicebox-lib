@@ -1,6 +1,6 @@
 import {Inject, Injectable, Injector, isDevMode, Type} from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {SnackbarService} from "../../../ui-components";
 import { interval, Observable, Subject, Subscription } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
 import { Juice } from './juice.service';
@@ -57,7 +57,7 @@ export class JuiceboxService {
     constructor(protected http: HttpClient, private juice: Juice,
                 @Inject(DOCUMENT) private document,
                 @Inject(Injector) private injector: Injector,
-                private snackBar: MatSnackBar) {
+                private snackbar: SnackbarService) {
 
         this.juice.addEventListener((e) => {
             if (e == 'Not authenticated') {
@@ -174,7 +174,7 @@ export class JuiceboxService {
             panelClass: `${type}-snackbar`,
             ...options
         };
-        return this.snackBar.open(message, action, snackBarOptions);
+        return this.snackbar.open(message, action, snackBarOptions);
     }
 
     setAuthenticator(auth: string) {

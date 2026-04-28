@@ -1,48 +1,59 @@
 <div class="parent">
     <div class="filter-bar">
-        <mat-form-field appearance="outline" style="width: 400px; padding-right: 24px">
-            <mat-label>{{'organisation' | translate}}</mat-label>
-            <mat-select [(ngModel)]="selectedOrganisation"
+        <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
+            <app-label>{{'organisation' | translate}}</app-label>
+            <app-select [(ngModel)]="selectedOrganisation"
                         name="organisations"
                         (selectionChange)="organisationChanged()">
-                <mat-option *ngFor="let org of organisations" [value]="org._id">
-                    {{org.name}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
+                @for (org of organisations; track org._id) {
+                    <app-option [value]="org._id">
+                        {{org.name}}
+                    </app-option>
+                }
+            </app-select>
+        </app-form-field>
     </div>
     <div class="wrapper">
         <div class="container" style="text-align: center;">
             <span class="group-handle">{{i18nMain.transform('visible')}}</span>
-            <div *ngIf="!disabledDragAndDrop; else elseBlock" class="container" style="height: 84px !important; min-width: 189px !important;" id="sidebar" dragula="DRAGULA_SIDEBAR" [(dragulaModel)]="sidebar">
-                <div class="SidebarItem" *ngFor="let item of sidebar" [innerHtml]="item.label"></div>
-            </div>
-            <ng-template #elseBlock>
+            @if (!disabledDragAndDrop) {
+                <div class="container" style="height: 84px !important; min-width: 189px !important;" id="sidebar" dragula="DRAGULA_SIDEBAR" [(dragulaModel)]="sidebar">
+                    @for (item of sidebar; track item) {
+                        <div class="SidebarItem" [innerHtml]="item.label"></div>
+                    }
+                </div>
+            } @else {
                 <div class="container" style="height: 84px !important; min-width: 189px !important;">
                     <div class="text-center">
                         <i class="fas fa-spin fa-spinner fa-2x"></i>
                     </div>
-                    <div class="SidebarItem" *ngFor="let item of sidebar" [innerHtml]="item.label"></div>
+                    @for (item of sidebar; track item) {
+                        <div class="SidebarItem" [innerHtml]="item.label"></div>
+                    }
                 </div>
-            </ng-template>
+            }
         </div>
 
-        <div *ngIf="allowHidden" class="container" style="text-align: center;">
-            <span class="group-handle">{{i18nMain.transform('hidden')}}</span>
-            <div *ngIf="!disabledDragAndDrop; else elseBlock2" class="container" style="height: 84px !important; min-width: 189px !important;" id="sidebarHidden" dragula="DRAGULA_SIDEBAR" [(dragulaModel)]="sidebarHidden">
-                <div class="SidebarItem" *ngFor="let item of sidebarHidden" [innerHtml]="item.label"></div>
-            </div>
-            <ng-template #elseBlock2>
-                <div class="container" style="height: 84px !important; min-width: 189px !important;">
-                    <div class="text-center">
-                        <i class="fas fa-spin fa-spinner fa-2x"></i>
+        @if (allowHidden) {
+            <div class="container" style="text-align: center;">
+                <span class="group-handle">{{i18nMain.transform('hidden')}}</span>
+                @if (!disabledDragAndDrop) {
+                    <div class="container" style="height: 84px !important; min-width: 189px !important;" id="sidebarHidden" dragula="DRAGULA_SIDEBAR" [(dragulaModel)]="sidebarHidden">
+                        @for (item of sidebarHidden; track item) {
+                            <div class="SidebarItem" [innerHtml]="item.label"></div>
+                        }
                     </div>
-                    <div class="SidebarItem" *ngFor="let item of sidebarHidden" [innerHtml]="item.label"></div>
-                </div>
-            </ng-template>
-        </div>
+                } @else {
+                    <div class="container" style="height: 84px !important; min-width: 189px !important;">
+                        <div class="text-center">
+                            <i class="fas fa-spin fa-spinner fa-2x"></i>
+                        </div>
+                        @for (item of sidebarHidden; track item) {
+                            <div class="SidebarItem" [innerHtml]="item.label"></div>
+                        }
+                    </div>
+                }
+            </div>
+        }
     </div>
 </div>
-
-
-

@@ -1,9 +1,9 @@
 import {Component, Inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
+import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
 import {JuiceboxService} from '../../services/Juicebox.service';
 import { SharedTranslationPipe} from '../../i18n/shared-translation.pipe';
 import {CommonModule} from '@angular/common';
-import {MatButtonModule} from '@angular/material/button';
+import {ButtonComponent} from "../../../../ui-components";
 
 export interface ConfirmationDialogData {
   action?: string;
@@ -24,8 +24,7 @@ export interface ConfirmationDialogData {
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        MatDialogModule,
-        MatButtonModule,
+        ButtonComponent,
         SharedTranslationPipe
     ]
 })
@@ -44,8 +43,8 @@ export class ConfirmationDialogComponent implements OnInit {
 
     constructor(
         protected juicebox: JuiceboxService,
-        public dialogRef: MatDialogRef<ConfirmationDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: ConfirmationDialogData
+        public dialogRef: DialogRef<boolean>,
+        @Inject(DIALOG_DATA) public data: ConfirmationDialogData
     ) {
         // Set properties from injected data
         this.action = data.action;

@@ -1,6 +1,6 @@
 import {Inject, Injectable, Injector} from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {SnackbarService} from "../../../ui-components";
 
 @Injectable({
   providedIn: 'root'
@@ -67,10 +67,10 @@ export class Juice {
                     this.eventListener(err.error);
                     resolve(false);
                 } else if (err.status === 413) {
-                    this._snackBar.open(err.message, 'Close', { duration: 5000, panelClass: 'error-snackbar' });
+                    this._snackBar.open(err.message, 'Close', 5000);
                     resolve(false);
                 } else if (err.status == 0){
-                    this._snackBar.open(err.message, 'Close', { duration: 5000, panelClass: 'error-snackbar' });
+                    this._snackBar.open(err.message, 'Close', 5000);
                     resolve(false);
                 }
                 reject(err);
@@ -100,7 +100,7 @@ export class Juice {
                 resolve(data.body);
             }, err => {
                 if (err.status === 413) {
-                    this._snackBar.open(err.message, 'Close', { duration: 5000, panelClass: 'error-snackbar' });
+                    this._snackBar.open(err.message, 'Close', 5000);
                     throw new Error(err.message);
                 }
                 reject(err);
@@ -147,8 +147,8 @@ export class Juice {
         }
     }
 
-    private get _snackBar(): MatSnackBar {
-        return this.injector.get(MatSnackBar);
+    private get _snackBar(): SnackbarService {
+        return this.injector.get(SnackbarService);
     }
 
     showToast(type: 'success' | 'error' | 'warning' | 'info', message: string, action: string = 'Close', options?: any){

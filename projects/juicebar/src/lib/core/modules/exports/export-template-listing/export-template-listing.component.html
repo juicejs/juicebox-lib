@@ -1,103 +1,107 @@
 <div class="parent">
     <div class="text-right mb-3">
-        <button mat-raised-button
+        <button app-button
+                appearance="raised"
                 color="primary"
                 (click)="toWizard()"
                 [NoPermissionDisable]="'data-export:role#create'">{{'create' | translate}}
         </button>
     </div>
 
-    <mat-table [dataSource]="dataSource">
+    <table cdk-table [dataSource]="rows" class="data-table">
         <!-- Name Column -->
-        <ng-container matColumnDef="name">
-            <mat-header-cell *matHeaderCellDef class="col-width-200">
+        <ng-container cdkColumnDef="name">
+            <th cdk-header-cell *cdkHeaderCellDef class="col-width-200">
                 {{'name' | translate}}
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row" class="col-width-200" (click)="onSelect(row._id)">
+            </th>
+            <td cdk-cell *cdkCellDef="let row" class="col-width-200" (click)="onSelect(row._id)">
                 {{row.name || '-'}}
-            </mat-cell>
+            </td>
         </ng-container>
 
         <!-- Data Source Column -->
-        <ng-container matColumnDef="dataSource">
-            <mat-header-cell *matHeaderCellDef class="col-width-200">
+        <ng-container cdkColumnDef="dataSource">
+            <th cdk-header-cell *cdkHeaderCellDef class="col-width-200">
                 {{'datasource' | translate}}
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row" class="col-width-200" (click)="onSelect(row._id)">
+            </th>
+            <td cdk-cell *cdkCellDef="let row" class="col-width-200" (click)="onSelect(row._id)">
                 {{row._data_source && row._data_source.name ? row._data_source.name : '-'}}
-            </mat-cell>
+            </td>
         </ng-container>
 
         <!-- Columns Column -->
-        <ng-container matColumnDef="columns">
-            <mat-header-cell *matHeaderCellDef>
+        <ng-container cdkColumnDef="columns">
+            <th cdk-header-cell *cdkHeaderCellDef>
                 {{'columns' | translate}}
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row" (click)="onSelect(row._id)">
-                <span [matTooltip]="row._columns.length ? getLabels(row._columns, true) : null"
+            </th>
+            <td cdk-cell *cdkCellDef="let row" (click)="onSelect(row._id)">
+                <span [title]="row._columns.length ? getLabels(row._columns, true) : null"
                       [class.has-popover]="row._columns.length">
                     <span>{{getLabels(row._columns)}}</span>
                 </span>
-            </mat-cell>
+            </td>
         </ng-container>
 
         <!-- Filters Column -->
-        <ng-container matColumnDef="filters">
-            <mat-header-cell *matHeaderCellDef>
+        <ng-container cdkColumnDef="filters">
+            <th cdk-header-cell *cdkHeaderCellDef>
                 {{'filters' | translate}}
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row" (click)="onSelect(row._id)">
-                <span [matTooltip]="row._filters.length ? getLabels(row._filters, true) : null"
+            </th>
+            <td cdk-cell *cdkCellDef="let row" (click)="onSelect(row._id)">
+                <span [title]="row._filters.length ? getLabels(row._filters, true) : null"
                       [class.has-popover]="row._filters.length">
                     <span>{{getLabels(row._filters)}}</span>
                 </span>
-            </mat-cell>
+            </td>
         </ng-container>
 
         <!-- Actions Column -->
-        <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef class="col-width-150">
+        <ng-container cdkColumnDef="actions">
+            <th cdk-header-cell *cdkHeaderCellDef class="col-width-150">
                 {{'actions' | translate}}
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row" class="col-width-150 d-flex text-center align-center">
+            </th>
+            <td cdk-cell *cdkCellDef="let row" class="col-width-150 d-flex text-center align-center">
                 <div class="d-flex align-center" (click)="$event.stopPropagation()">
-                    <button mat-stroked-button
+                    <button app-button
                             [disabled]="!row._available_export_strategies.length"
-                            [matMenuTriggerFor]="exportMenu"
+                            [cdkMenuTriggerFor]="exportMenu"
                             [NoPermissionDisable]="row.data_source_key == 'sap-data:strategy' ? 'data-export:role#admin' : 'data-export:role#export'"
                             class="compact-table-button">
                         Export
-                        <mat-icon>arrow_drop_down</mat-icon>
+                        <app-icon [icon]="'arrow_drop_down'"></app-icon>
                     </button>
-                    <mat-menu #exportMenu="matMenu">
-                        <button *ngFor="let exportStrategy of row._available_export_strategies"
-                                mat-menu-item
-                                (click)="openExportConfirmationModal(row, exportStrategy.key)">
-                            {{exportStrategy.name}}
-                        </button>
-                    </mat-menu>
+                    <ng-template #exportMenu>
+                        <div class="menu-panel" cdkMenu>
+                            @for (exportStrategy of row._available_export_strategies; track exportStrategy.key) {
+                                <button class="menu-item"
+                                        cdkMenuItem
+                                        (click)="openExportConfirmationModal(row, exportStrategy.key)">
+                                    {{exportStrategy.name}}
+                                </button>
+                            }
+                        </div>
+                    </ng-template>
 
-                    <button mat-icon-button
+                    <button app-button
+                            appearance="icon"
                             (click)="delete(row)"
                             [NoPermissionDisable]="'data-export:role#delete'"
-                            matTooltip="{{'delete' | translate}}"
+                            [title]="'delete' | translate"
                             class="align-center">
-                        <mat-icon>delete</mat-icon>
+                        <app-icon [icon]="'delete'"></app-icon>
                     </button>
                 </div>
-            </mat-cell>
+            </td>
         </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;" class="clickable-row"></mat-row>
-    </mat-table>
+        <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
+        <tr cdk-row *cdkRowDef="let row; columns: displayedColumns;" class="clickable-row"></tr>
+    </table>
 
-    <mat-paginator
+    <app-paginator
         [length]="count"
         [pageSize]="pageSize"
-        [pageIndex]="page - 1"
         [pageSizeOptions]="[5, 10, 20, 50]"
-        (page)="onPageChange($event)"
-        showFirstLastButtons>
-    </mat-paginator>
+        (page)="onPageChange($event)">
+    </app-paginator>
 </div>

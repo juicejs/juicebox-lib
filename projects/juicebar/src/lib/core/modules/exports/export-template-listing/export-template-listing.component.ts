@@ -2,20 +2,21 @@ import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ExportsTranslationPipe} from "../i18n/exports.translation";
 import {Router, RouterLink} from "@angular/router";
 import {ExportsService} from '../exports.service';
-import {MatDialog} from "@angular/material/dialog";
+import {DialogService} from '../../../../ui-components';
 import {ConfirmationDialogComponent} from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 import {HelperService, TableFilter, TableSort} from '../../../shared/services/helper.service';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {ExcelExportConfirmComponent} from '../export-confirm/excel-confirm/excel-export-confirm.component';
 import {PdfExportConfirmComponent} from '../export-confirm/pdf-confirm/pdf-export-confirm.component';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
-import {PageEvent, MatPaginatorModule} from '@angular/material/paginator';
 import {CommonModule} from '@angular/common';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
-import {MatTooltipModule} from '@angular/material/tooltip';
 import {SharedModule} from '../../../shared/shared.module';
+
+export interface PageEvent {
+    pageIndex: number;
+    pageSize: number;
+    length: number;
+}
 
 @Component({
     selector: 'app-export-template-listing',
@@ -25,11 +26,6 @@ import {SharedModule} from '../../../shared/shared.module';
     imports: [
         CommonModule,
         RouterLink,
-        MatTableModule,
-        MatPaginatorModule,
-        MatButtonModule,
-        MatIconModule,
-        MatTooltipModule,
         SharedModule,
         ExportsTranslationPipe,
         AutoLanguagePipe
@@ -50,7 +46,6 @@ export class ExportTemplateListingComponent implements OnInit {
     customName: string;
 
     displayedColumns: string[] = ['name', 'dataSource', 'columns', 'filters', 'actions'];
-    dataSource = new MatTableDataSource<any>([]);
 
     i18n: ExportsTranslationPipe;
     autoLanguage: AutoLanguagePipe;
@@ -59,7 +54,7 @@ export class ExportTemplateListingComponent implements OnInit {
     constructor(public juicebox: JuiceboxService,
                 public helper: HelperService,
                 private exports: ExportsService,
-                private dialog: MatDialog,
+                private dialog: DialogService,
                 private router: Router) {
         this.i18n = new ExportsTranslationPipe(this.juicebox);
         this.autoLanguage = new AutoLanguagePipe(this.juicebox);
@@ -93,7 +88,6 @@ export class ExportTemplateListingComponent implements OnInit {
             if (!result.success) return this.juicebox.showToast("error", result.error);
             this.rows = result.payload.items;
             this.count = result.payload.count;
-            this.dataSource.data = this.rows;
         })
     }
 
@@ -141,7 +135,7 @@ export class ExportTemplateListingComponent implements OnInit {
                 subject: this.autoLanguage.transform(template.name)
             }
         });
-        dialogRef.afterClosed().subscribe(async (result) => {
+        dialogRef.closed.subscribe(async (result) => {
             if (result) {
                 const deleteResult = await this.exports.deleteExportTemplate(template._id);
                 if (deleteResult.success) {
@@ -165,7 +159,7 @@ export class ExportTemplateListingComponent implements OnInit {
                     dataSourceKey: exportTemplate.data_source_key
                 }
             });
-            dialogRef.afterClosed().subscribe((result) => {
+            dialogRef.closed.subscribe((result) => {
                 if (result) {
                     this.juicebox.showToast("success", this.i18n.transform('file_exported'))
                 }
@@ -181,7 +175,7 @@ export class ExportTemplateListingComponent implements OnInit {
                     exportStrategyKey: exportStrategyKey
                 }
             });
-            dialogRef.afterClosed().subscribe((result) => {
+            dialogRef.closed.subscribe((result) => {
                 if (result) {
                     this.juicebox.showToast("success", this.i18n.transform('file_exported'))
                 }

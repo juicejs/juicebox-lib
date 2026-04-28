@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {MatDateFormats, DateAdapter, NativeDateAdapter} from '@angular/material/core';
 import {JuiceboxService} from './Juicebox.service';
 
 const I18N_VALUES = {
@@ -42,27 +41,30 @@ const I18N_VALUES = {
 };
 
 /**
- * Custom Material DateAdapter that supports internationalization and DD.MM.YYYY format
- * Replaces the NgBootstrap CustomDatepickerI18n functionality
+ * Custom Date Utilities Service for handling date formatting and parsing
+ * Supports internationalization and DD.MM.YYYY format
  */
 @Injectable({providedIn: 'root'})
-export class CustomMaterialDateAdapter extends NativeDateAdapter {
+export class CustomMaterialDateAdapter {
     private language: string;
 
-    constructor(matDateLocale: string, private juicebox: JuiceboxService) {
-        super(matDateLocale);
+    constructor(private juicebox: JuiceboxService) {
         this.language = this.juicebox.getLanguage();
     }
 
-  override getMonthNames(style: 'long' | 'short' | 'narrow'): string[] {
+    getMonthNames(style: 'long' | 'short' | 'narrow'): string[] {
         return I18N_VALUES[this.language]?.months || I18N_VALUES['en_GB'].months;
     }
 
-  override getDayOfWeekNames(style: 'long' | 'short' | 'narrow'): string[] {
+    getDayOfWeekNames(style: 'long' | 'short' | 'narrow'): string[] {
         return I18N_VALUES[this.language]?.weekdays || I18N_VALUES['en_GB'].weekdays;
     }
 
-  override format(date: Date, displayFormat: string): string {
+    isValid(date: Date): boolean {
+        return date instanceof Date && !isNaN(date.getTime());
+    }
+
+    format(date: Date, displayFormat: string): string {
         if (!this.isValid(date)) {
             return '';
         }
@@ -75,10 +77,10 @@ export class CustomMaterialDateAdapter extends NativeDateAdapter {
             return `${day}.${month}.${year}`;
         }
 
-        return super.format(date, displayFormat);
+        return date.toLocaleDateString();
     }
 
-  override parse(value: any): Date | null {
+    parse(value: any): Date | null {
         if (typeof value === 'string' && value.length > 0) {
             // Handle DD.MM.YYYY format
             const dateParts = value.trim().split('.');
@@ -94,7 +96,7 @@ export class CustomMaterialDateAdapter extends NativeDateAdapter {
             }
         }
 
-        return super.parse(value);
+        return null;
     }
 
     /**
@@ -196,22 +198,6 @@ export class CustomMaterialDateAdapter extends NativeDateAdapter {
     }
 }
 
-/**
- * Custom Material DateFormats for DD.MM.YYYY pattern
- * Replaces the NgBootstrap CustomNgbDateParserFormatter functionality
- */
-export const CUSTOM_MAT_DATE_FORMATS: MatDateFormats = {
-    parse: {
-        dateInput: 'DD.MM.YYYY',
-    },
-    display: {
-        dateInput: 'DD.MM.YYYY',
-        monthYearLabel: 'MMM YYYY',
-        dateA11yLabel: 'DD.MM.YYYY',
-        monthYearA11yLabel: 'MMMM YYYY',
-    },
-};
-
 // Legacy exports for backward compatibility (these are now deprecated)
 // @deprecated Use CustomMaterialDateAdapter instead
 export class CustomDatepickerI18n {
@@ -220,9 +206,9 @@ export class CustomDatepickerI18n {
     }
 }
 
-// @deprecated Use CUSTOM_MAT_DATE_FORMATS instead
+// @deprecated Use CustomMaterialDateAdapter instead
 export class CustomNgbDateParserFormatter {
     constructor() {
-        console.warn('CustomNgbDateParserFormatter is deprecated. Use CUSTOM_MAT_DATE_FORMATS instead.');
+        console.warn('CustomNgbDateParserFormatter is deprecated. Use CustomMaterialDateAdapter instead.');
     }
 }

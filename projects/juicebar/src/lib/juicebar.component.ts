@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import {SidenavComponent} from "./ui-components";
+import {ToolbarComponent} from "./ui-components";
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import {MatListItem, MatNavList} from "@angular/material/list";
-import {MatIcon} from "@angular/material/icon";
-import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {NavListComponent, ListItemComponent} from "./ui-components";
+import {IconComponent} from "./ui-components";
+import {ProgressSpinnerComponent} from "./ui-components";
 import {BehaviorSubject, Observable} from 'rxjs'
 import { JuiceboxService } from './core/shared/services/Juicebox.service';
 
@@ -15,18 +15,18 @@ import { JuiceboxService } from './core/shared/services/Juicebox.service';
   imports: [
     CommonModule,
     RouterOutlet,
-    MatSidenavModule,
-    MatToolbarModule,
+    SidenavComponent,
+    ToolbarComponent,
     RouterLink,
-    MatNavList,
-    MatIcon,
-    MatListItem,
-    MatProgressSpinner
+    NavListComponent,
+    ListItemComponent,
+    IconComponent,
+    ProgressSpinnerComponent
   ],
   template: `
     @if (isLoading$ | async) {
       <div class="loading-container">
-        <mat-spinner></mat-spinner>
+        <app-progress-spinner></app-progress-spinner>
         <p>Loading Juicebox...</p>
       </div>
     } @else {

@@ -30,21 +30,9 @@ import {WelcomeMessageComponent} from './login/welcome-message/welcome-message.c
 import {SidebarService} from '../../shared/services/sidebar.service';
 import {DragulaModule} from 'ng2-dragula';
 import {SharedModule} from '../../shared/shared.module';
-import {MatDialogModule, MatDialogTitle, MatDialogContent, MatDialogActions} from '@angular/material/dialog';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatButtonModule} from '@angular/material/button';
-import {MatSelectModule} from '@angular/material/select';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatCard, MatCardActions, MatCardContent, MatCardFooter, MatCardHeader} from '@angular/material/card';
-import {MatIcon} from '@angular/material/icon';
-import {MatMenuModule} from '@angular/material/menu';
-import {MatTooltipModule} from '@angular/material/tooltip';
 import {NavigationComponent} from './navigation/navigation.component';
 import {SidebarComponent} from './sidebar/sidebar.component';
 import {ImageCropperComponent} from 'ngx-image-cropper';
-import {MatSidenav, MatSidenavContainer} from '@angular/material/sidenav';
-import {MatListItem, MatNavList} from '@angular/material/list';
 import {BASE_APP_CONFIG, BaseAppConfig} from '../../../config/base-app.config';
 import {Inject, Optional} from '@angular/core';
 
@@ -61,26 +49,7 @@ import {Inject, Optional} from '@angular/core';
     ReactiveFormsModule,
     DragulaModule,
     SharedModule,
-    MatDialogModule,
-    MatDialogTitle,
-    MatDialogContent,
-    MatDialogActions,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    MatCard,
-    MatCardHeader,
-    MatCardContent,
-    MatIcon,
-    MatCardActions,
-    MatCardFooter,
     ImageCropperComponent,
-    MatSidenavContainer,
-    MatSidenav,
-    MatNavList,
-    MatListItem,
     // Standalone components (default in Angular v20+)
     MainComponent,
     HelpComponent,

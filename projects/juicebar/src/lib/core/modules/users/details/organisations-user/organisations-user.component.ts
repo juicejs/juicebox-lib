@@ -8,13 +8,8 @@ import { HelperService} from '../../../../shared/services/helper.service';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { UsersService } from '../../users.service';
 import { ConfirmationDialogComponent} from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
+import { DialogService } from '../../../../../ui-components';
 import { UserTranslationPipe } from '../../i18n/user.translation';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { SharedModule } from '../../../../shared/shared.module';
 
 @Component({
@@ -25,11 +20,6 @@ import { SharedModule } from '../../../../shared/shared.module';
     imports: [
         CommonModule,
         ReactiveFormsModule,
-        MatTableModule,
-        MatButtonModule,
-        MatIconModule,
-        MatFormFieldModule,
-        MatSelectModule,
         SharedModule,
         UserTranslationPipe
     ]
@@ -57,7 +47,7 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
                 private aRoute: ActivatedRoute,
                 private userService: UsersService,
                 private router: Router,
-                private dialog: MatDialog) {
+                private dialog: DialogService) {
         super(juicebox);
     }
 
@@ -141,7 +131,7 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
                 action: this.i18n.transform('delete')
             }
         });
-        dialogRef.afterClosed().subscribe(async (result) => {
+        dialogRef.closed.subscribe(async (result) => {
             if (!result) return;
             const user_id = this.aRoute.snapshot.parent.params['id'];
             const deleteResult = await this.juicebox.removeOrganisationFromUser(user_id, org._id);

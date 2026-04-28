@@ -1,87 +1,112 @@
-<h2 mat-dialog-title>
+<app-dialog-title>
     {{"create_vendor" | translate}}
-    <button mat-icon-button mat-dialog-close class="close-button">
-        <mat-icon>close</mat-icon>
+    <button app-button appearance="icon" (click)="cancel()" class="close-button">
+        <app-icon [icon]="'close'"></app-icon>
     </button>
-</h2>
-<mat-dialog-content>
-    <form *ngIf="createVendorForm" class="m-0" [formGroup]="createVendorForm">
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{'company_name' | translate}}</mat-label>
-            <input matInput type="text" placeholder="{{'company_name' | translate}}" formControlName="name">
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{"firstname" | translate}}*</mat-label>
-            <input matInput type="text" placeholder='{{"firstname" | translate}}' formControlName="firstname">
-            <mat-error *ngIf="createVendorForm.controls['firstname'].hasError('required')">{{"include_firstname" | translate}}</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{"lastname" | translate}}*</mat-label>
-            <input matInput type="text" placeholder='{{"lastname" | translate}}' formControlName="lastname">
-            <mat-error *ngIf="createVendorForm.controls['lastname'].hasError('required')">{{"include_lastname" | translate}}</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width" *ngIf="juicebox.getProjectTitle() !== 'QualityCircle'">
-            <mat-label>{{"nickname" | translate}}</mat-label>
-            <input matInput type="text" placeholder='{{"nickname" | translate}}' formControlName="nickname">
-            <mat-error *ngIf="createVendorForm.controls['nickname'].hasError('required')">{{"include_nickname" | translate}}</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{"email" | translate}}*</mat-label>
-            <input matInput type="email" placeholder='{{"email" | translate}}' formControlName="email">
-            <mat-error *ngIf="createVendorForm.controls['email'].hasError('required')">{{"include_email" | translate}}</mat-error>
-            <mat-error *ngIf="createVendorForm.controls['email'].hasError('email')">{{"invalid_email" | translate}}</mat-error>
-        </mat-form-field>
-        <div class="row">
-            <div class="col-6">
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>{{'street' | translate}}</mat-label>
-                    <input matInput type="text" placeholder="{{'street' | translate}}" formControlName="street">
-                    <mat-error *ngIf="createVendorForm.controls['street'].hasError('required')">You must include a street.</mat-error>
-                </mat-form-field>
+</app-dialog-title>
+<app-dialog-content>
+    @if (createVendorForm) {
+        <form class="m-0" [formGroup]="createVendorForm">
+            <app-form-field appearance="outline" class="full-width">
+                <app-label>{{'company_name' | translate}}</app-label>
+                <input type="text" placeholder="{{'company_name' | translate}}" formControlName="name">
+            </app-form-field>
+            <app-form-field appearance="outline" class="full-width">
+                <app-label>{{"firstname" | translate}}*</app-label>
+                <input type="text" placeholder='{{"firstname" | translate}}' formControlName="firstname">
+                @if (createVendorForm.controls['firstname'].hasError('required')) {
+                    <app-error>{{"include_firstname" | translate}}</app-error>
+                }
+            </app-form-field>
+            <app-form-field appearance="outline" class="full-width">
+                <app-label>{{"lastname" | translate}}*</app-label>
+                <input type="text" placeholder='{{"lastname" | translate}}' formControlName="lastname">
+                @if (createVendorForm.controls['lastname'].hasError('required')) {
+                    <app-error>{{"include_lastname" | translate}}</app-error>
+                }
+            </app-form-field>
+            @if (juicebox.getProjectTitle() !== 'QualityCircle') {
+                <app-form-field appearance="outline" class="full-width">
+                    <app-label>{{"nickname" | translate}}</app-label>
+                    <input type="text" placeholder='{{"nickname" | translate}}' formControlName="nickname">
+                    @if (createVendorForm.controls['nickname'].hasError('required')) {
+                        <app-error>{{"include_nickname" | translate}}</app-error>
+                    }
+                </app-form-field>
+            }
+            <app-form-field appearance="outline" class="full-width">
+                <app-label>{{"email" | translate}}*</app-label>
+                <input type="email" placeholder='{{"email" | translate}}' formControlName="email">
+                @if (createVendorForm.controls['email'].hasError('required')) {
+                    <app-error>{{"include_email" | translate}}</app-error>
+                }
+                @if (createVendorForm.controls['email'].hasError('email')) {
+                    <app-error>{{"invalid_email" | translate}}</app-error>
+                }
+            </app-form-field>
+            <div class="row">
+                <div class="col-6">
+                    <app-form-field appearance="outline" class="full-width">
+                        <app-label>{{'street' | translate}}</app-label>
+                        <input type="text" placeholder="{{'street' | translate}}" formControlName="street">
+                        @if (createVendorForm.controls['street'].hasError('required')) {
+                            <app-error>You must include a street.</app-error>
+                        }
+                    </app-form-field>
+                </div>
+
+                <div class="col-6">
+                    <app-form-field appearance="outline" class="full-width">
+                        <app-label>{{'postcode' | translate}}</app-label>
+                        <input type="text" placeholder="{{'postcode' | translate}}" formControlName="postcode">
+                        @if (createVendorForm.controls['postcode'].hasError('required')) {
+                            <app-error>You must include a postcode.</app-error>
+                        }
+                    </app-form-field>
+                </div>
             </div>
 
-            <div class="col-6">
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>{{'postcode' | translate}}</mat-label>
-                    <input matInput type="text" placeholder="{{'postcode' | translate}}" formControlName="postcode">
-                    <mat-error *ngIf="createVendorForm.controls['postcode'].hasError('required')">You must include a postcode.</mat-error>
-                </mat-form-field>
-            </div>
-        </div>
+            <div class="row">
+                <div class="col-6">
+                    <app-form-field appearance="outline" class="full-width">
+                        <app-label>{{'city' | translate}}</app-label>
+                        <input type="text" placeholder="{{'city' | translate}}" formControlName="city">
+                        @if (createVendorForm.controls['city'].hasError('required')) {
+                            <app-error>You must include a city.</app-error>
+                        }
+                    </app-form-field>
+                </div>
 
-        <div class="row">
-            <div class="col-6">
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>{{'city' | translate}}</mat-label>
-                    <input matInput type="text" placeholder="{{'city' | translate}}" formControlName="city">
-                    <mat-error *ngIf="createVendorForm.controls['city'].hasError('required')">You must include a city.</mat-error>
-                </mat-form-field>
+                <div class="col-6">
+                    <app-form-field appearance="outline" class="full-width">
+                        <app-label>{{'country' | translate}}</app-label>
+                        <app-select formControlName="country" placeholder="{{'country' | translate}}">
+                            @for (country of countries; track country.code) {
+                                <app-option [value]="country.code">
+                                    {{country.name}}
+                                </app-option>
+                            }
+                        </app-select>
+                        @if (createVendorForm.controls['country'].hasError('required')) {
+                            <app-error>{{'must_include_country' | translate}}</app-error>
+                        }
+                    </app-form-field>
+                </div>
             </div>
+        </form>
+    }
+</app-dialog-content>
 
-            <div class="col-6">
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>{{'country' | translate}}</mat-label>
-                    <mat-select formControlName="country" placeholder="{{'country' | translate}}">
-                        <mat-option *ngFor="let country of countries" [value]="country.code">
-                            {{country.name}}
-                        </mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="createVendorForm.controls['country'].hasError('required')">{{'must_include_country' | translate}}</mat-error>
-                </mat-form-field>
-            </div>
-        </div>
-    </form>
-</mat-dialog-content>
-
-<mat-dialog-actions align="end">
-    <button mat-button (click)="cancel()">
+<app-dialog-actions align="end">
+    <button app-button (click)="cancel()">
         {{"cancel" | translate}}
     </button>
-    <button mat-raised-button
+    <button app-button
+            appearance="raised"
             color="primary"
             (click)="create()"
             [disabled]="createVendorForm.invalid"
             [matPromiseBtn]="updatePromise">
         {{"create" | translate}}
     </button>
-</mat-dialog-actions>
+</app-dialog-actions>

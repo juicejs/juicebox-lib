@@ -1,19 +1,24 @@
-<h2 mat-dialog-title [innerHTML]="title || ''"></h2>
-
-<div mat-dialog-content>
-  <p [innerHTML]="(completeMessage ?  (excludeQuestionMark ? completeMessage : completeMessage + '?') :  (message || ('are_you_sure' | translate)) + ' ' + (action || '') + ' ' + (subject || '') + '?')"></p>
-  <p *ngIf="info" class="dialog-info" [innerHTML]="info"></p>
+<div class="dialog-header">
+  <h2 [innerHTML]="title || ''"></h2>
 </div>
 
-<div mat-dialog-actions align="end">
-  <button mat-button 
-          color="primary" 
+<div class="dialog-content">
+  <p [innerHTML]="(completeMessage ?  (excludeQuestionMark ? completeMessage : completeMessage + '?') :  (message || ('are_you_sure' | translate)) + ' ' + (action || '') + ' ' + (subject || '') + '?')"></p>
+  @if (info) {
+    <p class="dialog-info" [innerHTML]="info"></p>
+  }
+</div>
+
+<div class="dialog-actions">
+  <button app-button
+          appearance="flat"
           (click)="dialogRef.close(false)"
           type="button">
     {{cancel | translate}}
   </button>
-  <button mat-raised-button 
-          color="primary" 
+  <button app-button
+          appearance="raised"
+          color="primary"
           (click)="dialogRef.close(true)"
           type="button">
     {{confirm | translate}}

@@ -5,20 +5,14 @@ import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {UsersService} from '../../users.service';
 import {ActivatedRoute} from '@angular/router';
 import {ConfigurationService} from '../../../../shared/services/configuration.service';
-import {MatDialog, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import {DialogRef} from '@angular/cdk/dialog';
 import {UserTranslationPipe} from '../../i18n/user.translation';
 import {HelperService} from '../../../../shared/services/helper.service';
 import {GroupsNameEditorComponent} from './groups-name-editor.component/groups-name-editor.component';
 import {ConfirmationDialogComponent} from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import {MatTableModule} from '@angular/material/table';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
-import {MatSelectModule} from '@angular/material/select';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatCheckboxModule} from '@angular/material/checkbox';
 import {FormsModule} from '@angular/forms';
 import {SharedModule} from '../../../../shared/shared.module';
+import {DialogService, SnackbarService} from '../../../../../ui-components';
 
 @Component({
     selector: 'groups-modal',
@@ -28,13 +22,6 @@ import {SharedModule} from '../../../../shared/shared.module';
     imports: [
         CommonModule,
         FormsModule,
-        MatDialogModule,
-        MatTableModule,
-        MatButtonModule,
-        MatIconModule,
-        MatSelectModule,
-        MatFormFieldModule,
-        MatCheckboxModule,
         SharedModule,
         UserTranslationPipe
     ]
@@ -62,11 +49,11 @@ export class GroupsModalComponent extends ListingComponent {
                 private route: ActivatedRoute,
                 private userService: UsersService,
                 private configurationService: ConfigurationService,
-                private dialogRef: MatDialogRef<GroupsModalComponent>,
-                private snackBar: MatSnackBar,
+                private dialogRef: DialogRef<any>,
+                private snackbar: SnackbarService,
                 private pipe: UserTranslationPipe,
                 private helperService: HelperService,
-                private dialog: MatDialog) {
+                private dialog: DialogService) {
         super(juicebox);
 
         this.hasVisibilityFeature = this.juicebox.getOptions().sidebarPermissions;
@@ -97,10 +84,10 @@ export class GroupsModalComponent extends ListingComponent {
     }
 
     createGroup() {
-        const dialogRef = this.dialog.open(GroupsNameEditorComponent, { 
-            disableClose: true 
+        const dialogRef = this.dialog.open(GroupsNameEditorComponent, {
+            disableClose: true
         });
-        dialogRef.afterClosed().subscribe(async (res) => {
+        dialogRef.closed.subscribe(async (res) => {
             if (!res || !res.success)
                 return;
 
@@ -109,11 +96,11 @@ export class GroupsModalComponent extends ListingComponent {
     }
 
     updateSelectedGroup() {
-        const dialogRef = this.dialog.open(GroupsNameEditorComponent, { 
+        const dialogRef = this.dialog.open(GroupsNameEditorComponent, {
             disableClose: true,
             data: { group: this.selectedGroup }
         });
-        dialogRef.afterClosed().subscribe(async (res) => {
+        dialogRef.closed.subscribe(async (res) => {
             if (!res || !res.success)
                 return;
 
@@ -148,17 +135,11 @@ export class GroupsModalComponent extends ListingComponent {
         this.promiseBtn = (async (): Promise<any> => {
             const result = await this.userService.addRoleToGroup(this.selectedGroup._id, this.selectedRole);
             if (!result.success) {
-                this.snackBar.open(`Error: ${result.error}`, '', {
-                    duration: 5000,
-                    panelClass: ['error-snackbar']
-                });
+                this.snackbar.open(`Error: ${result.error}`, 'error');
                 return false;
             }
 
-            this.snackBar.open(`Success: ${this.pipe.transform('successfully_added')} "${this.selectedRole}"`, '', {
-                duration: 1000,
-                panelClass: ['success-snackbar']
-            });
+            this.snackbar.open(`Success: ${this.pipe.transform('successfully_added')} "${this.selectedRole}"`, 'success');
             this.selectedRole = null;
             this.selectedGroup = result.payload;
             this.rows = result.payload.roles;
@@ -175,15 +156,12 @@ export class GroupsModalComponent extends ListingComponent {
                 action: this.pipe.transform('delete')
             }
         });
-        dialogRef.afterClosed().subscribe(async (confirmed) => {
+        dialogRef.closed.subscribe(async (confirmed) => {
             if (!confirmed) return;
             this.promiseBtn = (async (): Promise<any> => {
                 const result = await this.userService.deleteGroupRole(this.selectedGroup._id, role);
                 if (!result.success) {
-                    this.snackBar.open(`Error: ${result.error}`, '', {
-                        duration: 5000,
-                        panelClass: ['error-snackbar']
-                    });
+                    this.snackbar.open(`Error: ${result.error}`, 'error');
                     return false;
                 }
 
@@ -191,10 +169,7 @@ export class GroupsModalComponent extends ListingComponent {
                 this.rows = result.payload.roles;
 
                 await this.refreshRoles(this.selectedGroup.roles);
-                this.snackBar.open(`Success: ${this.pipe.transform('successfully_deleted')}`, '', {
-                    duration: 1000,
-                    panelClass: ['success-snackbar']
-                });
+                this.snackbar.open(`Success: ${this.pipe.transform('successfully_deleted')}`, 'success');
 
 
             })()
@@ -221,20 +196,14 @@ export class GroupsModalComponent extends ListingComponent {
         const result = await this.userService.updateGroupRolePermissions(this.selectedGroup._id, role);
         if (!result.success) {
             this.rows = [];
-            this.snackBar.open(`Error: ${result.error}`, '', {
-                duration: 5000,
-                panelClass: ['error-snackbar']
-            });
+            this.snackbar.open(`Error: ${result.error}`, 'error');
             const group = await this.userService.getGroupById(this.selectedGroup._id);
             if (!group || !group.success || !group.payload) return false;
 
             this.rows = group.payload.roles;
             return false;
         }
-        this.snackBar.open(`Success: ${this.pipe.transform('successfully_updated')}`, '', {
-            duration: 1000,
-            panelClass: ['success-snackbar']
-        });
+        this.snackbar.open(`Success: ${this.pipe.transform('successfully_updated')}`, 'success');
     }
 
     close() {

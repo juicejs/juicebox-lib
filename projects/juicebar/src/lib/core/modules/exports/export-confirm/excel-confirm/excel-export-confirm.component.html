@@ -1,42 +1,46 @@
-<div *ngIf="!isLoading">
-    <h2 mat-dialog-title>{{"confirm_export" | translate}}</h2>
+@if (!isLoading) {
+    <div class="dialog-header">
+        <h2>{{"confirm_export" | translate}}</h2>
+    </div>
 
-    <mat-dialog-content class="p-3">
-        <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{"file_name" | translate}}</mat-label>
-            <input matInput
+    <div class="dialog-content p-3">
+        <app-form-field appearance="outline" class="w-100">
+            <app-label>{{"file_name" | translate}}</app-label>
+            <input appInput
                    type="text"
                    [(ngModel)]="fileName"
                    [placeholder]="'file_name' | translate">
-        </mat-form-field>
+        </app-form-field>
 
         <!-- Future filters implementation -->
-        <div class="form-group mt-3" *ngIf="allowFiltersEditOnConfirm && filters">
-            <app-export-filters (filtersValueChange)="onFiltersValueChange($event)"
-                                [filters]="filters">
-            </app-export-filters>
-        </div>
-    </mat-dialog-content>
+        @if (allowFiltersEditOnConfirm && filters) {
+            <div class="form-group mt-3">
+                <app-export-filters (filtersValueChange)="onFiltersValueChange($event)"
+                                    [filters]="filters">
+                </app-export-filters>
+            </div>
+        }
+    </div>
 
-    <mat-dialog-actions align="end" class="p-3">
-        <button mat-button (click)="cancel()">
+    <div class="dialog-actions p-3">
+        <button app-button appearance="flat" (click)="cancel()">
             {{"cancel" | translate}}
         </button>
-        <button mat-raised-button
+        <button app-button
+                appearance="raised"
                 color="primary"
                 [matPromiseBtn]="promiseBtn"
                 (click)="export()">
             {{"download" | translate}}
         </button>
-    </mat-dialog-actions>
-</div>
+    </div>
+}
 
-<div *ngIf="isLoading" class="loading-container">
-    <mat-dialog-content class="text-center p-4">
-        <mat-progress-spinner
-            mode="indeterminate"
-            diameter="40">
-        </mat-progress-spinner>
-        <p class="mt-2">{{"loading" | translate}}</p>
-    </mat-dialog-content>
-</div>
+@if (isLoading) {
+    <div class="loading-container">
+        <div class="dialog-content text-center p-4">
+            <div class="spinner"></div>
+            <p class="mt-2">{{"loading" | translate}}</p>
+        </div>
+    </div>
+}

@@ -1,37 +1,42 @@
-<h2 mat-dialog-title>{{"confirm_export" | translate}}</h2>
+<div class="dialog-header">
+    <h2>{{"confirm_export" | translate}}</h2>
+</div>
 
-<mat-dialog-content class="p-3">
+<div class="dialog-content p-3">
     <div class="form-group mb-3">
-        <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{"zip_file_name" | translate}}</mat-label>
-            <input matInput 
-                   type="text" 
-                   [(ngModel)]="fileName" 
+        <app-form-field appearance="outline" class="w-100">
+            <app-label>{{"zip_file_name" | translate}}</app-label>
+            <input appInput
+                   type="text"
+                   [(ngModel)]="fileName"
                    [placeholder]="'zip_file_name' | translate">
-        </mat-form-field>
+        </app-form-field>
     </div>
 
     <div class="form-group mb-3">
-        <mat-form-field appearance="outline" class="w-100">
-            <mat-label>{{"file_name" | translate}}</mat-label>
-            <mat-select [(ngModel)]="selectedFileNameProperty"
+        <app-form-field appearance="outline" class="w-100">
+            <app-label>{{"file_name" | translate}}</app-label>
+            <app-select [(ngModel)]="selectedFileNameProperty"
                        [placeholder]="'file_name' | translate">
-                <mat-option *ngFor="let item of fileNameProperties" [value]="item.id">
-                    <span>{{item.label | autoLanguage}}</span>
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
+                @for (item of fileNameProperties; track item.id) {
+                    <app-option [value]="item.id">
+                        <span>{{item.label | autoLanguage}}</span>
+                    </app-option>
+                }
+            </app-select>
+        </app-form-field>
     </div>
-</mat-dialog-content>
+</div>
 
-<mat-dialog-actions align="end" class="p-3">
-    <button mat-button (click)="cancel()">
+<div class="dialog-actions p-3">
+    <button app-button appearance="flat" (click)="cancel()">
         {{"cancel" | translate}}
     </button>
-    <button mat-raised-button 
-            color="primary" 
-            [matPromiseBtn]="promiseBtn" 
+    <button app-button
+            appearance="raised"
+            color="primary"
+            [matPromiseBtn]="promiseBtn"
             (click)="export()">
         {{"download" | translate}}
     </button>
-</mat-dialog-actions>
+</div>

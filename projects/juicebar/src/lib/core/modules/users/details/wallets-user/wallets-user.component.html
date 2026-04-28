@@ -2,51 +2,54 @@
 
     <div class="menu-bar">
 
-        <button mat-raised-button
+        <button app-button
+                appearance="raised"
                 color="primary"
                 (click)="openDialog()"
                 routerLinkActive="active"
                 [hasPermissions]="'assets:role'"
                 style="float:right;">
-            <mat-icon>add_circle</mat-icon>
+            <app-icon [icon]="'add_circle'"></app-icon>
             {{"add_new" | translate}}
         </button>
 
     </div>
 
     <div class="col-sm-12 col-md-12" style="max-height: 85vh;padding:0!important;">
-        <mat-card>
-            <mat-table [dataSource]="rows" class="mat-elevation-0">
+        <app-card>
+            <table cdk-table [dataSource]="rows" class="data-table">
                 <!-- Name Column -->
-                <ng-container matColumnDef="name">
-                    <mat-header-cell *matHeaderCellDef>{{"name" | translate}}</mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                        <div *ngIf="!row.active; else inactiveWallet">{{row.name}}</div>
-                        <ng-template #inactiveWallet>
-                            <mat-icon style="color:red;">block</mat-icon>
+                <ng-container cdkColumnDef="name">
+                    <th cdk-header-cell *cdkHeaderCellDef>{{"name" | translate}}</th>
+                    <td cdk-cell *cdkCellDef="let row">
+                        @if (!row.active) {
+                            <div>{{row.name}}</div>
+                        } @else {
+                            <app-icon [icon]="'block'" style="color:red;"></app-icon>
                             {{row.name}}
-                        </ng-template>
-                    </mat-cell>
+                        }
+                    </td>
                 </ng-container>
 
                 <!-- Address Column -->
-                <ng-container matColumnDef="address">
-                    <mat-header-cell *matHeaderCellDef>{{"address" | translate}}</mat-header-cell>
-                    <mat-cell *matCellDef="let row">{{row.address}}</mat-cell>
+                <ng-container cdkColumnDef="address">
+                    <th cdk-header-cell *cdkHeaderCellDef>{{"address" | translate}}</th>
+                    <td cdk-cell *cdkCellDef="let row">{{row.address}}</td>
                 </ng-container>
 
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-            </mat-table>
+                <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
+                <tr cdk-row *cdkRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
 
-            <mat-paginator
-                *ngIf="length > itemsPerPage"
-                [length]="length"
-                [pageSize]="itemsPerPage"
-                [pageSizeOptions]="[5, 10, 20]"
-                [showFirstLastButtons]="true"
-                (page)="changePage($event.pageIndex + 1, config)">
-            </mat-paginator>
-        </mat-card>
+            @if (length > itemsPerPage) {
+                <app-paginator
+                    [length]="length"
+                    [pageSize]="itemsPerPage"
+                    [pageSizeOptions]="[5, 10, 20]"
+                    [showFirstLastButtons]="true"
+                    (page)="changePage($event.pageIndex + 1, config)">
+                </app-paginator>
+            }
+        </app-card>
     </div>
 </div>

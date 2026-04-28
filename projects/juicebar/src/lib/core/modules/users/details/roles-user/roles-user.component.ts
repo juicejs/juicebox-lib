@@ -5,15 +5,9 @@ import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {ConfigurationService} from '../../../../shared/services/configuration.service';
 import {UsersService} from '../../users.service';
 import {UserTranslationPipe} from '../../i18n/user.translation';
-import {MatDialog} from '@angular/material/dialog';
+import {DialogService} from '../../../../../ui-components';
 import {ConfirmationDialogComponent} from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import {HelperService} from '../../../../shared/services/helper.service';
-import {MatTableModule} from '@angular/material/table';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
-import {MatSelectModule} from '@angular/material/select';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatCheckboxModule} from '@angular/material/checkbox';
 import {FormsModule} from '@angular/forms';
 import {SharedModule} from '../../../../shared/shared.module';
 
@@ -25,12 +19,6 @@ import {SharedModule} from '../../../../shared/shared.module';
     imports: [
         CommonModule,
         FormsModule,
-        MatTableModule,
-        MatButtonModule,
-        MatIconModule,
-        MatSelectModule,
-        MatFormFieldModule,
-        MatCheckboxModule,
         SharedModule,
         UserTranslationPipe
     ]
@@ -60,7 +48,7 @@ export class RolesUserComponent implements OnInit {
     constructor(private configurationService: ConfigurationService,
                 protected juicebox: JuiceboxService,
                 private userService: UsersService,
-                private dialog: MatDialog,
+                private dialog: DialogService,
                 public route: ActivatedRoute,
                 public helperService: HelperService) {
       this.i18n = new UserTranslationPipe(this.juicebox)
@@ -194,7 +182,7 @@ export class RolesUserComponent implements OnInit {
                 action: this.i18n.transform('remove_role')
             }
         });
-        dialogRef.afterClosed().subscribe(async (result) => {
+        dialogRef.closed.subscribe(async (result) => {
             if (!result) return;
             const deleteResult = await this.userService.removeRole(this.user._id, role.role, this.selectedOrganisation);
             if (!deleteResult || !deleteResult.success) {

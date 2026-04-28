@@ -6,8 +6,6 @@ import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import { UsersService } from "../../users.service";
 import { UserTranslationPipe } from "../../i18n/user.translation";
 import DefaultChannelAccess from "./channel-access-default";
-import { MatTableModule } from '@angular/material/table';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../../../../shared/shared.module';
 
@@ -18,8 +16,6 @@ import { SharedModule } from '../../../../shared/shared.module';
     imports: [
         CommonModule,
         FormsModule,
-        MatTableModule,
-        MatCheckboxModule,
         SharedModule,
         UserTranslationPipe
     ]

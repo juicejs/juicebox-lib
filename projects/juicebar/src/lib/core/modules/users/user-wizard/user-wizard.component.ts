@@ -2,9 +2,9 @@ import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterOutlet} from '@angular/router';
 import { JuiceboxService} from '../../../shared/services/Juicebox.service';
-import {MatTabsModule} from '@angular/material/tabs';
 import {SharedModule} from '../../../shared/shared.module';
 import {UserTranslationPipe} from '../i18n/user.translation';
+import {TabsComponent, TabComponent} from "../../../../ui-components";
 
 @Component({
     selector: 'app-user-wizard',
@@ -13,9 +13,10 @@ import {UserTranslationPipe} from '../i18n/user.translation';
     imports: [
         CommonModule,
         RouterOutlet,
-        MatTabsModule,
         SharedModule,
-        UserTranslationPipe
+        UserTranslationPipe,
+        TabsComponent,
+        TabComponent
     ]
 })
 export class UserWizardComponent implements OnInit {

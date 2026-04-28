@@ -3,9 +3,7 @@ import { UsersService } from '../users.service';
 import { ListingComponent } from '../../../shared/components/listing/listing.component';
 import { Router, RouterLink } from '@angular/router';
 import { UserTranslationPipe } from '../i18n/user.translation';
-import { MatDialog } from '@angular/material/dialog';
-import { Sort } from '@angular/material/sort';
-import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
+import { DialogService, PageEvent } from '../../../../ui-components';
 import { GroupsModalComponent } from './groups-modal/groups-modal.component';
 import { HelperService} from '../../../shared/services/helper.service';
 import { ISearchTerm} from '../../../shared/interfaces/ISearchTerm';
@@ -18,13 +16,13 @@ import { User } from '../models/user.model';
 import { LoginAsAnotherUserComponent } from './login-as-another-user/login-as-another-user.component';
 import { FilterConfig, FilterBarComponent } from '../../../shared/components/filter-bar/filter-bar.component';
 import {CommonModule} from '@angular/common';
-import {MatTableModule} from '@angular/material/table';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {MatCheckboxModule} from '@angular/material/checkbox';
 import {SharedModule} from '../../../shared/shared.module';
 import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
+
+export interface Sort {
+    active: string;
+    direction: 'asc' | 'desc' | '';
+}
 
 @Component({
     selector: 'app-ng-table',
@@ -34,12 +32,6 @@ import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
     imports: [
         CommonModule,
         RouterLink,
-        MatTableModule,
-        MatPaginatorModule,
-        MatButtonModule,
-        MatIconModule,
-        MatTooltipModule,
-        MatCheckboxModule,
         FilterBarComponent,
         SharedModule,
         UserTranslationPipe,
@@ -83,7 +75,7 @@ export class UserListingComponent extends ListingComponent implements OnInit {
                        public override juicebox: JuiceboxService,
                        public helper: HelperService,
                        private router: Router,
-                       private dialog: MatDialog,
+                       private dialog: DialogService,
                        private configurationService: ConfigurationService) {
         super(juicebox);
 
@@ -214,7 +206,7 @@ export class UserListingComponent extends ListingComponent implements OnInit {
                 completeMessage: this.i18n.transform('are_you_sure_you_want_to_delete_user') + ' ' + user.firstname + ' ' + user.lastname
             }
         });
-        dialogRef.afterClosed().subscribe(async (confirmed) => {
+        dialogRef.closed.subscribe(async (confirmed) => {
             if (!confirmed) return;
 
             this.usersService.deleteUser(user._id).then(async (result) => {
@@ -239,7 +231,7 @@ export class UserListingComponent extends ListingComponent implements OnInit {
             maxWidth: '1200px',
             disableClose: true
         });
-        dialogRef.afterClosed().subscribe(result => {
+        dialogRef.closed.subscribe(result => {
             if (result?.success) {
                 // Handle success if needed
             }
@@ -412,7 +404,7 @@ export class UserListingComponent extends ListingComponent implements OnInit {
             disableClose: true,
             data: { user_id: user._id }
         });
-        dialogRef.afterClosed().subscribe(async (result) => {
+        dialogRef.closed.subscribe(async (result) => {
             if (!result?.success)
                 return;
 

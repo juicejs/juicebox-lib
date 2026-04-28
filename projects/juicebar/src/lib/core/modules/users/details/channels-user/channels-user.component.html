@@ -1,40 +1,41 @@
 <div class="parent">
-    <mat-card class="mb-3">
-        <mat-card-content>
+    <app-card class="mb-3">
+        <app-card-content>
             <div class="alert alert-warning">{{'channel_access_roles_disclaimer' | translate}}</div>
             <div class="alert alert-warning">{{ 'channel_access_refresh_disclaimer' | translate}}</div>
-        </mat-card-content>
-    </mat-card>
+        </app-card-content>
+    </app-card>
 
-    <mat-card>
-        <mat-table [dataSource]="rows" class="mat-elevation-0">
+    <app-card>
+        <table cdk-table [dataSource]="rows" class="data-table">
             <!-- Name Column -->
-            <ng-container matColumnDef="name">
-                <mat-header-cell *matHeaderCellDef>{{'name' | translate}}</mat-header-cell>
-                <mat-cell *matCellDef="let row">
+            <ng-container cdkColumnDef="name">
+                <th cdk-header-cell *cdkHeaderCellDef>{{'name' | translate}}</th>
+                <td cdk-cell *cdkCellDef="let row">
                     <span class="user-select-none">{{row.key | translate}}</span>
-                </mat-cell>
+                </td>
             </ng-container>
 
             <!-- Permissions Column -->
-            <ng-container matColumnDef="permissions">
-                <mat-header-cell *matHeaderCellDef>{{'permissions' | translate}}</mat-header-cell>
-                <mat-cell *matCellDef="let row" class="permissions-cell">
+            <ng-container cdkColumnDef="permissions">
+                <th cdk-header-cell *cdkHeaderCellDef>{{'permissions' | translate}}</th>
+                <td cdk-cell *cdkCellDef="let row" class="permissions-cell">
                     <div class="d-flex flex-wrap user-select-none pt-1">
-                        <mat-checkbox 
-                            *ngFor="let permission of allPermissions"
-                            [(ngModel)]="row.permissions[permission.key]"
-                            (change)="togglePermission(row)"
-                            [hasPermissions]="'users:role#updated|update'"
-                            class="permission-checkbox mb-1 mr-2">
-                            {{permission.key | translate}}
-                        </mat-checkbox>
+                        @for (permission of allPermissions; track permission.key) {
+                            <app-checkbox
+                                [(ngModel)]="row.permissions[permission.key]"
+                                (change)="togglePermission(row)"
+                                [hasPermissions]="'users:role#updated|update'"
+                                class="permission-checkbox mb-1 mr-2">
+                                {{permission.key | translate}}
+                            </app-checkbox>
+                        }
                     </div>
-                </mat-cell>
+                </td>
             </ng-container>
 
-            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-        </mat-table>
-    </mat-card>
+            <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
+            <tr cdk-row *cdkRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+    </app-card>
 </div>

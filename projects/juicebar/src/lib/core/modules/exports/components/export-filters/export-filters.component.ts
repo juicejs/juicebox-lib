@@ -5,22 +5,13 @@ import {ExportValidators} from '../../shared/ExportValidators';
 import {AutoLanguagePipe, MultiLanguageObject} from '../../../../shared/pipes/auto-language.pipe';
 import {ExportFilter} from '../../types/ExportFilter';
 import {ExportStrategy} from '../../types/ExportStrategy';
-import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
-import {CustomMaterialDateAdapter, CUSTOM_MAT_DATE_FORMATS} from '../../../../shared/services/CustomDatepickerI18n';
+import {CustomMaterialDateAdapter} from '../../../../shared/services/CustomDatepickerI18n';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 
 @Component({
     selector: 'app-export-filters',
     templateUrl: './export-filters.component.html',
-    styleUrls: ['./export-filters.component.scss'],
-    providers: [
-        {
-            provide: DateAdapter,
-            useClass: CustomMaterialDateAdapter,
-            deps: [MAT_DATE_LOCALE, JuiceboxService]
-        },
-        {provide: MAT_DATE_FORMATS, useValue: CUSTOM_MAT_DATE_FORMATS}
-    ]
+    styleUrls: ['./export-filters.component.scss']
 })
 export class ExportFiltersComponent implements OnChanges, OnDestroy {
 

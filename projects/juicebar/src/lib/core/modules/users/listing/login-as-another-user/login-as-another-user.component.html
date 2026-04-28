@@ -1,46 +1,47 @@
 <h2>
     {{'login_as_another_user' | translate}}
-    <button mat-icon-button mat-dialog-close class="close-button" (click)="close()">
-        <mat-icon>close</mat-icon>
+    <button app-button class="close-button" (click)="close()">
+        <app-icon icon="close">close</app-icon>
     </button>
 </h2>
 
-<mat-dialog-content>
+<app-dialog-content>
     <form class="d-flex flex-column" [formGroup]="twoFaForm">
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{'two_factor_authorisation_code' | translate}}</mat-label>
-            <input matInput maxlength="6" formControlName="code" 
+        <app-form-field appearance="outline" class="full-width">
+            <app-label>{{'two_factor_authorisation_code' | translate}}</app-label>
+            <input appInput maxlength="6" formControlName="code" 
                    placeholder="Enter 6-digit code">
-            <mat-error *ngIf="twoFaForm.get('code')?.hasError('required')">
+            <app-error *ngIf="twoFaForm.get('code')?.hasError('required')">
                 Code is required
-            </mat-error>
-            <mat-error *ngIf="twoFaForm.get('code')?.hasError('pattern')">
+            </app-error>
+            <app-error *ngIf="twoFaForm.get('code')?.hasError('pattern')">
                 Code must contain only numbers
-            </mat-error>
-            <mat-error *ngIf="twoFaForm.get('code')?.hasError('minlength') || twoFaForm.get('code')?.hasError('maxlength')">
+            </app-error>
+            <app-error *ngIf="twoFaForm.get('code')?.hasError('minlength') || twoFaForm.get('code')?.hasError('maxlength')">
                 Code must be exactly 6 digits
-            </mat-error>
-        </mat-form-field>
+            </app-error>
+        </app-form-field>
 
-        <mat-form-field *ngIf="organisations.length" appearance="outline" class="full-width">
-            <mat-label>{{'select_organisation' | translate}}</mat-label>
-            <mat-select formControlName="organisation" 
+        <app-form-field *ngIf="organisations.length" appearance="outline" class="full-width">
+            <app-label>{{'select_organisation' | translate}}</app-label>
+            <app-select formControlName="organisation" 
                         placeholder="{{'organisation' | translate}}">
-                <mat-option *ngFor="let org of organisations" [value]="org._id">
+                <app-option *ngFor="let org of organisations" [value]="org._id">
                     {{org.name}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
+                </app-option>
+            </app-select>
+        </app-form-field>
     </form>
-</mat-dialog-content>
+</app-dialog-content>
 
-<mat-dialog-actions align="end">
-    <button mat-button (click)="close()">
+<app-dialog-actions align="end">
+    <button app-button (click)="close()">
         {{"cancel" | translate}}
     </button>
-    <button mat-raised-button color="primary" (click)="login()"
+    <button app-button color="primary" (click)="login()"
+            appearance="raised"
             [matPromiseBtn]="promiseBtn"
             [disabled]="!twoFaForm.valid">
         {{"login" | translate}}
     </button>
-</mat-dialog-actions>
+</app-dialog-actions>

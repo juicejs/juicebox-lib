@@ -2,7 +2,6 @@ import {Component, input, ChangeDetectionStrategy, OnInit, effect} from '@angula
 import {Subject, of, Observable, combineLatest} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map, startWith, switchMap, filter, tap} from 'rxjs/operators';
 import {FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {MatAutocompleteSelectedEvent, MatAutocompleteModule} from '@angular/material/autocomplete';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {ExportsTranslationPipe} from '../../i18n/exports.translation';
 import {ExportFilter, FilterOptions} from '../../types/ExportFilter';
@@ -10,26 +9,16 @@ import {ExportStrategy} from '../../types/ExportStrategy';
 import {ExportsService} from '../../exports.service';
 import {Result} from '../../../../shared/types/Result';
 import {CommonModule} from '@angular/common';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatChipsModule} from '@angular/material/chips';
-import {MatIconModule} from '@angular/material/icon';
 import {SharedModule} from '../../../../shared/shared.module';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @Component({
     selector: 'app-export-multiselect-async',
     templateUrl: './async-multiselect.component.html',
+    styleUrls: ['./async-multiselect.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
         ReactiveFormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatAutocompleteModule,
-        MatChipsModule,
-        MatIconModule,
-        MatProgressSpinnerModule,
         SharedModule,
         ExportsTranslationPipe
     ]
@@ -122,22 +111,15 @@ export class AsyncMultiselectComponent implements OnInit {
         this.input$.next(target.value);
     }
 
-    onOptionSelected(event: MatAutocompleteSelectedEvent): void {
-        const selectedItem = event.option.value as FilterOptions;
+    onOptionSelected(selectedItem: FilterOptions): void {
         const currentValue = this.formGroup().get(this.filter().id)?.value || [];
         const newValue = [...currentValue, selectedItem.id];
 
         this.formGroup().get(this.filter().id)?.setValue(newValue);
 
-        // Clear the input
-        const input = event.option.getLabel();
-        if (event.option.viewValue) {
-            (event.option as any)._element.nativeElement.querySelector('input')?.focus();
-        }
-
         // Clear search input
         setTimeout(() => {
-            const searchInput = document.querySelector('input[matChipInputFor]') as HTMLInputElement;
+            const searchInput = document.querySelector('input[type="text"]') as HTMLInputElement;
             if (searchInput) {
                 searchInput.value = '';
                 this.input$.next('');

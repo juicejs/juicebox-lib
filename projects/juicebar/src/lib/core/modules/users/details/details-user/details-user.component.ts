@@ -8,12 +8,7 @@ import { CustomValidators} from '../../../../shared/CustomValidators';
 import { HelperService} from '../../../../shared/services/helper.service';
 import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import { ConfirmationDialogComponent} from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { DialogService } from '../../../../../ui-components';
 import { SharedModule } from '../../../../shared/shared.module';
 
 @Component({
@@ -24,11 +19,6 @@ import { SharedModule } from '../../../../shared/shared.module';
     imports: [
         CommonModule,
         ReactiveFormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatButtonModule,
-        MatSelectModule,
-        MatCheckboxModule,
         SharedModule,
         UserTranslationPipe
     ]
@@ -65,7 +55,7 @@ export class DetailsUserComponent implements OnInit {
                 private userService: UsersService,
                 private helper: HelperService,
                 public juicebox: JuiceboxService,
-                private dialog: MatDialog,
+                private dialog: DialogService,
                 private userPipe: UserTranslationPipe) {
       this.i18n = new UserTranslationPipe(this.juicebox)
     }
@@ -176,7 +166,7 @@ export class DetailsUserComponent implements OnInit {
                 subject: 'User two factor'
             }
         });
-        dialogRef.afterClosed().subscribe(async (dialogResult) => {
+        dialogRef.closed.subscribe(async (dialogResult) => {
             if (!dialogResult) return;
             const result = await this.userService.resetTwoFactor(this.user._id);
             if (!result?.success) {

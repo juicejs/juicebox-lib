@@ -1,46 +1,58 @@
 <div class="form-group" [formGroup]="formGroup()">
-    <mat-form-field appearance="outline" class="full-width">
-        <mat-label>{{ filter().label | translate }}</mat-label>
-        <mat-chip-grid #chipGrid [formControlName]="filter().id" multiple>
-            <mat-chip-row *ngFor="let item of selectedItems; trackBy: trackByFn"
-                         (removed)="removeItem(item)"
-                         [editable]="false">
-                {{ item.label }}
-                <button matChipRemove>
-                    <mat-icon>cancel</mat-icon>
+    <app-form-field appearance="outline" class="full-width">
+        <app-label>{{ filter().label | translate }}</app-label>
+
+        <!-- Selected items chips -->
+        <div class="chip-list">
+            @for (item of selectedItems; track trackByFn($index, item)) {
+                <div class="chip">
+                    <span class="chip-text">{{ item.label }}</span>
+                    <button type="button" class="chip-remove" (click)="removeItem(item)">
+                        <app-icon [icon]="'close'"></app-icon>
+                    </button>
+                </div>
+            }
+        </div>
+
+        <!-- Search input -->
+        <div class="autocomplete-wrapper">
+            <input appInput
+                   #searchInput
+                   type="text"
+                   (input)="onSearchInput($event)"
+                   (blur)="clearOptions()"
+                   [placeholder]="selectedItems.length === 0 ? ('select_options' | translate) : ''"
+                   autocomplete="off">
+
+            @if (loading) {
+                <div class="input-suffix">
+                    <div class="spinner"></div>
+                </div>
+            }
+            @if (!loading && selectedItems.length > 0) {
+                <button type="button" class="input-suffix clear-button" (click)="clearAll()">
+                    <app-icon [icon]="'close'"></app-icon>
                 </button>
-            </mat-chip-row>
-        </mat-chip-grid>
-        <input matInput
-               #searchInput
-               [matAutocomplete]="auto"
-               [matChipInputFor]="chipGrid"
-               (input)="onSearchInput($event)"
-               (blur)="clearOptions()"
-               [placeholder]="selectedItems.length === 0 ? ('select_options' | translate) : ''"
-               autocomplete="off">
-        <mat-progress-spinner *ngIf="loading" 
-                            matSuffix 
-                            diameter="20" 
-                            mode="indeterminate">
-        </mat-progress-spinner>
-        <mat-icon *ngIf="!loading && selectedItems.length > 0" 
-                  matSuffix 
-                  (click)="clearAll()" 
-                  class="clear-icon">
-            clear
-        </mat-icon>
-        <mat-autocomplete #auto="matAutocomplete" 
-                         (optionSelected)="onOptionSelected($event)"
-                         [displayWith]="displayWith">
-            <mat-option *ngIf="(items$ | async)?.length === 0 && !loading" disabled>
-                {{ 'no_data_to_display' | translate }}
-            </mat-option>
-            <mat-option *ngFor="let item of filteredItems$ | async; trackBy: trackByFn" 
-                       [value]="item"
-                       [disabled]="isSelected(item)">
-                {{ item.label }}
-            </mat-option>
-        </mat-autocomplete>
-    </mat-form-field>
+            }
+
+            <!-- Dropdown options -->
+            @if (searchInput.value) {
+                <div class="autocomplete-panel">
+                    @if ((items$ | async)?.length === 0 && !loading) {
+                        <div class="autocomplete-option disabled">
+                            {{ 'no_data_to_display' | translate }}
+                        </div>
+                    }
+                    @for (item of filteredItems$ | async; track trackByFn($index, item)) {
+                        <div class="autocomplete-option"
+                             [class.selected]="isSelected(item)"
+                             [class.disabled]="isSelected(item)"
+                             (click)="!isSelected(item) && onOptionSelected(item)">
+                            {{ item.label }}
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </app-form-field>
 </div>

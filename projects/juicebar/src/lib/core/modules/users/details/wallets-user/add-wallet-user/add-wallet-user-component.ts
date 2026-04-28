@@ -1,16 +1,12 @@
 import {Component, Inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
-import {MatDialogRef, MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
+import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UsersService} from '../../../users.service';
 import {UserTranslationPipe} from '../../../i18n/user.translation';
 import {CustomValidators} from '../../../../../shared/CustomValidators';
 import {JuiceboxService} from '../../../../../shared/services/Juicebox.service';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatButtonModule} from '@angular/material/button';
-import {MatSelectModule} from '@angular/material/select';
 import {SharedModule} from '../../../../../shared/shared.module';
 
 
@@ -21,11 +17,6 @@ import {SharedModule} from '../../../../../shared/shared.module';
     imports: [
         CommonModule,
         ReactiveFormsModule,
-        MatDialogModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatButtonModule,
-        MatSelectModule,
         SharedModule,
         UserTranslationPipe
     ]
@@ -50,8 +41,8 @@ export class AddWalletUserComponent implements OnInit {
 
     constructor(
                 private userService: UsersService,
-                private dialogRef: MatDialogRef<AddWalletUserComponent>,
-                @Inject(MAT_DIALOG_DATA) public data: { id: any },
+                private dialogRef: DialogRef<any>,
+                @Inject(DIALOG_DATA) public data: { id: any },
                 public route: ActivatedRoute,
                 private juicebox: JuiceboxService,
                 public router: Router) {

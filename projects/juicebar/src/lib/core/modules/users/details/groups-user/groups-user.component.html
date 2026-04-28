@@ -3,39 +3,43 @@
 
         <form class="form-group">
             <div class="d-flex">
-                <mat-form-field appearance="outline" style="width: 400px; padding-right: 24px">
-                    <mat-label>{{'organisation' | translate}}</mat-label>
-                    <mat-select [(ngModel)]="selectedOrganisation" name="organisations" (selectionChange)="organisationChanged($event.value)">
-                        <mat-option *ngFor="let org of organisations" [value]="org._id">
-                            {{org.name}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
+                <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
+                    <app-label>{{'organisation' | translate}}</app-label>
+                    <app-select [(ngModel)]="selectedOrganisation" name="organisations" (selectionChange)="organisationChanged($event.value)">
+                        @for (org of organisations; track org._id) {
+                            <app-option [value]="org._id">
+                                {{org.name}}
+                            </app-option>
+                        }
+                    </app-select>
+                </app-form-field>
             </div>
         </form>
 
         <form class="form-group">
             <div class="d-flex">
-                <mat-form-field appearance="outline" style="width: 400px; padding-right: 24px">
-                    <mat-label>{{'group' | translate}}</mat-label>
-                    <mat-select [(ngModel)]="selectedGroup" name="groups">
-                        <mat-option *ngFor="let group of groups" [value]="group.key" [disabled]="group.disabled">
-                            {{group.name}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
+                <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
+                    <app-label>{{'group' | translate}}</app-label>
+                    <app-select [(ngModel)]="selectedGroup" name="groups">
+                        @for (group of groups; track group.key) {
+                            <app-option [value]="group.key" [disabled]="group.disabled">
+                                {{group.name}}
+                            </app-option>
+                        }
+                    </app-select>
+                </app-form-field>
 
                 <div class="form-group">
-                    <button mat-raised-button color="primary" [matPromiseBtn]="promiseBtn"
+                    <button app-button appearance="raised" color="primary" [matPromiseBtn]="promiseBtn"
                             [hasPermissions]="'groups:role#updated|update'"
                             (click)="addGroup()">
-                        <mat-icon>add</mat-icon>
+                        <app-icon [icon]="'add'"></app-icon>
                         {{'add' | translate}}
                     </button>
                 </div>
 
                 <div class="form-group" style="margin-left: auto;">
-                    <button mat-raised-button color="primary" [matPromiseBtn]="promiseBtn"
+                    <button app-button appearance="raised" color="primary" [matPromiseBtn]="promiseBtn"
                             [hasPermissions]="'groups:role#read'"
                             (click)="openGroupEditor()">{{'group editor' | translate}}</button>
                 </div>
@@ -45,52 +49,60 @@
     </div>
 
     <div class="d-flex position-relative">
-        <div *ngIf="loading" style="top:2.5rem; left:0; z-index: 999;"
-             class="w-100 h-100 d-flex justify-center align-center position-absolute">
-            <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
-        </div>
+        @if (loading) {
+            <div style="top:2.5rem; left:0; z-index: 999;"
+                 class="w-100 h-100 d-flex justify-center align-center position-absolute">
+                <app-progress-spinner mode="indeterminate"></app-progress-spinner>
+            </div>
+        }
 
-        <div *ngIf="!loading" class="col-sm-12 col-md-12" style="max-height: 100vh; padding:0 !important; width: 100%;">
+        @if (!loading) {
+            <div class="col-sm-12 col-md-12" style="max-height: 100vh; padding:0 !important; width: 100%;">
 
-            <mat-table [dataSource]="rows" class="mat-elevation-2 fullscreen">
-                <!-- Name Column -->
-                <ng-container matColumnDef="name">
-                    <mat-header-cell *matHeaderCellDef>{{'name' | translate}}</mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                        <strong>{{row.name}}</strong>
-                    </mat-cell>
-                </ng-container>
+                <table cdk-table [dataSource]="rows" class="data-table fullscreen">
+                    <!-- Name Column -->
+                    <ng-container cdkColumnDef="name">
+                        <th cdk-header-cell *cdkHeaderCellDef>{{'name' | translate}}</th>
+                        <td cdk-cell *cdkCellDef="let row">
+                            <strong>{{row.name}}</strong>
+                        </td>
+                    </ng-container>
 
-                <!-- Roles Column -->
-                <ng-container matColumnDef="roles">
-                    <mat-header-cell *matHeaderCellDef>{{'roles' | translate}}</mat-header-cell>
-                    <mat-cell *matCellDef="let row" class="roles-cell">
-                        <div class="row flex-column" style="flex-wrap: wrap; padding-top: 6px;">
-                            <label class="ml-3" *ngFor="let role of getGroupRoles(row)">
-                                <strong>{{role.role | translate}}:</strong>
-                                <span class="pl-2">{{role.permissions}}</span>
-                            </label>
-                        </div>
-                    </mat-cell>
-                </ng-container>
+                    <!-- Roles Column -->
+                    <ng-container cdkColumnDef="roles">
+                        <th cdk-header-cell *cdkHeaderCellDef>{{'roles' | translate}}</th>
+                        <td cdk-cell *cdkCellDef="let row" class="roles-cell">
+                            <div class="row flex-column" style="flex-wrap: wrap; padding-top: 6px;">
+                                @for (role of getGroupRoles(row); track role.role) {
+                                    <label class="ml-3">
+                                        <strong>{{role.role | translate}}:</strong>
+                                        <span class="pl-2">{{role.permissions}}</span>
+                                    </label>
+                                }
+                            </div>
+                        </td>
+                    </ng-container>
 
-                <!-- Actions Column -->
-                <ng-container matColumnDef="actions">
-                    <mat-header-cell *matHeaderCellDef>{{'actions' | translate}}</mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                        <button mat-icon-button
-                                [hasPermissions]="'users:role#updated|update'" [matPromiseBtn]="promiseBtn"
-                                [matTooltip]="'delete' | translate"
-                                (click)="deleteGroup(row);">
-                            <mat-icon>delete</mat-icon>
-                        </button>
-                    </mat-cell>
-                </ng-container>
+                    <!-- Actions Column -->
+                    <ng-container cdkColumnDef="actions">
+                        <th cdk-header-cell *cdkHeaderCellDef>{{'actions' | translate}}</th>
+                        <td cdk-cell *cdkCellDef="let row">
+                            <button app-button
+                                    appearance="icon"
+                                    [hasPermissions]="'users:role#updated|update'"
+                                    [matPromiseBtn]="promiseBtn"
+                                    [title]="'delete' | translate"
+                                    (click)="deleteGroup(row);">
+                                <app-icon [icon]="'delete'"></app-icon>
+                            </button>
+                        </td>
+                    </ng-container>
 
-                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-            </mat-table>
+                    <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
+                    <tr cdk-row *cdkRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
 
-        </div>
+            </div>
+        }
     </div>
 </div>

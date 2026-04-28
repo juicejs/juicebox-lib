@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { DialogService } from '../../../../ui-components';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { JuiceboxService} from '../../../shared/services/Juicebox.service';
 import { WelcomeMessageComponent } from './welcome-message/welcome-message.component';
@@ -10,13 +10,6 @@ import { ConfigurationService} from '../../../shared/services/configuration.serv
 import { Title } from '@angular/platform-browser';
 import { MainTranslationPipe } from '../i18n/main.translation';
 import {CommonModule} from '@angular/common';
-import {MatCardModule} from '@angular/material/card';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatSelectModule} from '@angular/material/select';
 import {SharedModule} from '../../../shared/shared.module';
 
 @Component({
@@ -27,13 +20,6 @@ import {SharedModule} from '../../../shared/shared.module';
     imports: [
         CommonModule,
         ReactiveFormsModule,
-        MatCardModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatButtonModule,
-        MatIconModule,
-        MatCheckboxModule,
-        MatSelectModule,
         SharedModule,
         MainTranslationPipe,
         AutoLanguagePipe
@@ -59,7 +45,7 @@ export class LoginComponent implements OnInit {
 
     constructor(private titleService: Title,
         private router: Router,
-        public dialog: MatDialog,
+        public dialog: DialogService,
         private route: ActivatedRoute,
         private configuration: ConfigurationService,
         public juicebox: JuiceboxService) {
@@ -223,7 +209,7 @@ export class LoginComponent implements OnInit {
             width: '500px',
             disableClose: false
         });
-        dialogRef.afterClosed().subscribe(result => {
+        dialogRef.closed.subscribe(result => {
             if (result) {
                 console.log('success');
             }
@@ -314,7 +300,7 @@ export class LoginComponent implements OnInit {
                 disableClose: true,
                 data: { message: message }
             });
-            await dialogRef.afterClosed().toPromise();
+            await dialogRef.closed.toPromise();
             return true;
         }
         return true;

@@ -1,5 +1,5 @@
 import {Component, OnInit, Inject, ChangeDetectionStrategy} from '@angular/core';
-import {MatDialogRef, MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
+import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
 import moment from 'moment';
 import {ExportsService} from '../../exports.service';
 import {HelperService} from '../../../../shared/services/helper.service';
@@ -8,7 +8,6 @@ import {ExportsTranslationPipe} from "../../i18n/exports.translation";
 import {FormGroup} from "@angular/forms";
 import {ConfigurationService} from '../../../../shared/services/configuration.service';
 import {CommonModule} from '@angular/common';
-import {MatButtonModule} from '@angular/material/button';
 import {SharedModule} from '../../../../shared/shared.module';
 
 export interface ExcelExportConfirmDialogData {
@@ -24,8 +23,6 @@ export interface ExcelExportConfirmDialogData {
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        MatDialogModule,
-        MatButtonModule,
         SharedModule,
         ExportsTranslationPipe
     ]
@@ -49,8 +46,8 @@ export class ExcelExportConfirmComponent implements OnInit {
                 private helper: HelperService,
                 private juicebox: JuiceboxService,
                 private configurations: ConfigurationService,
-                public dialogRef: MatDialogRef<ExcelExportConfirmComponent>,
-                @Inject(MAT_DIALOG_DATA) public data: ExcelExportConfirmDialogData) {
+                public dialogRef: DialogRef<boolean>,
+                @Inject(DIALOG_DATA) public data: ExcelExportConfirmDialogData) {
         this.i18n = new ExportsTranslationPipe(this.juicebox);
 
         // Initialize properties from injected data

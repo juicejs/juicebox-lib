@@ -3,20 +3,13 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, Routes } from '@angular/router';
 import {BASE_APP_CONFIG, BaseAppConfig, ModuleConfig} from './config/base-app.config';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatListModule } from '@angular/material/list';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { DialogModule } from '@angular/cdk/dialog';
+import { OverlayModule } from '@angular/cdk/overlay';
+import { CdkTableModule } from '@angular/cdk/table';
+import { CdkMenuModule } from '@angular/cdk/menu';
+import { CdkListboxModule } from '@angular/cdk/listbox';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { DialogService, SnackbarService } from './ui-components';
 import {NavigationService} from './core/shared/services/NavigationService';
 import {LoginComponent} from './core/modules/main/login/login.component';
 import {MainComponentModule} from './core/modules/main/main.component.module';
@@ -41,21 +34,15 @@ export function provideJuicebar(config: BaseAppConfig): ApplicationConfig {
       provideHttpClient(),
       provideAnimations(),
       provideRouter(routes),
+      DialogService,
+      SnackbarService,
       importProvidersFrom(
-        MatSidenavModule,
-        MatToolbarModule,
-        MatListModule,
-        MatIconModule,
-        MatButtonModule,
-        MatCardModule,
-        MatProgressSpinnerModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatMenuModule,
-        MatSnackBarModule,
-        MatDialogModule,
-        MatSelectModule,
-        MatCheckboxModule,
+        DialogModule,
+        OverlayModule,
+        CdkTableModule,
+        CdkMenuModule,
+        CdkListboxModule,
+        DragDropModule,
         MainComponentModule,
         ...((!config.builtInModules?.users || config.builtInModules.users.enabled !== false) ? [UsersModule] : []),
         ...((!config.builtInModules?.exports || config.builtInModules.exports.enabled !== false) ? [ExportsModule] : [])

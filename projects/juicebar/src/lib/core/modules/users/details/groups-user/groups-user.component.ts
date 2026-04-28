@@ -5,15 +5,9 @@ import { UsersService } from '../../users.service';
 import { ActivatedRoute } from '@angular/router';
 import { UserTranslationPipe } from '../../i18n/user.translation';
 import { GroupsModalComponent } from '../../listing/groups-modal/groups-modal.component';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { DialogService, SnackbarService } from '../../../../../ui-components';
 import { ConfirmationDialogComponent} from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../../../../shared/shared.module';
 
@@ -25,11 +19,6 @@ import { SharedModule } from '../../../../shared/shared.module';
     imports: [
         CommonModule,
         FormsModule,
-        MatTableModule,
-        MatButtonModule,
-        MatIconModule,
-        MatSelectModule,
-        MatFormFieldModule,
         SharedModule,
         UserTranslationPipe
     ]
@@ -52,8 +41,8 @@ export class GroupsUserComponent extends ListingComponent {
         protected override juicebox: JuiceboxService,
         private userService: UsersService,
         public route: ActivatedRoute,
-        public dialog: MatDialog,
-        private snackBar: MatSnackBar,
+        public dialog: DialogService,
+        private snackbar: SnackbarService,
         private pipe: UserTranslationPipe,
     ) {
         super(juicebox);
@@ -137,25 +126,16 @@ export class GroupsUserComponent extends ListingComponent {
                 if (result.error) {
                     const translatedMessage: string = this.pipe.transform(result.error);
                     if (!translatedMessage.startsWith('@')) { // translation exists
-                        this.snackBar.open(`${this.pipe.transform('error')}: ${translatedMessage}`, '', {
-                        duration: 5000,
-                        panelClass: ['error-snackbar']
-                    });
+                        this.snackbar.open(`${this.pipe.transform('error')}: ${translatedMessage}`, 'error');
                     };
                 }
 
                 return false;
             }
 
-            this.snackBar.open(`${this.pipe.transform('success')}: ${this.pipe.transform('successfully_added')} ${this.selectedGroup}`, '', {
-                duration: 3000,
-                panelClass: ['success-snackbar']
-            });
+            this.snackbar.open(`${this.pipe.transform('success')}: ${this.pipe.transform('successfully_added')} ${this.selectedGroup}`, 'success');
         } catch (error) {
-            this.snackBar.open(`${this.pipe.transform('error')}: ${this.pipe.transform('error_adding_group_to_user')}`, '', {
-                duration: 5000,
-                panelClass: ['error-snackbar']
-            });
+            this.snackbar.open(`${this.pipe.transform('error')}: ${this.pipe.transform('error_adding_group_to_user')}`, 'error');
         }
 
         this.rows = await this.getUserGroups(this.user._id, this.selectedOrganisation);
@@ -170,21 +150,15 @@ export class GroupsUserComponent extends ListingComponent {
                 action: this.pipe.transform('remove')
             }
         });
-        dialogRef.afterClosed().subscribe(async (dialogResult): Promise<any> => {
+        dialogRef.closed.subscribe(async (dialogResult): Promise<any> => {
             if (!dialogResult) return;
             const result: any = await this.userService.deleteGroupFromUser(group.key, this.user._id, this.selectedOrganisation);
             if (!result.success) {
-                this.snackBar.open(`${this.pipe.transform('error')}: ${result.error}`, '', {
-                    duration: 5000,
-                    panelClass: ['error-snackbar']
-                });
+                this.snackbar.open(`${this.pipe.transform('error')}: ${result.error}`, 'error');
                 return false;
             }
 
-            this.snackBar.open(`${this.pipe.transform('success')}: ${this.pipe.transform('successfully_deleted')} ${group.name}`, '', {
-                duration: 3000,
-                panelClass: ['success-snackbar']
-            });
+            this.snackbar.open(`${this.pipe.transform('success')}: ${this.pipe.transform('successfully_deleted')} ${group.name}`, 'success');
             this.rows = await this.getUserGroups(this.user._id, this.selectedOrganisation);
             this.selectedGroup = null;
         });
@@ -197,7 +171,7 @@ export class GroupsUserComponent extends ListingComponent {
             maxWidth: '90vw',
             disableClose: true
         });
-        dialogRef.afterClosed().subscribe(async (result) => {
+        dialogRef.closed.subscribe(async (result) => {
             this.rows = await this.getUserGroups(this.user._id);
         });
     }

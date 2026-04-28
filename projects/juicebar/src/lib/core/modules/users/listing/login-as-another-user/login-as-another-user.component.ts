@@ -1,14 +1,10 @@
 import { Component, Inject, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { UsersService } from '../../users.service';
 import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '../../../../shared/shared.module';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
 
 @Component({
     templateUrl: './login-as-another-user.component.html',
@@ -17,11 +13,6 @@ import { MatSelectModule } from '@angular/material/select';
     imports: [
         CommonModule,
         ReactiveFormsModule,
-        MatDialogModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatButtonModule,
-        MatSelectModule,
         SharedModule
     ]
 })
@@ -38,8 +29,8 @@ export class LoginAsAnotherUserComponent implements OnInit {
 
     organisations: any[] = [];
 
-    constructor(private dialogRef: MatDialogRef<LoginAsAnotherUserComponent>,
-                @Inject(MAT_DIALOG_DATA) public data: { user_id: string },
+    constructor(private dialogRef: DialogRef<any>,
+                @Inject(DIALOG_DATA) public data: { user_id: string },
                 private userService: UsersService,
                 private juicebox: JuiceboxService) {
         this.user_id = this.data.user_id;
