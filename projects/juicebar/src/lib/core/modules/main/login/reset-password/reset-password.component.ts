@@ -1,19 +1,14 @@
-import {Component, OnDestroy, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, OnDestroy, OnInit, ChangeDetectionStrategy, inject} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators, ReactiveFormsModule} from '@angular/forms';
 import {CustomValidators} from '../../../../shared/CustomValidators';
-// import {UsersService} from '../../../users/users.service';
 import {HelperService} from '../../../../shared/services/helper.service';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {GlobalTranslationPipe} from '../../../../i18n/global.translation';
 import {CommonModule} from '@angular/common';
-import {MatCardModule} from '@angular/material/card';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
 import {SharedModule} from '../../../../shared/shared.module';
+import {ButtonComponent} from '../../../../../ui-components';
 
 @Component({
     selector: 'app-reset-password',
@@ -23,13 +18,9 @@ import {SharedModule} from '../../../../shared/shared.module';
     imports: [
         CommonModule,
         ReactiveFormsModule,
-        MatCardModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatButtonModule,
-        MatIconModule,
         SharedModule,
-        GlobalTranslationPipe
+        GlobalTranslationPipe,
+        ButtonComponent
     ]
 })
 export class ResetPasswordComponent implements OnInit, OnDestroy {
@@ -42,15 +33,12 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     randomPassword: string;
     private static passwordValidatorRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*#?&:{}<>+-_()|~]{8,64}$/;
 
-    i18n: GlobalTranslationPipe;
+    private route = inject(ActivatedRoute);
+    private juicebox = inject(JuiceboxService);
+    private helper = inject(HelperService);
+    private router = inject(Router);
 
-    constructor(private route: ActivatedRoute,
-                // private usersService: UsersService,
-                private juicebox: JuiceboxService,
-                private helper: HelperService,
-                private router: Router) {
-      this.i18n = new GlobalTranslationPipe(this.juicebox);
-    }
+    i18n: GlobalTranslationPipe = new GlobalTranslationPipe(this.juicebox);
 
     private static customPassword(control: AbstractControl): ValidationErrors | null {
         const regex = ResetPasswordComponent.passwordValidatorRegex;
@@ -61,18 +49,6 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
       // @ts-ignore
       this.subscription$ = this.route.queryParams.subscribe(async params => {
             this.token = params['token'];
-            // if (!this.token) {
-            //     this.juicebox.showToast("error", 'Invalid token');
-            //     await this.router.navigateByUrl('/');
-            //     return false;
-            // }
-
-            // const result = await this.usersService.isForgotPasswordTokenValid(this.token);
-            // if (!result.success) {
-            //     this.juicebox.showToast("error", 'Invalid token');
-            //     await this.router.navigateByUrl('/');
-            //     return false;
-            // }
         });
 
         this.resetPasswordForm = new FormGroup({
@@ -93,14 +69,6 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
         }
 
         this.promiseBtn = (async () => {
-            // const sendResetEmail = await this.usersService.resetPassword(this.resetPasswordForm.value.password, this.resetPasswordForm.value.repeatPassword, this.token);
-            // if (!sendResetEmail.success) {
-            //     this.juicebox.showToast("error", sendResetEmail.error);
-            //     await this.helper.pause();
-            //     await this.router.navigateByUrl('/');
-            //     return false;
-            //
-            // }
             this.juicebox.showToast("success", this.i18n.transform('password_changed'));
             await this.helper.pause();
             await this.router.navigateByUrl('/');

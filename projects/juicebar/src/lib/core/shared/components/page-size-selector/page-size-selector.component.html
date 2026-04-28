@@ -1,9 +1,10 @@
-<form [formGroup]="radioGroupForm">
-    <mat-button-toggle-group name="pageSize" formControlName="pageSize" 
-                             (change)="selected($event.value)" 
-                             appearance="standard">
-        <mat-button-toggle *ngFor="let size of _sizes" [value]="size">
+<div class="page-size-group">
+    @for (size of _sizes(); track size) {
+        <button app-button
+                [appearance]="pageSize() === size ? 'raised' : 'stroked'"
+                [color]="pageSize() === size ? 'primary' : 'basic'"
+                (click)="select(size)">
             {{size}}
-        </mat-button-toggle>
-    </mat-button-toggle-group>
-</form>
+        </button>
+    }
+</div>

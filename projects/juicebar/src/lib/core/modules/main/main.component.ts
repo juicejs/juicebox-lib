@@ -4,19 +4,17 @@ import { filter } from 'rxjs/operators';
 import { JuiceboxService} from '../../shared/services/Juicebox.service';
 import { SocketService} from '../../shared/services/socket.service';
 import { isNumber} from '../../shared/util';
-import {OnInit, Component, ViewEncapsulation, signal, computed, effect, Signal, ChangeDetectionStrategy} from '@angular/core';
+import {OnInit, Component, ViewEncapsulation, signal, Signal, ChangeDetectionStrategy, inject} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {HelpComponent} from './navigation/help/help.component';
-import {MatDialog} from '@angular/material/dialog';
 import {SidebarService} from '../../shared/services/sidebar.service';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {CommonModule} from '@angular/common';
-import {MatIconModule} from '@angular/material/icon';
-import {MatTooltipModule} from '@angular/material/tooltip';
 import {NavigationComponent} from './navigation/navigation.component';
 import {SidebarComponent} from './sidebar/sidebar.component';
 import {SharedModule} from '../../shared/shared.module';
 import {GlobalTranslationPipe} from '../../i18n/global.translation';
+import {ButtonComponent, IconComponent, DialogService, TooltipDirective} from '../../../ui-components';
 
 @Component({
   selector: 'app-main',
@@ -28,12 +26,13 @@ import {GlobalTranslationPipe} from '../../i18n/global.translation';
   imports: [
     CommonModule,
     RouterOutlet,
-    MatIconModule,
-    MatTooltipModule,
     NavigationComponent,
     SidebarComponent,
     SharedModule,
-    GlobalTranslationPipe
+    GlobalTranslationPipe,
+    ButtonComponent,
+    IconComponent,
+    TooltipDirective
   ]
 })
 export class MainComponent implements OnInit {
@@ -48,18 +47,17 @@ export class MainComponent implements OnInit {
 
     private subscription$: Subscription = new Subscription();
 
-    constructor(private titleService: Title,
-                private router: Router,
-                public juicebox: JuiceboxService,
-                public socketService: SocketService,
-                private dialog: MatDialog,
-                public route: ActivatedRoute,
-                public sidebarService: SidebarService) {
+    private titleService = inject(Title);
+    private router = inject(Router);
+    public juicebox = inject(JuiceboxService);
+    public socketService = inject(SocketService);
+    private dialog = inject(DialogService);
+    public route = inject(ActivatedRoute);
+    public sidebarService = inject(SidebarService);
 
-        // Convert observable to signal - must be done in constructor after sidebarService is injected
+    constructor() {
         this.navigationVisible = toSignal(this.sidebarService.navigationVisible$, { initialValue: true });
 
-        // Initialize empty arrays to prevent "changed after checked" errors
         this.juicebox.actionButtons = [];
         this.juicebox.searchResults = [];
 
@@ -77,12 +75,11 @@ export class MainComponent implements OnInit {
         this.setTitle()
         this.setLanguage();
         this.verifyConnection();
-        socketService.connect();
+        this.socketService.connect();
 
         // @ts-ignore
-        router.events.pipe(filter((e: Event): e is RouterEvent => e instanceof NavigationStart)
+        this.router.events.pipe(filter((e: Event): e is RouterEvent => e instanceof NavigationStart)
         ).subscribe((e) => {
-            // Clear buttons without triggering template updates during initialization
             this.juicebox.actionButtons = [];
         });
 
@@ -93,7 +90,6 @@ export class MainComponent implements OnInit {
             this.locationLink.set(await (<any>event).link);
         });
 
-        // show 2fa warning after succesfull login
         if (localStorage.getItem("2fawarning")){
             this.juicebox.showToast("warning", "2FA", localStorage.getItem("2fawarning"),{
                 disableTimeOut: true
@@ -102,9 +98,7 @@ export class MainComponent implements OnInit {
         }
     }
 
-    ngOnInit() {
-        // No manual subscriptions needed - navigationVisible is already a signal from toSignal()
-    }
+    ngOnInit() {}
 
     private setTitle() {
         const options = this.juicebox.getOptions();
@@ -146,13 +140,13 @@ export class MainComponent implements OnInit {
     }
 
     public openHelpModal() {
-        const dialogRef = this.dialog.open(HelpComponent, {
+        const dialogRef = this.dialog.open<HelpComponent, { text: string }, boolean>(HelpComponent, {
             width: '800px',
             maxWidth: '90vw',
             data: { text: this.text() }
         });
 
-        dialogRef.afterClosed().subscribe(result => {
+        dialogRef.closed.subscribe(result => {
             if (result) {
                 this.helpTextUpdated();
             }
@@ -191,27 +185,18 @@ export class MainComponent implements OnInit {
         this.subscription$.unsubscribe();
     }
 
-    // Helper method to map button types to Material colors
-    getButtonColor(buttonType: string): string {
+    getButtonColor(buttonType: string): 'primary' | 'accent' | 'warn' | 'basic' {
         switch (buttonType) {
-            case 'btn-primary':
-                return 'primary';
-            case 'btn-secondary':
-                return 'accent';
-            case 'btn-success':
-                return 'primary';
-            case 'btn-danger':
-                return 'warn';
-            case 'btn-warning':
-                return 'accent';
-            case 'btn-info':
-                return 'primary';
-            default:
-                return 'primary';
+            case 'btn-primary': return 'primary';
+            case 'btn-secondary': return 'accent';
+            case 'btn-success': return 'primary';
+            case 'btn-danger': return 'warn';
+            case 'btn-warning': return 'accent';
+            case 'btn-info': return 'primary';
+            default: return 'primary';
         }
     }
 
-    // Helper method to map FontAwesome icons to Material icons
     getButtonIcon(faIcon: string): string {
         const iconMap: { [key: string]: string } = {
             'fa-plus-circle': 'add_circle',
@@ -245,9 +230,7 @@ export class MainComponent implements OnInit {
             'fa-star': 'star'
         };
 
-        // Remove fa- prefix if present and lookup
         const cleanIcon = faIcon.startsWith('fa-') ? faIcon : `fa-${faIcon}`;
-        return iconMap[cleanIcon] || 'add'; // default to 'add' icon
+        return iconMap[cleanIcon] || 'add';
     }
 }
-

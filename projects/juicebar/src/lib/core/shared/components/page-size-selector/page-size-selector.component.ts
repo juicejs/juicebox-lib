@@ -1,7 +1,6 @@
-import {Component, EventEmitter, input, OnInit, output, ChangeDetectionStrategy} from "@angular/core";
-import {FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
+import {Component, input, OnInit, output, ChangeDetectionStrategy, signal} from "@angular/core";
 import {CommonModule} from '@angular/common';
-import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {ButtonComponent} from '../../../../ui-components';
 
 @Component({
     selector: 'page-size-selector',
@@ -9,44 +8,30 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        ReactiveFormsModule,
-        MatButtonToggleModule
+        ButtonComponent
     ]
 })
 export class PageSizeSelectorComponent implements OnInit {
-    public radioGroupForm: FormGroup
-
-    public _sizes: Array<number>  =   [10,20,50];
-    public pageSize = 10;
 
     sizes = input<number[]>();
-
-    ngOnChanges() {
-        if(this.sizes()) {
-            this._sizes = this.sizes();
-        }
-    }
-
     defaultSize = input<number>();
 
-    ngOnInit2() {
-        if(this.defaultSize()) {
-            this.pageSize = this.defaultSize();
-        }
-    }
+    onChange = output<number>();
 
-    onChange = output<number>()
-
-    constructor(private formBuilder: FormBuilder) {}
+    _sizes = signal<number[]>([10, 20, 50]);
+    pageSize = signal<number>(10);
 
     ngOnInit(): void {
-        this.radioGroupForm = this.formBuilder.group({
-            'pageSize': this.pageSize || this._sizes[0]
-        });
+        const s = this.sizes();
+        if (s && s.length) this._sizes.set(s);
+
+        const d = this.defaultSize();
+        if (d) this.pageSize.set(d);
+        else this.pageSize.set(this._sizes()[0]);
     }
 
-    public selected(size?){
-        this.onChange.emit(size)
+    select(size: number) {
+        this.pageSize.set(size);
+        this.onChange.emit(size);
     }
-
 }

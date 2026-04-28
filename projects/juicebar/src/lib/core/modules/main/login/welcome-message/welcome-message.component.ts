@@ -1,7 +1,7 @@
-import {Component, Inject, input, OnInit, ChangeDetectionStrategy} from '@angular/core';
-import {MatDialogRef, MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
+import {Component, input, OnInit, ChangeDetectionStrategy, inject} from '@angular/core';
+import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
 import {CommonModule} from '@angular/common';
-import {MatButtonModule} from '@angular/material/button';
+import {ButtonComponent, DialogContentComponent, DialogActionsComponent} from '../../../../../ui-components';
 
 export interface WelcomeMessageData {
   message: string;
@@ -14,22 +14,17 @@ export interface WelcomeMessageData {
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        MatDialogModule,
-        MatButtonModule
+        ButtonComponent,
+        DialogContentComponent,
+        DialogActionsComponent
     ]
 })
 export class WelcomeMessageComponent implements OnInit {
 
     public message = input<string>();
 
-    constructor(
-        public dialogRef: MatDialogRef<WelcomeMessageComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: WelcomeMessageData
-    ) {
-    }
+    public dialogRef = inject<DialogRef<boolean>>(DialogRef);
+    public data = inject<WelcomeMessageData>(DIALOG_DATA, { optional: true });
 
-    ngOnInit() {
-
-    }
-
+    ngOnInit() {}
 }

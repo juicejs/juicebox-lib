@@ -1,5 +1,5 @@
-import {Injectable} from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {Injectable, inject} from '@angular/core';
+import {SnackbarService} from '../../../ui-components';
 import {BehaviorSubject} from 'rxjs';
 import {JuiceboxService} from './Juicebox.service';
 import {SocketIoConfig} from '../socket-io/config/socket-io.config';
@@ -22,7 +22,10 @@ export class SocketService {
   private socket: WrappedSocket;
   _connected = new BehaviorSubject(false);
 
-  constructor(private snackBar: MatSnackBar, private juicebox: JuiceboxService) {}
+  private snackBar = inject(SnackbarService);
+  private juicebox = inject(JuiceboxService);
+
+  constructor() {}
 
   connect() {
     if (!this.juicebox.isLoggedIn()) return;
@@ -55,7 +58,7 @@ export class SocketService {
   private registerDefaultEvents() {
     this.on('connect', () => this._connected.next(true));
     this.on('disconnect', () => this._connected.next(false));
-    this.on('message', (msg) => this.snackBar.open(msg, 'Close', { duration: 5000, panelClass: 'info-snackbar' }));
+    this.on('message', (msg) => this.snackBar.open(msg, 'Close', 5000));
   }
 
 
