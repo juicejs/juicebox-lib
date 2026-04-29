@@ -38,10 +38,9 @@ import {
   SelectComponent, OptionComponent,
   CheckboxComponent,
   IconComponent,
-  DialogService, DialogTitleComponent, DialogContentComponent, DialogActionsComponent, DialogModule,
-  CdkTableModule,
-  MenuComponent, MenuItemComponent, MenuTriggerComponent, CdkMenuModule,
-  TooltipDirective, TooltipComponent, OverlayModule,
+  DialogService, DialogTitleComponent, DialogContentComponent, DialogActionsComponent,
+  MenuComponent, MenuItemComponent, MenuTriggerComponent,
+  TooltipDirective, TooltipComponent,
   ToolbarComponent,
   SidenavComponent, SidenavContainerComponent,
   NavListComponent, ListItemComponent,
@@ -50,9 +49,15 @@ import {
   SlideToggleComponent,
   PaginatorComponent,
   TabsComponent, TabComponent,
-  SnackbarService, SnackbarComponent,
-  DragDropModule
+  SnackbarService, SnackbarComponent
 } from '../../ui-components';
+
+// Import CDK modules directly to avoid build path resolution issues
+import { DialogModule } from '@angular/cdk/dialog';
+import { CdkTableModule } from '@angular/cdk/table';
+import { CdkMenuModule } from '@angular/cdk/menu';
+import { OverlayModule } from '@angular/cdk/overlay';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 // import { ProgressBarsComponent } from './shared/progress-bars/progress-bars.component';
 // import { JuicechainAuthComponent } from './shared/juicechain-auth/juicechain-auth.component';
 // import { ProgressbarModule } from './shared/progressbar/progressbar.module';

@@ -44,19 +44,19 @@
       </div>
     </div>
 
-    <mat-divider class="section-divider"></mat-divider>
+    <app-divider class="section-divider"></app-divider>
 
     <div class="help-text">
       <h4 class="section-title">{{'help_text' | translate}}</h4>
       <div class="textarea-container">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{'help_text' | translate}}</mat-label>
+        <app-form-field appearance="outline" class="full-width">
+          <app-label>{{'help_text' | translate}}</app-label>
           <textarea matInput
                     #text
                     [(ngModel)]="helpData"
                     rows="6"
                     placeholder="Enter help text..."></textarea>
-        </mat-form-field>
+        </app-form-field>
 
         <button mat-raised-button
                 color="primary"

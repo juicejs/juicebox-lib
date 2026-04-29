@@ -2,16 +2,12 @@ import {Component, EventEmitter, OnDestroy, OnInit, output, ChangeDetectionStrat
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {Router, RouterLink} from '@angular/router';
 import {CommonModule, Location} from '@angular/common';
-import {MatDialog} from '@angular/material/dialog';
+import {DialogService} from '../../../../ui-components/dialog/dialog.service';
 import {HelpComponent} from './help/help.component';
 import {MainTranslationPipe} from '../i18n/main.translation';
 import {Subscription} from 'rxjs';
 import {ClientRoutesService} from '../../../shared/services/client-routes.service';
-import {MatToolbarModule} from '@angular/material/toolbar';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
-import {MatMenuModule} from '@angular/material/menu';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {CdkMenuModule} from '@angular/cdk/menu';
 import {SharedModule} from '../../../shared/shared.module';
 
 export interface Language {
@@ -27,11 +23,7 @@ export interface Language {
   imports: [
     CommonModule,
     RouterLink,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    MatTooltipModule,
+    CdkMenuModule,
     SharedModule,
     MainTranslationPipe
   ]
@@ -72,7 +64,7 @@ export class NavigationComponent implements OnInit, OnDestroy {
               private clientRoutes: ClientRoutesService,
               public juiceboxService: JuiceboxService,
               public location: Location,
-              public dialog: MatDialog) {
+              public dialog: DialogService) {
 
     this.projectTitle = this.juicebox.getProjectTitle();
     this.organisationLogo += ".png";

@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
+import {DIALOG_DATA, DialogRef, DialogService} from '../../../../../ui-components/dialog/dialog.service';
 
 export interface HelpDialogData {
   text?: string;
@@ -10,8 +10,6 @@ import {ConfirmationDialogComponent, ConfirmationDialogData} from '../../../../s
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
 import {SharedModule} from '../../../../shared/shared.module';
 
 @Component({
@@ -21,9 +19,6 @@ import {SharedModule} from '../../../../shared/shared.module';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        MatDialogModule,
-        MatButtonModule,
-        MatIconModule,
         SharedModule,
         MainTranslationPipe
     ]
@@ -40,10 +35,10 @@ export class HelpComponent implements OnInit {
 
     helpTextUpdated: boolean = false;
 
-    constructor(public dialogRef: MatDialogRef<HelpComponent>,
-                @Inject(MAT_DIALOG_DATA) public data: HelpDialogData,
+    constructor(public dialogRef: DialogRef<boolean>,
+                @Inject(DIALOG_DATA) public data: HelpDialogData,
                 public juicebox: JuiceboxService,
-                private dialog: MatDialog,
+                private dialog: DialogService,
                 private helper: HelperService,
                 private juiceboxService: JuiceboxService,
                 private router: Router) {
@@ -108,7 +103,7 @@ export class HelpComponent implements OnInit {
             data: dialogData
         });
         
-        dialogRef.afterClosed().subscribe(async (result) => {
+        dialogRef.closed.subscribe(async (result) => {
             if (result) {
                 const deleteResult = await this.juicebox.deleteHelpFile(this.router.url.split("/")[2], this.juicebox.getLanguage());
                 if (deleteResult) {

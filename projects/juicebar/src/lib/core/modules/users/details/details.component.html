@@ -1,33 +1,37 @@
-<mat-tab-group [(selectedIndex)]="selectedTabIndex" mat-stretch-tabs="false" (selectedTabChange)="onTabChange($event)">
-    <mat-tab label="{{'details' | translate}}"></mat-tab>
+<app-tabs [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)">
+    <app-tab [label]="'details' | translate"></app-tab>
 
-    <mat-tab *ngIf="projectTitle !== 'Equipments' && projectTitle !== 'CSJuicEcommerce' && projectTitle !== 'CSWP' && projectTitle !== 'Carl Stahl Configurator'"
-             label="{{'organisations' | translate}}"></mat-tab>
+    @if (projectTitle !== 'Equipments' && projectTitle !== 'CSJuicEcommerce' && projectTitle !== 'CSWP' && projectTitle !== 'Carl Stahl Configurator') {
+      <app-tab [label]="'organisations' | translate"></app-tab>
+    }
 
-    <mat-tab [disabled]="!juicebox.hasPermission('users:role#roles')"
-             *ngIf="juicebox.hasPermission('users:role#roles')"
-             label="{{'roles' | translate}}"></mat-tab>
+    @if (juicebox.hasPermission('users:role#roles')) {
+      <app-tab [disabled]="!juicebox.hasPermission('users:role#roles')" [label]="'roles' | translate"></app-tab>
+    }
 
-    <mat-tab [disabled]="!juicebox.hasPermission('groups:role#read')"
-             *ngIf="juicebox.hasPermission('groups:role#read')"
-             label="{{'groups' | translate}}"></mat-tab>
+    @if (juicebox.hasPermission('groups:role#read')) {
+      <app-tab [disabled]="!juicebox.hasPermission('groups:role#read')" [label]="'groups' | translate"></app-tab>
+    }
 
-    <mat-tab *ngIf="!deprecated()"
-             label="{{'sidebar' | translate}}"></mat-tab>
+    @if (!deprecated()) {
+      <app-tab [label]="'sidebar' | translate"></app-tab>
+    }
 
-    <mat-tab [disabled]="!juicebox.hasPermission('customers:role#read')"
-             *ngIf="juicebox.hasPermission('customers:role#read')"
-             label="{{'customers' | translate}}"></mat-tab>
+    @if (juicebox.hasPermission('customers:role#read')) {
+      <app-tab [disabled]="!juicebox.hasPermission('customers:role#read')" [label]="'customers' | translate"></app-tab>
+    }
 
-    <mat-tab [disabled]="!juicebox.hasPermission('customers:role#allowed-types')"
-             *ngIf="juicebox.hasPermission('customers:role#allowed-types')"
-             label="{{'allowed_types' | translate}}"></mat-tab>
+    @if (juicebox.hasPermission('customers:role#allowed-types')) {
+      <app-tab [disabled]="!juicebox.hasPermission('customers:role#allowed-types')" [label]="'allowed_types' | translate"></app-tab>
+    }
 
-    <mat-tab *ngIf="juicebox.hasPermission('clients:role#super-admin') && juicebox.hasPermission('pdf:role')"
-             label="{{'clients' | translate}}"></mat-tab>
+    @if (juicebox.hasPermission('clients:role#super-admin') && juicebox.hasPermission('pdf:role')) {
+      <app-tab [label]="'clients' | translate"></app-tab>
+    }
 
-    <mat-tab *ngIf="channels && channels.length > 1 && juicebox.hasPermission('users:role#roles')"
-             label="{{'channels' | translate}}"></mat-tab>
-</mat-tab-group>
+    @if (channels && channels.length > 1 && juicebox.hasPermission('users:role#roles')) {
+      <app-tab [label]="'channels' | translate"></app-tab>
+    }
+</app-tabs>
 
 <router-outlet></router-outlet>

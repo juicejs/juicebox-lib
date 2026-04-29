@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, input, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, input, output, model, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -19,7 +19,8 @@ import { CommonModule } from '@angular/common';
   }
 })
 export class TabsComponent {
-  selectedIndex = signal(0);
+  selectedIndex = model<number>(0);
+  selectedIndexChange = output<number>();
 }
 
 @Component({

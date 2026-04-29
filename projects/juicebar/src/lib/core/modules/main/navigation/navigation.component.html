@@ -1,11 +1,11 @@
-<mat-toolbar class="modern-navigation"
+<app-toolbar class="modern-navigation"
              [ngStyle]="getComponentWidth()">
 
   <!-- Left Section - Logo & Menu -->
   <div class="nav-left-section">
     <!-- Hamburger menu (optional for future use) -->
-    <!-- <button mat-icon-button class="menu-button">
-      <mat-icon>menu</mat-icon>
+    <!-- <button app-button appearance="icon" class="menu-button">
+      <app-icon [icon]="'menu'"></app-icon>
     </button> -->
 
     <!-- Logo -->
@@ -17,10 +17,8 @@
   <!-- Center Section - Enhanced Search -->
   <div class="search-section">
     <div class="search-container">
-      <button mat-icon-button class="search-icon-btn">
-        <mat-icon class="search-icon">
-          <span class="fa" [ngClass]="{ 'fa-search' : !searching, 'fa-spinner fa-spin': searching}"></span>
-        </mat-icon>
+      <button app-button appearance="icon" class="search-icon-btn">
+        <app-icon class="search-icon" [icon]="searching ? 'fa-spinner fa-spin' : 'fa-search'"></app-icon>
       </button>
       <input type="text"
              class="search-input"
@@ -28,9 +26,11 @@
              debounceKeyUp
              [debounceTime]="500"
              (onEvent)="doSearch($event)">
-      <button mat-icon-button class="search-options-btn" *ngIf="false">
-        <mat-icon>tune</mat-icon>
-      </button>
+      @if (false) {
+        <button app-button appearance="icon" class="search-options-btn">
+          <app-icon [icon]="'tune'"></app-icon>
+        </button>
+      }
     </div>
   </div>
 
@@ -38,93 +38,106 @@
   <div class="nav-right-section">
 
     <!-- Help Button -->
-    <button mat-icon-button
-            class="action-button help-btn"
-            (click)="getHelp()"
-            *ngIf="fileInfo || this.juicebox.hasPermission('juicebox:role#edit-help-document')"
-            [matTooltip]="'help' | translate">
-      <mat-icon>help_outline</mat-icon>
-    </button>
+    @if (fileInfo || this.juicebox.hasPermission('juicebox:role#edit-help-document')) {
+      <button app-button
+              appearance="icon"
+              class="action-button help-btn"
+              (click)="getHelp()"
+              [appTooltip]="'help' | translate">
+        <app-icon [icon]="'help_outline'"></app-icon>
+      </button>
+    }
 
     <!-- Language Switcher -->
-    <button mat-icon-button
-            class="action-button language-btn"
-            *ngIf="languages && languages.length > 1"
-            [matMenuTriggerFor]="languageMenu"
-            [matTooltip]="'change_language' | translate">
-      <mat-icon>language</mat-icon>
-    </button>
-
-    <mat-menu #languageMenu="matMenu" class="menu-dropdown">
-      <div class="menu-header">
-        <span class="menu-title">Language</span>
-      </div>
-      <button *ngFor="let language of languages"
-              (click)="changeLanguage(language)"
-              mat-menu-item
-              class="language-menu-item">
-        <div class="menu-item-content">
-          <mat-icon class="menu-item-icon">language</mat-icon>
-          <span class="menu-item-label">{{language.name | translate}}</span>
-        </div>
+    @if (languages && languages.length > 1) {
+      <button app-button
+              appearance="icon"
+              class="action-button language-btn"
+              [cdkMenuTriggerFor]="languageMenu"
+              [appTooltip]="'change_language' | translate">
+        <app-icon [icon]="'language'"></app-icon>
       </button>
-    </mat-menu>
+    }
+
+    <ng-template #languageMenu>
+      <div class="menu-panel menu-dropdown" cdkMenu>
+        <div class="menu-header">
+          <span class="menu-title">Language</span>
+        </div>
+        @for (language of languages; track language.key) {
+          <button (click)="changeLanguage(language)"
+                  cdkMenuItem
+                  class="language-menu-item">
+            <div class="menu-item-content">
+              <app-icon [icon]="'language'" class="menu-item-icon"></app-icon>
+              <span class="menu-item-label">{{language.name | translate}}</span>
+            </div>
+          </button>
+        }
+      </div>
+    </ng-template>
 
     <!-- Organization Switcher (Google Drive-like) -->
-    <button mat-button
-            class="org-switcher-btn"
-            [matMenuTriggerFor]="orgMenu"
-            *ngIf="userOrganisations && userOrganisations.length > 1">
-      <mat-icon class="org-icon">business</mat-icon>
-      <span class="org-label">{{ organisationName }}</span>
-      <mat-icon class="dropdown-arrow">keyboard_arrow_down</mat-icon>
-    </button>
-
-    <mat-menu #orgMenu="matMenu" class="menu-dropdown">
-      <div class="menu-header">
-        <span class="menu-title">Switch Organization</span>
-      </div>
-      <button *ngFor="let org of userOrganisations"
-              (click)="onOrganisationSwitch(org._id)"
-              mat-menu-item
-              class="org-menu-item">
-        <div class="menu-item-content">
-          <mat-icon class="menu-item-icon">business</mat-icon>
-          <span class="menu-item-label">{{ org.name }}</span>
-        </div>
+    @if (userOrganisations && userOrganisations.length > 1) {
+      <button app-button
+              class="org-switcher-btn"
+              [cdkMenuTriggerFor]="orgMenu">
+        <app-icon [icon]="'business'" class="org-icon"></app-icon>
+        <span class="org-label">{{ organisationName }}</span>
+        <app-icon [icon]="'keyboard_arrow_down'" class="dropdown-arrow"></app-icon>
       </button>
-    </mat-menu>
+    }
+
+    <ng-template #orgMenu>
+      <div class="menu-panel menu-dropdown" cdkMenu>
+        <div class="menu-header">
+          <span class="menu-title">Switch Organization</span>
+        </div>
+        @for (org of userOrganisations; track org._id) {
+          <button (click)="onOrganisationSwitch(org._id)"
+                  cdkMenuItem
+                  class="org-menu-item">
+            <div class="menu-item-content">
+              <app-icon [icon]="'business'" class="menu-item-icon"></app-icon>
+              <span class="menu-item-label">{{ org.name }}</span>
+            </div>
+          </button>
+        }
+      </div>
+    </ng-template>
 
     <!-- User Profile -->
-    <button mat-button
+    <button app-button
             class="profile-button"
-            [matMenuTriggerFor]="profileMenu"
-            [matTooltip]="'user_profile' | translate">
+            [cdkMenuTriggerFor]="profileMenu"
+            [appTooltip]="'user_profile' | translate">
       <div class="user-avatar">
-        <mat-icon class="avatar-icon">account_circle</mat-icon>
+        <app-icon [icon]="'account_circle'" class="avatar-icon"></app-icon>
       </div>
     </button>
 
-    <mat-menu #profileMenu="matMenu" class="menu-dropdown profile-menu">
-      <div class="profile-menu-header">
-        <div class="profile-info">
-          <mat-icon class="profile-avatar">account_circle</mat-icon>
-          <div class="profile-details">
-            <div class="profile-name">{{ userName }}</div>
-            <div class="profile-email">{{ userEmail || 'user@example.com' }}</div>
+    <ng-template #profileMenu>
+      <div class="menu-panel menu-dropdown profile-menu" cdkMenu>
+        <div class="profile-menu-header">
+          <div class="profile-info">
+            <app-icon [icon]="'account_circle'" class="profile-avatar"></app-icon>
+            <div class="profile-details">
+              <div class="profile-name">{{ userName }}</div>
+              <div class="profile-email">{{ userEmail || 'user@example.com' }}</div>
+            </div>
           </div>
         </div>
+        <app-divider></app-divider>
+        <button cdkMenuItem (click)="goToUserProfile()" class="profile-menu-item">
+          <app-icon [icon]="'person'" class="menu-item-icon"></app-icon>
+          <span class="menu-item-label">{{'user_profile' | translate}}</span>
+        </button>
+        <button cdkMenuItem (click)="logout()" class="profile-menu-item logout-item">
+          <app-icon [icon]="'logout'" class="menu-item-icon"></app-icon>
+          <span class="menu-item-label">{{'logout' | translate}}</span>
+        </button>
       </div>
-      <mat-divider></mat-divider>
-      <button mat-menu-item (click)="goToUserProfile()" class="profile-menu-item">
-        <mat-icon class="menu-item-icon">person</mat-icon>
-        <span class="menu-item-label">{{'user_profile' | translate}}</span>
-      </button>
-      <button mat-menu-item (click)="logout()" class="profile-menu-item logout-item">
-        <mat-icon class="menu-item-icon">logout</mat-icon>
-        <span class="menu-item-label">{{'logout' | translate}}</span>
-      </button>
-    </mat-menu>
+    </ng-template>
 
   </div>
-</mat-toolbar>
+</app-toolbar>

@@ -1,11 +1,11 @@
 <h2>
     {{'groups_name_editor' | translate}}
-    <button mat-icon-button mat-dialog-close class="close-button" (click)="close()">
-        <mat-icon>close</mat-icon>
+    <button app-button appearance="icon" mat-dialog-close class="close-button" (click)="close()">
+        <app-icon [icon]="'close'"></app-icon>
     </button>
 </h2>
 
-<mat-dialog-content>
+<app-dialog-content>
     <form *ngIf="groupForm" class="m-0" [formGroup]="groupForm">
 
         <mat-form-field appearance="outline" class="full-width">
@@ -34,9 +34,9 @@
         </div>
 
     </form>
-</mat-dialog-content>
+</app-dialog-content>
 
-<mat-dialog-actions align="end">
+<app-dialog-actions align="end">
     <button mat-button (click)="close()">
         {{"cancel" | translate}}
     </button>
@@ -45,4 +45,4 @@
             [matPromiseBtn]="promiseBtn">
         {{"save" | translate}}
     </button>
-</mat-dialog-actions>
+</app-dialog-actions>

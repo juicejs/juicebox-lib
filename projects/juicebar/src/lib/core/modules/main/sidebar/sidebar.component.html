@@ -1,7 +1,7 @@
-<mat-sidenav-container class="modern-sidebar-container"
+<app-sidenav-container class="modern-sidebar-container"
                        [ngClass]="{ 'collapsed': juicebox.collapsed }">
 
-  <mat-sidenav opened mode="side" class="modern-sidebar">
+  <app-sidenav opened mode="side" class="modern-sidebar">
 
     <!-- Logo Section -->
     <div class="sidebar-header" [ngClass]="{ 'collapsed': juicebox.collapsed }">
@@ -17,8 +17,8 @@
          [cdkDropListDisabled]="!juicebox.getOptions().sidebarPermissions">
          
       <div class="menu-section">
-        <div *ngFor="let menuItem of this.menu; trackBy: trackByRole" 
-             class="menu-item-container"
+        @for (menuItem of this.menu; track trackByRole($index, menuItem)) {
+          <div class="menu-item-container"
              cdkDrag
              [cdkDragDisabled]="!juicebox.getOptions().sidebarPermissions"
              (cdkDragStarted)="onMenuDragStarted()">
@@ -26,17 +26,17 @@
           <div class="menu-item"
                [ngClass]="{ 'active': isActiveRoute(menuItem.router), 'dragging': isDragging }"
                (click)="menuItemClicked($event, menuItem.router)"
-               [matTooltip]="juicebox.collapsed ? menuItem.label : ''"
-               matTooltipPosition="right">
+               [appTooltip]="juicebox.collapsed ? menuItem.label : ''"
+               appTooltipPosition="right">
                
             <div class="menu-item-content">
               <div class="menu-icon-container">
-                <mat-icon class="menu-icon" *ngIf="!isDragging">
-                  {{getMatIcon(menuItem.icon)}}
-                </mat-icon>
-                <mat-icon class="drag-handle" *ngIf="isDragging">
-                  drag_indicator
-                </mat-icon>
+                @if (!isDragging) {
+                  <app-icon class="menu-icon" [icon]="getMatIcon(menuItem.icon)"></app-icon>
+                }
+                @if (isDragging) {
+                  <app-icon class="drag-handle" [icon]="'drag_indicator'"></app-icon>
+                }
               </div>
               
               <span class="menu-label" [ngClass]="{ 'collapsed': juicebox.collapsed }">
@@ -44,26 +44,26 @@
               </span>
             </div>
           </div>
-        </div>
+          </div>
+        }
       </div>
     </div>
 
     <!-- Sidebar Footer -->
     <div class="sidebar-footer">
-      <button mat-icon-button
+      <button app-button
+              appearance="icon"
               class="collapse-btn"
               (click)="collapse()"
-              [matTooltip]="juicebox.collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
-              matTooltipPosition="right">
-        <mat-icon class="collapse-icon">
-          {{juicebox.collapsed ? 'menu_open' : 'menu'}}
-        </mat-icon>
+              [appTooltip]="juicebox.collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+              appTooltipPosition="right">
+        <app-icon class="collapse-icon" [icon]="juicebox.collapsed ? 'menu_open' : 'menu'"></app-icon>
       </button>
     </div>
 
-  </mat-sidenav>
+  </app-sidenav>
 
-</mat-sidenav-container>
+</app-sidenav-container>
 
 <!-- Profile Picture Dialog -->
 <ng-template #picture let-modal>

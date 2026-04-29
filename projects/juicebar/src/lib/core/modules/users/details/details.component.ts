@@ -4,7 +4,7 @@ import {ActivatedRoute, Router, RouterOutlet} from '@angular/router';
 import {Subscription} from 'rxjs';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import { ConfigurationService} from '../../../shared/services/configuration.service';
-import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
+import { TabsComponent, TabComponent } from '../../../../ui-components';
 import {SharedModule} from '../../../shared/shared.module';
 import {UserTranslationPipe} from '../i18n/user.translation';
 
@@ -16,7 +16,8 @@ import {UserTranslationPipe} from '../i18n/user.translation';
   imports: [
     CommonModule,
     RouterOutlet,
-    MatTabsModule,
+    TabsComponent,
+    TabComponent,
     SharedModule,
     UserTranslationPipe
   ]
@@ -72,8 +73,8 @@ export class DetailsUsersComponent implements OnInit, OnDestroy {
         this.actionButtons = buttons;
     }
 
-    onTabChange(event: MatTabChangeEvent) {
-        const route = this.tabRoutes[event.index];
+    onTabChange(index: number) {
+        const route = this.tabRoutes[index];
         if (route) {
             this.router.navigate([route], { relativeTo: this.route });
         }

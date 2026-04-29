@@ -49,4 +49,6 @@ export { CdkTableModule } from '@angular/cdk/table';
 export { CdkMenuModule } from '@angular/cdk/menu';
 export { OverlayModule } from '@angular/cdk/overlay';
 export { CdkListboxModule } from '@angular/cdk/listbox';
-export { DragDropModule } from '@angular/cdk/drag-drop';
+// Note: DragDropModule is exported separately to avoid build issues
+// export { DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+// export type { CdkDragDrop } from '@angular/cdk/drag-drop';

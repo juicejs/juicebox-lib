@@ -2,18 +2,14 @@ import {Component, Inject, OnDestroy, OnInit, TemplateRef, ChangeDetectionStrate
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {SidebarItem, SidebarService} from '../../../shared/services/sidebar.service';
 import {SocketService} from '../../../shared/services/socket.service';
-import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {DialogService} from '../../../../ui-components';
+import type {CdkDragDrop} from '@angular/cdk/drag-drop';
+import {moveItemInArray} from '@angular/cdk/drag-drop';
 import {ImageCroppedEvent, ImageCropperComponent} from 'ngx-image-cropper';
 import {MainTranslationPipe} from '../i18n/main.translation';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import {CdkDragDrop, moveItemInArray, DragDropModule} from '@angular/cdk/drag-drop';
 import {Subscription} from 'rxjs/internal/Subscription';
 import {CommonModule} from '@angular/common';
-import {MatSidenavModule} from '@angular/material/sidenav';
-import {MatListModule} from '@angular/material/list';
-import {MatIconModule} from '@angular/material/icon';
-import {MatButtonModule} from '@angular/material/button';
-import {MatTooltipModule} from '@angular/material/tooltip';
 import {SharedModule} from '../../../shared/shared.module';
 
 @Component({
@@ -25,13 +21,6 @@ import {SharedModule} from '../../../shared/shared.module';
         CommonModule,
         RouterLink,
         RouterLinkActive,
-        MatSidenavModule,
-        MatListModule,
-        MatIconModule,
-        MatButtonModule,
-        MatTooltipModule,
-        MatDialogModule,
-        DragDropModule,
         ImageCropperComponent,
         SharedModule,
         MainTranslationPipe
@@ -68,7 +57,7 @@ export class SidebarComponent implements OnInit, OnDestroy{
                 private socketService: SocketService,
                 private router: Router,
                 public juicebox: JuiceboxService,
-                private dialog: MatDialog) {
+                private dialog: DialogService) {
       this.i18n = new MainTranslationPipe(this.juicebox);
 
         // TODO check why some users have roles saved as array and some as object

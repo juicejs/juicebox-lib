@@ -16,6 +16,9 @@
 export * from './lib/juicebar.component';
 export * from './lib/bootstrap';
 
+// UI Components (CDK-based)
+export * from './lib/ui-components';
+
 // Configuration
 export * from './lib/config/base-app.config';
 export * from './lib/config/app.config';
