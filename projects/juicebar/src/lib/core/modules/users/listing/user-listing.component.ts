@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { UsersService } from '../users.service';
 import { ListingComponent } from '../../../shared/components/listing/listing.component';
 import { Router, RouterLink } from '@angular/router';
@@ -76,7 +76,8 @@ export class UserListingComponent extends ListingComponent implements OnInit {
                        public helper: HelperService,
                        private router: Router,
                        private dialog: DialogService,
-                       private configurationService: ConfigurationService) {
+                       private configurationService: ConfigurationService,
+                       private cdr: ChangeDetectorRef) {
         super(juicebox);
 
     }
@@ -144,6 +145,9 @@ export class UserListingComponent extends ListingComponent implements OnInit {
 
         this.rows = result.payload.items;
         this.count = result.payload.count;
+
+        // Trigger change detection since we're using OnPush strategy
+        this.cdr.markForCheck();
     }
 
     getLoginData(users) {
@@ -257,6 +261,7 @@ export class UserListingComponent extends ListingComponent implements OnInit {
 
         this.organisations = [...this.organisations, ...organisationResult.payload.items];
         this.organisationsCount = organisationResult.payload.count;
+        this.cdr.markForCheck();
     }
 
     async organisationChanged(organisation) {
@@ -311,6 +316,7 @@ export class UserListingComponent extends ListingComponent implements OnInit {
         if (!result.success) return false;
         this.groups = result.payload;
         this.filteredGroups = [...this.groups]; // Initialize filtered array
+        this.cdr.markForCheck();
     }
 
     async groupChanged(group: any) {
@@ -341,6 +347,7 @@ export class UserListingComponent extends ListingComponent implements OnInit {
 
         this.roles = result.payload;
         this.filteredRoles = [...this.roles]; // Initialize filtered array
+        this.cdr.markForCheck();
     }
 
     async roleChanged(role: any) {

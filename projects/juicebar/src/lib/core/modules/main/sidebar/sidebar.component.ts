@@ -1,4 +1,4 @@
-import {Component, Inject, OnDestroy, OnInit, TemplateRef, ChangeDetectionStrategy} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit, TemplateRef, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {SidebarItem, SidebarService} from '../../../shared/services/sidebar.service';
 import {SocketService} from '../../../shared/services/socket.service';
@@ -57,7 +57,8 @@ export class SidebarComponent implements OnInit, OnDestroy{
                 private socketService: SocketService,
                 private router: Router,
                 public juicebox: JuiceboxService,
-                private dialog: DialogService) {
+                private dialog: DialogService,
+                private cdr: ChangeDetectorRef) {
       this.i18n = new MainTranslationPipe(this.juicebox);
 
         // TODO check why some users have roles saved as array and some as object
@@ -129,7 +130,6 @@ export class SidebarComponent implements OnInit, OnDestroy{
         } else {
             // get old way of storing items
             const res = await this.sidebarService.getSidebarItems(this.juicebox.getUserId(), this.juicebox.getUserOrganisationId());
-
             // if no items came out with permissions use old way
             if (sidebar.visible.length == 0){
                 if (res && res.visible){
@@ -139,6 +139,9 @@ export class SidebarComponent implements OnInit, OnDestroy{
         }
 
         this.menu = sidebar.visible;
+
+      // Trigger change detection since we're using OnPush strategy
+      this.cdr.markForCheck();
     }
 
     ngOnDestroy() {
