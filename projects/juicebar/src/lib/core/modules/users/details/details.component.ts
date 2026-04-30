@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnDestroy, OnInit, output, ChangeDetectionStrategy} from '@angular/core';
+import {Component, EventEmitter, inject, OnDestroy, OnInit, output, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule, Location} from '@angular/common';
 import {ActivatedRoute, Router, RouterOutlet} from '@angular/router';
 import {Subscription} from 'rxjs';
@@ -48,11 +48,13 @@ export class DetailsUsersComponent implements OnInit, OnDestroy {
         'channels-user'
     ];
 
-    constructor(public location: Location,
-                private route: ActivatedRoute,
-                private router: Router,
-                public juicebox: JuiceboxService,
-                private configurationService: ConfigurationService) {
+    public location = inject(Location);
+    private route = inject(ActivatedRoute);
+    private router = inject(Router);
+    public juicebox = inject(JuiceboxService);
+    private configurationService = inject(ConfigurationService);
+
+    constructor() {
         this.projectTitle = this.juicebox.getProjectTitle();
     }
 

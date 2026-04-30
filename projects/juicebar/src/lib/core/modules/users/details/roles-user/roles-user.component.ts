@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ActivatedRoute} from '@angular/router';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
@@ -45,13 +45,15 @@ export class RolesUserComponent implements OnInit {
     public hasVisibilityFeature: boolean = false;
     displayedColumns: string[] = ['name', 'permissions', 'actions'];
 
-    constructor(private configurationService: ConfigurationService,
-                protected juicebox: JuiceboxService,
-                private userService: UsersService,
-                private dialog: DialogService,
-                public route: ActivatedRoute,
-                public helperService: HelperService) {
-      this.i18n = new UserTranslationPipe(this.juicebox)
+    private configurationService = inject(ConfigurationService);
+    protected juicebox = inject(JuiceboxService);
+    private userService = inject(UsersService);
+    private dialog = inject(DialogService);
+    public route = inject(ActivatedRoute);
+    public helperService = inject(HelperService);
+
+    constructor() {
+        this.i18n = new UserTranslationPipe(this.juicebox);
     }
 
     async ngOnInit() {

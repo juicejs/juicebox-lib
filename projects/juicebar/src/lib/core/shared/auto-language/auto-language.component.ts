@@ -1,49 +1,40 @@
-import {Component, Input, OnChanges, OnInit} from '@angular/core';
-import {JuiceboxService} from '../services/Juicebox.service';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { JuiceboxService } from '../services/Juicebox.service';
 
 @Component({
     selector: 'auto-language',
     templateUrl: './auto-language.component.html',
-    styleUrls: ['./auto-language.component.css']
+    styleUrls: ['./auto-language.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AutoLanguageComponent implements OnChanges {
+export class AutoLanguageComponent {
+    private juicebox = inject(JuiceboxService);
 
-    @Input("value") public value: any;
-    @Input("language") public language: any;
-    @Input("strikethrough") public strikethrough: boolean;
+    readonly value = input<unknown>();
+    readonly language = input<string | undefined>();
+    readonly strikethrough = input<boolean>(true);
 
-    public fallback: string;
-    public clearText: string;
+    private resolved = computed<{ fallback: string | null; clearText: string }>(() => {
+        const value = this.value();
+        if (!value) return { fallback: null, clearText: '' };
 
-    constructor(private juicebox: JuiceboxService) {}
+        const lang = this.language() ?? this.juicebox.getLanguage();
 
-    ngOnChanges() {
-        if (!this.value) return;
-        if (this.strikethrough == undefined) this.strikethrough = true;
-
-        if (!this.language){
-            this.language = this.juicebox.getLanguage();
+        if (typeof value === 'object' && value !== null && (value as Record<string, unknown>)[lang]) {
+            return {
+                fallback: lang.split('_')[0].toUpperCase(),
+                clearText: String((value as Record<string, unknown>)[lang]),
+            };
         }
-        if (this.value[this.language]){
-            this.clearText = this.value[this.language];
-            this.fallback = this.language.split("_")[0].toUpperCase();
-        } else {
-            if (typeof this.value == "string")
-                this.clearText = this.value;
-            else if (typeof this.value == "number") {
-                this.clearText = this.value.toString();
-            } else {
-                let key = Object.keys(this.value)[0];
-                if(!key){
-                    this.fallback = null;
-                    this.clearText = 'Missing name translation';
-                } else {
-                    this.fallback = key.split("_")[0].toUpperCase();
-                    this.clearText = this.value[key];
-                }
+        if (typeof value === 'string') return { fallback: null, clearText: value };
+        if (typeof value === 'number') return { fallback: null, clearText: value.toString() };
 
-            }
-        }
-    }
+        const obj = value as Record<string, unknown>;
+        const key = Object.keys(obj)[0];
+        if (!key) return { fallback: null, clearText: 'Missing name translation' };
+        return { fallback: key.split('_')[0].toUpperCase(), clearText: String(obj[key]) };
+    });
 
+    readonly fallback = computed(() => this.resolved().fallback);
+    readonly clearText = computed(() => this.resolved().clearText);
 }

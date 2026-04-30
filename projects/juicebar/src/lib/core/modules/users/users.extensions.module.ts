@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {inject, NgModule} from '@angular/core';
 import {IJuiceboxExtensions} from '../../models/searchprovider.interface';
 import {JuiceboxService} from '../../services/Juicebox.service';
 import {UsersService} from "./users.service";
@@ -10,13 +10,15 @@ import {ISearchTerm} from "../../interfaces/ISearchTerm";
     exports: []
 })
 export class UsersExtensionsModule implements IJuiceboxExtensions{
+    private juicebox = inject(JuiceboxService);
+    public usersService = inject(UsersService);
+
     loggedInOrganisationId: string;
     sort: ISort = { dir: 'asc', prop: 'lastname' };
     filter: Array<ISearchTerm> = [];
 
-    constructor(private juicebox: JuiceboxService,
-                public usersService: UsersService) {
-        juicebox.registerSearchProvider(this, "Users", "fa-users", "users:role");
+    constructor() {
+        this.juicebox.registerSearchProvider(this, "Users", "fa-users", "users:role");
     }
 
     async search(token: string): Promise<Array<{ title: string; details: string; link: string }>> {

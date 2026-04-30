@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { UsersService } from '../users.service';
 import { ListingComponent } from '../../../shared/components/listing/listing.component';
 import { Router, RouterLink } from '@angular/router';
@@ -71,16 +71,12 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     actionButtons: Array<ActionButton> = [];
     displayedColumns: string[] = ['firstname', 'lastname', 'email', 'active', 'roles_count', 'groups', 'lastLogin', 'loginCount', 'actions'];
 
-    public constructor(public usersService: UsersService,
-                       public override juicebox: JuiceboxService,
-                       public helper: HelperService,
-                       private router: Router,
-                       private dialog: DialogService,
-                       private configurationService: ConfigurationService,
-                       private cdr: ChangeDetectorRef) {
-        super(juicebox);
-
-    }
+    public usersService = inject(UsersService);
+    public helper = inject(HelperService);
+    private router = inject(Router);
+    private dialog = inject(DialogService);
+    private configurationService = inject(ConfigurationService);
+    private cdr = inject(ChangeDetectorRef);
 
     public override async ngOnInit(): Promise<void> {
         this.projectTitle = this.juicebox.getProjectTitle();

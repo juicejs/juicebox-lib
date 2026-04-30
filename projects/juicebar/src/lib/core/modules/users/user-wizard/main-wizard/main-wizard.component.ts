@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from '../../models/user.model';
@@ -10,7 +10,8 @@ import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
 
 @Component({
     selector: 'app-main-user-wizard',
-    templateUrl: './main-wizard.component.html'
+    templateUrl: './main-wizard.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MainWizardComponent implements OnInit {
 
@@ -31,13 +32,14 @@ export class MainWizardComponent implements OnInit {
     languages: any[] = [];
     salutations: any[];
 
-    constructor(private router: Router,
-                private route: ActivatedRoute,
-                private userService: UsersService,
-                // private traineesService: TraineesService,
-                public juicebox: JuiceboxService,
-                private userPipe: UserTranslationPipe) {
-      this.i18n = new UserTranslationPipe(this.juicebox)
+    private router = inject(Router);
+    private route = inject(ActivatedRoute);
+    private userService = inject(UsersService);
+    public juicebox = inject(JuiceboxService);
+    private userPipe = inject(UserTranslationPipe);
+
+    constructor() {
+      this.i18n = new UserTranslationPipe(this.juicebox);
     }
 
     async ngOnInit() {

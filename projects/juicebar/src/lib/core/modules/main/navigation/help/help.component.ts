@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {DIALOG_DATA, DialogRef, DialogService} from '../../../../../ui-components/dialog/dialog.service';
 
 export interface HelpDialogData {
@@ -35,14 +35,16 @@ export class HelpComponent implements OnInit {
 
     helpTextUpdated: boolean = false;
 
-    constructor(public dialogRef: DialogRef<boolean>,
-                @Inject(DIALOG_DATA) public data: HelpDialogData,
-                public juicebox: JuiceboxService,
-                private dialog: DialogService,
-                private helper: HelperService,
-                private juiceboxService: JuiceboxService,
-                private router: Router) {
-      this.i18n = new MainTranslationPipe(this.juicebox)
+    public dialogRef = inject<DialogRef<boolean>>(DialogRef);
+    public data = inject<HelpDialogData>(DIALOG_DATA);
+    public juicebox = inject(JuiceboxService);
+    private dialog = inject(DialogService);
+    private helper = inject(HelperService);
+    private juiceboxService = inject(JuiceboxService);
+    private router = inject(Router);
+
+    constructor() {
+        this.i18n = new MainTranslationPipe(this.juicebox);
     }
 
     async ngOnInit() {

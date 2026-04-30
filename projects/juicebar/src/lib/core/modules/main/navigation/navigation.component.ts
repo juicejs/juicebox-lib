@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnDestroy, OnInit, output, ChangeDetectionStrategy} from '@angular/core';
+import {Component, EventEmitter, inject, OnDestroy, OnInit, output, ChangeDetectionStrategy} from '@angular/core';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {Router, RouterLink} from '@angular/router';
 import {CommonModule, Location} from '@angular/common';
@@ -59,13 +59,14 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
   helpTextUpdatedEventEmitter = output<any>();
 
-  constructor(public juicebox: JuiceboxService,
-              public router: Router,
-              private clientRoutes: ClientRoutesService,
-              public juiceboxService: JuiceboxService,
-              public location: Location,
-              public dialog: DialogService) {
+  public juicebox = inject(JuiceboxService);
+  public router = inject(Router);
+  private clientRoutes = inject(ClientRoutesService);
+  public juiceboxService = inject(JuiceboxService);
+  public location = inject(Location);
+  public dialog = inject(DialogService);
 
+  constructor() {
     this.projectTitle = this.juicebox.getProjectTitle();
     this.organisationLogo += ".png";
   }

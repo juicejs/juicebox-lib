@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {Result} from '../../shared/types/Result';
 import {JuiceboxService} from '../../shared/services/Juicebox.service';
 import {Juice} from '../../shared/services/juice.service';
@@ -12,9 +12,8 @@ import {ExportDataOptions, FilterFetcherOptions, GetExportTemplateOptions, GetEx
   providedIn: 'root'}
 )
 export class ExportsService {
-
-    constructor(private juice: Juice, private juicebox: JuiceboxService) {
-    }
+    private juice = inject(Juice);
+    private juicebox = inject(JuiceboxService);
 
     getExportTemplates(page: number, pageSize: number, options: GetExportTemplatesOptions = {}): Promise<Result<{
         items: Array<ExportTemplate>,

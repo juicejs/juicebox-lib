@@ -1,14 +1,18 @@
-import {Pipe, PipeTransform} from '@angular/core';
+import {inject, Injector, Pipe, PipeTransform} from '@angular/core';
 import {JuiceboxService} from '../services/Juicebox.service';
 
 export interface MultiLanguageObject {
     [key: string]: string | number // example: {en_GB: 'something'}
 }
 
-@Pipe({name: 'autoLanguage', standalone: true})
+@Pipe({name: 'autoLanguage'})
 export class AutoLanguagePipe implements PipeTransform {
 
-    constructor(private juicebox: JuiceboxService) {}
+    private juicebox: JuiceboxService;
+
+    constructor(juicebox?: JuiceboxService) {
+        this.juicebox = juicebox ?? inject(JuiceboxService);
+    }
 
     transform(value: MultiLanguageObject | string | number, language?: string, localisationOrder?: Array<string>): any {
         let clearText;

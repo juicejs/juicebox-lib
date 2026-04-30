@@ -1,34 +1,29 @@
-import {Directive, ElementRef, Input, OnInit} from '@angular/core';
-import {JuiceboxService} from '../services/Juicebox.service';
+import { Directive, ElementRef, inject, input, OnInit } from '@angular/core';
+import { JuiceboxService } from '../services/Juicebox.service';
 
 @Directive({
     selector: `[hasPermissionsHide]`
 })
-export class HasPermissionHideDirective implements OnInit{
+export class HasPermissionHideDirective implements OnInit {
+    private e = inject(ElementRef);
+    private juicebox = inject(JuiceboxService);
 
-    @Input() hasPermissionsHide: string;
-
-    constructor(private e: ElementRef,
-                private juicebox: JuiceboxService) {
-
-    }
+    readonly hasPermissionsHide = input<string>();
 
     ngOnInit(): void {
+        const value = this.hasPermissionsHide();
+        if (!value) return;
 
-        if (!this.hasPermissionsHide) return;
+        const role = value.split('#')[0];
+        const permissions = value.split('#')[1];
 
-        // read permissions
-        const role = this.hasPermissionsHide.split('#')[0];
-        const permissions = this.hasPermissionsHide.split('#')[1];
-
-
-        const hasRole = this.juicebox.getUser().roles.find(_role => {
-            return _role.role == role;
-        });
+        const hasRole = this.juicebox.getUser().roles.find(_role => _role.role == role);
 
         if (hasRole && hasRole.permissions) {
             this.hasAllowedPermissions(permissions, hasRole.permissions);
-        } else this.e.nativeElement.setAttribute("style", 'display:none');
+        } else {
+            this.e.nativeElement.setAttribute("style", 'display:none');
+        }
     }
 
     hasAllowedPermissions(permissions: string, userPermissions: any) {
@@ -41,22 +36,13 @@ export class HasPermissionHideDirective implements OnInit{
             separatedPermissions = permissions.split(',');
             separatedPermissions.forEach(permission => {
                 if (!userPermissions[permission] || userPermissions[permission] === false) allow = false;
-            })
-        }
-
-        //Case to have only one permission listed
-        else if (permissions.includes('|')) {
-            separatedPermissions = permissions.split('|');
-            // @ts-ignore
-          allow = separatedPermissions.find(permission => {
-                if (userPermissions[permission] || userPermissions[permission] === true) {
-                    return true;
-                }
             });
+        } else if (permissions.includes('|')) { //Case to have only one permission listed
+             separatedPermissions = permissions.split('|');
+            allow = !!separatedPermissions.find(permission => userPermissions[permission] === true);
+        } else if (!userPermissions[permissions] === true) { //Case if only one permission is selected
+            allow = false;
         }
-
-        //Case if only one permission is selected
-        else if (!userPermissions[permissions] === true) allow = false;
 
         if (allow) this.e.nativeElement.removeAttribute("disabled");
         else this.e.nativeElement.setAttribute("style", 'display:none');

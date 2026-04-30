@@ -1,4 +1,4 @@
-import {Inject, Injectable, Injector, isDevMode, Type} from '@angular/core';
+import {inject, Injectable, Injector, isDevMode, Type} from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {SnackbarService} from "../../../ui-components";
 import { interval, Observable, Subject, Subscription } from 'rxjs';
@@ -54,11 +54,13 @@ export class JuiceboxService {
     //component registry
     public registry = new Map<string, Type<any>>();
 
-    constructor(protected http: HttpClient, private juice: Juice,
-                @Inject(DOCUMENT) private document,
-                @Inject(Injector) private injector: Injector,
-                private snackbar: SnackbarService) {
+    protected http = inject(HttpClient);
+    private juice = inject(Juice);
+    private document = inject(DOCUMENT);
+    private injector = inject(Injector);
+    private snackbar = inject(SnackbarService);
 
+    constructor() {
         this.juice.addEventListener((e) => {
             if (e == 'Not authenticated') {
                 this.showWarning(`Missing Permission`, "");

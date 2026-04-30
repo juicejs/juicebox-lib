@@ -1,17 +1,14 @@
+import { Directive } from '@angular/core';
 import { AbstractDebounceDirective } from './abstract-debounce.directive';
-import { Directive, HostListener } from '@angular/core';
 
 @Directive({
-  selector: "[debounce]"
+  selector: "[debounce]",
+  host: {
+    '(search)': 'onKeyUp($event)',
+  },
 })
 export class NgSelectDebounceDirective extends AbstractDebounceDirective {
-
-    constructor() {
-        super();
-    }
-
-    @HostListener("search", ["$event"])
-    public onKeyUp(event: any): void {
+    public onKeyUp(event: unknown): void {
         this.emitEvent$.next(event);
     }
 }

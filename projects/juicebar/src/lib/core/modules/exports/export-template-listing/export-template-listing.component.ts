@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ExportsTranslationPipe} from "../i18n/exports.translation";
 import {Router, RouterLink} from "@angular/router";
 import {ExportsService} from '../exports.service';
@@ -51,11 +51,13 @@ export class ExportTemplateListingComponent implements OnInit {
     autoLanguage: AutoLanguagePipe;
     promiseBtn;
 
-    constructor(public juicebox: JuiceboxService,
-                public helper: HelperService,
-                private exports: ExportsService,
-                private dialog: DialogService,
-                private router: Router) {
+    public juicebox = inject(JuiceboxService);
+    public helper = inject(HelperService);
+    private exports = inject(ExportsService);
+    private dialog = inject(DialogService);
+    private router = inject(Router);
+
+    constructor() {
         this.i18n = new ExportsTranslationPipe(this.juicebox);
         this.autoLanguage = new AutoLanguagePipe(this.juicebox);
 

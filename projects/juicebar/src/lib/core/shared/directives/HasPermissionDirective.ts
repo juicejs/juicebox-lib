@@ -1,33 +1,27 @@
-import {Directive, ElementRef, Input, OnInit} from '@angular/core';
-import {JuiceboxService} from '../services/Juicebox.service';
+import { Directive, ElementRef, inject, input, OnInit } from '@angular/core';
+import { JuiceboxService } from '../services/Juicebox.service';
 
 @Directive({
   selector: `[hasPermissions]`
 })
-export class HasPermissionDirective implements OnInit{
+export class HasPermissionDirective implements OnInit {
+  private e = inject(ElementRef);
+  private juicebox = inject(JuiceboxService);
 
-  @Input() hasPermissions: string;
-
-  constructor(private e: ElementRef,
-              private juicebox: JuiceboxService) {
-
-  }
+  readonly hasPermissions = input<string>();
 
   /**
    * role#permission1,permission2,permission3 -> must have all permissions
    * role#permission1|permission2 -> must have one of the permissions
    */
-
   ngOnInit(): void {
-    if (!this.hasPermissions) return;
+    const value = this.hasPermissions();
+    if (!value) return;
 
-    // read permissions
-    const role = this.hasPermissions.split('#')[0];
-    const permissions = this.hasPermissions.split('#')[1];
+    const role = value.split('#')[0];
+    const permissions = value.split('#')[1];
 
-    const hasRole = this.juicebox.getUser().roles.find(_role => {
-      return _role.role == role;
-    });
+    const hasRole = this.juicebox.getUser().roles.find(_role => _role.role == role);
 
     if (hasRole && hasRole.permissions) {
       this.hasAllowedPermissions(permissions, hasRole.permissions);
@@ -47,23 +41,13 @@ export class HasPermissionDirective implements OnInit{
       separatedPermissions = permissions.split(',');
       separatedPermissions.forEach(permission => {
         if (!userPermissions[permission] || userPermissions[permission] === false) allow = false;
-      })
-    }
-
-    //Case to have only one permission listed
-    else if (permissions.includes('|')) {
-      separatedPermissions = permissions.split('|');
-      // @ts-ignore
-      allow = separatedPermissions.find(permission => {
-        if (userPermissions[permission] || userPermissions[permission] === true) {
-          return true;
-        }
       });
+    } else if (permissions.includes('|')) { //Case to have only one permission listed
+      separatedPermissions = permissions.split('|');
+      allow = !!separatedPermissions.find(permission => userPermissions[permission] === true);
+    } else if (!userPermissions[permissions] === true) { //Case if only one permission is selected
+      allow = false;
     }
-
-    //Case if only one permission is selected
-    else if (!userPermissions[permissions] === true) allow = false;
-
 
     if (allow) this.e.nativeElement.removeAttribute("disabled");
     else {

@@ -1,7 +1,15 @@
-<div *ngIf="strikethrough">
-<span style="color:#6c1f00;" *ngIf="fallback">[{{fallback}}]</span><span class="ml-1">{{clearText}}</span>
-</div>
-<div *ngIf="!strikethrough">
-    <span style="color:#6c1f00; text-decoration: line-through;" *ngIf="fallback"> [{{fallback}}]</span><span class="ml-1" style="text-decoration: line-through;">{{clearText}}</span>
-</div>
-
+@if (strikethrough()) {
+  <div>
+    @if (fallback()) {
+      <span style="color:#6c1f00;">[{{ fallback() }}]</span>
+    }
+    <span class="ml-1">{{ clearText() }}</span>
+  </div>
+} @else {
+  <div>
+    @if (fallback()) {
+      <span style="color:#6c1f00; text-decoration: line-through;"> [{{ fallback() }}]</span>
+    }
+    <span class="ml-1" style="text-decoration: line-through;">{{ clearText() }}</span>
+  </div>
+}

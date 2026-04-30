@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
@@ -31,11 +31,13 @@ export class CreateVendorComponent implements OnInit {
     public language: any;
     private i18n: UserTranslationPipe;
 
-    constructor(private router: Router,
-                private usersService: UsersService,
-                public dialogRef: DialogRef<any>,
-                public configurationService: ConfigurationService,
-                public juicebox: JuiceboxService) {
+    private router = inject(Router);
+    private usersService = inject(UsersService);
+    public dialogRef = inject<DialogRef<any>>(DialogRef);
+    public configurationService = inject(ConfigurationService);
+    public juicebox = inject(JuiceboxService);
+
+    constructor() {
 
         this.createVendorForm = new FormGroup({
             street: new FormControl(''),

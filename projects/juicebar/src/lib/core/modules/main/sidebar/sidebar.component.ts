@@ -1,4 +1,4 @@
-import {Component, Inject, OnDestroy, OnInit, TemplateRef, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit, TemplateRef, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {SidebarItem, SidebarService} from '../../../shared/services/sidebar.service';
 import {SocketService} from '../../../shared/services/socket.service';
@@ -53,14 +53,17 @@ export class SidebarComponent implements OnInit, OnDestroy{
     isDragging: boolean = false;
     subs = new Subscription();
 
-    constructor(private sidebarService: SidebarService,
-                private socketService: SocketService,
-                private router: Router,
-                public juicebox: JuiceboxService,
-                private dialog: DialogService,
-                private cdr: ChangeDetectorRef) {
+    private sidebarService = inject(SidebarService);
+    private socketService = inject(SocketService);
+    private router = inject(Router);
+    public juicebox = inject(JuiceboxService);
+    private dialog = inject(DialogService);
+    private cdr = inject(ChangeDetectorRef);
+
+    constructor() {
       this.i18n = new MainTranslationPipe(this.juicebox);
 
+        const juicebox = this.juicebox;
         // TODO check why some users have roles saved as array and some as object
         //  of organisation id with array of roles, now is checking both cases to load modules in sidebar
         this.temp = juicebox.getUser().roles;

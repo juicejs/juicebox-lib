@@ -1,4 +1,4 @@
-import {Injectable, OnDestroy, signal, Signal} from '@angular/core';
+import {inject, Injectable, OnDestroy, signal, Signal} from '@angular/core';
 // import setup from '../../generator/setup.json';
 import {Juice} from './juice.service';
 import {Result} from '../types/Result';
@@ -12,11 +12,14 @@ import {toObservable} from '@angular/core/rxjs-interop';
 })
 export class SidebarService implements OnDestroy {
 
+    private juice = inject(Juice);
+    private juicebox = inject(JuiceboxService);
+
     sidebarChange: Subject<any> = new Subject<any>();
-    private allRegisteredSidebarItems: SidebarItem[] = []; // ordered sidebar modules visible in the sidebar, depending on the role
-    private readonly setupJsonModules: string[];
+    private allRegisteredSidebarItems: SidebarItem[] = [];
+    private readonly setupJsonModules: string[] = ['users'];
     private $sub = new Subscription();
-    private mainTranslationPipe: MainTranslationPipe;
+    private mainTranslationPipe = new MainTranslationPipe(this.juicebox);
 
     // Signals for reactive state
     private navigationVisibleSignal = signal<boolean>(true);
@@ -31,15 +34,6 @@ export class SidebarService implements OnDestroy {
     toggleSidebar$ = this.toggleSidebarSubject.asObservable();
     navigationVisible$ = toObservable(this.navigationVisibleSignal);
     sidebarCollapsed$ = toObservable(this.sidebarCollapsedSignal);
-
-    constructor(private juice: Juice, private juicebox: JuiceboxService) {
-        this.mainTranslationPipe = new MainTranslationPipe(this.juicebox);
-        // this.setupJsonModules = setup.modules;
-      const setup = {
-        modules: ["users"]
-      }
-      this.setupJsonModules = setup.modules;
-    }
 
     ngOnDestroy(): void {
         this.$sub.unsubscribe();

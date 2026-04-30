@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {JuiceboxService} from './Juicebox.service';
 
 const I18N_VALUES = {
@@ -46,11 +46,8 @@ const I18N_VALUES = {
  */
 @Injectable({providedIn: 'root'})
 export class CustomMaterialDateAdapter {
-    private language: string;
-
-    constructor(private juicebox: JuiceboxService) {
-        this.language = this.juicebox.getLanguage();
-    }
+    private juicebox = inject(JuiceboxService);
+    private language: string = this.juicebox.getLanguage();
 
     getMonthNames(style: 'long' | 'short' | 'narrow'): string[] {
         return I18N_VALUES[this.language]?.months || I18N_VALUES['en_GB'].months;

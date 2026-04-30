@@ -34,7 +34,7 @@ import {NavigationComponent} from './navigation/navigation.component';
 import {SidebarComponent} from './sidebar/sidebar.component';
 import {ImageCropperComponent} from 'ngx-image-cropper';
 import {BASE_APP_CONFIG, BaseAppConfig} from '../../../config/base-app.config';
-import {Inject, Optional} from '@angular/core';
+import {inject} from '@angular/core';
 
 @NgModule({
     declarations: [
@@ -67,8 +67,12 @@ import {Inject, Optional} from '@angular/core';
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class MainComponentModule {
+   private sidebarService = inject(SidebarService);
+   private config = inject<BaseAppConfig>(BASE_APP_CONFIG, { optional: true });
 
-   constructor(private sidebarService: SidebarService, @Optional() @Inject(BASE_APP_CONFIG) private config?: BaseAppConfig) {
+   constructor() {
+     const sidebarService = this.sidebarService;
+     const config = this.config;
 
      // Only register built-in modules if they're enabled
      if (!config?.builtInModules?.users || config.builtInModules.users.enabled !== false) {

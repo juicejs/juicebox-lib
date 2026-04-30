@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterOutlet} from '@angular/router';
 import { JuiceboxService} from '../../../shared/services/Juicebox.service';
@@ -20,9 +20,7 @@ import {TabsComponent, TabComponent} from "../../../../ui-components";
     ]
 })
 export class UserWizardComponent implements OnInit {
-
-    constructor(public juicebox: JuiceboxService) {
-    }
+    public juicebox = inject(JuiceboxService);
 
     ngOnInit(): void {
     }

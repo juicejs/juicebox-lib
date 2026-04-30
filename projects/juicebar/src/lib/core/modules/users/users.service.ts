@@ -1,5 +1,5 @@
 import {Result} from '../../shared/types/Result';
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {Juice} from '../../shared/services/juice.service';
 import {JuiceboxService} from '../../shared/services/Juicebox.service';
 import {ActionButton} from '../../shared/types/ActionButton';
@@ -8,8 +8,8 @@ import { ISearchTerm} from '../../shared/interfaces/ISearchTerm';
 
 @Injectable({providedIn: 'root'})
 export class UsersService {
-
-    constructor(private juice: Juice, private juicebox: JuiceboxService) {}
+    private juice = inject(Juice);
+    private juicebox = inject(JuiceboxService);
 
     public customActionButtons: Array<any> = [];
 

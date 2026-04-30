@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute} from "@angular/router";
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
@@ -16,7 +16,8 @@ import {ExportFilter} from '../types/ExportFilter';
 @Component({
     selector: 'app-export-template-edit',
     templateUrl: './export-template-edit.component.html',
-    styleUrls: ['./export-template-edit.component.scss']
+    styleUrls: ['./export-template-edit.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExportTemplateEditComponent implements OnInit, OnDestroy {
 
@@ -47,13 +48,12 @@ export class ExportTemplateEditComponent implements OnInit, OnDestroy {
     selectedGroupColumns: any = [];
     amgExport: boolean = false;
 
-    constructor(public juicebox: JuiceboxService,
-                private exports: ExportsService,
-                private helper: HelperService,
-                private route: ActivatedRoute,
-                private configurationService: ConfigurationService,
-                private i18n: ExportsTranslationPipe) {
-    }
+    public juicebox = inject(JuiceboxService);
+    private exports = inject(ExportsService);
+    private helper = inject(HelperService);
+    private route = inject(ActivatedRoute);
+    private configurationService = inject(ConfigurationService);
+    private i18n = inject(ExportsTranslationPipe);
 
     async ngOnInit() {
         const amg_conf = await this.configurationService.getByKey('amgshop');

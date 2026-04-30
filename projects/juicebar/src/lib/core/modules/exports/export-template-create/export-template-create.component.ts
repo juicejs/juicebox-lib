@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {ExportColumn} from '../types/ExportColumn';
@@ -14,7 +14,8 @@ import { MultiLanguageObject, AutoLanguagePipe} from '../../../shared/pipes/auto
 @Component({
     selector: 'app-export-template-create',
     templateUrl: './export-template-create.component.html',
-    styleUrls: ['./export-template-create.component.scss']
+    styleUrls: ['./export-template-create.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExportTemplateCreateComponent implements OnInit {
 
@@ -46,12 +47,14 @@ export class ExportTemplateCreateComponent implements OnInit {
     selectedGroupColumns: any = [];
     amgExport: boolean = false;
 
-    constructor(public juicebox: JuiceboxService,
-                private exports: ExportsService,
-                private helper: HelperService,
-                private router: Router,
-                private configurations: ConfigurationService,
-                private i18n: ExportsTranslationPipe) {
+    public juicebox = inject(JuiceboxService);
+    private exports = inject(ExportsService);
+    private helper = inject(HelperService);
+    private router = inject(Router);
+    private configurations = inject(ConfigurationService);
+    private i18n = inject(ExportsTranslationPipe);
+
+    constructor() {
         this.juicebox.navigationEvent({
             location: this.i18n.transform('exports'),
             subject: this.i18n.transform('create_export_template'),

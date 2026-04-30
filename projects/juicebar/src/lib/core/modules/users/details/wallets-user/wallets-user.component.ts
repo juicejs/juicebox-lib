@@ -1,4 +1,4 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {UsersService} from '../../users.service';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -28,13 +28,14 @@ export class WalletsUserComponent extends ListingComponent{
     public searchTerm: string;
     displayedColumns: string[] = ['name', 'address'];
 
-    public constructor(private usersService: UsersService,
-                       protected override juicebox: JuiceboxService,
-                       private router: Router,
-                       private userDetails: DetailsUsersComponent,
-                       private route: ActivatedRoute,
-                       private dialog: DialogService) {
-        super(juicebox);
+    private usersService = inject(UsersService);
+    private router = inject(Router);
+    private userDetails = inject(DetailsUsersComponent);
+    private route = inject(ActivatedRoute);
+    private dialog = inject(DialogService);
+
+    public constructor() {
+        super();
 
         this.juicebox.setActionButtons([{
             title: "add_new",

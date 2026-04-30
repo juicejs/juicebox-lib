@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { DialogService } from '../../../../ui-components';
@@ -43,12 +43,14 @@ export class LoginComponent implements OnInit {
     autoLanguagePipe: AutoLanguagePipe;
     mainTranslationPipe: MainTranslationPipe;
 
-    constructor(private titleService: Title,
-        private router: Router,
-        public dialog: DialogService,
-        private route: ActivatedRoute,
-        private configuration: ConfigurationService,
-        public juicebox: JuiceboxService) {
+    private titleService = inject(Title);
+    private router = inject(Router);
+    public dialog = inject(DialogService);
+    private route = inject(ActivatedRoute);
+    private configuration = inject(ConfigurationService);
+    public juicebox = inject(JuiceboxService);
+
+    constructor() {
       this.autoLanguagePipe = new AutoLanguagePipe(this.juicebox);
       this.mainTranslationPipe = new MainTranslationPipe(this.juicebox);
     }

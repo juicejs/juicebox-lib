@@ -1,19 +1,12 @@
-import {Component, Input, OnInit} from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
     selector: 'app-filter-container',
     templateUrl: './filter-container.component.html',
-    styleUrls: ['./filter-container.component.scss']
+    styleUrls: ['./filter-container.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FilterContainerComponent implements OnInit {
-
-    @Input() label: string;
-    @Input() labelWidth: string;
-
-    constructor() {
-    }
-
-    ngOnInit() {
-    }
-
+export class FilterContainerComponent {
+    readonly label = input<string>();
+    readonly labelWidth = input<string>();
 }

@@ -1,4 +1,4 @@
-import {Component, input, ChangeDetectionStrategy, OnInit, effect} from '@angular/core';
+import {Component, inject, input, ChangeDetectionStrategy, OnInit, effect} from '@angular/core';
 import {Subject, of, Observable, combineLatest} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map, startWith, switchMap, filter, tap} from 'rxjs/operators';
 import {FormGroup, ReactiveFormsModule} from '@angular/forms';
@@ -28,14 +28,11 @@ export class AsyncMultiselectComponent implements OnInit {
     selectedDataSourceKey = input.required<ExportStrategy>();
     formGroup = input.required<FormGroup>();
 
-    constructor(private readonly exportsService: ExportsService,
-                private readonly juicebox: JuiceboxService) {
-      this.language = this.juicebox.getLanguage();
-      this.i18n = new ExportsTranslationPipe(this.juicebox);
-    }
+    private readonly exportsService = inject(ExportsService);
+    private readonly juicebox = inject(JuiceboxService);
 
-    private readonly language: string;
-    private readonly i18n: ExportsTranslationPipe;
+    private readonly language: string = this.juicebox.getLanguage();
+    private readonly i18n: ExportsTranslationPipe = new ExportsTranslationPipe(this.juicebox);
 
     // TODO: (onScrollToEnd) in the ng-select is not working so pagination is not implemented
     private readonly PAGE_SIZE = 20;

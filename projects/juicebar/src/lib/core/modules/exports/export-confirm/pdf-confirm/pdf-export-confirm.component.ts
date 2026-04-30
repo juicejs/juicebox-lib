@@ -1,4 +1,4 @@
-import {Component, OnInit, Inject, ChangeDetectionStrategy} from '@angular/core';
+import {Component, OnInit, inject, ChangeDetectionStrategy} from '@angular/core';
 import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
 import moment from 'moment';
 import {ExportsService} from '../../exports.service';
@@ -39,15 +39,17 @@ export class PdfExportConfirmComponent implements OnInit {
     selectedFileNameProperty: string;
     i18n: ExportsTranslationPipe;
 
-    constructor(private exportsService: ExportsService,
-                private helper: HelperService,
-                private exports: ExportsService,
-                private juicebox: JuiceboxService,
-                public dialogRef: DialogRef<boolean>,
-                @Inject(DIALOG_DATA) public data: PdfExportConfirmDialogData) {
+    private exportsService = inject(ExportsService);
+    private helper = inject(HelperService);
+    private exports = inject(ExportsService);
+    private juicebox = inject(JuiceboxService);
+    public dialogRef = inject<DialogRef<boolean>>(DialogRef);
+    public data = inject<PdfExportConfirmDialogData>(DIALOG_DATA);
+
+    constructor() {
         this.i18n = new ExportsTranslationPipe(this.juicebox);
 
-        // Initialize properties from injected data
+        const data = this.data;
         this.fileName = data.fileName;
         this.exportStrategyKey = data.exportStrategyKey;
         this.dataSourceKey = data.dataSourceKey;

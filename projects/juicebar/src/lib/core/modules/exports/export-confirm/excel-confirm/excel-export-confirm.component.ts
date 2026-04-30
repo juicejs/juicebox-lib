@@ -1,4 +1,4 @@
-import {Component, OnInit, Inject, ChangeDetectionStrategy} from '@angular/core';
+import {Component, OnInit, inject, ChangeDetectionStrategy} from '@angular/core';
 import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
 import moment from 'moment';
 import {ExportsService} from '../../exports.service';
@@ -42,15 +42,17 @@ export class ExcelExportConfirmComponent implements OnInit {
 
     filterForm: FormGroup;
 
-    constructor(private exportsService: ExportsService,
-                private helper: HelperService,
-                private juicebox: JuiceboxService,
-                private configurations: ConfigurationService,
-                public dialogRef: DialogRef<boolean>,
-                @Inject(DIALOG_DATA) public data: ExcelExportConfirmDialogData) {
+    private exportsService = inject(ExportsService);
+    private helper = inject(HelperService);
+    private juicebox = inject(JuiceboxService);
+    private configurations = inject(ConfigurationService);
+    public dialogRef = inject<DialogRef<boolean>>(DialogRef);
+    public data = inject<ExcelExportConfirmDialogData>(DIALOG_DATA);
+
+    constructor() {
         this.i18n = new ExportsTranslationPipe(this.juicebox);
 
-        // Initialize properties from injected data
+        const data = this.data;
         this.fileName = data.fileName;
         this.exportStrategyKey = data.exportStrategyKey;
         this.exportTemplate = data.exportTemplate;

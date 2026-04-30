@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
 import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
@@ -29,12 +29,14 @@ export class GroupsNameEditorComponent implements OnInit {
 
     enable: boolean = false;
 
-    constructor(private dialogRef: DialogRef<any>,
-                @Inject(DIALOG_DATA) public data: { group?: any },
-                private userService: UsersService,
-                private snackbar: SnackbarService,
-                private pipe: UserTranslationPipe,
-                public juicebox: JuiceboxService) {
+    private dialogRef = inject<DialogRef<any>>(DialogRef);
+    public data = inject<{ group?: any }>(DIALOG_DATA);
+    private userService = inject(UsersService);
+    private snackbar = inject(SnackbarService);
+    private pipe = inject(UserTranslationPipe);
+    public juicebox = inject(JuiceboxService);
+
+    constructor() {
         this.group = this.data?.group;
     }
 

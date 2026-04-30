@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { ISearchTerm, SearchTermType } from '../interfaces/ISearchTerm';
 // import { NgbDateStruct, NgbTimeStruct } from '@ng-bootstrap/ng-bootstrap';
 // import { isNumber, padNumber } from '../app/shared/ngb-datepicker-adapters/util';
@@ -37,8 +37,7 @@ export interface TableSort {
   providedIn: 'root'
 })
 export class HelperService {
-
-    constructor(private juicebox: JuiceboxService) {}
+    private juicebox = inject(JuiceboxService);
 
     public timeForTimepicker(date: any): TimeFormat {
 

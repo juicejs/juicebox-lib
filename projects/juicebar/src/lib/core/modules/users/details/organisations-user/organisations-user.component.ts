@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ListingComponent} from '../../../../shared/components/listing/listing.component';
@@ -42,14 +42,11 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
     userId: string;
     displayedColumns: string[] = ['name', 'actions'];
 
-    constructor(public override juicebox: JuiceboxService,
-                private helper: HelperService,
-                private aRoute: ActivatedRoute,
-                private userService: UsersService,
-                private router: Router,
-                private dialog: DialogService) {
-        super(juicebox);
-    }
+    private helper = inject(HelperService);
+    private aRoute = inject(ActivatedRoute);
+    private userService = inject(UsersService);
+    private router = inject(Router);
+    private dialog = inject(DialogService);
 
   override async ngOnInit(): Promise<void> {
         this.loggedInUserId = this.juicebox.getUserId();

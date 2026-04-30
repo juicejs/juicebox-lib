@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { UsersService } from '../../users.service';
@@ -29,10 +29,12 @@ export class LoginAsAnotherUserComponent implements OnInit {
 
     organisations: any[] = [];
 
-    constructor(private dialogRef: DialogRef<any>,
-                @Inject(DIALOG_DATA) public data: { user_id: string },
-                private userService: UsersService,
-                private juicebox: JuiceboxService) {
+    private dialogRef = inject<DialogRef<any>>(DialogRef);
+    public data = inject<{ user_id: string }>(DIALOG_DATA);
+    private userService = inject(UsersService);
+    private juicebox = inject(JuiceboxService);
+
+    constructor() {
         this.user_id = this.data.user_id;
     }
 

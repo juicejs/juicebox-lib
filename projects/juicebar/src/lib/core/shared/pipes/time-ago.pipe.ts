@@ -1,15 +1,13 @@
-import {Pipe, PipeTransform, OnDestroy} from "@angular/core";
+import {inject, Pipe, PipeTransform, OnDestroy} from "@angular/core";
 import {JuiceboxService} from "../services/Juicebox.service";
 @Pipe({
     name:'timeAgo',
     pure:false
 })
 export class TimeAgoPipe implements PipeTransform, OnDestroy {
+    private juicebox = inject(JuiceboxService);
     private timer: number;
-    private language: string = 'en_GB';
-    constructor(private juicebox: JuiceboxService) {
-        this.language = this.juicebox.getLanguage();
-    }
+    private language: string = this.juicebox.getLanguage() || 'en_GB';
     transform(value:string) {
         this.removeTimer();
         let d = new Date(value);

@@ -4,7 +4,7 @@ import {TranslationPipe} from '../shared/pipes/TranslationPipe';
 // import setup from '../../../generator/setup.json';
 import {JuiceboxService} from '../shared/services/Juicebox.service';
 
-@Pipe({standalone: true, name: 'translate'})
+@Pipe({name: 'translate'})
 export class GlobalTranslationPipe extends TranslationPipe {
     constructor(protected override juicebox: JuiceboxService) {
         super(juicebox);

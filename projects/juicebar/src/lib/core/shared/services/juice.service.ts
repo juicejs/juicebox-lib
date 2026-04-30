@@ -1,4 +1,4 @@
-import {Inject, Injectable, Injector} from '@angular/core';
+import {inject, Injectable, Injector} from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {SnackbarService} from "../../../ui-components";
 
@@ -6,15 +6,13 @@ import {SnackbarService} from "../../../ui-components";
   providedIn: 'root'
 })
 export class Juice {
+    protected http = inject(HttpClient);
+    private injector = inject(Injector);
 
     private endpoint!: string;
-    private httpUtil: HttpUtil;
+    private httpUtil: HttpUtil = new HttpUtil(this.http, this);
 
     private eventListener: any;
-
-    constructor(protected http: HttpClient, @Inject(Injector) private injector: Injector) {
-        this.httpUtil = new HttpUtil(this.http, this);
-    }
 
     addEventListener(eventListener: any){
         this.eventListener = eventListener;

@@ -1,17 +1,18 @@
-import {Component, OnInit} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {SidenavComponent} from "./ui-components";
-import {ToolbarComponent} from "./ui-components";
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import {NavListComponent, ListItemComponent} from "./ui-components";
-import {IconComponent} from "./ui-components";
-import {ProgressSpinnerComponent} from "./ui-components";
-import {BehaviorSubject, Observable} from 'rxjs'
+import {
+  IconComponent,
+  ListItemComponent,
+  NavListComponent,
+  ProgressSpinnerComponent,
+  SidenavComponent,
+  ToolbarComponent,
+} from './ui-components';
 import { JuiceboxService } from './core/shared/services/Juicebox.service';
 
 @Component({
   selector: 'juicebox-lib',
-  standalone: true,
   imports: [
     CommonModule,
     RouterOutlet,
@@ -24,7 +25,7 @@ import { JuiceboxService } from './core/shared/services/Juicebox.service';
     ProgressSpinnerComponent
   ],
   template: `
-    @if (isLoading$ | async) {
+    @if (isLoading()) {
       <div class="loading-container">
         <app-progress-spinner></app-progress-spinner>
         <p>Loading Juicebox...</p>
@@ -47,19 +48,14 @@ import { JuiceboxService } from './core/shared/services/Juicebox.service';
       font-size: 16px;
       color: #666;
     }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class JuicebarComponent implements OnInit {
-  isLoading$: Observable<boolean>;
-  private loadingSubject = new BehaviorSubject<boolean>(true);
+  private juiceboxService = inject(JuiceboxService);
+  private router = inject(Router);
 
-  constructor(
-    private juiceboxService: JuiceboxService,
-    private router: Router
-  ) {
-    this.isLoading$ = this.loadingSubject.asObservable();
-  }
+  protected readonly isLoading = signal(true);
 
   async ngOnInit() {
     try {
@@ -80,7 +76,7 @@ export class JuicebarComponent implements OnInit {
       console.error('Error during initialization:', error);
       await this.router.navigate(['/login']);
     } finally {
-      this.loadingSubject.next(false);
+      this.isLoading.set(false);
     }
   }
 }

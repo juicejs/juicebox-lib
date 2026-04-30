@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, Output, SimpleChanges} from '@angular/core';
 import {FormControl, FormGroup, ValidatorFn} from '@angular/forms';
 import {Subscription} from 'rxjs';
 import {ExportValidators} from '../../shared/ExportValidators';
@@ -11,9 +11,12 @@ import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 @Component({
     selector: 'app-export-filters',
     templateUrl: './export-filters.component.html',
-    styleUrls: ['./export-filters.component.scss']
+    styleUrls: ['./export-filters.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExportFiltersComponent implements OnChanges, OnDestroy {
+
+    private juicebox = inject(JuiceboxService);
 
     @Input() filters: Array<ExportFilter> = [];
     @Input() disabled: boolean = false;
@@ -23,11 +26,7 @@ export class ExportFiltersComponent implements OnChanges, OnDestroy {
     filterForm = new FormGroup({});
     sub = new Subscription();
 
-    private autoLanguage: AutoLanguagePipe;
-
-    constructor(private juicebox: JuiceboxService) {
-        this.autoLanguage = new AutoLanguagePipe(this.juicebox);
-    }
+    private autoLanguage = new AutoLanguagePipe(this.juicebox);
 
     ngOnChanges(changes: SimpleChanges) {
         console.log(changes["filters"]);

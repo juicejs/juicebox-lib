@@ -1,13 +1,11 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {Result} from '../types/Result';
 import {ComparedConfiguration} from '../types/ComparedConfiguration';
 import {Juice} from './juice.service';
 
 @Injectable({providedIn: 'root'})
 export class ConfigurationService {
-
-    constructor(private juice: Juice) {
-    }
+    private juice = inject(Juice);
 
     /**
      * Finds and returns the configuration (by key) saved in the memory

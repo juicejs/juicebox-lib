@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { UsersService } from '../../users.service';
@@ -51,13 +51,15 @@ export class DetailsUserComponent implements OnInit {
         }
     ]
 
-    constructor(private route: ActivatedRoute,
-                private userService: UsersService,
-                private helper: HelperService,
-                public juicebox: JuiceboxService,
-                private dialog: DialogService,
-                private userPipe: UserTranslationPipe) {
-      this.i18n = new UserTranslationPipe(this.juicebox)
+    private route = inject(ActivatedRoute);
+    private userService = inject(UsersService);
+    private helper = inject(HelperService);
+    public juicebox = inject(JuiceboxService);
+    private dialog = inject(DialogService);
+    private userPipe = inject(UserTranslationPipe);
+
+    constructor() {
+        this.i18n = new UserTranslationPipe(this.juicebox);
     }
 
     /**
