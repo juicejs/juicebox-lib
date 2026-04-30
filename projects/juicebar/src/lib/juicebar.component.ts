@@ -16,12 +16,6 @@ import { JuiceboxService } from './core/shared/services/Juicebox.service';
   imports: [
     CommonModule,
     RouterOutlet,
-    SidenavComponent,
-    ToolbarComponent,
-    RouterLink,
-    NavListComponent,
-    ListItemComponent,
-    IconComponent,
     ProgressSpinnerComponent
   ],
   template: `

@@ -45,7 +45,7 @@ export class GroupsUserComponent extends ListingComponent {
         private snackbar: SnackbarService,
         private pipe: UserTranslationPipe,
     ) {
-        super(juicebox);
+        super();
     }
 
   override async ngOnInit() {

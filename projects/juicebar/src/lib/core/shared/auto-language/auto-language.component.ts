@@ -4,7 +4,7 @@ import { JuiceboxService } from '../services/Juicebox.service';
 @Component({
     selector: 'auto-language',
     templateUrl: './auto-language.component.html',
-    styleUrls: ['./auto-language.component.css'],
+    styleUrls: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AutoLanguageComponent {

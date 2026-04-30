@@ -54,7 +54,7 @@ export class GroupsModalComponent extends ListingComponent {
                 private pipe: UserTranslationPipe,
                 private helperService: HelperService,
                 private dialog: DialogService) {
-        super(juicebox);
+        super();
 
         this.hasVisibilityFeature = this.juicebox.getOptions().sidebarPermissions;
         if (this.hasVisibilityFeature) {
