@@ -1,10 +1,14 @@
 <div [class]="juicebox.nextUi ? 'main-container-new-ui' : 'main-container-old-ui'">
     @if (navigationVisible()) {
-        <app-navigation (helpTextUpdatedEventEmitter)="helpTextUpdated()"></app-navigation>
         <app-sidebar></app-sidebar>
     }
 
-    <div class="content-container" [style]="getContentContainerStyle()">
+    <div class="right-section">
+        @if (navigationVisible()) {
+            <app-navigation (helpTextUpdatedEventEmitter)="helpTextUpdated()"></app-navigation>
+        }
+
+        <div class="content-container">
         <div class="flex-column navigation-container next" [style.display]="juicebox.searchActive ? 'none' : 'flex'">
             @if (navigationVisible()) {
                 <div class="location-container">
@@ -92,5 +96,6 @@
                 </div>
             }
         </div>
+    </div>
     </div>
 </div>

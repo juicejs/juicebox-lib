@@ -2,8 +2,9 @@
 
 // Modern Sidebar Container
 .modern-sidebar-container {
+  flex-shrink: 0;
   width: 220px;
-  height: 100vh;
+  height: 100%;
   transition: width 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
 
   &.collapsed {
@@ -15,7 +16,7 @@
 .modern-sidebar {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   background: white;
   border-right: 1px solid #e0e0e0;

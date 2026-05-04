@@ -206,12 +206,6 @@ export class NavigationComponent implements OnInit, OnDestroy {
   async goToUserProfile() {
     await this.router.navigate(['/main/user-profile']);
   }
-
-  getComponentWidth(): string {
-    if (!this.juicebox.nextUi) return '100%';
-    if (this.juicebox.collapsed) return 'calc(100% - 70px)';
-    return 'calc(100%)';
-  }
 }
 
 
