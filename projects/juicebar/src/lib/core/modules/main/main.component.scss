@@ -89,20 +89,11 @@
                         padding: 0.5rem 1rem;
                         border-radius: 8px;
                         transition: all 0.3s ease;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 
-                        &.mat-mdc-raised-button {
-                            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-
-                            &:hover {
-                                transform: translateY(-1px);
-                                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-                            }
-                        }
-
-                        mat-icon {
-                            font-size: 18px !important;
-                            height: 18px !important;
-                            width: 18px !important;
+                        &:hover {
+                            transform: translateY(-1px);
+                            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
                         }
                     }
                 }
@@ -191,11 +182,5 @@
     &:hover {
         color: $primary;
         background-color: rgba(0, 0, 0, 0.04);
-    }
-
-    mat-icon {
-        font-size: 24px !important;
-        width: 24px;
-        height: 24px;
     }
 }

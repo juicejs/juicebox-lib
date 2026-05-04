@@ -16,13 +16,8 @@
   }
 }
 
-// Ensure all filter fields are full width
-mat-form-field {
-  width: 100%;
-}
-
 // Standalone error styling for async multiselect
-.mat-error-standalone {
+.error-message {
   font-size: 12px;
   color: #f44336;
   margin-top: 0.25rem;

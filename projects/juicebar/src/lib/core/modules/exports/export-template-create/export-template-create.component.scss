@@ -111,7 +111,7 @@
   flex-direction: column;
   justify-content: center;
   gap: 8px;
-  
+
   button {
     width: 32px;
     height: 32px;
@@ -122,17 +122,9 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    
+
     &:hover {
       background: #e9ecef;
-    }
-    
-    mat-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-      color: #6c757d;
-      line-height: 1;
     }
   }
 }
@@ -156,15 +148,6 @@
 // Filters section
 .filters-section {
   width: 400px;
-  
-  // Make all filter fields equal width
-  ::ng-deep mat-form-field {
-    width: 400px;
-    
-    &.filter-field {
-      width: 400px;
-    }
-  }
 }
 
 // Actions section
