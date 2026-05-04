@@ -15,8 +15,6 @@ import { MainComponent } from './core/modules/main/main.component';
 import { provideMain } from './core/modules/main/main.providers';
 import { Juice } from './core/shared/services/juice.service';
 import { JuiceboxService } from './core/shared/services/Juicebox.service';
-import { SidebarService } from './core/shared/services/sidebar.service';
-import { Router } from '@angular/router';
 import { AuthGuard } from './core/shared/guards/auth.guard';
 import { environment } from './environments/environment.development';
 
@@ -47,7 +45,7 @@ export function provideJuicebar(config: BaseAppConfig, ...features: JuicebarFeat
     {
       provide: APP_INITIALIZER,
       useFactory: JuiceboxProviderFactory,
-      deps: [Juice, JuiceboxService, SidebarService, Router],
+      deps: [Juice, JuiceboxService],
       multi: true,
     },
     AuthGuard,
@@ -56,8 +54,6 @@ export function provideJuicebar(config: BaseAppConfig, ...features: JuicebarFeat
 }
 
 function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], featureRoutes: Routes = []): Routes {
-  const detailsKids = featureRoutes[0]?.children?.[2]?.children ?? [];
-  detailsKids.forEach((c: any) => console.log('[juicebar] details child:', c.path, '| loadComponent?', !!c.loadComponent, '| component?', !!c.component));
   const mainChildren = [
     ...featureRoutes,
     ...(mainRoutes?.map(m => ({
@@ -90,7 +86,7 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], fe
   ];
 }
 
-export function JuiceboxProviderFactory(juice: Juice, juiceboxService: JuiceboxService, sidebarService: SidebarService, router: Router) {
+export function JuiceboxProviderFactory(juice: Juice, juiceboxService: JuiceboxService) {
   if (isDevMode()) juice.setEndPoint(environment.apiUrl);
 
   switch (juice.getEndPoint()) {
@@ -106,12 +102,6 @@ export function JuiceboxProviderFactory(juice: Juice, juiceboxService: JuiceboxS
   }
 
   return async () => {
-    const mainRoute = router.config.find(r => r.path === 'main');
-    const usersRoute = mainRoute?.children?.find(r => r.path === 'users');
-    const detailsRoute = usersRoute?.children?.find(r => r.path === 'details/:id');
-    const groupsRoute = detailsRoute?.children?.find(r => r.path === 'groups-user');
-    console.log('[juicebar] LIVE router groups-user route:', groupsRoute, 'loadComponent?', !!groupsRoute?.loadComponent, 'component?', !!groupsRoute?.component);
-
     if (!isDevMode()) {
       const config: any = await juice.loadConfiguration('config.json');
 
@@ -126,8 +116,6 @@ export function JuiceboxProviderFactory(juice: Juice, juiceboxService: JuiceboxS
       }
     }
 
-    return juiceboxService.init().then(success => {
-      console.log('Juicebox Initialized', success);
-    });
+    return juiceboxService.init();
   };
 }

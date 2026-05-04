@@ -9,19 +9,13 @@ function resolveComponent(
 ): () => Promise<Type<any>> {
   const override = overrides?.find(o => o.routePath.join('/') === overridePath.join('/'));
   if (override) {
-    console.log('[juicebar] Component override applied for route:', overridePath.join('/'), '→', override.component);
     const overrideComponent = override.component;
-    return () => {
-      console.log('[juicebar] loadComponent called for override:', overridePath.join('/'), overrideComponent);
-      return Promise.resolve(overrideComponent);
-    };
+    return () => Promise.resolve(overrideComponent);
   }
-  console.log('[juicebar] No override for route:', overridePath.join('/'), '— using default loader');
   return defaultLoader;
 }
 
 export function buildUsersRoute(overrides?: ComponentOverride[]): Routes {
-  console.log('[juicebar] buildUsersRoute called with overrides:', overrides);
   const r = (path: string[], loader: () => Promise<Type<any>>) =>
     resolveComponent(loader, path, overrides);
 

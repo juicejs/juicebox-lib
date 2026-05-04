@@ -6,7 +6,6 @@ import { ModuleCustomization, USERS_CUSTOMIZATION, JuicebarFeature } from '../..
 import { buildUsersRoute } from './users.route';
 
 export function provideUsers(customization?: ModuleCustomization): JuicebarFeature {
-  console.log('[juicebar] provideUsers called with customization:', customization);
   return {
     routes: buildUsersRoute(customization?.componentOverrides),
     providers: makeEnvironmentProviders([
