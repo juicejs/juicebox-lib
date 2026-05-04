@@ -5,7 +5,7 @@
             <div class="d-flex">
                 <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
                     <app-label>{{'organisation' | translate}}</app-label>
-                    <app-select [(ngModel)]="selectedOrganisation" name="organisations" (selectionChange)="organisationChanged($event.value)">
+                    <app-select [(value)]="selectedOrganisation" (selectionChange)="organisationChanged($event)">
                         @for (org of organisations; track org._id) {
                             <app-option [value]="org._id">
                                 {{org.name}}
@@ -20,7 +20,7 @@
             <div class="d-flex">
                 <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
                     <app-label>{{'group' | translate}}</app-label>
-                    <app-select [(ngModel)]="selectedGroup" name="groups">
+                    <app-select [(value)]="selectedGroup">
                         @for (group of groups; track group.key) {
                             <app-option [value]="group.key" [disabled]="group.disabled">
                                 {{group.name}}

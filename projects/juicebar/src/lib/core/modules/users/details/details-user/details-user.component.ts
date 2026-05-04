@@ -28,6 +28,7 @@ export class DetailsUserComponent implements OnInit {
     public user: any;
     public userForm: FormGroup;
     public passwordForm: FormGroup;
+    public walletCtrl = new FormControl<string>('');
 
     public i18n: UserTranslationPipe;
     public updatePromise = null;
@@ -75,6 +76,7 @@ export class DetailsUserComponent implements OnInit {
         const id = this.route.parent.snapshot.params['id'];
         const result = await this.userService.getUser(id);
         this.user = result.payload;
+        this.walletCtrl.setValue(this.user.wallet ?? '');
 
         this.userForm = new FormGroup({
             salutation: new FormControl(this.user.salutation ?? null),
@@ -183,7 +185,7 @@ export class DetailsUserComponent implements OnInit {
 
     async setWalletAddress(){
         await this.userService.updateUser(this.user._id, {
-            "wallet": this.user.wallet
+            "wallet": this.walletCtrl.value
         });
     }
 

@@ -1,4 +1,5 @@
 import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {DIALOG_DATA, DialogRef, DialogService} from '../../../../../ui-components/dialog/dialog.service';
 
 export interface HelpDialogData {
@@ -20,6 +21,7 @@ import {SharedModule} from '../../../../shared/shared.module';
     imports: [
         CommonModule,
         SharedModule,
+        ReactiveFormsModule,
         MainTranslationPipe
     ]
 })
@@ -28,7 +30,7 @@ export class HelpComponent implements OnInit {
     fileInfo: {name: string, extension: string, type: string, path: string};
     file: File;
 
-    helpData: { text: string };
+    helpDataCtrl = new FormControl<string>('');
 
     i18n: MainTranslationPipe;
     promiseBtn;
@@ -142,6 +144,6 @@ export class HelpComponent implements OnInit {
         const splitUrl = url.split('/');
         const module = splitUrl[2]
         const result = await this.juicebox.getHelpText(module)
-        this.helpData = result && result.success ? result.payload.text[this.juicebox.getLanguage()] : null;
+        this.helpDataCtrl.setValue(result && result.success ? result.payload.text[this.juicebox.getLanguage()] : null);
     }
 }

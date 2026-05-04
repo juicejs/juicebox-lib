@@ -2,8 +2,7 @@
     <div class="filter-bar">
         <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
             <app-label>{{'organisation' | translate}}</app-label>
-            <app-select [(ngModel)]="selectedOrganisation"
-                        name="organisations"
+            <app-select [(value)]="selectedOrganisation"
                         (selectionChange)="organisationChanged()">
                 @for (org of organisations; track org._id) {
                     <app-option [value]="org._id">

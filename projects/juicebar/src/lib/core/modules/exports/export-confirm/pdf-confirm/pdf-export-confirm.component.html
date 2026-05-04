@@ -8,7 +8,7 @@
             <app-label>{{"zip_file_name" | translate}}</app-label>
             <input appInput
                    type="text"
-                   [(ngModel)]="fileName"
+                   [formControl]="fileNameCtrl"
                    [placeholder]="'zip_file_name' | translate">
         </app-form-field>
     </div>
@@ -16,7 +16,7 @@
     <div class="form-group mb-3">
         <app-form-field appearance="outline" class="w-100">
             <app-label>{{"file_name" | translate}}</app-label>
-            <app-select [(ngModel)]="selectedFileNameProperty"
+            <app-select [(value)]="selectedFileNameProperty"
                        [placeholder]="'file_name' | translate">
                 @for (item of fileNameProperties; track item.id) {
                     <app-option [value]="item.id">

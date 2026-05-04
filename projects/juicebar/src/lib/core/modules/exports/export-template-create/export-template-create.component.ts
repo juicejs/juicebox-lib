@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import {CommonModule} from '@angular/common';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {ExportColumn} from '../types/ExportColumn';
 import {ExportsTranslationPipe} from '../i18n/exports.translation';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
@@ -10,12 +11,23 @@ import {Router} from '@angular/router';
 import {ConfigurationService} from '../../../shared/services/configuration.service';
 import {ExportStrategy} from '../types/ExportStrategy';
 import { MultiLanguageObject, AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
+import {SharedModule} from '../../../shared/shared.module';
+import {ExportFiltersComponent} from '../components/export-filters/export-filters.component';
 
 @Component({
     selector: 'app-export-template-create',
     templateUrl: './export-template-create.component.html',
     styleUrls: ['./export-template-create.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        SharedModule,
+        ReactiveFormsModule,
+        DragDropModule,
+        AutoLanguagePipe,
+        ExportsTranslationPipe,
+        ExportFiltersComponent,
+    ]
 })
 export class ExportTemplateCreateComponent implements OnInit {
 

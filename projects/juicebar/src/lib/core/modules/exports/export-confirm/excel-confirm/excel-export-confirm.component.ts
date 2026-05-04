@@ -5,7 +5,7 @@ import {ExportsService} from '../../exports.service';
 import {HelperService} from '../../../../shared/services/helper.service';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {ExportsTranslationPipe} from "../../i18n/exports.translation";
-import {FormGroup} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
 import {ConfigurationService} from '../../../../shared/services/configuration.service';
 import {CommonModule} from '@angular/common';
 import {SharedModule} from '../../../../shared/shared.module';
@@ -29,7 +29,9 @@ export interface ExcelExportConfirmDialogData {
 })
 export class ExcelExportConfirmComponent implements OnInit {
     promiseBtn;
-    fileName: string;
+    fileNameCtrl = new FormControl<string>('');
+    get fileName(): string { return this.fileNameCtrl.value || ''; }
+    set fileName(v: string) { this.fileNameCtrl.setValue(v ?? ''); }
     exportStrategyKey: string;
     exportTemplate: any;
     i18n: ExportsTranslationPipe;

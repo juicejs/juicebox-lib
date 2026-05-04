@@ -5,73 +5,67 @@
 
         @switch (filter.type) {
             @case ('string') {
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>{{ getFilterLabel(filter) }}</mat-label>
-                    <input matInput type="text" [formControlName]="filter.id">
+                <app-form-field appearance="outline" class="full-width">
+                    <app-label>{{ getFilterLabel(filter) }}</app-label>
+                    <input appInput type="text" [formControlName]="filter.id">
                     @if (getFilterError(filter); as error) {
-                        <mat-error>{{ error }}</mat-error>
+                        <app-error>{{ error }}</app-error>
                     }
-                </mat-form-field>
+                </app-form-field>
             }
             @case ('number') {
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>{{ getFilterLabel(filter) }}</mat-label>
-                    <input matInput type="number" [formControlName]="filter.id">
+                <app-form-field appearance="outline" class="full-width">
+                    <app-label>{{ getFilterLabel(filter) }}</app-label>
+                    <input appInput type="number" [formControlName]="filter.id">
                     @if (getFilterError(filter); as error) {
-                        <mat-error>{{ error }}</mat-error>
+                        <app-error>{{ error }}</app-error>
                     }
-                </mat-form-field>
+                </app-form-field>
             }
             @case ('date') {
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>{{ getFilterLabel(filter) }}</mat-label>
-                    <input matInput
-                           [matDatepicker]="picker"
-                           [formControlName]="filter.id"
-                           placeholder="DD.MM.YYYY"
-                           readonly>
-                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
+                <app-form-field appearance="outline" class="full-width">
+                    <app-label>{{ getFilterLabel(filter) }}</app-label>
+                    <app-datepicker [formControlName]="filter.id"
+                                    placeholder="DD.MM.YYYY"></app-datepicker>
                     @if (getFilterError(filter); as error) {
-                        <mat-error>{{ error }}</mat-error>
+                        <app-error>{{ error }}</app-error>
                     }
-                </mat-form-field>
+                </app-form-field>
             }
             @case ('multiselect') {
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>{{ getFilterLabel(filter) }}</mat-label>
-                    <mat-select [formControlName]="filter.id" multiple>
-                        <mat-option>{{ 'clear_selection' | translate }}</mat-option>
+                <app-form-field appearance="outline" class="full-width">
+                    <app-label>{{ getFilterLabel(filter) }}</app-label>
+                    <select appInput [formControlName]="filter.id" multiple>
                         @for (item of filter.items; track item.id) {
-                            <mat-option [value]="item.id">{{ item.label | autoLanguage }}</mat-option>
+                            <option [value]="item.id">{{ item.label | autoLanguage }}</option>
                         }
-                    </mat-select>
+                    </select>
                     @if (getFilterError(filter); as error) {
-                        <mat-error>{{ error }}</mat-error>
+                        <app-error>{{ error }}</app-error>
                     }
-                </mat-form-field>
+                </app-form-field>
             }
             @case ('multiselect-async') {
                 <app-export-multiselect-async [formGroup]="filterForm"
                                               [selectedDataSourceKey]="selectedDataSourceKey"
                                               [filter]="filter"></app-export-multiselect-async>
                 @if (getFilterError(filter); as error) {
-                    <mat-error class="mat-error-standalone">{{ error }}</mat-error>
+                    <app-error class="mat-error-standalone">{{ error }}</app-error>
                 }
             }
             @case ('select') {
-                <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>{{ getFilterLabel(filter) }}</mat-label>
-                    <mat-select [formControlName]="filter.id">
-                        <mat-option>{{ 'clear_selection' | translate }}</mat-option>
+                <app-form-field appearance="outline" class="full-width">
+                    <app-label>{{ getFilterLabel(filter) }}</app-label>
+                    <select appInput [formControlName]="filter.id">
+                        <option [ngValue]="null">{{ 'clear_selection' | translate }}</option>
                         @for (item of filter.items; track item.id) {
-                            <mat-option [value]="item.id">{{ item.label | autoLanguage }}</mat-option>
+                            <option [value]="item.id">{{ item.label | autoLanguage }}</option>
                         }
-                    </mat-select>
+                    </select>
                     @if (getFilterError(filter); as error) {
-                        <mat-error>{{ error }}</mat-error>
+                        <app-error>{{ error }}</app-error>
                     }
-                </mat-form-field>
+                </app-form-field>
             }
         }
 
@@ -79,8 +73,8 @@
     }
 </div>
 } @else {
-    <mat-form-field appearance="outline" class="full-width">
-        <mat-label>{{ 'filters' | translate }}</mat-label>
-        <input matInput disabled [value]="'no_filters_available' | translate">
-    </mat-form-field>
+    <app-form-field appearance="outline" class="full-width">
+        <app-label>{{ 'filters' | translate }}</app-label>
+        <input appInput disabled [value]="'no_filters_available' | translate">
+    </app-form-field>
 }

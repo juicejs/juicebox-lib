@@ -49,7 +49,9 @@ import {
   SlideToggleComponent,
   PaginatorComponent,
   TabsComponent, TabComponent,
-  SnackbarService, SnackbarComponent
+  SnackbarService, SnackbarComponent,
+  DatepickerComponent,
+  AutocompleteComponent
 } from '../../ui-components';
 
 // Import CDK modules directly to avoid build path resolution issues
@@ -171,7 +173,9 @@ import { CdkListboxModule } from '@angular/cdk/listbox';
     ListingComponent,
     FilterContainerComponent,
     FilterBarComponent,
-    NoPermissionDisableDirective
+    NoPermissionDisableDirective,
+    DatepickerComponent,
+    AutocompleteComponent
   ],
   imports: [
     ReactiveFormsModule,
@@ -217,7 +221,9 @@ import { CdkListboxModule } from '@angular/cdk/listbox';
     PageSizeSelectorComponent,
     TimeAgoPipe,
     FilterBarComponent,
-    NoPermissionDisableDirective
+    NoPermissionDisableDirective,
+    DatepickerComponent,
+    AutocompleteComponent
   ],
   providers: [
     DialogService,

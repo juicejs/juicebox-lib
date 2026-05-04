@@ -1,9 +1,8 @@
 <div class="menu-bar clear" style="padding: 16px;">
     <app-form-field appearance="outline" style="width: 300px; margin-right: 1rem;">
         <app-label>{{'organisation' | translate}}</app-label>
-        <app-select [(ngModel)]="selectedOrganisation"
-                    (selectionChange)="organisationChanged($event.value)"
-                    name="organisations">
+        <app-select [(value)]="selectedOrganisation"
+                    (selectionChange)="organisationChanged($event)">
             @for (org of organisations; track org._id) {
                 <app-option [value]="org._id">
                     {{org.name}}
@@ -14,8 +13,7 @@
 
     <app-form-field appearance="outline" style="width: 300px; margin-right: 1rem;">
         <app-label>{{'roles' | translate}}</app-label>
-        <app-select [(ngModel)]="selectedRole"
-                    name="role">
+        <app-select [(value)]="selectedRole">
             @for (role of availableRoles; track role.key) {
                 <app-option [value]="role.key"
                             [disabled]="role.disabled">
@@ -69,7 +67,7 @@
                     <div class="d-flex flex-wrap user-select-none" style="gap: 0.5rem;">
                         @for (permission of getRolePermissions(row); track permission.key) {
                             <app-checkbox
-                                [(ngModel)]="row.permissions[permission.key]"
+                                [(checked)]="row.permissions[permission.key]"
                                 [hasPermissions]="'users:role#updated|update'"
                                 (change)="togglePermission(row.role, row.permissions)"
                                 class="permission-checkbox">

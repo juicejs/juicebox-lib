@@ -3,81 +3,77 @@
     <form class="col-4 p-0" [formGroup]="userForm">
         <div class="form-group"
              [class.has-error]="!userForm.controls['firstname'].valid && userForm.controls['firstname'].touched">
-            <mat-form-field appearance="outline" class="w-100">
-                <mat-label>{{"salutation" | translate}}</mat-label>
-                <mat-select formControlName="salutation">
+            <app-form-field appearance="outline" class="w-100">
+                <app-label>{{"salutation" | translate}}</app-label>
+                <select appInput formControlName="salutation">
                     @for (salutation of juicebox.getSalutations(); track salutation.key) {
-                        <mat-option [value]="salutation.key">
-                            {{salutation.name}}
-                        </mat-option>
+                        <option [value]="salutation.key">{{salutation.name}}</option>
                     }
-                </mat-select>
-            </mat-form-field>
+                </select>
+            </app-form-field>
             @if (userForm.controls['salutation'].hasError('required') && userForm.controls['salutation'].touched) {
                 <div class="alert alert-danger">{{"include_salutation" | translate}}</div>
             }
         </div>
 
         <div class="form-group">
-            <mat-form-field appearance="outline" class="w-100">
-                <mat-label>{{"firstname" | translate}}*</mat-label>
-                <input matInput formControlName="firstname">
+            <app-form-field appearance="outline" class="w-100">
+                <app-label>{{"firstname" | translate}}*</app-label>
+                <input appInput formControlName="firstname">
                 @if (userForm.controls['firstname'].hasError('required')) {
-                    <mat-error>{{"include_firstname" | translate}}</mat-error>
+                    <app-error>{{"include_firstname" | translate}}</app-error>
                 }
-            </mat-form-field>
+            </app-form-field>
         </div>
 
         <div class="form-group">
-            <mat-form-field appearance="outline" class="w-100">
-                <mat-label>{{"lastname" | translate}}*</mat-label>
-                <input matInput formControlName="lastname">
+            <app-form-field appearance="outline" class="w-100">
+                <app-label>{{"lastname" | translate}}*</app-label>
+                <input appInput formControlName="lastname">
                 @if (userForm.controls['lastname'].hasError('required')) {
-                    <mat-error>{{"include_lastname" | translate}}</mat-error>
+                    <app-error>{{"include_lastname" | translate}}</app-error>
                 }
-            </mat-form-field>
+            </app-form-field>
         </div>
 
         @if (juicebox.getProjectTitle() !== 'QualityCircle') {
             <div class="form-group">
-                <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>{{"nickname" | translate}}</mat-label>
-                    <input matInput formControlName="nickname">
-                </mat-form-field>
+                <app-form-field appearance="outline" class="w-100">
+                    <app-label>{{"nickname" | translate}}</app-label>
+                    <input appInput formControlName="nickname">
+                </app-form-field>
             </div>
         }
 
         <div class="form-group">
-            <mat-form-field appearance="outline" class="w-100">
-                <mat-label>{{"language" | translate}}</mat-label>
-                <mat-select formControlName="language">
+            <app-form-field appearance="outline" class="w-100">
+                <app-label>{{"language" | translate}}</app-label>
+                <select appInput formControlName="language">
                     @for (language of languages; track language.code) {
-                        <mat-option [value]="language.code">
-                            {{language.name}}
-                        </mat-option>
+                        <option [value]="language.code">{{language.name}}</option>
                     }
-                </mat-select>
-            </mat-form-field>
+                </select>
+            </app-form-field>
         </div>
 
         <div class="form-group">
-            <mat-form-field appearance="outline" class="w-100">
-                <mat-label>{{"email" | translate}}*</mat-label>
-                <input matInput formControlName="email" [readonly]="projectTitle === 'Equipments'">
+            <app-form-field appearance="outline" class="w-100">
+                <app-label>{{"email" | translate}}*</app-label>
+                <input appInput formControlName="email" [readonly]="projectTitle === 'Equipments'">
                 @if (userForm.controls['email'].hasError('required')) {
-                    <mat-error>{{"include_email" | translate}}</mat-error>
+                    <app-error>{{"include_email" | translate}}</app-error>
                 }
                 @if (userForm.controls['email'].hasError('email')) {
-                    <mat-error>{{"invalid_email" | translate}}</mat-error>
+                    <app-error>{{"invalid_email" | translate}}</app-error>
                 }
-            </mat-form-field>
+            </app-form-field>
         </div>
         @if (juicebox.getProjectTitle() !== 'QualityCircle') {
             <div class="form-group">
-                <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>{{"department" | translate}}</mat-label>
-                    <input matInput formControlName="department">
-                </mat-form-field>
+                <app-form-field appearance="outline" class="w-100">
+                    <app-label>{{"department" | translate}}</app-label>
+                    <input appInput formControlName="department">
+                </app-form-field>
             </div>
         }
 
@@ -85,17 +81,25 @@
             <div class="d-flex align-center justify-between">
                 <div class="d-flex align-center" style="gap: 1.5rem;">
                     <div class="d-flex align-center">
-                        <mat-slide-toggle formControlName="active" class="mr-2"></mat-slide-toggle>
+                        <app-slide-toggle
+                            [checked]="!!userForm.controls['active'].value"
+                            (change)="userForm.controls['active'].setValue($event)"
+                            class="mr-2">
+                        </app-slide-toggle>
                         <span>{{"active" | translate}}</span>
                     </div>
                     @if (juicebox.hasPermission('users:role#super-admin')) {
                         <div class="d-flex align-center">
-                            <mat-slide-toggle formControlName="admin" class="mr-2"></mat-slide-toggle>
+                            <app-slide-toggle
+                                [checked]="!!userForm.controls['admin'].value"
+                                (change)="userForm.controls['admin'].setValue($event)"
+                                class="mr-2">
+                            </app-slide-toggle>
                             <span>{{"admin" | translate}}</span>
                         </div>
                     }
                 </div>
-                <button mat-raised-button color="primary" [matPromiseBtn]="updatePromise"
+                <button app-button appearance="raised" color="primary" [matPromiseBtn]="updatePromise"
                         [hasPermissions]="'users:role#updated|update'"
                         (click)="change()">{{"save" | translate}}
                 </button>
@@ -108,16 +112,16 @@
     <form class="col-4 p-0" [formGroup]="passwordForm">
         @if (projectTitle !== 'Equipments') {
             <div class="form-group">
-                <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>{{"password" | translate}}</mat-label>
-                    <input matInput formControlName="password" type="password" [autocomplete]="'new-password'">
-                </mat-form-field>
+                <app-form-field appearance="outline" class="w-100">
+                    <app-label>{{"password" | translate}}</app-label>
+                    <input appInput formControlName="password" type="password" [autocomplete]="'new-password'">
+                </app-form-field>
             </div>
             <div class="form-group">
-                <mat-form-field appearance="outline" class="w-100">
-                    <mat-label>{{"pass_repeat" | translate}}</mat-label>
-                    <input matInput formControlName="repeatPassword" type="password" [autocomplete]="'new-password'">
-                </mat-form-field>
+                <app-form-field appearance="outline" class="w-100">
+                    <app-label>{{"pass_repeat" | translate}}</app-label>
+                    <input appInput formControlName="repeatPassword" type="password" [autocomplete]="'new-password'">
+                </app-form-field>
             </div>
 
             @if (passwordForm.controls['password'].errors && passwordForm.controls['password'].touched) {
@@ -139,7 +143,7 @@
 
             <div class="d-flex mb-5" style="margin-bottom: 3rem;">
                 <div class="d-flex flex-column text-center">
-                    <button mat-raised-button color="primary"
+                    <button app-button appearance="raised" color="primary"
                             [hasPermissions]="'users:role#updated|update'"
                             (click)="generateRandomPassword()">{{"generate_random" | translate}}
                     </button>
@@ -147,7 +151,7 @@
                         <span class="m-2" style="user-select: all">{{randomPassword}}</span>
                     }
                 </div>
-                <button mat-raised-button color="primary" class="ml-auto mb-auto" [matPromiseBtn]="updatePromise"
+                <button app-button appearance="raised" color="primary" class="ml-auto mb-auto" [matPromiseBtn]="updatePromise"
                         [hasPermissions]="'users:role#updated|update'"
                         (click)="changePassword()">{{"pass_save" | translate}}
                 </button>
@@ -158,11 +162,11 @@
             <div>
                 <div class="form-group">
                     <div class="d-flex align-center">
-                        <mat-form-field appearance="outline" class="flex-1 mr-2">
-                            <mat-label>{{"two_factor_authorisation_type" | translate}}</mat-label>
-                            <input matInput readonly [placeholder]="user.attributes.settings.twoFactor | translate">
-                        </mat-form-field>
-                        <button mat-raised-button color="primary" [matPromiseBtn]="updatePromise"
+                        <app-form-field appearance="outline" class="flex-1 mr-2">
+                            <app-label>{{"two_factor_authorisation_type" | translate}}</app-label>
+                            <input appInput readonly [placeholder]="user.attributes.settings.twoFactor | translate">
+                        </app-form-field>
+                        <button app-button appearance="raised" color="primary" [matPromiseBtn]="updatePromise"
                                 [hasPermissions]="'users:role#updated|update'"
                                 (click)="resetTwoFactor()">{{"reset" | translate}}
                         </button>
@@ -175,13 +179,12 @@
             <div [hasPermissions]="'users:role#admin'">
                 <div class="form-group">
                     <div class="d-flex align-center">
-                        <mat-form-field appearance="outline" class="flex-1 mr-2">
-                            <mat-label>{{"wallet_authorization" | translate}}</mat-label>
-                            <input matInput [(ngModel)]="user.wallet"
-                                   [ngModelOptions]="{standalone: true}"
+                        <app-form-field appearance="outline" class="flex-1 mr-2">
+                            <app-label>{{"wallet_authorization" | translate}}</app-label>
+                            <input appInput [formControl]="walletCtrl"
                                    [placeholder]="'wallet_address' | translate">
-                        </mat-form-field>
-                        <button mat-raised-button color="primary" [matPromiseBtn]="updatePromise"
+                        </app-form-field>
+                        <button app-button appearance="raised" color="primary" [matPromiseBtn]="updatePromise"
                                 [hasPermissions]="'users:role#updated|update'"
                                 (click)="setWalletAddress()">{{"save" | translate}}
                         </button>

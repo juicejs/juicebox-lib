@@ -8,7 +8,7 @@
             <app-label>{{"file_name" | translate}}</app-label>
             <input appInput
                    type="text"
-                   [(ngModel)]="fileName"
+                   [formControl]="fileNameCtrl"
                    [placeholder]="'file_name' | translate">
         </app-form-field>
 

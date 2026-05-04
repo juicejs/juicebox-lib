@@ -1,6 +1,6 @@
 <h2>
     {{'groups_name_editor' | translate}}
-    <button app-button appearance="icon" mat-dialog-close class="close-button" (click)="close()">
+    <button app-button appearance="icon" class="close-button" (click)="close()">
         <app-icon [icon]="'close'"></app-icon>
     </button>
 </h2>
@@ -9,29 +9,31 @@
     @if (groupForm) {
     <form class="m-0" [formGroup]="groupForm">
 
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{'name' | translate}}*</mat-label>
-            <input matInput type="text" formControlName="name">
+        <app-form-field appearance="outline" class="full-width">
+            <app-label>{{'name' | translate}}*</app-label>
+            <input appInput type="text" formControlName="name">
             @if (groupForm.get('name')?.hasError('required')) {
-                <mat-error>{{'name' | translate}} is required</mat-error>
+                <app-error>{{'name' | translate}} is required</app-error>
             }
-        </mat-form-field>
+        </app-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{'key' | translate}}*</mat-label>
-            <span matTextPrefix>group:</span>
-            <input matInput type="text" formControlName="key"
+        <app-form-field appearance="outline" class="full-width">
+            <app-label>{{'key' | translate}}*</app-label>
+            <span class="input-prefix">group:</span>
+            <input appInput type="text" formControlName="key"
                    (keydown.space)="$event.preventDefault()"
                    placeholder="{{'group key' | translate}}" [readonly]="!!group">
             @if (groupForm.get('key')?.hasError('required')) {
-                <mat-error>{{'key' | translate}} is required</mat-error>
+                <app-error>{{'key' | translate}} is required</app-error>
             }
-        </mat-form-field>
+        </app-form-field>
 
         <div [hasPermissionsHide]="'superAdmin:role#read'" class="full-width d-flex align-center">
-            <mat-slide-toggle formControlName="superAdmin" [(ngModel)]="enable">
+            <app-slide-toggle
+                [checked]="!!groupForm.controls['superAdmin'].value"
+                (change)="groupForm.controls['superAdmin'].setValue($event); enable = $event">
                 {{'superAdminEdit' | translate}}
-            </mat-slide-toggle>
+            </app-slide-toggle>
         </div>
 
     </form>
@@ -39,10 +41,10 @@
 </app-dialog-content>
 
 <app-dialog-actions align="end">
-    <button mat-button (click)="close()">
+    <button app-button (click)="close()">
         {{"cancel" | translate}}
     </button>
-    <button mat-raised-button color="primary" (click)="submit()"
+    <button app-button appearance="raised" color="primary" (click)="submit()"
             [disabled]="!groupForm || !groupForm.valid || !juicebox.hasPermission('groups:role#updated|update')"
             [matPromiseBtn]="promiseBtn">
         {{"save" | translate}}

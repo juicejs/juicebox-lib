@@ -9,7 +9,7 @@
 
         <app-form-field appearance="outline" class="full-width">
             <app-label>{{ 'publisher' | translate}}</app-label>
-            <app-select formControlName="publisher" [(ngModel)]="publisher" placeholder="{{'choose_publisher' | translate}}">
+            <app-select formControlName="publisher" placeholder="{{'choose_publisher' | translate}}">
                 @for (pub of publishers; track pub.id) {
                     <app-option [value]="pub.id">{{pub.title}}</app-option>
                 }
@@ -22,7 +22,6 @@
         <app-form-field appearance="outline" class="full-width">
             <app-label>{{"name" | translate}}*</app-label>
             <input appInput type="text" placeholder="{{'name' | translate}}"
-                   [(ngModel)]="user.wallets.name"
                    formControlName="name">
             @if (walletForm.controls['name'].hasError('required')) {
                 <app-error>{{"include_name" | translate}}</app-error>
@@ -31,7 +30,6 @@
         <app-form-field appearance="outline" class="full-width">
             <app-label>{{"existing_address" | translate}}</app-label>
             <input appInput type="text" placeholder="{{'leave_empty_for_new_wallet' | translate}}"
-                   [(ngModel)]="user.wallets.address"
                    formControlName="address">
             @if (walletForm.controls['address'].hasError('addressLength')) {
                 <app-error>{{"include_address" | translate}}</app-error>
@@ -40,7 +38,6 @@
         <app-form-field appearance="outline" class="full-width">
             <app-label>{{"private_key" | translate}}</app-label>
             <input appInput type="text" placeholder="{{'leave_empty_for_new_wallet' | translate}}"
-                   [(ngModel)]="user.wallets.privateKey"
                    formControlName="privateKey">
             @if (walletForm.controls['privateKey'].hasError('required')) {
                 <app-error>{{"include_key" | translate}}</app-error>

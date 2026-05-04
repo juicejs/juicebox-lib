@@ -20,6 +20,7 @@ export class MainWizardComponent implements OnInit {
 
     // public trainees: Trainee[] = [];
     filteredTrainees: any[] = [];
+    emailAutocompleteOptions: Array<{value: any, label: string}> = [];
     configuration: any;
     projectTitle: string;
 

@@ -1,7 +1,8 @@
 import {ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {CommonModule} from '@angular/common';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {ActivatedRoute} from "@angular/router";
-import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import {CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {Subscription} from "rxjs";
 import {ExportsService} from '../exports.service';
 import {ExportsTranslationPipe} from '../i18n/exports.translation';
@@ -12,12 +13,24 @@ import {ExportTemplate} from '../types/ExportTemplate';
 import {ExportStrategy} from '../types/ExportStrategy';
 import {ExportColumn} from '../types/ExportColumn';
 import {ExportFilter} from '../types/ExportFilter';
+import {SharedModule} from '../../../shared/shared.module';
+import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
+import {ExportFiltersComponent} from '../components/export-filters/export-filters.component';
 
 @Component({
     selector: 'app-export-template-edit',
     templateUrl: './export-template-edit.component.html',
     styleUrls: ['./export-template-edit.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        CommonModule,
+        SharedModule,
+        ReactiveFormsModule,
+        DragDropModule,
+        AutoLanguagePipe,
+        ExportsTranslationPipe,
+        ExportFiltersComponent,
+    ]
 })
 export class ExportTemplateEditComponent implements OnInit, OnDestroy {
 

@@ -7,7 +7,7 @@ import {MultiLanguageObject} from '../../../../shared/pipes/auto-language.pipe';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {ExportsTranslationPipe} from "../../i18n/exports.translation";
 import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {SharedModule} from '../../../../shared/shared.module';
 
 export interface PdfExportConfirmDialogData {
@@ -24,14 +24,16 @@ export interface PdfExportConfirmDialogData {
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        FormsModule,
+        ReactiveFormsModule,
         SharedModule,
         ExportsTranslationPipe
     ]
 })
 export class PdfExportConfirmComponent implements OnInit {
     promiseBtn;
-    fileName: string;
+    fileNameCtrl = new FormControl<string>('');
+    get fileName(): string { return this.fileNameCtrl.value || ''; }
+    set fileName(v: string) { this.fileNameCtrl.setValue(v ?? ''); }
     exportStrategyKey: string;
     dataSourceKey: string;
     exportTemplate: any;

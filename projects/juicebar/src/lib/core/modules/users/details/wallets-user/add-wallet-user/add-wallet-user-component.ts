@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
 import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
@@ -25,27 +25,20 @@ export class AddWalletUserComponent implements OnInit {
 
     public walletForm: FormGroup;
     public publishers: Array<any>;
-    public publisher: any;
-    public user: any = {
-        wallets: {
-            name: "",
-            address: "",
-            privateKey: ""
-        }
-    };
 
     id: any;
 
     public updatePromise = null;
     private i18n: UserTranslationPipe;
 
-    constructor(
-                private userService: UsersService,
-                private dialogRef: DialogRef<any>,
-                @Inject(DIALOG_DATA) public data: { id: any },
-                public route: ActivatedRoute,
-                private juicebox: JuiceboxService,
-                public router: Router) {
+    private userService = inject(UsersService);
+    private dialogRef = inject<DialogRef<any>>(DialogRef);
+    public data = inject<{ id: any }>(DIALOG_DATA);
+    public route = inject(ActivatedRoute);
+    private juicebox = inject(JuiceboxService);
+    public router = inject(Router);
+
+    constructor() {
         this.i18n = new UserTranslationPipe(this.juicebox);
         this.id = this.data?.id;
     }
@@ -70,8 +63,7 @@ export class AddWalletUserComponent implements OnInit {
         ).then(result => {
             this.publishers = result.payload.publishers;
             if (this.publishers.length == 1) {
-                this.publisher = this.publishers[0].id;
-                console.log(this.publisher);
+                this.walletForm.patchValue({ publisher: this.publishers[0].id });
             }
         })
     }
@@ -79,20 +71,22 @@ export class AddWalletUserComponent implements OnInit {
         this.walletForm.markAllAsTouched();
         if (this.walletForm.invalid) return new Promise(resolve => setTimeout(resolve, 200));
 
+        const { publisher, name, address, privateKey } = this.walletForm.value;
+
         this.updatePromise = (async () => {
-            if (!this.user.wallets.privateKey){
+            if (!privateKey){
                 const result = await this.userService.createWallet(this.id, {
-                    address: this.user.wallets.address,
-                    name: this.user.wallets.name,
-                    publisherId: this.publisher,
+                    address,
+                    name,
+                    publisherId: publisher,
                     transferLock: 2
                 });
                 if (result.success) {
-                    this.juicebox.showToast("success", this.i18n.transform(this.walletForm.value.address ? 'wallet_added' : 'wallet_created'));
+                    this.juicebox.showToast("success", this.i18n.transform(address ? 'wallet_added' : 'wallet_created'));
                     this.dialogRef.close();
                     await this.router.navigateByUrl("/main/users/details/"+this.id+"/wallets-user");
                 } else {
-                    this.juicebox.showToast("error", this.i18n.transform(this.walletForm.value.address ? 'wallet_add_failed' : 'wallet_create_failed'));
+                    this.juicebox.showToast("error", this.i18n.transform(address ? 'wallet_add_failed' : 'wallet_create_failed'));
                     if (result.message) {
                         this.juicebox.showToast("warning", this.i18n.transform(result.message));
                     }

@@ -1,10 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   inject,
   OnInit,
-  Output,
+  output,
 } from '@angular/core';
 import { JuiceboxService } from '../../services/Juicebox.service';
 import { TableActions } from './table-data';
@@ -23,10 +22,8 @@ export enum MaterialSelectionType {
 export class ListingComponent implements OnInit {
   protected juicebox = inject(JuiceboxService);
 
-  @Output()
-  cellClicked: EventEmitter<any> = new EventEmitter<any>();
-  @Output()
-  actionsclicked: EventEmitter<any> = new EventEmitter();
+  cellClicked = output<any>();
+  actionsclicked = output<any>();
 
   public showFilterRow: Boolean = false;
 

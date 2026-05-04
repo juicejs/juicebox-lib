@@ -1,10 +1,11 @@
 import {
   Directive,
-  Input,
   ElementRef,
   Renderer2,
   OnDestroy,
+  effect,
   inject,
+  input,
   signal
 } from '@angular/core';
 import { Subscription, Observable, isObservable, from } from 'rxjs';
@@ -21,59 +22,56 @@ export class MaterialPromiseButtonDirective implements OnDestroy {
   private originalContent?: string;
   private originalDisabled?: boolean;
 
-  // Signals for reactive state
   isLoading = signal(false);
 
-  @Input() spinnerTemplate = `
+  spinnerTemplate = input<string>(`
     <mat-spinner diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
-  `;
+  `);
+  loadingText = input<string>('Loading...');
+  disableWhileLoading = input<boolean>(true);
+  showSpinner = input<boolean>(true);
+  matPromiseBtn = input<Promise<any> | Observable<any> | null>(null);
 
-  @Input() loadingText = 'Loading...';
-  @Input() disableWhileLoading = true;
-  @Input() showSpinner = true;
+  constructor() {
+    effect(() => {
+      const promise = this.matPromiseBtn();
+      if (!promise) {
+        this.resetButton();
+        return;
+      }
 
-  @Input() set matPromiseBtn(promise: Promise<any> | Observable<any> | null) {
-    if (!promise) {
-      this.resetButton();
-      return;
-    }
+      this.setLoadingState();
 
-    this.setLoadingState();
+      const observable = isObservable(promise) ? promise : from(promise);
 
-    // Convert promise to observable if needed
-    const observable = isObservable(promise) ? promise : from(promise);
-
-    this.subscription?.unsubscribe();
-    this.subscription = observable.pipe(
-      finalize(() => this.resetButton())
-    ).subscribe({
-      next: () => {},
-      error: () => {} // Handle in finalize
+      this.subscription?.unsubscribe();
+      this.subscription = observable.pipe(
+        finalize(() => this.resetButton())
+      ).subscribe({
+        next: () => {},
+        error: () => {}
+      });
     });
   }
 
   private setLoadingState(): void {
     const element = this.elementRef.nativeElement;
 
-    // Store original state
     this.originalContent = element.innerHTML;
     this.originalDisabled = element.disabled;
     this.isLoading.set(true);
 
-    // Disable button if requested
-    if (this.disableWhileLoading) {
+    if (this.disableWhileLoading()) {
       this.renderer.setProperty(element, 'disabled', true);
       this.renderer.addClass(element, 'mat-button-disabled');
     }
 
-    // Add loading class
     this.renderer.addClass(element, 'mat-button-loading');
 
-    // Update button content
-    if (this.showSpinner) {
+    if (this.showSpinner()) {
       const loadingContent = `
-        ${this.spinnerTemplate}
-        <span>${this.loadingText}</span>
+        ${this.spinnerTemplate()}
+        <span>${this.loadingText()}</span>
       `;
       this.renderer.setProperty(element, 'innerHTML', loadingContent);
     }
@@ -83,18 +81,15 @@ export class MaterialPromiseButtonDirective implements OnDestroy {
     const element = this.elementRef.nativeElement;
     this.isLoading.set(false);
 
-    // Restore original content
     if (this.originalContent !== undefined) {
       this.renderer.setProperty(element, 'innerHTML', this.originalContent);
     }
 
-    // Restore disabled state
-    if (this.disableWhileLoading) {
+    if (this.disableWhileLoading()) {
       this.renderer.setProperty(element, 'disabled', this.originalDisabled || false);
       this.renderer.removeClass(element, 'mat-button-disabled');
     }
 
-    // Remove loading class
     this.renderer.removeClass(element, 'mat-button-loading');
 
     this.originalContent = undefined;

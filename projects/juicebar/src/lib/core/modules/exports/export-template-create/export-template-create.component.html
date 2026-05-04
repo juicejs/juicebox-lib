@@ -2,33 +2,34 @@
     @if (templateForm) {
     <div [formGroup]="templateForm" class="template-form-container">
 
-        <mat-form-field appearance="outline" class="template-form-field">
-            <mat-label>{{'name' | translate}} *</mat-label>
-            <input matInput
+        <app-form-field appearance="outline" class="template-form-field">
+            <app-label>{{'name' | translate}} *</app-label>
+            <input appInput
                    type="text"
                    formControlName="name"
                    [placeholder]="'name' | translate">
             @if (templateForm.get('name')?.errors?.['required']) {
-                <mat-error>{{'field_required' | translate}}</mat-error>
+                <app-error>{{'field_required' | translate}}</app-error>
             }
-        </mat-form-field>
+        </app-form-field>
 
-        <mat-form-field appearance="outline" class="template-form-field">
-            <mat-label>{{'datasource' | translate}} *</mat-label>
-            <mat-select formControlName="data_source_key"
-                       (valueChange)="onDataSourceChange($event)">
+        <app-form-field appearance="outline" class="template-form-field">
+            <app-label>{{'datasource' | translate}} *</app-label>
+            <select appInput
+                    formControlName="data_source_key"
+                    (change)="onDataSourceChange($any($event.target).value)">
                 @for (dataSource of dataSources; track dataSource.key) {
-                    <mat-option [value]="dataSource.key">{{ dataSource.name | autoLanguage }}</mat-option>
+                    <option [value]="dataSource.key">{{ dataSource.name | autoLanguage }}</option>
                 }
-            </mat-select>
+            </select>
             @if (templateForm.get('data_source_key')?.errors?.['required']) {
-                <mat-error>{{'field_required' | translate}}</mat-error>
+                <app-error>{{'field_required' | translate}}</app-error>
             }
-        </mat-form-field>
+        </app-form-field>
 
         @if (!groupColumns) {
         <div class="columns-section">
-            <mat-label class="section-label">{{'columns' | translate}} *</mat-label>
+            <app-label class="section-label">{{'columns' | translate}} *</app-label>
             <div class="columns-container" cdkDropListGroup>
                 <div class="columns-card dragula-container"
                      cdkDropList
@@ -39,7 +40,7 @@
                     @for (column of columns; track column.id) {
                     <div class="column-item dragula-label"
                          cdkDrag
-                         [matTooltip]="column.description ? (column.description | autoLanguage) : ''">
+                         [appTooltip]="column.description ? (column.description | autoLanguage) : ''">
                         <span class="column-label">{{column.label | autoLanguage}}</span>
                         @if (column.filterable) {
                             <span class="column-filterable" title="Filterable">[F]</span>
@@ -52,15 +53,17 @@
                 </div>
 
                 <div class="column-controls">
-                    <button mat-icon-button
+                    <button app-button
+                            appearance="icon"
                             (click)="selectAllColumns()"
-                            [matTooltip]="'select_all' | translate">
-                        <mat-icon>keyboard_double_arrow_right</mat-icon>
+                            [appTooltip]="'select_all' | translate">
+                        <app-icon icon="keyboard_double_arrow_right">keyboard_double_arrow_right</app-icon>
                     </button>
-                    <button mat-icon-button
+                    <button app-button
+                            appearance="icon"
                             (click)="deSelectAllColumns()"
-                            [matTooltip]="'deselect_all' | translate">
-                        <mat-icon>keyboard_double_arrow_left</mat-icon>
+                            [appTooltip]="'deselect_all' | translate">
+                        <app-icon icon="keyboard_double_arrow_left">keyboard_double_arrow_left</app-icon>
                     </button>
                 </div>
 
@@ -73,7 +76,7 @@
                     @for (column of selectedColumns; track column.id) {
                     <div class="column-item dragula-label"
                          cdkDrag
-                         [matTooltip]="column.description ? (column.description | autoLanguage) : ''">
+                         [appTooltip]="column.description ? (column.description | autoLanguage) : ''">
                         <span class="column-label">{{column.label | autoLanguage}}</span>
                         @if (column.filterable) {
                             <span class="column-filterable" title="Filterable">[F]</span>
@@ -90,17 +93,17 @@
 
         @if (groupColumns) {
         <div class="columns-section">
-            <mat-label class="section-label">{{'columns' | translate}} *</mat-label>
+            <app-label class="section-label">{{'columns' | translate}} *</app-label>
             <div class="grouped-columns-container">
                 @for (group of Object.keys(groupColumns); track group) {
                 <div class="group-section">
-                    <mat-label class="group-label">{{ group }}</mat-label>
+                    <app-label class="group-label">{{ group }}</app-label>
                     <div class="columns-container" cdkDropListGroup>
-                        <mat-card class="columns-card">
-                            <mat-card-header>
-                                <mat-card-title>{{'available_columns' | translate}}</mat-card-title>
-                            </mat-card-header>
-                            <mat-card-content>
+                        <app-card class="columns-card">
+                            <app-card-header>
+                                <app-card-title>{{'available_columns' | translate}}</app-card-title>
+                            </app-card-header>
+                            <app-card-content>
                                 <div class="column-list"
                                      cdkDropList
                                      [id]="'available-' + group"
@@ -110,41 +113,43 @@
                                     @for (column of groupColumns[group]; track column.id) {
                                     <div class="column-item"
                                          cdkDrag
-                                         [matTooltip]="column.description ? (column.description | autoLanguage) : ''">
+                                         [appTooltip]="column.description ? (column.description | autoLanguage) : ''">
                                         <span class="column-label">{{column.label | autoLanguage}}</span>
                                         <div class="column-badges">
                                             @if (column.filterable) {
-                                                <mat-chip class="column-badge">F</mat-chip>
+                                                <span class="column-badge">F</span>
                                             }
                                             @if (column.sortable) {
-                                                <mat-chip class="column-badge">S</mat-chip>
+                                                <span class="column-badge">S</span>
                                             }
                                         </div>
-                                        <mat-icon cdkDragHandle>drag_handle</mat-icon>
+                                        <app-icon icon="drag_handle" cdkDragHandle>drag_handle</app-icon>
                                     </div>
                                     }
                                 </div>
-                            </mat-card-content>
-                        </mat-card>
+                            </app-card-content>
+                        </app-card>
 
                         <div class="column-controls">
-                            <button mat-icon-button
+                            <button app-button
+                                    appearance="icon"
                                     (click)="selectAllGroupColumns(group)"
-                                    [matTooltip]="'select_all' | translate">
-                                <mat-icon>keyboard_double_arrow_right</mat-icon>
+                                    [appTooltip]="'select_all' | translate">
+                                <app-icon icon="keyboard_double_arrow_right">keyboard_double_arrow_right</app-icon>
                             </button>
-                            <button mat-icon-button
+                            <button app-button
+                                    appearance="icon"
                                     (click)="deSelectAllGroupColumns(group)"
-                                    [matTooltip]="'deselect_all' | translate">
-                                <mat-icon>keyboard_double_arrow_left</mat-icon>
+                                    [appTooltip]="'deselect_all' | translate">
+                                <app-icon icon="keyboard_double_arrow_left">keyboard_double_arrow_left</app-icon>
                             </button>
                         </div>
 
-                        <mat-card class="columns-card">
-                            <mat-card-header>
-                                <mat-card-title>{{'selected_columns' | translate}}</mat-card-title>
-                            </mat-card-header>
-                            <mat-card-content>
+                        <app-card class="columns-card">
+                            <app-card-header>
+                                <app-card-title>{{'selected_columns' | translate}}</app-card-title>
+                            </app-card-header>
+                            <app-card-content>
                                 <div class="column-list"
                                      cdkDropList
                                      [id]="'selected-' + group"
@@ -154,22 +159,22 @@
                                     @for (column of selectedGroupColumns[group]; track column.id) {
                                     <div class="column-item"
                                          cdkDrag
-                                         [matTooltip]="column.description ? (column.description | autoLanguage) : ''">
+                                         [appTooltip]="column.description ? (column.description | autoLanguage) : ''">
                                         <span class="column-label">{{column.label | autoLanguage}}</span>
                                         <div class="column-badges">
                                             @if (column.filterable) {
-                                                <mat-chip class="column-badge">F</mat-chip>
+                                                <span class="column-badge">F</span>
                                             }
                                             @if (column.sortable) {
-                                                <mat-chip class="column-badge">S</mat-chip>
+                                                <span class="column-badge">S</span>
                                             }
                                         </div>
-                                        <mat-icon cdkDragHandle>drag_handle</mat-icon>
+                                        <app-icon icon="drag_handle" cdkDragHandle>drag_handle</app-icon>
                                     </div>
                                     }
                                 </div>
-                            </mat-card-content>
-                        </mat-card>
+                            </app-card-content>
+                        </app-card>
                     </div>
                 </div>
                 }
@@ -178,31 +183,32 @@
         }
 
         <div class="sort-section" formGroupName="sort">
-            <mat-label class="section-label">{{'sort' | translate}}</mat-label>
+            <app-label class="section-label">{{'sort' | translate}}</app-label>
             <div class="sort-controls">
-                <mat-form-field appearance="outline" class="sort-field">
-                    <mat-label>{{'sort_column' | translate}}</mat-label>
-                    <mat-select formControlName="prop"
-                               (selectionChange)="onSortField($event.value)">
-                        <mat-option>{{'clear_selection' | translate}}</mat-option>
+                <app-form-field appearance="outline" class="sort-field">
+                    <app-label>{{'sort_column' | translate}}</app-label>
+                    <select appInput
+                            formControlName="prop"
+                            (change)="onSortField($any($event.target).value)">
+                        <option [ngValue]="null">{{'clear_selection' | translate}}</option>
                         @for (column of sortable; track column.id) {
-                            <mat-option [value]="column.id">{{column.label | autoLanguage}}</mat-option>
+                            <option [value]="column.id">{{column.label | autoLanguage}}</option>
                         }
-                    </mat-select>
-                </mat-form-field>
+                    </select>
+                </app-form-field>
 
-                <mat-form-field appearance="outline" class="sort-direction">
-                    <mat-label>{{'sort_direction' | translate}}</mat-label>
-                    <mat-select formControlName="dir">
-                        <mat-option value="asc">{{'ascending' | translate}}</mat-option>
-                        <mat-option value="desc">{{'descending' | translate}}</mat-option>
-                    </mat-select>
-                </mat-form-field>
+                <app-form-field appearance="outline" class="sort-direction">
+                    <app-label>{{'sort_direction' | translate}}</app-label>
+                    <select appInput formControlName="dir">
+                        <option value="asc">{{'ascending' | translate}}</option>
+                        <option value="desc">{{'descending' | translate}}</option>
+                    </select>
+                </app-form-field>
             </div>
         </div>
 
         <div class="filters-section">
-            <mat-label class="section-label">{{'filters' | translate}}</mat-label>
+            <app-label class="section-label">{{'filters' | translate}}</app-label>
             <app-export-filters (filtersValueChange)="onFiltersValueChange($event)"
                                 [selectedDataSourceKey]="selectedDataSource"
                                 [disabled]="!selectedColumns.length"
@@ -211,7 +217,8 @@
         </div>
 
         <div class="actions-section">
-            <button mat-raised-button
+            <button app-button
+                    appearance="raised"
                     color="primary"
                     (click)="create()"
                     [disabled]="!juicebox.hasPermission('data-export:role#create') || templateForm.invalid || !filtersValid"

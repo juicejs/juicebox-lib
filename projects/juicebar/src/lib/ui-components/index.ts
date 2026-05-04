@@ -36,6 +36,12 @@ export * from './divider/divider.component';
 // Progress
 export * from './progress-spinner/progress-spinner.component';
 
+// Datepicker
+export * from './datepicker/datepicker.component';
+
+// Autocomplete
+export * from './autocomplete/autocomplete.component';
+
 // Other components
 export * from './slide-toggle/slide-toggle.component';
 export * from './paginator/paginator.component';

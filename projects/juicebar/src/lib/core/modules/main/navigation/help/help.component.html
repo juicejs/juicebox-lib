@@ -1,6 +1,6 @@
-<h2 mat-dialog-title>{{'help' | translate}}</h2>
+<app-dialog-title>{{'help' | translate}}</app-dialog-title>
 
-<div mat-dialog-content>
+<app-dialog-content>
     <div class="help-file">
       <h4 class="section-title">{{'help_document' | translate}}</h4>
       <div class="file-upload-section">
@@ -10,7 +10,8 @@
                class="file-input"
                [hasPermissions]="'juicebox:role#edit-help-document'"
                accept="application/pdf">
-        <button mat-raised-button
+        <button app-button
+                appearance="raised"
                 color="primary"
                 (click)="uploadFile(input)"
                 [hasPermissions]="'juicebox:role#edit-help-document'"
@@ -29,13 +30,13 @@
         }
 
         <div class="action-buttons">
-          <button mat-button
+          <button app-button
                   color="primary"
                   (click)="downloadFile()"
                   [disabled]="!fileInfo">
             Download
           </button>
-          <button mat-button
+          <button app-button
                   color="primary"
                   (click)="deleteFile()"
                   [hasPermissions]="'juicebox:role#edit-help-document'">
@@ -52,14 +53,15 @@
       <div class="textarea-container">
         <app-form-field appearance="outline" class="full-width">
           <app-label>{{'help_text' | translate}}</app-label>
-          <textarea matInput
+          <textarea appInput
                     #text
-                    [(ngModel)]="helpData"
+                    [formControl]="helpDataCtrl"
                     rows="6"
                     placeholder="Enter help text..."></textarea>
         </app-form-field>
 
-        <button mat-raised-button
+        <button app-button
+                appearance="raised"
                 color="primary"
                 type="submit"
                 class="update-button"
@@ -70,11 +72,11 @@
         </button>
       </div>
     </div>
-</div>
+</app-dialog-content>
 
-<div mat-dialog-actions align="end">
-  <button mat-button
+<app-dialog-actions align="end">
+  <button app-button
           (click)="dialogRef.close(helpTextUpdated)">
     {{'close' | translate}}
   </button>
-</div>
+</app-dialog-actions>

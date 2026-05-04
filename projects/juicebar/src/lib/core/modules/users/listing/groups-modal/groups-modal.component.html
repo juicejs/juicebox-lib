@@ -78,7 +78,7 @@
                     <div class="d-flex flex-wrap pt-1">
                         @for (permission of getRolePermissions(row); track permission.key) {
                         <app-checkbox
-                            [(ngModel)]="row.permissions[permission.key]"
+                            [(checked)]="row.permissions[permission.key]"
                             [disabled]="!hasPermission('groups:role#super-admin')"
                             (change)="updateGroupRolePermission(row)"
                             class="mb-1 mr-1">

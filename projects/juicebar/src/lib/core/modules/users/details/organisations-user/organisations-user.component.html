@@ -2,9 +2,8 @@
     <div class="menu-bar" style="justify-content: flex-start; align-items: center; gap: 16px;">
         <app-form-field appearance="outline" style="width: 15rem;">
             <app-label>Select organisation</app-label>
-            <app-select [(ngModel)]="selectedOrganisation"
-                        name="organisations"
-                        (selectionChange)="organisationChanged($event.value)">
+            <app-select [(value)]="selectedOrganisation"
+                        (selectionChange)="organisationChanged($event)">
                 @for (org of organisations; track org._id) {
                     <app-option [value]="org">
                         {{org.name}}

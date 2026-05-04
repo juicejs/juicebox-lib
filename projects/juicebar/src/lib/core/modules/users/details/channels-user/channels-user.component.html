@@ -23,7 +23,7 @@
                     <div class="d-flex flex-wrap user-select-none pt-1">
                         @for (permission of allPermissions; track permission.key) {
                             <app-checkbox
-                                [(ngModel)]="row.permissions[permission.key]"
+                                [(checked)]="row.permissions[permission.key]"
                                 (change)="togglePermission(row)"
                                 [hasPermissions]="'users:role#updated|update'"
                                 class="permission-checkbox mb-1 mr-2">
