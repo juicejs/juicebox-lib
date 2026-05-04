@@ -10,13 +10,13 @@
         <app-form-field appearance="outline" class="full-width">
             <app-label>{{ 'publisher' | translate}}</app-label>
             <app-select formControlName="publisher" [(ngModel)]="publisher" placeholder="{{'choose_publisher' | translate}}">
-                <app-option *ngFor="let pub of publishers" [value]="pub.id">
-                    {{pub.title}}
-                </app-option>
+                @for (pub of publishers; track pub.id) {
+                    <app-option [value]="pub.id">{{pub.title}}</app-option>
+                }
             </app-select>
-            <app-error *ngIf="walletForm.controls['publisher'].hasError('required')">
-                You must include a publisher
-            </app-error>
+            @if (walletForm.controls['publisher'].hasError('required')) {
+                <app-error>You must include a publisher</app-error>
+            }
         </app-form-field>
 
         <app-form-field appearance="outline" class="full-width">
@@ -24,27 +24,27 @@
             <input appInput type="text" placeholder="{{'name' | translate}}"
                    [(ngModel)]="user.wallets.name"
                    formControlName="name">
-            <app-error *ngIf="walletForm.controls['name'].hasError('required')">
-                {{"include_name" | translate}}
-            </app-error>
+            @if (walletForm.controls['name'].hasError('required')) {
+                <app-error>{{"include_name" | translate}}</app-error>
+            }
         </app-form-field>
         <app-form-field appearance="outline" class="full-width">
             <app-label>{{"existing_address" | translate}}</app-label>
             <input appInput type="text" placeholder="{{'leave_empty_for_new_wallet' | translate}}"
                    [(ngModel)]="user.wallets.address"
                    formControlName="address">
-            <app-error *ngIf="walletForm.controls['address'].hasError('addressLength')">
-                {{"include_address" | translate}}
-            </app-error>
+            @if (walletForm.controls['address'].hasError('addressLength')) {
+                <app-error>{{"include_address" | translate}}</app-error>
+            }
         </app-form-field>
         <app-form-field appearance="outline" class="full-width">
             <app-label>{{"private_key" | translate}}</app-label>
             <input appInput type="text" placeholder="{{'leave_empty_for_new_wallet' | translate}}"
                    [(ngModel)]="user.wallets.privateKey"
                    formControlName="privateKey">
-            <app-error *ngIf="walletForm.controls['privateKey'].hasError('required')">
-                {{"include_key" | translate}}
-            </app-error>
+            @if (walletForm.controls['privateKey'].hasError('required')) {
+                <app-error>{{"include_key" | translate}}</app-error>
+            }
         </app-form-field>
     </form>
 </app-dialog-content>

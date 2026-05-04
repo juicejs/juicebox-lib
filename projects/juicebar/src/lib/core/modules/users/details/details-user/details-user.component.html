@@ -1,24 +1,30 @@
 <div class="d-flex p-3" style="gap: 2rem;">
-    <form *ngIf="userForm" class="col-4 p-0" [formGroup]="userForm">
+    @if (userForm) {
+    <form class="col-4 p-0" [formGroup]="userForm">
         <div class="form-group"
-             [ngClass]="{'has-error':!userForm.controls['firstname'].valid  && userForm.controls['firstname'].touched}">
+             [class.has-error]="!userForm.controls['firstname'].valid && userForm.controls['firstname'].touched">
             <mat-form-field appearance="outline" class="w-100">
                 <mat-label>{{"salutation" | translate}}</mat-label>
                 <mat-select formControlName="salutation">
-                    <mat-option *ngFor="let salutation of juicebox.getSalutations()" [value]="salutation.key">
-                        {{salutation.name}}
-                    </mat-option>
+                    @for (salutation of juicebox.getSalutations(); track salutation.key) {
+                        <mat-option [value]="salutation.key">
+                            {{salutation.name}}
+                        </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
-            <div *ngIf="userForm.controls['salutation'].hasError('required') && userForm.controls['salutation'].touched"
-                 class="alert alert-danger">{{"include_salutation" | translate}} </div>
+            @if (userForm.controls['salutation'].hasError('required') && userForm.controls['salutation'].touched) {
+                <div class="alert alert-danger">{{"include_salutation" | translate}}</div>
+            }
         </div>
 
         <div class="form-group">
             <mat-form-field appearance="outline" class="w-100">
                 <mat-label>{{"firstname" | translate}}*</mat-label>
                 <input matInput formControlName="firstname">
-                <mat-error *ngIf="userForm.controls['firstname'].hasError('required')">{{"include_firstname" | translate}}</mat-error>
+                @if (userForm.controls['firstname'].hasError('required')) {
+                    <mat-error>{{"include_firstname" | translate}}</mat-error>
+                }
             </mat-form-field>
         </div>
 
@@ -26,24 +32,30 @@
             <mat-form-field appearance="outline" class="w-100">
                 <mat-label>{{"lastname" | translate}}*</mat-label>
                 <input matInput formControlName="lastname">
-                <mat-error *ngIf="userForm.controls['lastname'].hasError('required')">{{"include_lastname" | translate}}</mat-error>
+                @if (userForm.controls['lastname'].hasError('required')) {
+                    <mat-error>{{"include_lastname" | translate}}</mat-error>
+                }
             </mat-form-field>
         </div>
 
-        <div class="form-group" *ngIf="juicebox.getProjectTitle() !== 'QualityCircle'">
-            <mat-form-field appearance="outline" class="w-100">
-                <mat-label>{{"nickname" | translate}}</mat-label>
-                <input matInput formControlName="nickname">
-            </mat-form-field>
-        </div>
+        @if (juicebox.getProjectTitle() !== 'QualityCircle') {
+            <div class="form-group">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>{{"nickname" | translate}}</mat-label>
+                    <input matInput formControlName="nickname">
+                </mat-form-field>
+            </div>
+        }
 
         <div class="form-group">
             <mat-form-field appearance="outline" class="w-100">
                 <mat-label>{{"language" | translate}}</mat-label>
                 <mat-select formControlName="language">
-                    <mat-option *ngFor="let language of languages" [value]="language.code">
-                        {{language.name}}
-                    </mat-option>
+                    @for (language of languages; track language.code) {
+                        <mat-option [value]="language.code">
+                            {{language.name}}
+                        </mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
         </div>
@@ -52,16 +64,22 @@
             <mat-form-field appearance="outline" class="w-100">
                 <mat-label>{{"email" | translate}}*</mat-label>
                 <input matInput formControlName="email" [readonly]="projectTitle === 'Equipments'">
-                <mat-error *ngIf="userForm.controls['email'].hasError('required')">{{"include_email" | translate}}</mat-error>
-                <mat-error *ngIf="userForm.controls['email'].hasError('email')">{{"invalid_email" | translate}}</mat-error>
+                @if (userForm.controls['email'].hasError('required')) {
+                    <mat-error>{{"include_email" | translate}}</mat-error>
+                }
+                @if (userForm.controls['email'].hasError('email')) {
+                    <mat-error>{{"invalid_email" | translate}}</mat-error>
+                }
             </mat-form-field>
         </div>
-        <div class="form-group" *ngIf="juicebox.getProjectTitle() !== 'QualityCircle'">
-            <mat-form-field appearance="outline" class="w-100">
-                <mat-label>{{"department" | translate}}</mat-label>
-                <input matInput formControlName="department">
-            </mat-form-field>
-        </div>
+        @if (juicebox.getProjectTitle() !== 'QualityCircle') {
+            <div class="form-group">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>{{"department" | translate}}</mat-label>
+                    <input matInput formControlName="department">
+                </mat-form-field>
+            </div>
+        }
 
         <div class="form-group">
             <div class="d-flex align-center justify-between">
@@ -70,10 +88,12 @@
                         <mat-slide-toggle formControlName="active" class="mr-2"></mat-slide-toggle>
                         <span>{{"active" | translate}}</span>
                     </div>
-                    <div class="d-flex align-center" *ngIf="juicebox.hasPermission('users:role#super-admin')">
-                        <mat-slide-toggle formControlName="admin" class="mr-2"></mat-slide-toggle>
-                        <span>{{"admin" | translate}}</span>
-                    </div>
+                    @if (juicebox.hasPermission('users:role#super-admin')) {
+                        <div class="d-flex align-center">
+                            <mat-slide-toggle formControlName="admin" class="mr-2"></mat-slide-toggle>
+                            <span>{{"admin" | translate}}</span>
+                        </div>
+                    }
                 </div>
                 <button mat-raised-button color="primary" [matPromiseBtn]="updatePromise"
                         [hasPermissions]="'users:role#updated|update'"
@@ -82,9 +102,11 @@
             </div>
         </div>
     </form>
+    }
 
-    <form *ngIf="passwordForm" class="col-4 p-0" [formGroup]="passwordForm">
-        <ng-container *ngIf="projectTitle !== 'Equipments'">
+    @if (passwordForm) {
+    <form class="col-4 p-0" [formGroup]="passwordForm">
+        @if (projectTitle !== 'Equipments') {
             <div class="form-group">
                 <mat-form-field appearance="outline" class="w-100">
                     <mat-label>{{"password" | translate}}</mat-label>
@@ -98,16 +120,22 @@
                 </mat-form-field>
             </div>
 
-            <div class="form-control-feedback alert alert-danger" *ngIf="passwordForm.controls['password'].errors && passwordForm.controls['password'].touched">
-                <div *ngIf="passwordForm.controls['password'].errors.required">
-                    {{"pass_required" | translate}}</div>
-                <div *ngIf="passwordForm.controls['password'].errors.password">
-                    {{"pass_regex_error" | translate}}</div>
-            </div>
+            @if (passwordForm.controls['password'].errors && passwordForm.controls['password'].touched) {
+                <div class="form-control-feedback alert alert-danger">
+                    @if (passwordForm.controls['password'].errors.required) {
+                        <div>{{"pass_required" | translate}}</div>
+                    }
+                    @if (passwordForm.controls['password'].errors.password) {
+                        <div>{{"pass_regex_error" | translate}}</div>
+                    }
+                </div>
+            }
 
-            <div class="form-control-feedback alert alert-danger" *ngIf="passwordForm && passwordForm.errors && passwordForm.errors['mismatch'] && passwordForm.controls['repeatPassword'].touched">
-                {{"pass_not_same" | translate}}
-            </div>
+            @if (passwordForm && passwordForm.errors && passwordForm.errors['mismatch'] && passwordForm.controls['repeatPassword'].touched) {
+                <div class="form-control-feedback alert alert-danger">
+                    {{"pass_not_same" | translate}}
+                </div>
+            }
 
             <div class="d-flex mb-5" style="margin-bottom: 3rem;">
                 <div class="d-flex flex-column text-center">
@@ -115,46 +143,53 @@
                             [hasPermissions]="'users:role#updated|update'"
                             (click)="generateRandomPassword()">{{"generate_random" | translate}}
                     </button>
-                    <span *ngIf="randomPassword" class="m-2" style="user-select: all">{{randomPassword}}</span>
+                    @if (randomPassword) {
+                        <span class="m-2" style="user-select: all">{{randomPassword}}</span>
+                    }
                 </div>
                 <button mat-raised-button color="primary" class="ml-auto mb-auto" [matPromiseBtn]="updatePromise"
                         [hasPermissions]="'users:role#updated|update'"
                         (click)="changePassword()">{{"pass_save" | translate}}
                 </button>
             </div>
-        </ng-container>
+        }
 
-        <div *ngIf="user?.attributes?.settings?.twoFactor && juicebox.hasPermission('users:role#super-admin')">
-            <div class="form-group">
-                <div class="d-flex align-center">
-                    <mat-form-field appearance="outline" class="flex-1 mr-2">
-                        <mat-label>{{"two_factor_authorisation_type" | translate}}</mat-label>
-                        <input matInput readonly [placeholder]="user.attributes.settings.twoFactor | translate">
-                    </mat-form-field>
-                    <button mat-raised-button color="primary" [matPromiseBtn]="updatePromise"
-                            [hasPermissions]="'users:role#updated|update'"
-                            (click)="resetTwoFactor()">{{"reset" | translate}}
-                    </button>
+        @if (user?.attributes?.settings?.twoFactor && juicebox.hasPermission('users:role#super-admin')) {
+            <div>
+                <div class="form-group">
+                    <div class="d-flex align-center">
+                        <mat-form-field appearance="outline" class="flex-1 mr-2">
+                            <mat-label>{{"two_factor_authorisation_type" | translate}}</mat-label>
+                            <input matInput readonly [placeholder]="user.attributes.settings.twoFactor | translate">
+                        </mat-form-field>
+                        <button mat-raised-button color="primary" [matPromiseBtn]="updatePromise"
+                                [hasPermissions]="'users:role#updated|update'"
+                                (click)="resetTwoFactor()">{{"reset" | translate}}
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        }
 
-        <div *ngIf="user" [hasPermissions]="'users:role#admin'">
-            <div class="form-group">
-                <div class="d-flex align-center">
-                    <mat-form-field appearance="outline" class="flex-1 mr-2">
-                        <mat-label>{{"wallet_authorization" | translate}}</mat-label>
-                        <input matInput [(ngModel)]="user.wallet"
-                               [ngModelOptions]="{standalone: true}"
-                               [placeholder]="'wallet_address' | translate">
-                    </mat-form-field>
-                    <button mat-raised-button color="primary" [matPromiseBtn]="updatePromise"
-                            [hasPermissions]="'users:role#updated|update'"
-                            (click)="setWalletAddress()">{{"save" | translate}}
-                    </button>
+        @if (user) {
+            <div [hasPermissions]="'users:role#admin'">
+                <div class="form-group">
+                    <div class="d-flex align-center">
+                        <mat-form-field appearance="outline" class="flex-1 mr-2">
+                            <mat-label>{{"wallet_authorization" | translate}}</mat-label>
+                            <input matInput [(ngModel)]="user.wallet"
+                                   [ngModelOptions]="{standalone: true}"
+                                   [placeholder]="'wallet_address' | translate">
+                        </mat-form-field>
+                        <button mat-raised-button color="primary" [matPromiseBtn]="updatePromise"
+                                [hasPermissions]="'users:role#updated|update'"
+                                (click)="setWalletAddress()">{{"save" | translate}}
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        }
 
     </form>
+    }
 </div>

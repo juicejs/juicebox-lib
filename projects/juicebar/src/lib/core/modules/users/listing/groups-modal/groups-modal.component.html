@@ -7,28 +7,33 @@
     </h2>
     <div class="filter-bar">
         <div class="form-group d-flex" style="width:100%;">
-            <app-form-field *ngIf="groups && groups.length" appearance="outline" style="width: 400px; padding-right: 24px">
+            @if (groups && groups.length) {
+            <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
                 <app-label>{{'groups' | translate}}</app-label>
                 <app-select (selectionChange)="groupChanged($event.value)">
-                    <app-option *ngFor="let group of groups" [value]="group">
-                        {{group.name}}
-                    </app-option>
+                    @for (group of groups; track group.key) {
+                        <app-option [value]="group">{{group.name}}</app-option>
+                    }
                 </app-select>
             </app-form-field>
+            }
 
             <button app-button color="primary" [hasPermissions]="'groups:role#super-admin'"
                     (click)="createGroup()">{{'create' | translate}}</button>
         </div>
 
-        <div class="form-group d-flex" *ngIf="this.selectedGroup">
-            <app-form-field *ngIf="roles && roles.length && this.selectedGroup" appearance="outline" style="width: 400px; padding-right: 24px">
+        @if (this.selectedGroup) {
+        <div class="form-group d-flex">
+            @if (roles && roles.length && this.selectedGroup) {
+            <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
                 <app-label>{{'add_role' | translate}}</app-label>
                 <app-select [(value)]="selectedRole" name="role">
-                    <app-option *ngFor="let role of roles" [value]="role.key" [disabled]="role.disabled">
-                        {{role.name}}
-                    </app-option>
+                    @for (role of roles; track role.key) {
+                        <app-option [value]="role.key" [disabled]="role.disabled">{{role.name}}</app-option>
+                    }
                 </app-select>
             </app-form-field>
+            }
 
             <button app-button color="primary"
                     appearance="raised"
@@ -36,9 +41,12 @@
                     [hasPermissions]="'groups:role#super-admin'"
                     (click)="addRole()">{{'add' | translate}}</button>
 
-            <button *ngIf="selectedGroup" app-button color="primary" class="ml-2" [hasPermissions]="'groups:role#super-admin'"
-                    (click)="updateSelectedGroup()">{{'edit' | translate}}</button>
+            @if (selectedGroup) {
+                <button app-button color="primary" class="ml-2" [hasPermissions]="'groups:role#super-admin'"
+                        (click)="updateSelectedGroup()">{{'edit' | translate}}</button>
+            }
         </div>
+        }
     </div>
 
     <div class="col-12">
@@ -49,7 +57,8 @@
                 <cdk-cell *cdkCellDef="let row">{{row.role | translate}}</cdk-cell>
             </ng-container>
 
-            <ng-container cdkColumnDef="visibility" *ngIf="hasVisibilityFeature">
+            @if (hasVisibilityFeature) {
+            <ng-container cdkColumnDef="visibility">
                 <cdk-header-cell *cdkHeaderCellDef>{{'visibility' | translate}}</cdk-header-cell>
                 <cdk-cell *cdkCellDef="let row">
                     <div class="d-flex flex-wrap user-select-none pt-1">
@@ -61,19 +70,21 @@
                     </div>
                 </cdk-cell>
             </ng-container>
+            }
 
             <ng-container cdkColumnDef="permissions">
                 <cdk-header-cell *cdkHeaderCellDef>{{'permissions' | translate}}</cdk-header-cell>
                 <cdk-cell *cdkCellDef="let row">
                     <div class="d-flex flex-wrap pt-1">
-                        <app-checkbox 
-                            *ngFor="let permission of getRolePermissions(row)"
+                        @for (permission of getRolePermissions(row); track permission.key) {
+                        <app-checkbox
                             [(ngModel)]="row.permissions[permission.key]"
                             [disabled]="!hasPermission('groups:role#super-admin')"
                             (change)="updateGroupRolePermission(row)"
                             class="mb-1 mr-1">
                             {{permission.key}}
                         </app-checkbox>
+                        }
                     </div>
                 </cdk-cell>
             </ng-container>
@@ -96,13 +107,14 @@
             <cdk-row *cdkRowDef="let row; columns: displayedColumns;"></cdk-row>
         </cdk-table>
 
-        <app-paginator 
-            *ngIf="count > itemsPerPage"
+        @if (count > itemsPerPage) {
+        <app-paginator
             [length]="count"
             [pageSize]="itemsPerPage"
             [pageSizeOptions]="[5, 10, 25, 100]"
             (page)="changePage($event, config)">
         </app-paginator>
+        }
     </div>
 </div>
 

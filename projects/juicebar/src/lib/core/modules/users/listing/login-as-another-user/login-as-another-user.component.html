@@ -11,26 +11,28 @@
             <app-label>{{'two_factor_authorisation_code' | translate}}</app-label>
             <input appInput maxlength="6" formControlName="code" 
                    placeholder="Enter 6-digit code">
-            <app-error *ngIf="twoFaForm.get('code')?.hasError('required')">
-                Code is required
-            </app-error>
-            <app-error *ngIf="twoFaForm.get('code')?.hasError('pattern')">
-                Code must contain only numbers
-            </app-error>
-            <app-error *ngIf="twoFaForm.get('code')?.hasError('minlength') || twoFaForm.get('code')?.hasError('maxlength')">
-                Code must be exactly 6 digits
-            </app-error>
+            @if (twoFaForm.get('code')?.hasError('required')) {
+                <app-error>Code is required</app-error>
+            }
+            @if (twoFaForm.get('code')?.hasError('pattern')) {
+                <app-error>Code must contain only numbers</app-error>
+            }
+            @if (twoFaForm.get('code')?.hasError('minlength') || twoFaForm.get('code')?.hasError('maxlength')) {
+                <app-error>Code must be exactly 6 digits</app-error>
+            }
         </app-form-field>
 
-        <app-form-field *ngIf="organisations.length" appearance="outline" class="full-width">
+        @if (organisations.length) {
+        <app-form-field appearance="outline" class="full-width">
             <app-label>{{'select_organisation' | translate}}</app-label>
-            <app-select formControlName="organisation" 
+            <app-select formControlName="organisation"
                         placeholder="{{'organisation' | translate}}">
-                <app-option *ngFor="let org of organisations" [value]="org._id">
-                    {{org.name}}
-                </app-option>
+                @for (org of organisations; track org._id) {
+                    <app-option [value]="org._id">{{org.name}}</app-option>
+                }
             </app-select>
         </app-form-field>
+        }
     </form>
 </app-dialog-content>
 

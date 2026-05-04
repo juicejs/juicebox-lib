@@ -207,23 +207,10 @@ export class NavigationComponent implements OnInit, OnDestroy {
     await this.router.navigate(['/main/user-profile']);
   }
 
-  getComponentWidth() {
-    if (!this.juicebox.nextUi) {
-      return {
-        'width': '100%',
-      };
-    } else {
-      if (this.juicebox.collapsed) {
-        return {
-          'width': 'calc(100% - 70px)',
-        };
-      } else {
-        return {
-          // 'width': 'calc(100% - 220px)',
-          'width': 'calc(100%)',
-        };
-      }
-    }
+  getComponentWidth(): string {
+    if (!this.juicebox.nextUi) return '100%';
+    if (this.juicebox.collapsed) return 'calc(100% - 70px)';
+    return 'calc(100%)';
   }
 }
 

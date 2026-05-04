@@ -1,5 +1,6 @@
 <div class="parent">
-    <div [formGroup]="templateForm" class="template-form-container" *ngIf="templateForm">
+    @if (templateForm) {
+    <div [formGroup]="templateForm" class="template-form-container">
 
         <mat-form-field appearance="outline" class="template-form-field">
             <mat-label>{{'name' | translate}}</mat-label>
@@ -7,25 +8,26 @@
                    type="text"
                    formControlName="name"
                    [placeholder]="'name' | translate">
-            <mat-error *ngIf="templateForm.get('name')?.errors?.['required']">
-                {{'field_required' | translate}}
-            </mat-error>
+            @if (templateForm.get('name')?.errors?.['required']) {
+                <mat-error>{{'field_required' | translate}}</mat-error>
+            }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="template-form-field">
             <mat-label>{{'datasource' | translate}}</mat-label>
             <mat-select formControlName="data_source_key"
                        (selectionChange)="onDataSourceChange($event.value)">
-                <mat-option *ngFor="let dataSource of dataSources" [value]="dataSource.key">
-                    {{ dataSource.name | autoLanguage }}
-                </mat-option>
+                @for (dataSource of dataSources; track dataSource.key) {
+                    <mat-option [value]="dataSource.key">{{ dataSource.name | autoLanguage }}</mat-option>
+                }
             </mat-select>
-            <mat-error *ngIf="templateForm.get('data_source_key')?.errors?.['required']">
-                {{'field_required' | translate}}
-            </mat-error>
+            @if (templateForm.get('data_source_key')?.errors?.['required']) {
+                <mat-error>{{'field_required' | translate}}</mat-error>
+            }
         </mat-form-field>
 
-        <div class="columns-section" *ngIf="!groupColumns">
+        @if (!groupColumns) {
+        <div class="columns-section">
             <mat-label class="section-label">{{'columns' | translate}} *</mat-label>
             <div class="columns-container" cdkDropListGroup>
                 <div class="columns-card dragula-container"
@@ -34,14 +36,19 @@
                      [cdkDropListData]="columns"
                      [cdkDropListConnectedTo]="[selectedList]"
                      (cdkDropListDropped)="onColumnDrop($event)">
-                    <div *ngFor="let column of columns"
-                         class="column-item dragula-label"
+                    @for (column of columns; track column.id) {
+                    <div class="column-item dragula-label"
                          cdkDrag
                          [matTooltip]="column.description ? (column.description | autoLanguage) : ''">
                         <span class="column-label">{{column.label | autoLanguage}}</span>
-                        <span *ngIf="column.filterable" class="column-filterable" title="Filterable">[F]</span>
-                        <span *ngIf="column.sortable" class="column-sortable" title="Sortable">[S]</span>
+                        @if (column.filterable) {
+                            <span class="column-filterable" title="Filterable">[F]</span>
+                        }
+                        @if (column.sortable) {
+                            <span class="column-sortable" title="Sortable">[S]</span>
+                        }
                     </div>
+                    }
                 </div>
 
                 <div class="column-controls">
@@ -63,22 +70,30 @@
                      [cdkDropListData]="selectedColumns"
                      [cdkDropListConnectedTo]="[availableList]"
                      (cdkDropListDropped)="onColumnDrop($event)">
-                    <div *ngFor="let column of selectedColumns"
-                         class="column-item dragula-label"
+                    @for (column of selectedColumns; track column.id) {
+                    <div class="column-item dragula-label"
                          cdkDrag
                          [matTooltip]="column.description ? (column.description | autoLanguage) : ''">
                         <span class="column-label">{{column.label | autoLanguage}}</span>
-                        <span *ngIf="column.filterable" class="column-filterable" title="Filterable">[F]</span>
-                        <span *ngIf="column.sortable" class="column-sortable" title="Sortable">[S]</span>
+                        @if (column.filterable) {
+                            <span class="column-filterable" title="Filterable">[F]</span>
+                        }
+                        @if (column.sortable) {
+                            <span class="column-sortable" title="Sortable">[S]</span>
+                        }
                     </div>
+                    }
                 </div>
             </div>
         </div>
+        }
 
-        <div class="columns-section" *ngIf="groupColumns">
+        @if (groupColumns) {
+        <div class="columns-section">
             <mat-label class="section-label">{{'columns' | translate}} *</mat-label>
             <div class="grouped-columns-container">
-                <div *ngFor="let group of Object.keys(groupColumns)" class="group-section">
+                @for (group of Object.keys(groupColumns); track group) {
+                <div class="group-section">
                     <mat-label class="group-label">{{ group }}</mat-label>
                     <div class="columns-container" cdkDropListGroup>
                         <mat-card class="columns-card">
@@ -92,17 +107,22 @@
                                      [cdkDropListData]="groupColumns[group]"
                                      [cdkDropListConnectedTo]="['selected-' + group]"
                                      (cdkDropListDropped)="onGroupColumnDrop($event, group)">
-                                    <div *ngFor="let column of groupColumns[group]"
-                                         class="column-item"
+                                    @for (column of groupColumns[group]; track column.id) {
+                                    <div class="column-item"
                                          cdkDrag
                                          [matTooltip]="column.description ? (column.description | autoLanguage) : ''">
                                         <span class="column-label">{{column.label | autoLanguage}}</span>
                                         <div class="column-badges">
-                                            <mat-chip *ngIf="column.filterable" class="column-badge">F</mat-chip>
-                                            <mat-chip *ngIf="column.sortable" class="column-badge">S</mat-chip>
+                                            @if (column.filterable) {
+                                                <mat-chip class="column-badge">F</mat-chip>
+                                            }
+                                            @if (column.sortable) {
+                                                <mat-chip class="column-badge">S</mat-chip>
+                                            }
                                         </div>
                                         <mat-icon cdkDragHandle>drag_handle</mat-icon>
                                     </div>
+                                    }
                                 </div>
                             </mat-card-content>
                         </mat-card>
@@ -131,24 +151,31 @@
                                      [cdkDropListData]="selectedGroupColumns[group]"
                                      [cdkDropListConnectedTo]="['available-' + group]"
                                      (cdkDropListDropped)="onGroupColumnDrop($event, group)">
-                                    <div *ngFor="let column of selectedGroupColumns[group]"
-                                         class="column-item"
+                                    @for (column of selectedGroupColumns[group]; track column.id) {
+                                    <div class="column-item"
                                          cdkDrag
                                          [matTooltip]="column.description ? (column.description | autoLanguage) : ''">
                                         <span class="column-label">{{column.label | autoLanguage}}</span>
                                         <div class="column-badges">
-                                            <mat-chip *ngIf="column.filterable" class="column-badge">F</mat-chip>
-                                            <mat-chip *ngIf="column.sortable" class="column-badge">S</mat-chip>
+                                            @if (column.filterable) {
+                                                <mat-chip class="column-badge">F</mat-chip>
+                                            }
+                                            @if (column.sortable) {
+                                                <mat-chip class="column-badge">S</mat-chip>
+                                            }
                                         </div>
                                         <mat-icon cdkDragHandle>drag_handle</mat-icon>
                                     </div>
+                                    }
                                 </div>
                             </mat-card-content>
                         </mat-card>
                     </div>
                 </div>
+                }
             </div>
         </div>
+        }
 
         <div class="sort-section" formGroupName="sort">
             <mat-label class="section-label">{{'sort' | translate}}</mat-label>
@@ -158,9 +185,9 @@
                     <mat-select formControlName="prop"
                                (selectionChange)="onSortField($event.value)">
                         <mat-option>{{'clear_selection' | translate}}</mat-option>
-                        <mat-option *ngFor="let column of sortable" [value]="column.id">
-                            {{column.label | autoLanguage}}
-                        </mat-option>
+                        @for (column of sortable; track column.id) {
+                            <mat-option [value]="column.id">{{column.label | autoLanguage}}</mat-option>
+                        }
                     </mat-select>
                 </mat-form-field>
 
@@ -193,4 +220,5 @@
             </button>
         </div>
     </div>
+    }
 </div>

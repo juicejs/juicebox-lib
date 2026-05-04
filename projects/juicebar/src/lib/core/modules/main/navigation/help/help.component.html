@@ -20,12 +20,13 @@
       </div>
 
       <div class="file-actions">
-        <div *ngIf="fileInfo else noFile" class="file-name">
-          {{fileInfo.name}}{{fileInfo.extension}}
-        </div>
-        <ng-template #noFile>
+        @if (fileInfo) {
+          <div class="file-name">
+            {{fileInfo.name}}{{fileInfo.extension}}
+          </div>
+        } @else {
           <span class="no-file">-</span>
-        </ng-template>
+        }
 
         <div class="action-buttons">
           <button mat-button

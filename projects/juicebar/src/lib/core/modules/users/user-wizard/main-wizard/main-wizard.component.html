@@ -1,21 +1,23 @@
 <div class="parent">
-    <form *ngIf="userForm" [formGroup]="userForm" class="col-4">
+    @if (userForm) {
+    <form [formGroup]="userForm" class="col-4">
 
         <div class="form-group">
             <mat-form-field appearance="outline" class="w-100">
                 <mat-label>{{"salutation" | translate}}</mat-label>
                 <mat-select formControlName="salutation">
-                    <mat-option *ngFor="let salutation of salutations" [value]="salutation.key">
-                        {{salutation.name}}
-                    </mat-option>
+                    @for (salutation of salutations; track salutation.key) {
+                        <mat-option [value]="salutation.key">{{salutation.name}}</mat-option>
+                    }
                 </mat-select>
-                <mat-error *ngIf="userForm.controls['salutation'].hasError('required')">
-                    {{"include_salutation" | translate}}
-                </mat-error>
+                @if (userForm.controls['salutation'].hasError('required')) {
+                    <mat-error>{{"include_salutation" | translate}}</mat-error>
+                }
             </mat-form-field>
         </div>
 
-        <div class="form-group" *ngIf="projectTitle === 'QualityCircle' || projectTitle === 'FireCircle'">
+        @if (projectTitle === 'QualityCircle' || projectTitle === 'FireCircle') {
+        <div class="form-group">
             <mat-form-field appearance="outline" class="w-100">
                 <mat-label>{{ 'choose_email' | translate}}</mat-label>
                 <input matInput
@@ -26,32 +28,36 @@
                 <mat-autocomplete #emailAutocomplete
                                   (optionSelected)="onSelectChange($event.option.value)"
                                   [displayWith]="displayEmailFn">
-                    <mat-option *ngFor="let trainee of filteredTrainees" [value]="trainee.email">
-                        <span>{{ getDisplayValue(trainee) }}</span>
-                    </mat-option>
-                    <mat-option *ngIf="filteredTrainees.length === 0 && userForm.get('email')?.value"
-                                [value]="userForm.get('email')?.value"
-                                (click)="addCustomEmail(userForm.get('email')?.value)">
-                        <mat-icon>add</mat-icon>
-                        {{'add_new_email' | translate}}: {{ userForm.get('email')?.value }}
-                    </mat-option>
+                    @for (trainee of filteredTrainees; track trainee.email) {
+                        <mat-option [value]="trainee.email">
+                            <span>{{ getDisplayValue(trainee) }}</span>
+                        </mat-option>
+                    }
+                    @if (filteredTrainees.length === 0 && userForm.get('email')?.value) {
+                        <mat-option [value]="userForm.get('email')?.value"
+                                    (click)="addCustomEmail(userForm.get('email')?.value)">
+                            <mat-icon>add</mat-icon>
+                            {{'add_new_email' | translate}}: {{ userForm.get('email')?.value }}
+                        </mat-option>
+                    }
                 </mat-autocomplete>
-                <mat-error *ngIf="userForm.controls['email'].hasError('required')">
-                    {{"include_email" | translate}}
-                </mat-error>
-                <mat-error *ngIf="userForm.controls['email'].hasError('email')">
-                    {{"invalid_email" | translate}}
-                </mat-error>
+                @if (userForm.controls['email'].hasError('required')) {
+                    <mat-error>{{"include_email" | translate}}</mat-error>
+                }
+                @if (userForm.controls['email'].hasError('email')) {
+                    <mat-error>{{"invalid_email" | translate}}</mat-error>
+                }
             </mat-form-field>
         </div>
+        }
 
         <div class="form-group">
             <mat-form-field appearance="outline" class="w-100">
                 <mat-label>{{"firstname" | translate}}</mat-label>
                 <input matInput type="text" formControlName="firstname">
-                <mat-error *ngIf="userForm.controls['firstname'].hasError('required')">
-                    {{"include_firstname" | translate}}
-                </mat-error>
+                @if (userForm.controls['firstname'].hasError('required')) {
+                    <mat-error>{{"include_firstname" | translate}}</mat-error>
+                }
             </mat-form-field>
         </div>
 
@@ -59,61 +65,68 @@
             <mat-form-field appearance="outline" class="w-100">
                 <mat-label>{{"lastname" | translate}}</mat-label>
                 <input matInput type="text" formControlName="lastname">
-                <mat-error *ngIf="userForm.controls['lastname'].hasError('required')">
-                    {{"include_lastname" | translate}}
-                </mat-error>
+                @if (userForm.controls['lastname'].hasError('required')) {
+                    <mat-error>{{"include_lastname" | translate}}</mat-error>
+                }
             </mat-form-field>
         </div>
 
-        <div class="form-group" *ngIf="juicebox.getProjectTitle() !== 'QualityCircle'">
+        @if (juicebox.getProjectTitle() !== 'QualityCircle') {
+        <div class="form-group">
             <mat-form-field appearance="outline" class="w-100">
                 <mat-label>{{"nickname" | translate}}</mat-label>
                 <input matInput type="text" formControlName="nickname">
             </mat-form-field>
         </div>
+        }
 
         <div class="form-group">
             <mat-form-field appearance="outline" class="w-100">
                 <mat-label>{{"language" | translate}}</mat-label>
                 <mat-select formControlName="language">
-                    <mat-option *ngFor="let language of languages" [value]="language.code">
-                        {{language.name}}
-                    </mat-option>
+                    @for (language of languages; track language.code) {
+                        <mat-option [value]="language.code">{{language.name}}</mat-option>
+                    }
                 </mat-select>
             </mat-form-field>
         </div>
 
-        <div class="form-group" *ngIf="projectTitle !== 'QualityCircle' && projectTitle !== 'FireCircle'">
+        @if (projectTitle !== 'QualityCircle' && projectTitle !== 'FireCircle') {
+        <div class="form-group">
             <mat-form-field appearance="outline" class="w-100">
                 <mat-label>{{"email" | translate}}*</mat-label>
                 <input matInput type="email" formControlName="email">
-                <mat-error *ngIf="userForm.controls['email'].hasError('required')">
-                    {{"include_email" | translate}}
-                </mat-error>
-                <mat-error *ngIf="userForm.controls['email'].hasError('email')">
-                    {{"invalid_email" | translate}}
-                </mat-error>
+                @if (userForm.controls['email'].hasError('required')) {
+                    <mat-error>{{"include_email" | translate}}</mat-error>
+                }
+                @if (userForm.controls['email'].hasError('email')) {
+                    <mat-error>{{"invalid_email" | translate}}</mat-error>
+                }
             </mat-form-field>
         </div>
+        }
 
         <div class="form-group d-flex justify-end">
-            <button *ngIf="!multipleTabs"
-                    mat-raised-button
-                    color="primary"
-                    class="action-button"
-                    (click)="publish()"
-                    [matPromiseBtn]="promiseBtn">
-                {{"create" | translate}}
-            </button>
+            @if (!multipleTabs) {
+                <button mat-raised-button
+                        color="primary"
+                        class="action-button"
+                        (click)="publish()"
+                        [matPromiseBtn]="promiseBtn">
+                    {{"create" | translate}}
+                </button>
+            }
 
-            <button *ngIf="multipleTabs"
-                    mat-raised-button
-                    color="primary"
-                    class="action-button"
-                    [disabled]="!userForm.valid"
-                    (click)="next()">
-                {{"next" | translate}}
-            </button>
+            @if (multipleTabs) {
+                <button mat-raised-button
+                        color="primary"
+                        class="action-button"
+                        [disabled]="!userForm.valid"
+                        (click)="next()">
+                    {{"next" | translate}}
+                </button>
+            }
         </div>
     </form>
+    }
 </div>

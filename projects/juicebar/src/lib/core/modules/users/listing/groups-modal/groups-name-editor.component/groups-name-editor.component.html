@@ -6,14 +6,15 @@
 </h2>
 
 <app-dialog-content>
-    <form *ngIf="groupForm" class="m-0" [formGroup]="groupForm">
+    @if (groupForm) {
+    <form class="m-0" [formGroup]="groupForm">
 
         <mat-form-field appearance="outline" class="full-width">
             <mat-label>{{'name' | translate}}*</mat-label>
             <input matInput type="text" formControlName="name">
-            <mat-error *ngIf="groupForm.get('name')?.hasError('required')">
-                {{'name' | translate}} is required
-            </mat-error>
+            @if (groupForm.get('name')?.hasError('required')) {
+                <mat-error>{{'name' | translate}} is required</mat-error>
+            }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
@@ -22,9 +23,9 @@
             <input matInput type="text" formControlName="key"
                    (keydown.space)="$event.preventDefault()"
                    placeholder="{{'group key' | translate}}" [readonly]="!!group">
-            <mat-error *ngIf="groupForm.get('key')?.hasError('required')">
-                {{'key' | translate}} is required
-            </mat-error>
+            @if (groupForm.get('key')?.hasError('required')) {
+                <mat-error>{{'key' | translate}} is required</mat-error>
+            }
         </mat-form-field>
 
         <div [hasPermissionsHide]="'superAdmin:role#read'" class="full-width d-flex align-center">
@@ -34,6 +35,7 @@
         </div>
 
     </form>
+    }
 </app-dialog-content>
 
 <app-dialog-actions align="end">

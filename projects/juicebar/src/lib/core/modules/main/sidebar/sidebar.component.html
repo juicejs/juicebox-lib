@@ -1,10 +1,10 @@
 <app-sidenav-container class="modern-sidebar-container"
-                       [ngClass]="{ 'collapsed': juicebox.collapsed }">
+                       [class.collapsed]="juicebox.collapsed">
 
   <app-sidenav opened mode="side" class="modern-sidebar">
 
     <!-- Logo Section -->
-    <div class="sidebar-header" [ngClass]="{ 'collapsed': juicebox.collapsed }">
+    <div class="sidebar-header" [class.collapsed]="juicebox.collapsed">
       <div class="logo-container">
         <img [src]="organisationLogo" [alt]="'Company Logo'" class="company-logo">
       </div>
@@ -24,7 +24,8 @@
              (cdkDragStarted)="onMenuDragStarted()">
              
           <div class="menu-item"
-               [ngClass]="{ 'active': isActiveRoute(menuItem.router), 'dragging': isDragging }"
+               [class.active]="isActiveRoute(menuItem.router)"
+               [class.dragging]="isDragging"
                (click)="menuItemClicked($event, menuItem.router)"
                [appTooltip]="juicebox.collapsed ? menuItem.label : ''"
                appTooltipPosition="right">
@@ -39,7 +40,7 @@
                 }
               </div>
               
-              <span class="menu-label" [ngClass]="{ 'collapsed': juicebox.collapsed }">
+              <span class="menu-label" [class.collapsed]="juicebox.collapsed">
                 {{menuItem.label}}
               </span>
             </div>
@@ -78,7 +79,8 @@
              type="file"
              class="file-input"/>
 
-      <div *ngIf="imageChangedEvent" class="cropper-section">
+      @if (imageChangedEvent) {
+      <div class="cropper-section">
         <image-cropper
           [imageChangedEvent]="imageChangedEvent"
           [maintainAspectRatio]="true"
@@ -90,12 +92,15 @@
           (imageCropped)="imageCropped($event)">
         </image-cropper>
       </div>
+      }
 
-      <div *ngIf="croppedImage" class="preview-section">
+      @if (croppedImage) {
+      <div class="preview-section">
         <div class="user-logo">
           <img [src]="croppedImage" class="user-placeholder" alt="Profile Preview" />
         </div>
       </div>
+      }
     </div>
   </mat-dialog-content>
 
