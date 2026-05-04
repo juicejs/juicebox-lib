@@ -222,7 +222,7 @@
                     color="primary"
                     (click)="save()"
                     [disabled]="!juicebox.hasPermission('data-export:role#update') || templateForm.invalid || !filtersValid"
-                    [matPromiseBtn]="promiseBtn">
+                    [promiseBtn]="promiseBtn">
                 {{'save' | translate}}
             </button>
         </div>

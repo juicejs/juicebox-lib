@@ -1,8 +1,8 @@
 <div class="d-flex p-3" style="gap: 2rem;">
-    @if (userForm) {
-    <form class="col-4 p-0" [formGroup]="userForm">
+    @if (userForm(); as form) {
+    <form class="col-4 p-0" [formGroup]="form">
         <div class="form-group"
-             [class.has-error]="!userForm.controls['firstname'].valid && userForm.controls['firstname'].touched">
+             [class.has-error]="!form.controls['firstname'].valid && form.controls['firstname'].touched">
             <app-form-field appearance="outline" class="w-100">
                 <app-label>{{"salutation" | translate}}</app-label>
                 <select appInput formControlName="salutation">
@@ -11,7 +11,7 @@
                     }
                 </select>
             </app-form-field>
-            @if (userForm.controls['salutation'].hasError('required') && userForm.controls['salutation'].touched) {
+            @if (form.controls['salutation'].hasError('required') && form.controls['salutation'].touched) {
                 <div class="alert alert-danger">{{"include_salutation" | translate}}</div>
             }
         </div>
@@ -20,7 +20,7 @@
             <app-form-field appearance="outline" class="w-100">
                 <app-label>{{"firstname" | translate}}*</app-label>
                 <input appInput formControlName="firstname">
-                @if (userForm.controls['firstname'].hasError('required')) {
+                @if (form.controls['firstname'].hasError('required')) {
                     <app-error>{{"include_firstname" | translate}}</app-error>
                 }
             </app-form-field>
@@ -30,7 +30,7 @@
             <app-form-field appearance="outline" class="w-100">
                 <app-label>{{"lastname" | translate}}*</app-label>
                 <input appInput formControlName="lastname">
-                @if (userForm.controls['lastname'].hasError('required')) {
+                @if (form.controls['lastname'].hasError('required')) {
                     <app-error>{{"include_lastname" | translate}}</app-error>
                 }
             </app-form-field>
@@ -49,7 +49,7 @@
             <app-form-field appearance="outline" class="w-100">
                 <app-label>{{"language" | translate}}</app-label>
                 <select appInput formControlName="language">
-                    @for (language of languages; track language.code) {
+                    @for (language of languages(); track language.code) {
                         <option [value]="language.code">{{language.name}}</option>
                     }
                 </select>
@@ -59,15 +59,16 @@
         <div class="form-group">
             <app-form-field appearance="outline" class="w-100">
                 <app-label>{{"email" | translate}}*</app-label>
-                <input appInput formControlName="email" [readonly]="projectTitle === 'Equipments'">
-                @if (userForm.controls['email'].hasError('required')) {
+                <input appInput formControlName="email" [readonly]="projectTitle() === 'Equipments'">
+                @if (form.controls['email'].hasError('required')) {
                     <app-error>{{"include_email" | translate}}</app-error>
                 }
-                @if (userForm.controls['email'].hasError('email')) {
+                @if (form.controls['email'].hasError('email')) {
                     <app-error>{{"invalid_email" | translate}}</app-error>
                 }
             </app-form-field>
         </div>
+
         @if (juicebox.getProjectTitle() !== 'QualityCircle') {
             <div class="form-group">
                 <app-form-field appearance="outline" class="w-100">
@@ -82,8 +83,8 @@
                 <div class="d-flex align-center" style="gap: 1.5rem;">
                     <div class="d-flex align-center">
                         <app-slide-toggle
-                            [checked]="!!userForm.controls['active'].value"
-                            (change)="userForm.controls['active'].setValue($event)"
+                            [checked]="!!form.controls['active'].value"
+                            (change)="form.controls['active'].setValue($event)"
                             class="mr-2">
                         </app-slide-toggle>
                         <span>{{"active" | translate}}</span>
@@ -91,15 +92,15 @@
                     @if (juicebox.hasPermission('users:role#super-admin')) {
                         <div class="d-flex align-center">
                             <app-slide-toggle
-                                [checked]="!!userForm.controls['admin'].value"
-                                (change)="userForm.controls['admin'].setValue($event)"
+                                [checked]="!!form.controls['admin'].value"
+                                (change)="form.controls['admin'].setValue($event)"
                                 class="mr-2">
                             </app-slide-toggle>
                             <span>{{"admin" | translate}}</span>
                         </div>
                     }
                 </div>
-                <button app-button appearance="raised" color="primary" [matPromiseBtn]="updatePromise"
+                <button app-button appearance="raised" color="primary" [promiseBtn]="updatePromise()"
                         [hasPermissions]="'users:role#updated|update'"
                         (click)="change()">{{"save" | translate}}
                 </button>
@@ -108,9 +109,9 @@
     </form>
     }
 
-    @if (passwordForm) {
-    <form class="col-4 p-0" [formGroup]="passwordForm">
-        @if (projectTitle !== 'Equipments') {
+    @if (passwordForm(); as pwForm) {
+    <form class="col-4 p-0" [formGroup]="pwForm">
+        @if (projectTitle() !== 'Equipments') {
             <div class="form-group">
                 <app-form-field appearance="outline" class="w-100">
                     <app-label>{{"password" | translate}}</app-label>
@@ -124,18 +125,18 @@
                 </app-form-field>
             </div>
 
-            @if (passwordForm.controls['password'].errors && passwordForm.controls['password'].touched) {
+            @if (pwForm.controls['password'].errors && pwForm.controls['password'].touched) {
                 <div class="form-control-feedback alert alert-danger">
-                    @if (passwordForm.controls['password'].errors.required) {
+                    @if (pwForm.controls['password'].errors.required) {
                         <div>{{"pass_required" | translate}}</div>
                     }
-                    @if (passwordForm.controls['password'].errors.password) {
+                    @if (pwForm.controls['password'].errors.password) {
                         <div>{{"pass_regex_error" | translate}}</div>
                     }
                 </div>
             }
 
-            @if (passwordForm && passwordForm.errors && passwordForm.errors['mismatch'] && passwordForm.controls['repeatPassword'].touched) {
+            @if (pwForm.errors?.['mismatch'] && pwForm.controls['repeatPassword'].touched) {
                 <div class="form-control-feedback alert alert-danger">
                     {{"pass_not_same" | translate}}
                 </div>
@@ -147,26 +148,26 @@
                             [hasPermissions]="'users:role#updated|update'"
                             (click)="generateRandomPassword()">{{"generate_random" | translate}}
                     </button>
-                    @if (randomPassword) {
-                        <span class="m-2" style="user-select: all">{{randomPassword}}</span>
+                    @if (randomPassword()) {
+                        <span class="m-2" style="user-select: all">{{randomPassword()}}</span>
                     }
                 </div>
-                <button app-button appearance="raised" color="primary" class="ml-auto mb-auto" [matPromiseBtn]="updatePromise"
+                <button app-button appearance="raised" color="primary" class="ml-auto mb-auto" [promiseBtn]="updatePromise()"
                         [hasPermissions]="'users:role#updated|update'"
                         (click)="changePassword()">{{"pass_save" | translate}}
                 </button>
             </div>
         }
 
-        @if (user?.attributes?.settings?.twoFactor && juicebox.hasPermission('users:role#super-admin')) {
+        @if (user()?.attributes?.settings?.twoFactor && juicebox.hasPermission('users:role#super-admin')) {
             <div>
                 <div class="form-group">
                     <div class="d-flex align-center">
                         <app-form-field appearance="outline" class="flex-1 mr-2">
                             <app-label>{{"two_factor_authorisation_type" | translate}}</app-label>
-                            <input appInput readonly [placeholder]="user.attributes.settings.twoFactor | translate">
+                            <input appInput readonly [placeholder]="user().attributes.settings.twoFactor | translate">
                         </app-form-field>
-                        <button app-button appearance="raised" color="primary" [matPromiseBtn]="updatePromise"
+                        <button app-button appearance="raised" color="primary" [promiseBtn]="updatePromise()"
                                 [hasPermissions]="'users:role#updated|update'"
                                 (click)="resetTwoFactor()">{{"reset" | translate}}
                         </button>
@@ -175,7 +176,7 @@
             </div>
         }
 
-        @if (user) {
+        @if (user()) {
             <div [hasPermissions]="'users:role#admin'">
                 <div class="form-group">
                     <div class="d-flex align-center">
@@ -184,7 +185,7 @@
                             <input appInput [formControl]="walletCtrl"
                                    [placeholder]="'wallet_address' | translate">
                         </app-form-field>
-                        <button app-button appearance="raised" color="primary" [matPromiseBtn]="updatePromise"
+                        <button app-button appearance="raised" color="primary" [promiseBtn]="updatePromise()"
                                 [hasPermissions]="'users:role#updated|update'"
                                 (click)="setWalletAddress()">{{"save" | translate}}
                         </button>

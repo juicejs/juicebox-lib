@@ -42,7 +42,7 @@
     </button>
     <button app-button color="primary" (click)="login()"
             appearance="raised"
-            [matPromiseBtn]="promiseBtn"
+            [promiseBtn]="promiseBtn"
             [disabled]="!twoFaForm.valid">
         {{"login" | translate}}
     </button>

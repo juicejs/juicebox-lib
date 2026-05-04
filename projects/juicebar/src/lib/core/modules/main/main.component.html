@@ -38,7 +38,7 @@
                         <div class="button-bar">
                             @for (button of juicebox.actionButtons; track button) {
                                 <button (click)="button.callAction()"
-                                        [matPromiseBtn]="button.promise"
+                                        [promiseBtn]="button.promise"
                                         [disabled]="button.disabled"
                                         [hasPermissions]="button.permissions ? button.permissions : null"
                                         [hasPermissionsHide]="button.permissionsHide ? button.permissionsHide : null"

@@ -1,24 +1,20 @@
-import {Routes} from '@angular/router';
-import {ExportsComponent} from './exports.component';
-import {ExportTemplateListingComponent} from './export-template-listing/export-template-listing.component';
-import {ExportTemplateCreateComponent} from './export-template-create/export-template-create.component';
-import {ExportTemplateEditComponent} from './export-template-edit/export-template-edit.component';
+import { Routes } from '@angular/router';
 
 export const ExportsRoute: Routes = [{
-  path: 'exports',
-  component: ExportsComponent,
-  children: [
-    {
-      path: '',
-      component: ExportTemplateListingComponent
-    },
-    {
-      path: 'create',
-      component: ExportTemplateCreateComponent
-    },
-    {
-      path: 'edit/:id',
-      component: ExportTemplateEditComponent,
-    }
-  ]
+    path: 'exports',
+    loadComponent: () => import('./exports.component').then(m => m.ExportsComponent),
+    children: [
+        {
+            path: '',
+            loadComponent: () => import('./export-template-listing/export-template-listing.component').then(m => m.ExportTemplateListingComponent),
+        },
+        {
+            path: 'create',
+            loadComponent: () => import('./export-template-create/export-template-create.component').then(m => m.ExportTemplateCreateComponent),
+        },
+        {
+            path: 'edit/:id',
+            loadComponent: () => import('./export-template-edit/export-template-edit.component').then(m => m.ExportTemplateEditComponent),
+        },
+    ],
 }];

@@ -1,20 +1,56 @@
 import {Result} from '../../shared/types/Result';
-import {inject, Injectable} from '@angular/core';
+import {inject, Injectable, Type} from '@angular/core';
 import {Juice} from '../../shared/services/juice.service';
 import {JuiceboxService} from '../../shared/services/Juicebox.service';
 import {ActionButton} from '../../shared/types/ActionButton';
 import { ISort} from '../../shared/interfaces/ISort';
 import { ISearchTerm} from '../../shared/interfaces/ISearchTerm';
+import {Router} from '@angular/router';
 
 @Injectable({providedIn: 'root'})
 export class UsersService {
     private juice = inject(Juice);
     private juicebox = inject(JuiceboxService);
+    private router = inject(Router);
 
     public customActionButtons: Array<any> = [];
 
     public addCustomActionButton(actionButton: ActionButton){
         this.customActionButtons.push(actionButton);
+    }
+
+    overwriteRoute(routePath: string[], component: Type<any>) {
+        const usersRouteConfig = this.router.config
+            .find(item => item.path === 'main')
+            ?.children?.find(route => route.path === 'users');
+
+        if (!usersRouteConfig) throw new Error('could_not_find_users_route');
+
+        const routeNodeToUpdate = routePath.reduce<any>((res, pathPart) => {
+            const routeNode = res.children?.find((node: any) => node.path === pathPart);
+            if (!routeNode) throw new Error('could_not_find_route_with_provided_path');
+            return routeNode;
+        }, usersRouteConfig);
+
+        delete routeNodeToUpdate.loadComponent;
+        routeNodeToUpdate.component = component;
+        this.router.resetConfig(this.router.config);
+    }
+
+    registerDynamicTab(routerLink: string, component: any, path: string) {
+        const currentRoutes = this.router.config;
+        const router = this.findRouter(currentRoutes[1], path);
+        router.children.push({ path: routerLink, component });
+        this.router.resetConfig(currentRoutes);
+    }
+
+    private findRouter(route: any, path: string): any {
+        const parts = path.split(',');
+        if (parts.length > 1) {
+            const next = this.findRouter(route, parts.shift());
+            return this.findRouter(next, parts.join(','));
+        }
+        return route.children.find((r: any) => r.path === path);
     }
 
     // ************************** CODE CONNECTED TO USERS ************************** //

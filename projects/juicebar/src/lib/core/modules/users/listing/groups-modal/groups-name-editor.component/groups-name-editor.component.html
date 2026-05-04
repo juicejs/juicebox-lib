@@ -46,7 +46,7 @@
     </button>
     <button app-button appearance="raised" color="primary" (click)="submit()"
             [disabled]="!groupForm || !groupForm.valid || !juicebox.hasPermission('groups:role#updated|update')"
-            [matPromiseBtn]="promiseBtn">
+            [promiseBtn]="promiseBtn">
         {{"save" | translate}}
     </button>
 </app-dialog-actions>

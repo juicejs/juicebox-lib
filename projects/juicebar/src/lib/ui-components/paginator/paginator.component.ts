@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output, signal, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, model } from '@angular/core';
 
 export interface PageEvent {
   pageIndex: number;
@@ -16,19 +16,11 @@ export class PaginatorComponent {
   length = input<number>(0);
   pageSize = input<number>(10);
   pageSizeOptions = input<number[]>([5, 10, 25, 50]);
-  pageIndexInput = input<number>(0, { alias: 'pageIndex' });
-
-  pageIndex = signal(this.pageIndexInput());
+  pageIndex = model<number>(0);
 
   page = output<PageEvent>();
 
   protected readonly Math = Math;
-
-  constructor() {
-    effect(() => {
-      this.pageIndex.set(this.pageIndexInput());
-    });
-  }
 
   get totalPages(): number {
     return Math.ceil(this.length() / this.pageSize());

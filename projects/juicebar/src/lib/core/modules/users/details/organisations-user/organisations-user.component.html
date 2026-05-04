@@ -12,14 +12,14 @@
             </app-select>
         </app-form-field>
 
-        <button app-button appearance="raised" color="primary" [matPromiseBtn]="promiseBtn"
+        <button app-button appearance="raised" color="primary" [promiseBtn]="promiseBtn"
                 [disabled]="!juicebox.hasPermission('users:role#update') || !selectedOrganisation"
                 (click)="add()" style="margin-left: 16px;">
             <app-icon [icon]="'add'"></app-icon>
             {{'add' | translate}}
         </button>
 
-        <button app-button appearance="raised" color="primary" [matPromiseBtn]="promiseBtn"
+        <button app-button appearance="raised" color="primary" [promiseBtn]="promiseBtn"
                 [hasPermissionsHide]="'users:role#super-admin'"
                 (click)="createNewOrg()"
                 style="margin-left: auto;">

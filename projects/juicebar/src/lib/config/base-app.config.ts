@@ -1,10 +1,10 @@
-import {Provider, EnvironmentProviders, Type, InjectionToken} from '@angular/core';
-import { CanActivateFn } from '@angular/router';
+import { Provider, EnvironmentProviders, Type, InjectionToken } from '@angular/core';
+import { CanActivateFn, Routes } from '@angular/router';
 
 export interface ModuleConfig {
   path: string;
-  component?: () => Promise<Type<any>>; // Optional for standalone components
-  loadChildren?: () => Promise<any>;     // Optional for modules
+  component?: () => Promise<Type<any>>;
+  loadChildren?: () => Promise<any>;
   guards?: CanActivateFn[];
   navigation?: {
     role: string;
@@ -13,31 +13,14 @@ export interface ModuleConfig {
   };
 }
 
-// Component override configuration
 export interface ComponentOverride {
-  routePath: string[];  // e.g., ['details/:id', 'groups-user']
-  component: Type<any>; // Your custom component
+  routePath: string[];
+  component: Type<any>;
 }
 
-// Module customization options
 export interface ModuleCustomization {
-  // Component overrides for specific routes
   componentOverrides?: ComponentOverride[];
-
-  // Custom providers for the module
   providers?: Provider[];
-}
-
-// Built-in module configuration
-export interface BuiltInModules {
-  users?: {
-    enabled: boolean;
-    customization?: ModuleCustomization;
-  };
-  exports?: {
-    enabled: boolean;
-    customization?: ModuleCustomization;
-  };
 }
 
 export interface BaseAppConfig {
@@ -46,10 +29,13 @@ export interface BaseAppConfig {
   modules: ModuleConfig[];
   mainRoutes?: ModuleConfig[];
   providers?: (Provider | EnvironmentProviders)[];
-
-  // Control over built-in modules
-  builtInModules?: BuiltInModules;
 }
 
-// Add this export
 export const BASE_APP_CONFIG = new InjectionToken<BaseAppConfig>('BASE_APP_CONFIG');
+export const USERS_CUSTOMIZATION = new InjectionToken<ModuleCustomization>('USERS_CUSTOMIZATION');
+export const EXPORTS_CUSTOMIZATION = new InjectionToken<ModuleCustomization>('EXPORTS_CUSTOMIZATION');
+
+export interface JuicebarFeature {
+  routes: Routes;
+  providers: EnvironmentProviders;
+}

@@ -30,7 +30,7 @@
                 </app-form-field>
 
                 <div class="form-group">
-                    <button app-button appearance="raised" color="primary" [matPromiseBtn]="promiseBtn"
+                    <button app-button appearance="raised" color="primary" [promiseBtn]="promiseBtn"
                             [hasPermissions]="'groups:role#updated|update'"
                             (click)="addGroup()">
                         <app-icon [icon]="'add'"></app-icon>
@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="form-group" style="margin-left: auto;">
-                    <button app-button appearance="raised" color="primary" [matPromiseBtn]="promiseBtn"
+                    <button app-button appearance="raised" color="primary" [promiseBtn]="promiseBtn"
                             [hasPermissions]="'groups:role#read'"
                             (click)="openGroupEditor()">{{'group editor' | translate}}</button>
                 </div>
@@ -90,7 +90,7 @@
                             <button app-button
                                     appearance="icon"
                                     [hasPermissions]="'users:role#updated|update'"
-                                    [matPromiseBtn]="promiseBtn"
+                                    [promiseBtn]="promiseBtn"
                                     [title]="'delete' | translate"
                                     (click)="deleteGroup(row);">
                                 <app-icon [icon]="'delete'"></app-icon>

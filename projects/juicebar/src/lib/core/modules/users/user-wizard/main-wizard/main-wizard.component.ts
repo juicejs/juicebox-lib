@@ -1,10 +1,15 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from '../../models/user.model';
 import { UserTranslationPipe } from '../../i18n/user.translation';
 import { UsersService } from '../../users.service';
 import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
+import { PromiseButtonDirective } from '../../../../shared/directives/PromiseButton';
+import {
+    FormFieldComponent, LabelComponent, ErrorComponent, InputDirective,
+    AutocompleteComponent, ButtonComponent
+} from '../../../../../ui-components';
 // import {TraineesService} from "../../../trainees/trainees.service";
 // import {Trainee} from "../../../../models/trainee.model";
 
@@ -12,6 +17,13 @@ import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
     selector: 'app-main-user-wizard',
     templateUrl: './main-wizard.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        ReactiveFormsModule,
+        UserTranslationPipe,
+        PromiseButtonDirective,
+        FormFieldComponent, LabelComponent, ErrorComponent, InputDirective,
+        AutocompleteComponent, ButtonComponent,
+    ],
 })
 export class MainWizardComponent implements OnInit {
 

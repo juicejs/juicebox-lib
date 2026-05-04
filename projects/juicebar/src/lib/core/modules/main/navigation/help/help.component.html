@@ -15,7 +15,7 @@
                 color="primary"
                 (click)="uploadFile(input)"
                 [hasPermissions]="'juicebox:role#edit-help-document'"
-                [matPromiseBtn]="promiseBtn">
+                [promiseBtn]="promiseBtn">
           {{'upload' | translate}}
         </button>
       </div>
@@ -67,7 +67,7 @@
                 class="update-button"
                 [hasPermissions]="'juicebox:role#edit-help-document'"
                 (click)="addHelpText(text.value)"
-                [matPromiseBtn]="promiseBtn">
+                [promiseBtn]="promiseBtn">
           {{ 'update' | translate }}
         </button>
       </div>

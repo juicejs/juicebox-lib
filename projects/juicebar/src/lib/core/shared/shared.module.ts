@@ -22,7 +22,7 @@
  */
 
 import {importProvidersFrom, NgModule} from '@angular/core';
-import { MaterialPromiseButtonDirective} from './directives/MaterialPromiseButton';
+import { PromiseButtonDirective } from './directives/PromiseButton';
 import { HasPermissionDirective} from './directives/HasPermissionDirective';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ConfirmationDialogComponent} from './components/confirmation-dialog/confirmation-dialog.component';
@@ -139,7 +139,7 @@ import { CdkListboxModule } from '@angular/cdk/listbox';
     ConfirmationDialogComponent,
     SharedTranslationPipe,
     HasPermissionHideDirective,
-    MaterialPromiseButtonDirective,
+    PromiseButtonDirective,
     NgSelectDebounceDirective,
     DebounceKeyupDirective,
     PageSizeSelectorComponent,
@@ -209,7 +209,7 @@ import { CdkListboxModule } from '@angular/cdk/listbox';
     RouterLink,
     RouterLinkActive,
     // Standalone components, directives, and pipes (default in Angular v20+)
-    MaterialPromiseButtonDirective,
+    PromiseButtonDirective,
     HasPermissionDirective,
     ConfirmationDialogComponent,
     SharedTranslationPipe,

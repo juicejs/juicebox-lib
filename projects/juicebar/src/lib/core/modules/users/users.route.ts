@@ -1,83 +1,88 @@
-import { UsersComponent } from './users.component';
-import { UserListingComponent } from './listing/user-listing.component';
-import { UserWizardComponent } from './user-wizard/user-wizard.component';
-import { DetailsUsersComponent } from './details/details.component';
-import { DetailsUserComponent } from './details/details-user/details-user.component';
-import { DocumentsUserComponent } from './details/documents-user/documents-user.component';
-import { WalletsUserComponent } from './details/wallets-user/wallets-user.component';
-import { RolesUserComponent } from './details/roles-user/roles-user.component';
+import { Type } from '@angular/core';
 import { Routes } from '@angular/router';
-import { GroupsUserComponent } from './details/groups-user/groups-user.component';
-// import { UnsavedChangesGuard } from '../../guards/unsaved-changes.guard';
-import { SidebarUserComponent } from './details/sidebar-user/sidebar-user.component';
-import { MainWizardComponent } from './user-wizard/main-wizard/main-wizard.component';
-import { OrganisationsUserComponent } from './details/organisations-user/organisations-user.component';
-import { ChannelsUserComponent } from './details/channels-user/channels-user.component';
+import { ComponentOverride } from '../../../config/base-app.config';
 
-export const UsersRoute: Routes = [{
+function resolveComponent(
+  defaultLoader: () => Promise<Type<any>>,
+  overridePath: string[],
+  overrides?: ComponentOverride[]
+): () => Promise<Type<any>> {
+  const override = overrides?.find(o => o.routePath.join('/') === overridePath.join('/'));
+  if (override) {
+    console.log('[juicebar] Component override applied for route:', overridePath.join('/'), '→', override.component);
+    const overrideComponent = override.component;
+    return () => {
+      console.log('[juicebar] loadComponent called for override:', overridePath.join('/'), overrideComponent);
+      return Promise.resolve(overrideComponent);
+    };
+  }
+  console.log('[juicebar] No override for route:', overridePath.join('/'), '— using default loader');
+  return defaultLoader;
+}
+
+export function buildUsersRoute(overrides?: ComponentOverride[]): Routes {
+  console.log('[juicebar] buildUsersRoute called with overrides:', overrides);
+  const r = (path: string[], loader: () => Promise<Type<any>>) =>
+    resolveComponent(loader, path, overrides);
+
+  return [{
     path: 'users',
-    component: UsersComponent,
+    loadComponent: () => import('./users.component').then(m => m.UsersComponent),
     children: [
-        {
-            path: '',
-            component: UserListingComponent
-        },
-        {
-            path: 'user-wizard',
-            component: UserWizardComponent,
-            children: [
-                {
-                    path: '',
-                    redirectTo: 'main',
-                    pathMatch: 'full'
-                },
-                {
-                    path: 'main',
-                    component: MainWizardComponent
-                }
-            ]
-        },
-        {
-            path: 'details/:id',
-            component: DetailsUsersComponent,
-            children: [
-                {
-                    path: '',
-                    redirectTo: 'details-user',
-                    pathMatch: 'full'
-                },
-                {
-                    path: 'details-user',
-                    component: DetailsUserComponent,
-                    // canDeactivate: [UnsavedChangesGuard]
-                },
-                {
-                    path: 'documents-user',
-                    component: DocumentsUserComponent
-                },
-                {
-                    path: 'wallets-user',
-                    component: WalletsUserComponent
-                },
-                {
-                    path: 'roles-user',
-                    component: RolesUserComponent
-                },
-                {
-                    path: 'channels-user',
-                    component: ChannelsUserComponent
-                },
-                {
-                    path: 'groups-user',
-                    component: GroupsUserComponent
-                },
-                {
-                    path: 'sidebar-user',
-                    component: SidebarUserComponent
-                },
-                {
-                    path: 'organisations-user',
-                    component: OrganisationsUserComponent
-                }]
-        }]
-}];
+      {
+        path: '',
+        loadComponent: () => import('./listing/user-listing.component').then(m => m.UserListingComponent),
+      },
+      {
+        path: 'user-wizard',
+        loadComponent: () => import('./user-wizard/user-wizard.component').then(m => m.UserWizardComponent),
+        children: [
+          { path: '', redirectTo: 'main', pathMatch: 'full' },
+          {
+            path: 'main',
+            loadComponent: r(['user-wizard', 'main'], () => import('./user-wizard/main-wizard/main-wizard.component').then(m => m.MainWizardComponent)),
+          },
+        ],
+      },
+      {
+        path: 'details/:id',
+        loadComponent: () => import('./details/details.component').then(m => m.DetailsUsersComponent),
+        children: [
+          { path: '', redirectTo: 'details-user', pathMatch: 'full' },
+          {
+            path: 'details-user',
+            loadComponent: r(['details/:id', 'details-user'], () => import('./details/details-user/details-user.component').then(m => m.DetailsUserComponent)),
+          },
+          {
+            path: 'documents-user',
+            loadComponent: r(['details/:id', 'documents-user'], () => import('./details/documents-user/documents-user.component').then(m => m.DocumentsUserComponent)),
+          },
+          {
+            path: 'wallets-user',
+            loadComponent: r(['details/:id', 'wallets-user'], () => import('./details/wallets-user/wallets-user.component').then(m => m.WalletsUserComponent)),
+          },
+          {
+            path: 'roles-user',
+            loadComponent: r(['details/:id', 'roles-user'], () => import('./details/roles-user/roles-user.component').then(m => m.RolesUserComponent)),
+          },
+          {
+            path: 'channels-user',
+            loadComponent: r(['details/:id', 'channels-user'], () => import('./details/channels-user/channels-user.component').then(m => m.ChannelsUserComponent)),
+          },
+          {
+            path: 'groups-user',
+            loadComponent: r(['details/:id', 'groups-user'], () => import('./details/groups-user/groups-user.component').then(m => m.GroupsUserComponent)),
+          },
+          {
+            path: 'sidebar-user',
+            loadComponent: r(['details/:id', 'sidebar-user'], () => import('./details/sidebar-user/sidebar-user.component').then(m => m.SidebarUserComponent)),
+          },
+          {
+            path: 'organisations-user',
+            loadComponent: r(['details/:id', 'organisations-user'], () => import('./details/organisations-user/organisations-user.component').then(m => m.OrganisationsUserComponent)),
+          },
+        ],
+      },
+    ],
+  }];
+}

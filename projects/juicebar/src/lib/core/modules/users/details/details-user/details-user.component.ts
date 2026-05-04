@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { UsersService } from '../../users.service';
@@ -25,32 +25,17 @@ import { SharedModule } from '../../../../shared/shared.module';
 })
 export class DetailsUserComponent implements OnInit {
 
-    public user: any;
-    public userForm: FormGroup;
-    public passwordForm: FormGroup;
-    public walletCtrl = new FormControl<string>('');
-
-    public i18n: UserTranslationPipe;
-    public updatePromise = null;
+    protected readonly user = signal<any>(null);
+    protected readonly userForm = signal<FormGroup | null>(null);
+    protected readonly passwordForm = signal<FormGroup | null>(null);
+    protected readonly walletCtrl = new FormControl<string>('');
+    protected readonly updatePromise = signal<Promise<any> | null>(null);
+    protected readonly randomPassword = signal('');
+    protected readonly projectTitle = signal('');
+    protected readonly languages = signal<any[]>([]);
 
     private static passwordValidatorRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*#?&:{}<>+-_()|~]{8,64}$/;
-
     public minLength = 8;
-    randomPassword: string = '';
-
-    projectTitle: string = '';
-
-    languages: any[] = [];
-    emailReminders = [
-        {
-            value: true,
-            label: "Yes"
-        },
-        {
-            value: false,
-            label: "No"
-        }
-    ]
 
     private route = inject(ActivatedRoute);
     private userService = inject(UsersService);
@@ -59,14 +44,6 @@ export class DetailsUserComponent implements OnInit {
     private dialog = inject(DialogService);
     private userPipe = inject(UserTranslationPipe);
 
-    constructor() {
-        this.i18n = new UserTranslationPipe(this.juicebox);
-    }
-
-    /**
-     * Validate password
-     * @param control
-     */
     private static customPassword(control: AbstractControl): ValidationErrors | null {
         const regex = DetailsUserComponent.passwordValidatorRegex;
         return (typeof control.value === 'string' && regex.test(control.value)) ? null : { 'password': true };
@@ -75,118 +52,111 @@ export class DetailsUserComponent implements OnInit {
     async ngOnInit() {
         const id = this.route.parent.snapshot.params['id'];
         const result = await this.userService.getUser(id);
-        this.user = result.payload;
-        this.walletCtrl.setValue(this.user.wallet ?? '');
+        const userData = result.payload;
 
-        this.userForm = new FormGroup({
-            salutation: new FormControl(this.user.salutation ?? null),
-            firstname: new FormControl(this.user.firstname ?? null, Validators.required),
-            lastname: new FormControl(this.user.lastname ?? null, Validators.required),
-            email: new FormControl(this.user.email ?? null, [Validators.email, Validators.required]),
-            nickname: new FormControl(this.user.nickname ?? null, Validators.nullValidator),
-            department: new FormControl(this.user.department ?? null),
-            language: new FormControl(this.user.attributes?.settings?.language ?? null),
-            active: new FormControl(this.user.active ?? null),
-            admin: new FormControl(this.user.attributes?.admin ?? null),
-        });
+        this.user.set(userData);
+        this.walletCtrl.setValue(userData.wallet ?? '');
 
-        this.passwordForm = new FormGroup({
+        this.userForm.set(new FormGroup({
+            salutation: new FormControl(userData.salutation ?? null),
+            firstname: new FormControl(userData.firstname ?? null, Validators.required),
+            lastname: new FormControl(userData.lastname ?? null, Validators.required),
+            email: new FormControl(userData.email ?? null, [Validators.email, Validators.required]),
+            nickname: new FormControl(userData.nickname ?? null, Validators.nullValidator),
+            department: new FormControl(userData.department ?? null),
+            language: new FormControl(userData.attributes?.settings?.language ?? null),
+            active: new FormControl(userData.active ?? null),
+            admin: new FormControl(userData.attributes?.admin ?? null),
+        }));
+
+        this.passwordForm.set(new FormGroup({
             password: new FormControl('', [Validators.required, DetailsUserComponent.customPassword]),
             repeatPassword: new FormControl('', [Validators.required, DetailsUserComponent.customPassword])
-        }, CustomValidators.passwordMatch);
+        }, CustomValidators.passwordMatch));
 
-        this.projectTitle = this.juicebox.getProjectTitle();
-        this.languages = this.juicebox.getOptions()?.languages.map(l => {
-            return {
-                code: l.code,
-                name: this.userPipe.transform(l.name)
-            };
-        });
+        this.projectTitle.set(this.juicebox.getProjectTitle());
+        this.languages.set(this.juicebox.getOptions()?.languages.map(l => ({
+            code: l.code,
+            name: this.userPipe.transform(l.name)
+        })));
 
-        this.userForm.markAsPristine()
+        this.userForm().markAsPristine();
 
         this.juicebox.navigationEvent({
-            location: this.i18n.transform('users'),
-            subject: result.payload.email + ' - ' + this.i18n.transform('details'),
+            location: this.userPipe.transform('users'),
+            subject: userData.email + ' - ' + this.userPipe.transform('details'),
             link: '/main/users'
         });
     }
 
     change() {
-        this.userForm.markAllAsTouched();
-        if (this.userForm.invalid) {
-            return;
-        }
+        const form = this.userForm();
+        form.markAllAsTouched();
+        if (form.invalid) return;
 
-        this.updatePromise = (async () => {
-            const result = await this.userService.updateUser(this.user._id, this.userForm.value);
+        this.updatePromise.set((async () => {
+            const result = await this.userService.updateUser(this.user()._id, form.value);
             if (result.success) {
-                this.userForm.markAsPristine();
-                this.juicebox.showToast('success', this.i18n.transform('user_profile_updated'));
+                form.markAsPristine();
+                this.juicebox.showToast('success', this.userPipe.transform('user_profile_updated'));
             } else {
-                this.juicebox.showToast('error', this.i18n.transform(result.error));
+                this.juicebox.showToast('error', this.userPipe.transform(result.error));
             }
-        })();
+        })());
     }
 
     async changePassword() {
-        if (this.passwordForm.invalid) {
-            return;
-        }
+        const form = this.passwordForm();
+        if (form.invalid) return;
 
-        const data = this.passwordForm.value;
-
-        this.updatePromise = (async () => {
-            const result = await this.userService.updatePassword(this.user._id, data.password);
+        this.updatePromise.set((async () => {
+            const result = await this.userService.updatePassword(this.user()._id, form.value.password);
             if (result.success) {
-                this.juicebox.showToast('success', this.i18n.transform('password_changed'));
-                this.passwordForm.markAsPristine();
-                this.randomPassword = '';
-                this.passwordForm.controls['password'].setValue('');
-                this.passwordForm.controls['repeatPassword'].setValue('');
-                this.passwordForm.markAsUntouched();
+                this.juicebox.showToast('success', this.userPipe.transform('password_changed'));
+                form.markAsPristine();
+                this.randomPassword.set('');
+                form.controls['password'].setValue('');
+                form.controls['repeatPassword'].setValue('');
+                form.markAsUntouched();
                 return;
             }
             if (!result.success && result.error) {
-                this.juicebox.showToast('error', this.i18n.transform(result.error));
+                this.juicebox.showToast('error', this.userPipe.transform(result.error));
             }
-        })();
+        })());
     }
 
     generateRandomPassword() {
-        this.randomPassword = this.helper.generateRandomPassword();
-        this.passwordForm.controls['password'].patchValue(this.randomPassword);
-        this.passwordForm.controls['repeatPassword'].patchValue(this.randomPassword);
+        const pwd = this.helper.generateRandomPassword();
+        this.randomPassword.set(pwd);
+        this.passwordForm().controls['password'].patchValue(pwd);
+        this.passwordForm().controls['repeatPassword'].patchValue(pwd);
     }
 
     resetTwoFactor() {
-        if (!this.user?.attributes?.settings?.twoFactor && this.juicebox.hasPermission('users:role#super-admin')) {
+        const currentUser = this.user();
+        if (!currentUser?.attributes?.settings?.twoFactor && this.juicebox.hasPermission('users:role#super-admin')) {
             return;
         }
 
         const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-            data: {
-                action: 'reset',
-                subject: 'User two factor'
-            }
+            data: { action: 'reset', subject: 'User two factor' }
         });
         dialogRef.closed.subscribe(async (dialogResult) => {
             if (!dialogResult) return;
-            const result = await this.userService.resetTwoFactor(this.user._id);
+            const result = await this.userService.resetTwoFactor(currentUser._id);
             if (!result?.success) {
                 this.juicebox.showToast('error', result.error);
                 return;
             }
-
-            const user = await this.userService.getUser(this.user._id);
-            this.user = user.payload;
+            const updated = await this.userService.getUser(currentUser._id);
+            this.user.set(updated.payload);
         });
     }
 
-    async setWalletAddress(){
-        await this.userService.updateUser(this.user._id, {
-            "wallet": this.walletCtrl.value
+    async setWalletAddress() {
+        await this.userService.updateUser(this.user()._id, {
+            wallet: this.walletCtrl.value
         });
     }
-
 }

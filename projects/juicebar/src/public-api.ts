@@ -25,10 +25,12 @@ export * from './lib/config/app.config';
 
 // Modules
 export * from './lib/core/shared/shared.module';
-export * from './lib/core/modules/main/main.component.module';
+export * from './lib/core/modules/main/main.providers';
+export * from './lib/core/modules/users/users.providers';
+export * from './lib/core/modules/exports/exports.providers';
 
 // Directives
-export * from './lib/core/shared/directives/MaterialPromiseButton';
+export * from './lib/core/shared/directives/PromiseButton';
 export * from './lib/core/shared/directives/HasPermissionDirective';
 export * from './lib/core/shared/directives/HasPermissionHideDirective';
 export * from './lib/core/shared/directives/no-permission-disable.directive';

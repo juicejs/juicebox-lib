@@ -12,18 +12,28 @@
 .app-tab {
   padding: var(--spacing-sm) var(--spacing-md);
   cursor: pointer;
+  border: none;
   border-bottom: 2px solid transparent;
   margin-bottom: -2px;
+  background: transparent;
   color: var(--color-text-secondary);
+  font-size: inherit;
+  font-family: inherit;
   transition: all 0.2s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     color: var(--color-text-primary);
   }
 
   &.app-tab-active {
     color: var(--color-secondary);
     border-bottom-color: var(--color-secondary);
+  }
+
+  &.app-tab-disabled,
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 }
 

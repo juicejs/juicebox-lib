@@ -37,7 +37,7 @@
 
             <button app-button color="primary"
                     appearance="raised"
-                    [matPromiseBtn]="promiseBtn"
+                    [promiseBtn]="promiseBtn"
                     [hasPermissions]="'groups:role#super-admin'"
                     (click)="addRole()">{{'add' | translate}}</button>
 
@@ -95,7 +95,7 @@
                     <button app-button
                             [hasPermissions]="'groups:role#super-admin'"
                             appearance="raised"
-                            [matPromiseBtn]="promiseBtn"
+                            [promiseBtn]="promiseBtn"
                             [appTooltip]="'delete' | translate"
                             (click)="deleteRole(row);">
                         <app-icon icon="">delete</app-icon>
