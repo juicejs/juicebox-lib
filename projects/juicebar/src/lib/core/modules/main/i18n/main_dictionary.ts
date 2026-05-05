@@ -223,6 +223,22 @@ export const mainDictionary = {
     "de_DE": "Sprache",
     "hr_HR": "Odaberi jezik"
   },
+  "legal_agreement_explanation": {
+    "en_GB": "I agree to the",
+    "de_DE": "Ich stimme den"
+  },
+  "legal_link_text_middle_part": {
+    "en_GB": "and",
+    "de_DE": "und"
+  },
+  "legal_link_text_privacy_policy_part": {
+    "en_GB": "Privacy Policy",
+    "de_DE": "Datenschutzrichtlinie"
+  },
+  "legal_link_text_terms_of_use_part": {
+    "en_GB": "Terms of Use",
+    "de_DE": "Nutzungsbedingungen"
+  },
   "locations": {
     "en_GB": "Locations",
     "de_DE": "Standorte",
@@ -695,6 +711,10 @@ export const mainDictionary = {
     "en_GB": "Staff",
     "de_DE": ""
   },
+  "two_factor_authorisation_code": {
+    "en_GB": "Two-factor authorization code",
+    "de_DE": "Zwei-Faktor-Authentifizierungscode"
+  },
   "two_factor_authorisation_type": {
     "en_GB": "Two-Factor authorisation type",
     "de_DE": "Zwei-Faktor Authentifizierung Typ"
@@ -793,6 +813,10 @@ export const mainDictionary = {
     "en_GB": "Reset",
     "de_DE": "Zurücksetzen"
   },
+  "remember_me": {
+    "en_GB": "Remember me",
+    "de_DE": "Passwort merken"
+  },
   "visible": {
     "en_GB": "Visible",
     "de_DE": "Sichtbar"
@@ -808,6 +832,10 @@ export const mainDictionary = {
   "sidebar": {
     "en_GB": "Sidebar",
     "de_DE": "Seitenleiste"
+  },
+  "sign_in": {
+    "en_GB": "Sign in",
+    "de_DE": "Anmelden"
   },
   "teams": {
     "en_GB": "Teams",

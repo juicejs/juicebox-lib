@@ -107,9 +107,9 @@ export const globalDictionary = {
     "de_DE": "Bitte geben Sie ein neues Passwort ein"
   },
   "pass_regex_error": {
-    "en_GB": "Password should contain 8-64 characters,
-    "de_DE": "Das Passwort muss 8-64 Zeichen lang sein und mind. 1 Großbuchstaben,
-    "hr_HR": "Lozinka treba sadržavati 8-64 znaka
+    "en_GB": "Password should contain 8-64 characters",
+    "de_DE": "Das Passwort muss 8-64 Zeichen lang sein und mind. 1 Großbuchstaben",
+    "hr_HR": "Lozinka treba sadržavati 8-64 znaka"
   },
   "char": {
     "en_GB": "characters",
@@ -117,9 +117,9 @@ export const globalDictionary = {
     "hr_HR": "znakova"
   },
   "char_long_need_another": {
-    "en_GB": "characters long,
+    "en_GB": "characters long",
     "de_DE": "Zeichen lang sein. Es werden weitere",
-    "hr_HR": "znakova dugačka
+    "hr_HR": "znakova dugačka"
   },
   "current_password": {
     "en_GB": "Current password",
@@ -152,9 +152,9 @@ export const globalDictionary = {
     "hr_HR": "Zapamti me"
   },
   "wrong_credentials": {
-    "en_GB": "Wrong credentials,
+    "en_GB": "Wrong credentials",
     "de_DE": "Falsche Login-Daten. Bitte versuchen Sie es erneut",
-    "hr_HR": "Pogrešni korisnički podaci
+    "hr_HR": "Pogrešni korisnički podaci"
   },
   "wallet_authorization_failed": {
     "en_GB": "Web3 Authentication Failed",
@@ -167,7 +167,7 @@ export const globalDictionary = {
   },
   "reset_email_sent": {
     "en_GB": "Email will be sent to your email address if the user exists",
-    "de_DE": "E-Mail wird an Ihre E-Mail-Adresse gesendet
+    "de_DE": "E-Mail wird an Ihre E-Mail-Adresse gesendet"
   },
   "return-asset": {
     "en_GB": "Return asset",
