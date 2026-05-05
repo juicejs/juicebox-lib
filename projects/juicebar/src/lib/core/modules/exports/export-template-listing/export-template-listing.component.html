@@ -8,100 +8,63 @@
         </button>
     </div>
 
-    <table cdk-table [dataSource]="rows" class="data-table">
-        <!-- Name Column -->
-        <ng-container cdkColumnDef="name">
-            <th cdk-header-cell *cdkHeaderCellDef class="col-width-200">
-                {{'name' | translate}}
-            </th>
-            <td cdk-cell *cdkCellDef="let row" class="col-width-200" (click)="onSelect(row._id)">
-                {{row.name || '-'}}
-            </td>
-        </ng-container>
-
-        <!-- Data Source Column -->
-        <ng-container cdkColumnDef="dataSource">
-            <th cdk-header-cell *cdkHeaderCellDef class="col-width-200">
-                {{'datasource' | translate}}
-            </th>
-            <td cdk-cell *cdkCellDef="let row" class="col-width-200" (click)="onSelect(row._id)">
-                {{row._data_source && row._data_source.name ? row._data_source.name : '-'}}
-            </td>
-        </ng-container>
-
-        <!-- Columns Column -->
-        <ng-container cdkColumnDef="columns">
-            <th cdk-header-cell *cdkHeaderCellDef>
-                {{'columns' | translate}}
-            </th>
-            <td cdk-cell *cdkCellDef="let row" (click)="onSelect(row._id)">
-                <span [title]="row._columns.length ? getLabels(row._columns, true) : null"
-                      [class.has-popover]="row._columns.length">
-                    <span>{{getLabels(row._columns)}}</span>
-                </span>
-            </td>
-        </ng-container>
-
-        <!-- Filters Column -->
-        <ng-container cdkColumnDef="filters">
-            <th cdk-header-cell *cdkHeaderCellDef>
-                {{'filters' | translate}}
-            </th>
-            <td cdk-cell *cdkCellDef="let row" (click)="onSelect(row._id)">
-                <span [title]="row._filters.length ? getLabels(row._filters, true) : null"
-                      [class.has-popover]="row._filters.length">
-                    <span>{{getLabels(row._filters)}}</span>
-                </span>
-            </td>
-        </ng-container>
-
-        <!-- Actions Column -->
-        <ng-container cdkColumnDef="actions">
-            <th cdk-header-cell *cdkHeaderCellDef class="col-width-150">
-                {{'actions' | translate}}
-            </th>
-            <td cdk-cell *cdkCellDef="let row" class="col-width-150 d-flex text-center align-center">
-                <div class="d-flex align-center" (click)="$event.stopPropagation()">
-                    <button app-button
-                            [disabled]="!row._available_export_strategies.length"
-                            [cdkMenuTriggerFor]="exportMenu"
-                            [NoPermissionDisable]="row.data_source_key == 'sap-data:strategy' ? 'data-export:role#admin' : 'data-export:role#export'"
-                            class="compact-table-button">
-                        Export
-                        <app-icon [icon]="'arrow_drop_down'"></app-icon>
-                    </button>
-                    <ng-template #exportMenu>
-                        <div class="menu-panel" cdkMenu>
-                            @for (exportStrategy of row._available_export_strategies; track exportStrategy.key) {
-                                <button class="menu-item"
-                                        cdkMenuItem
-                                        (click)="openExportConfirmationModal(row, exportStrategy.key)">
-                                    {{exportStrategy.name}}
-                                </button>
-                            }
-                        </div>
-                    </ng-template>
-
-                    <button app-button
-                            appearance="icon"
-                            (click)="delete(row)"
-                            [NoPermissionDisable]="'data-export:role#delete'"
-                            [title]="'delete' | translate"
-                            class="align-center">
-                        <app-icon [icon]="'delete'"></app-icon>
-                    </button>
-                </div>
-            </td>
-        </ng-container>
-
-        <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
-        <tr cdk-row *cdkRowDef="let row; columns: displayedColumns;" class="clickable-row"></tr>
-    </table>
-
-    <app-paginator
-        [length]="count"
+    <app-data-table
+        [rows]="rows"
+        [columns]="columns"
+        [totalCount]="count"
         [pageSize]="pageSize"
-        [pageSizeOptions]="[5, 10, 20, 50]"
-        (page)="onPageChange($event)">
-    </app-paginator>
+        [pageIndex]="page - 1"
+        [sort]="sort"
+        (pageChange)="onPageChange($event)"
+        (sortChange)="onSort($event)"
+        (rowClick)="onSelect($event._id)">
+
+        <ng-template [cellDef]="'columns'" let-row>
+            <span [title]="row._columns.length ? getLabels(row._columns, true) : null"
+                  [class.has-popover]="row._columns.length"
+                  class="ellipsis-inner">
+                {{ getLabels(row._columns) || '-' }}
+            </span>
+        </ng-template>
+
+        <ng-template [cellDef]="'filters'" let-row>
+            <span [title]="row._filters.length ? getLabels(row._filters, true) : null"
+                  [class.has-popover]="row._filters.length"
+                  class="ellipsis-inner">
+                {{ getLabels(row._filters) || '-' }}
+            </span>
+        </ng-template>
+
+        <ng-template [cellDef]="'actions'" let-row>
+            <div class="actions-cell" (click)="$event.stopPropagation()">
+                <button app-button
+                        [disabled]="!row._available_export_strategies.length"
+                        [cdkMenuTriggerFor]="exportMenu"
+                        [NoPermissionDisable]="row.data_source_key == 'sap-data:strategy' ? 'data-export:role#admin' : 'data-export:role#export'"
+                        class="compact-table-button">
+                    Export
+                    <app-icon [icon]="'arrow_drop_down'"></app-icon>
+                </button>
+                <ng-template #exportMenu>
+                    <div class="menu-panel" cdkMenu>
+                        @for (exportStrategy of row._available_export_strategies; track exportStrategy.key) {
+                            <button class="menu-item"
+                                    cdkMenuItem
+                                    (click)="openExportConfirmationModal(row, exportStrategy.key)">
+                                {{exportStrategy.name}}
+                            </button>
+                        }
+                    </div>
+                </ng-template>
+
+                <button app-button
+                        appearance="icon"
+                        (click)="delete(row)"
+                        [NoPermissionDisable]="'data-export:role#delete'"
+                        [title]="'delete' | translate">
+                    <app-icon [icon]="'delete'"></app-icon>
+                </button>
+            </div>
+        </ng-template>
+    </app-data-table>
 </div>

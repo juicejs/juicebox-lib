@@ -3,7 +3,7 @@ import { UsersService } from '../users.service';
 import { ListingComponent } from '../../../shared/components/listing/listing.component';
 import { Router, RouterLink } from '@angular/router';
 import { UserTranslationPipe } from '../i18n/user.translation';
-import { DialogService, PageEvent } from '../../../../ui-components';
+import { DialogService, PageEvent, DataTableComponent, CellDefDirective, HeaderDefDirective, ColumnConfig, SortState } from '../../../../ui-components';
 import { GroupsModalComponent } from './groups-modal/groups-modal.component';
 import { HelperService} from '../../../shared/services/helper.service';
 import { ISearchTerm} from '../../../shared/interfaces/ISearchTerm';
@@ -35,7 +35,10 @@ export interface Sort {
         FilterBarComponent,
         SharedModule,
         UserTranslationPipe,
-        AutoLanguagePipe
+        AutoLanguagePipe,
+        DataTableComponent,
+        CellDefDirective,
+        HeaderDefDirective
     ]
 })
 export class UserListingComponent extends ListingComponent implements OnInit {
@@ -71,6 +74,18 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     actionButtons: Array<ActionButton> = [];
     displayedColumns: string[] = ['firstname', 'lastname', 'email', 'active', 'roles_count', 'groups', 'lastLogin', 'loginCount', 'actions'];
 
+    tableColumns: ColumnConfig[] = [
+        { key: 'firstname',   label: '', sortable: true },
+        { key: 'lastname',    label: '', sortable: true },
+        { key: 'email',       label: '', sortable: true },
+        { key: 'active',      label: '', width: '100px',  align: 'center', ellipsis: false, sortable: true },
+        { key: 'roles_count', label: '', width: '100px', align: 'center', ellipsis: false },
+        { key: 'groups',      label: '', width: '180px' },
+        { key: 'lastLogin',   label: '', width: '140px', sortable: true },
+        { key: 'loginCount',  label: '', width: '100px', sortable: true },
+        { key: 'actions',     label: '', width: '140px', align: 'center', ellipsis: false }
+    ];
+
     public usersService = inject(UsersService);
     public helper = inject(HelperService);
     private router = inject(Router);
@@ -81,6 +96,19 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     public override async ngOnInit(): Promise<void> {
         this.projectTitle = this.juicebox.getProjectTitle();
         this.i18n = new UserTranslationPipe(this.juicebox);
+
+        const labels: Record<string, string> = {
+            firstname: this.i18n.transform('firstname'),
+            lastname: this.i18n.transform('lastname'),
+            email: this.i18n.transform('email'),
+            active: this.i18n.transform('active'),
+            roles_count: this.i18n.transform('roles_count'),
+            groups: this.i18n.transform('groups'),
+            lastLogin: this.i18n.transform('last_login'),
+            loginCount: this.i18n.transform('login_count'),
+            actions: this.i18n.transform('actions')
+        };
+        this.tableColumns = this.tableColumns.map(c => ({ ...c, label: labels[c.key] || c.label }));
 
         this.juicebox.navigationEvent({
             location: this.i18n.transform('users'),
@@ -179,11 +207,9 @@ export class UserListingComponent extends ListingComponent implements OnInit {
         await this.fetchUsers();
     }
 
-    async onSort(event: Sort) {
-        this.sort = {
-            prop: event.active,
-            dir: event.direction
-        };
+    async onSort(event: SortState) {
+        this.sort = { prop: event.prop, dir: event.dir };
+        this.page = 1;
         await this.fetchUsers();
     }
 

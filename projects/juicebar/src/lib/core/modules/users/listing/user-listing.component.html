@@ -2,163 +2,129 @@
 
 <div class="parent">
 
-  <filter-bar 
-    [filters]="filterConfigs" 
-    (filterChanged)="onFilterChanged($event)" 
+  <filter-bar
+    [filters]="filterConfigs"
+    (filterChanged)="onFilterChanged($event)"
     (filterSearched)="onFilterSearched($event)">
   </filter-bar>
 
 
   <div class="w-100 p-0">
 
-    <table cdk-table [dataSource]="rows" class="data-table">
-
-      <ng-container cdkColumnDef="firstname">
-        <th cdk-header-cell *cdkHeaderCellDef>
-          <div class="header-wrap">
-            <input class="filter-input"
-                   type="text"
-                   [placeholder]="'firstname' | translate"
-                   debounceKeyUp
-                   [debounceTime]="500"
-                   (onEvent)="onFilter('firstname', $event.target['value'])"
-                   (click)="$event.stopPropagation()"
-                   (focus)="$event.stopPropagation()"
-                   (mousedown)="$event.stopPropagation()">
-          </div>
-        </th>
-        <td cdk-cell *cdkCellDef="let row">
-          {{row.firstname}}
-        </td>
-      </ng-container>
-
-      <ng-container cdkColumnDef="lastname">
-        <th cdk-header-cell *cdkHeaderCellDef>
-          <div class="header-wrap">
-            <input class="filter-input"
-                   type="text"
-                   [placeholder]="'lastname' | translate"
-                   debounceKeyUp
-                   [debounceTime]="500"
-                   (onEvent)="onFilter('lastname', $event.target['value'])"
-                   (click)="$event.stopPropagation()"
-                   (focus)="$event.stopPropagation()"
-                   (mousedown)="$event.stopPropagation()">
-          </div>
-        </th>
-        <td cdk-cell *cdkCellDef="let row">
-          {{row.lastname}}
-        </td>
-      </ng-container>
-
-      <ng-container cdkColumnDef="email">
-        <th cdk-header-cell *cdkHeaderCellDef>
-          <div class="header-wrap">
-            <input class="filter-input"
-                   type="text"
-                   [placeholder]="'email' | translate"
-                   debounceKeyUp
-                   [debounceTime]="500"
-                   (onEvent)="onFilter('email', $event.target['value'])"
-                   (click)="$event.stopPropagation()"
-                   (focus)="$event.stopPropagation()"
-                   (mousedown)="$event.stopPropagation()">
-          </div>
-        </th>
-        <td cdk-cell *cdkCellDef="let row">
-          <span class="hidden-email">{{row.email}}</span>
-        </td>
-      </ng-container>
-
-      <ng-container cdkColumnDef="active">
-        <th cdk-header-cell *cdkHeaderCellDef class="col-width-80">{{'active' | translate}}</th>
-        <td cdk-cell *cdkCellDef="let row" class="col-width-80">
-          @if (row.active == false) {
-            <app-icon [icon]="'block'" class="status-icon inactive"></app-icon>
-          }
-          @if (row.active == true) {
-            <app-icon [icon]="'check_circle'" class="status-icon active"></app-icon>
-          }
-        </td>
-      </ng-container>
-
-      <ng-container cdkColumnDef="roles_count">
-        <th cdk-header-cell *cdkHeaderCellDef class="col-width-120">{{'roles_count' | translate}}</th>
-        <td cdk-cell *cdkCellDef="let row" class="col-width-120">
-          <span class="roles-count">
-            {{row.roles_count}}
-            @if (!row.roles_count) {
-              <app-icon [icon]="'warning'" class="warning-icon"></app-icon>
-            }
-          </span>
-        </td>
-      </ng-container>
-
-      <ng-container cdkColumnDef="groups">
-        <th cdk-header-cell *cdkHeaderCellDef class="col-width-200">{{'groups' | translate}}</th>
-        <td cdk-cell  *cdkCellDef="let row" class="col-width-200">
-          @if (row.groups && objectValues(row.groups) && objectValues(row.groups).length && objectValues(row.groups)[0].length) {
-            <span [appTooltip]="getGroupsTooltip(row.groups)"
-                  class="has-popover">
-              {{getGroups(row.groups)}}
-            </span>
-          } @else {
-            <span class="grey-italic">{{'no_groups' | translate}}</span>
-          }
-        </td>
-      </ng-container>
-
-      <ng-container cdkColumnDef="lastLogin">
-        <th cdk-header-cell *cdkHeaderCellDef class="col-width-140">{{'last_login' | translate}}</th>
-        <td cdk-cell *cdkCellDef="let row" class="col-width-140">
-          {{row.lastLogin | timeAgo}}
-        </td>
-      </ng-container>
-
-      <ng-container cdkColumnDef="loginCount">
-        <th cdk-header-cell *cdkHeaderCellDef class="col-width-120">{{'login_count' | translate}}</th>
-        <td cdk-cell *cdkCellDef="let row" class="col-width-120">
-          {{row.loginCount}}
-        </td>
-      </ng-container>
-
-      <ng-container cdkColumnDef="actions">
-        <th cdk-header-cell *cdkHeaderCellDef class="col-width-120">{{'actions' | translate}}</th>
-        <td cdk-cell *cdkCellDef="let row" class="col-width-120">
-          <div class="action-buttons">
-            @if (juicebox.getUser().attributes?.settings?.twoFactor === 'totp') {
-              <button app-button
-                      appearance="icon"
-                      (click)="openModalToLoginAsAnotherUser(row);$event.stopPropagation();"
-                      [hasPermissionsHide]="'users:role#super-admin'"
-                      [appTooltip]="'login' | translate"
-                      class="action-btn login-btn">
-                <app-icon [icon]="'login'"></app-icon>
-              </button>
-            }
-            <button app-button
-                    appearance="icon"
-                    (click)="delete(row);$event.stopPropagation();"
-                    [hasPermissions]="'users:role#delete'"
-                    [appTooltip]="'delete' | translate"
-                    class="action-btn delete-btn">
-              <app-icon [icon]="'delete'"></app-icon>
-            </button>
-          </div>
-        </td>
-      </ng-container>
-
-      <tr cdk-header-row *cdkHeaderRowDef="displayedColumns; sticky: true"></tr>
-      <tr cdk-row *cdkRowDef="let row; columns: displayedColumns;" (click)="onSelect({type: 'click', row: row})"></tr>
-    </table>
-
-    <app-paginator
-      [length]="count"
+    <app-data-table
+      [rows]="rows"
+      [columns]="tableColumns"
+      [totalCount]="count"
       [pageSize]="itemsPerPage"
       [pageIndex]="page - 1"
       [pageSizeOptions]="[10, 20, 30, 50]"
-      (page)="onPageChange($event)">
-    </app-paginator>
+      [sort]="sort"
+      (pageChange)="onPageChange($event)"
+      (sortChange)="onSort($event)"
+      (rowClick)="onSelect({type: 'click', row: $event})">
+
+      <ng-template [headerDef]="'firstname'">
+        <div class="header-wrap">
+          <input class="filter-input"
+                 type="text"
+                 [placeholder]="'firstname' | translate"
+                 debounceKeyUp
+                 [debounceTime]="500"
+                 (onEvent)="onFilter('firstname', $event.target['value'])"
+                 (click)="$event.stopPropagation()"
+                 (focus)="$event.stopPropagation()"
+                 (mousedown)="$event.stopPropagation()">
+        </div>
+      </ng-template>
+
+      <ng-template [headerDef]="'lastname'">
+        <div class="header-wrap">
+          <input class="filter-input"
+                 type="text"
+                 [placeholder]="'lastname' | translate"
+                 debounceKeyUp
+                 [debounceTime]="500"
+                 (onEvent)="onFilter('lastname', $event.target['value'])"
+                 (click)="$event.stopPropagation()"
+                 (focus)="$event.stopPropagation()"
+                 (mousedown)="$event.stopPropagation()">
+        </div>
+      </ng-template>
+
+      <ng-template [headerDef]="'email'">
+        <div class="header-wrap">
+          <input class="filter-input"
+                 type="text"
+                 [placeholder]="'email' | translate"
+                 debounceKeyUp
+                 [debounceTime]="500"
+                 (onEvent)="onFilter('email', $event.target['value'])"
+                 (click)="$event.stopPropagation()"
+                 (focus)="$event.stopPropagation()"
+                 (mousedown)="$event.stopPropagation()">
+        </div>
+      </ng-template>
+
+      <ng-template [cellDef]="'email'" let-row>
+        <span class="hidden-email">{{row.email}}</span>
+      </ng-template>
+
+      <ng-template [cellDef]="'active'" let-row>
+        @if (row.active == false) {
+          <app-icon [icon]="'block'" class="status-icon inactive"></app-icon>
+        }
+        @if (row.active == true) {
+          <app-icon [icon]="'check_circle'" class="status-icon active"></app-icon>
+        }
+      </ng-template>
+
+      <ng-template [cellDef]="'roles_count'" let-row>
+        <span class="roles-count">
+          {{row.roles_count}}
+          @if (!row.roles_count) {
+            <app-icon [icon]="'warning'" class="warning-icon"></app-icon>
+          }
+        </span>
+      </ng-template>
+
+      <ng-template [cellDef]="'groups'" let-row>
+        @if (row.groups && objectValues(row.groups) && objectValues(row.groups).length && objectValues(row.groups)[0].length) {
+          <span [appTooltip]="getGroupsTooltip(row.groups)" class="has-popover">
+            {{getGroups(row.groups)}}
+          </span>
+        } @else {
+          <span class="grey-italic">{{'no_groups' | translate}}</span>
+        }
+      </ng-template>
+
+      <ng-template [cellDef]="'lastLogin'" let-row>
+        {{row.lastLogin | timeAgo}}
+      </ng-template>
+
+      <ng-template [cellDef]="'actions'" let-row>
+        <div class="action-buttons" (click)="$event.stopPropagation()">
+          @if (juicebox.getUser().attributes?.settings?.twoFactor === 'totp') {
+            <button app-button
+                    appearance="icon"
+                    (click)="openModalToLoginAsAnotherUser(row);$event.stopPropagation();"
+                    [hasPermissionsHide]="'users:role#super-admin'"
+                    [appTooltip]="'login' | translate"
+                    class="action-btn login-btn">
+              <app-icon [icon]="'login'"></app-icon>
+            </button>
+          }
+          <button app-button
+                  appearance="icon"
+                  (click)="delete(row);$event.stopPropagation();"
+                  [hasPermissions]="'users:role#delete'"
+                  [appTooltip]="'delete' | translate"
+                  class="action-btn delete-btn">
+            <app-icon [icon]="'delete'"></app-icon>
+          </button>
+        </div>
+      </ng-template>
+
+    </app-data-table>
 
   </div>
 </div>

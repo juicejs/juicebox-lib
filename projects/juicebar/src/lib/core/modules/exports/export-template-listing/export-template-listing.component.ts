@@ -2,7 +2,7 @@ import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core'
 import {ExportsTranslationPipe} from "../i18n/exports.translation";
 import {Router, RouterLink} from "@angular/router";
 import {ExportsService} from '../exports.service';
-import {DialogService} from '../../../../ui-components';
+import {DialogService, DataTableComponent, CellDefDirective, ColumnConfig, SortState} from '../../../../ui-components';
 import {ConfirmationDialogComponent} from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 import {HelperService, TableFilter, TableSort} from '../../../shared/services/helper.service';
@@ -28,7 +28,9 @@ export interface PageEvent {
         RouterLink,
         SharedModule,
         ExportsTranslationPipe,
-        AutoLanguagePipe
+        AutoLanguagePipe,
+        DataTableComponent,
+        CellDefDirective
     ]
 })
 export class ExportTemplateListingComponent implements OnInit {
@@ -45,7 +47,8 @@ export class ExportTemplateListingComponent implements OnInit {
 
     customName: string;
 
-    displayedColumns: string[] = ['name', 'dataSource', 'columns', 'filters', 'actions'];
+    columns: ColumnConfig[] = [];
+
 
     i18n: ExportsTranslationPipe;
     autoLanguage: AutoLanguagePipe;
@@ -66,6 +69,14 @@ export class ExportTemplateListingComponent implements OnInit {
             subject: this.i18n.transform('export_templates'),
             link: '/main/exports'
         });
+
+        this.columns = [
+            { key: 'name', label: this.i18n.transform('name'), width: '200px', sortable: true },
+            { key: '_data_source.name', label: this.i18n.transform('datasource'), width: '200px', sortable: true },
+            { key: 'columns', label: this.i18n.transform('columns') },
+            { key: 'filters', label: this.i18n.transform('filters') },
+            { key: 'actions', label: this.i18n.transform('actions'), width: '150px', align: 'center' }
+        ];
     }
 
     ngOnInit() {
@@ -126,6 +137,12 @@ export class ExportTemplateListingComponent implements OnInit {
     onPageChange(event: PageEvent) {
         this.page = event.pageIndex + 1;
         this.pageSize = event.pageSize;
+        this.fetchExportTemplates();
+    }
+
+    onSort(event: SortState) {
+        this.sort = { prop: event.prop, dir: event.dir };
+        this.page = 1;
         this.fetchExportTemplates();
     }
 

@@ -20,6 +20,12 @@ export * from './dialog/dialog-components';
 // Table
 export * from './table/table-exports';
 
+// Data table
+export * from './data-table/data-table.component';
+export * from './data-table/cell-def.directive';
+
+export * from './data-table/data-table.types';
+
 // Menu
 export * from './menu/menu.component';
 

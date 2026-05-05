@@ -1,0 +1,55 @@
+<div class="data-table-wrapper">
+  <table cdk-table [dataSource]="rows()" class="data-table">
+    @for (col of columns(); track trackKey($index, col)) {
+      <ng-container [cdkColumnDef]="col.key">
+        <th cdk-header-cell *cdkHeaderCellDef
+            [style.width]="col.width || null"
+            [class.text-right]="col.align === 'right'"
+            [class.text-center]="col.align === 'center'"
+            [class.sortable]="col.sortable"
+            [attr.role]="col.sortable ? 'button' : null"
+            [attr.tabindex]="col.sortable ? 0 : null"
+            [attr.aria-sort]="col.sortable ? (sortDirFor(col.key) === 'asc' ? 'ascending' : sortDirFor(col.key) === 'desc' ? 'descending' : 'none') : null"
+            (click)="toggleSort(col)"
+            (keydown)="onSortKey($event, col)">
+          <span class="th-inner">
+            @if (headerTpl(col.key); as h) {
+              <ng-container *ngTemplateOutlet="h; context: { $implicit: col }"></ng-container>
+            } @else {
+              <span class="th-label" [title]="col.label">{{ col.label }}</span>
+            }
+            @if (col.sortable) {
+              <app-icon
+                class="sort-icon"
+                [class.active]="sortDirFor(col.key) !== ''"
+                [icon]="sortIcon(col.key)">
+              </app-icon>
+            }
+          </span>
+        </th>
+        <td cdk-cell *cdkCellDef="let row"
+            [style.width]="col.width || null"
+            [class.cell-ellipsis]="col.ellipsis !== false"
+            [class.text-right]="col.align === 'right'"
+            [class.text-center]="col.align === 'center'"
+            (click)="rowClick.emit(row)">
+          @if (cellTpl(col.key); as t) {
+            <ng-container *ngTemplateOutlet="t; context: { $implicit: row, row: row }"></ng-container>
+          } @else {
+            <span [title]="value(row, col.key)">{{ value(row, col.key) ?? '-' }}</span>
+          }
+        </td>
+      </ng-container>
+    }
+    <tr cdk-header-row *cdkHeaderRowDef="columnKeys(); sticky: true"></tr>
+    <tr cdk-row *cdkRowDef="let row; columns: columnKeys();" class="clickable-row"></tr>
+  </table>
+
+  <app-paginator
+    [length]="totalCount()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="pageSizeOptions()"
+    [pageIndex]="pageIndex()"
+    (page)="pageChange.emit($event)">
+  </app-paginator>
+</div>
