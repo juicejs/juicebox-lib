@@ -37,8 +37,7 @@ export const exportsDictionary = {
   "exports": {
     "en_GB": "Exports",
     "de_DE": "Exporte",
-    "hr_HR": "Export",
-    "ru_RU": "Экспорты"
+    "hr_HR": "Export"
   },
   "submit": {
     "en_GB": "Submit",
