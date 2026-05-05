@@ -4,9 +4,55 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #ff8c61 0%, #e85a2a 100%);
   padding: 1rem;
   position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at top left, #ffb088 0%, transparent 55%),
+    radial-gradient(ellipse at bottom right, #c9421a 0%, transparent 60%),
+    linear-gradient(135deg, #ff8c61 0%, #ff6b35 45%, #e85a2a 100%);
+  background-attachment: fixed;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 25%, rgba(255, 200, 160, 0.55) 0%, transparent 35%),
+      radial-gradient(circle at 80% 75%, rgba(255, 140, 90, 0.45) 0%, transparent 40%),
+      radial-gradient(circle at 60% 15%, rgba(255, 230, 200, 0.35) 0%, transparent 30%);
+    filter: blur(40px);
+    animation: drift 18s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
+    pointer-events: none;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@keyframes drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(2%, -1.5%, 0) scale(1.05); }
+  100% { transform: translate3d(-2%, 1.5%, 0) scale(0.98); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-page::before { animation: none; }
 }
 
 .login-card {
