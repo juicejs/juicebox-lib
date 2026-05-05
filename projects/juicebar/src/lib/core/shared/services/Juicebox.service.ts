@@ -699,7 +699,7 @@ export class JuiceboxService {
     }
 
     getLanguage(): string {
-        this._language = this._language || localStorage.getItem('language');
+        this._language = this._language || localStorage.getItem('language') || 'en_GB';
         return this._language;
     }
 

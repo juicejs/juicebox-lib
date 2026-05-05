@@ -815,7 +815,7 @@ export const mainDictionary = {
   },
   "remember_me": {
     "en_GB": "Remember me",
-    "de_DE": "Passwort merken"
+    "de_DE": "Angemeldet bleiben"
   },
   "visible": {
     "en_GB": "Visible",
@@ -1015,5 +1015,41 @@ export const mainDictionary = {
   "collapse_sidebar": {
     "en_GB": "Collapse sidebar",
     "de_DE": "Seitenleiste einrücken"
+  },
+  "email_required": {
+    "en_GB": "E-mail is required",
+    "de_DE": "E-Mail wird benötigt"
+  },
+  "password_required": {
+    "en_GB": "Password is required",
+    "de_DE": "Passwort wird benötigt"
+  },
+  "choose_organisation": {
+    "en_GB": "Choose an organisation",
+    "de_DE": "Organisation auswählen"
+  },
+  "or": {
+    "en_GB": "or",
+    "de_DE": "oder"
+  },
+  "web3_login": {
+    "en_GB": "Web3 Login",
+    "de_DE": "Web3 Login"
+  },
+  "forgot_password": {
+    "en_GB": "Forgot password",
+    "de_DE": "Passwort vergessen"
+  },
+  "wrong_credentials": {
+    "en_GB": "Wrong credentials",
+    "de_DE": "Falsche Anmeldedaten"
+  },
+  "wallet_authorization_failed": {
+    "en_GB": "Wallet authorization failed",
+    "de_DE": "Wallet-Autorisierung fehlgeschlagen"
+  },
+  "LEGAL_AGREEMENT_NOT_ACCEPTED": {
+    "en_GB": "You must accept the legal agreement to continue",
+    "de_DE": "Sie müssen den rechtlichen Bestimmungen zustimmen, um fortzufahren"
   }
 }

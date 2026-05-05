@@ -1,22 +1,83 @@
 @import '../styles/variables.scss';
 
 .app-form-field {
-  display: block;
+  display: flex;
+  flex-direction: column;
   margin-bottom: var(--spacing-md);
-  position: relative;
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--color-text-primary);
+    background: var(--color-background, #fff);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+
+    &::placeholder {
+      color: var(--color-text-disabled);
+    }
+
+    &:hover:not(:disabled):not([readonly]) {
+      border-color: var(--color-secondary-light);
+    }
+
+    &:focus {
+      border-color: var(--color-secondary);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+    }
+
+    &[readonly],
+    &:disabled {
+      background: var(--color-grey-50);
+      color: var(--color-text-secondary);
+      cursor: not-allowed;
+    }
+  }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2.25rem;
+  }
+
+  &.app-form-field-fill {
+    input,
+    select,
+    textarea {
+      background: var(--color-grey-50);
+      border-color: transparent;
+      border-bottom: 2px solid var(--color-border);
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+
+      &:focus {
+        border-bottom-color: var(--color-secondary);
+        box-shadow: none;
+      }
+    }
+  }
+
+  &:has(input.ng-invalid.ng-touched),
+  &:has(select.ng-invalid.ng-touched),
+  &:has(textarea.ng-invalid.ng-touched) {
+    input,
+    select,
+    textarea {
+      border-color: var(--color-error);
+
+      &:focus {
+        box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.15);
+      }
+    }
+  }
 }
 
-.app-label {
-  display: block;
-  margin-bottom: var(--spacing-xs);
-  color: var(--color-text-secondary);
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.app-error {
-  display: block;
-  margin-top: var(--spacing-xs);
-  color: var(--color-error);
-  font-size: 0.75rem;
-}

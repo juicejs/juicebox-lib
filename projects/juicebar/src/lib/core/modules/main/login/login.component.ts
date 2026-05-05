@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy, signal} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { DialogService } from '../../../../ui-components';
@@ -9,7 +9,7 @@ import { AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 import { ConfigurationService} from '../../../shared/services/configuration.service';
 import { Title } from '@angular/platform-browser';
 import { MainTranslationPipe } from '../i18n/main.translation';
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {SharedModule} from '../../../shared/shared.module';
 
 @Component({
@@ -19,6 +19,7 @@ import {SharedModule} from '../../../shared/shared.module';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
+        NgOptimizedImage,
         ReactiveFormsModule,
         SharedModule,
         MainTranslationPipe,
@@ -29,13 +30,15 @@ export class LoginComponent implements OnInit {
 
     loginForm: FormGroup;
     returnUrl: string;
-    organisations: Array<{ _id: string, name: string }> = [];
+    organisations = signal<Array<{ _id: string, name: string }>>([]);
     version: { frontend: string, backend: string };
-    twoFactorAuthTimestamp: number = 0;
+    twoFactorAuthTimestamp = signal(0);
     privacyPolicyLink: string = 'cse_privacy_policy_link';
 
-    errorMessage: string = null;
-    org: boolean = false;
+    errorMessage = signal<string | null>(null);
+    org = signal(false);
+    legalAgreementUIShown = signal(false);
+    legalAgreementValue = signal(false);
     promiseBtn: any;
 
     organisation: any;
@@ -105,8 +108,8 @@ export class LoginComponent implements OnInit {
 
             if ((<any>success).success) {
                 if ((<any>success).organisations) {
-                    this.org = true;
-                    this.organisations = [...(<any>success).organisations];
+                    this.org.set(true);
+                    this.organisations.set([...(<any>success).organisations]);
                 } else {
                     document.location.replace('');
                 }
@@ -116,7 +119,7 @@ export class LoginComponent implements OnInit {
 
     login() {
         this.promiseBtn = (async () => {
-            this.errorMessage = null;
+            this.errorMessage.set(null);
 
             const result: any = await this.juicebox.auth(
                 'juicebox:user',
@@ -124,12 +127,12 @@ export class LoginComponent implements OnInit {
                     email: this.loginForm.value.email,
                     password: this.loginForm.value.password,
                     remember: this.loginForm.value.remember,
-                    legalAgreement: this.legalAgreementValue,
+                    legalAgreement: this.legalAgreementValue(),
                 },
                 this.loginForm.value.organisation_id,
                 {
                     code: this.loginForm.value.two_factor_authorisation_code,
-                    timestamp: this.twoFactorAuthTimestamp
+                    timestamp: this.twoFactorAuthTimestamp()
                 }
             );
 
@@ -139,12 +142,13 @@ export class LoginComponent implements OnInit {
             }
 
             if (result.organisations && result.organisations.length) {
-                this.org = true;
-                this.organisations = [...result.organisations];
-                this.organisation = this.organisations[0]._id;
+                this.org.set(true);
+                this.organisations.set([...result.organisations]);
+                this.organisation = this.organisations()[0]._id;
+                this.loginForm.patchValue({ organisation_id: this.organisation });
             } else if (result.twoFactor && result.twoFactor.strategy && result.twoFactor.timestamp) {
                 //Open field to confirm two factor auth
-                this.twoFactorAuthTimestamp = result.twoFactor.timestamp;
+                this.twoFactorAuthTimestamp.set(result.twoFactor.timestamp);
             }
             else {
                 const accepted = await this.showWelcomeDialogue(result.welcomeMessageKey);
@@ -169,7 +173,7 @@ export class LoginComponent implements OnInit {
         if (this.loginForm.invalid || !this.loginForm.value.organisation_id) return;
 
         this.promiseBtn = (async () => {
-            this.errorMessage = null;
+            this.errorMessage.set(null);
 
             const result = await this.juicebox.auth('juicebox:user', {
                 email: this.loginForm.value.email,
@@ -180,9 +184,9 @@ export class LoginComponent implements OnInit {
             if (result && result.success) {
                 if (result.twoFactor && result.twoFactor.strategy && result.twoFactor.timestamp) {
                     //Remove org dropdown
-                    this.org = false;
+                    this.org.set(false);
                     //Open field to confirm two factor auth
-                    this.twoFactorAuthTimestamp = result.twoFactor.timestamp;
+                    this.twoFactorAuthTimestamp.set(result.twoFactor.timestamp);
                 } else {
                     if (result.user?.attributes?.settings?.language) {
                         this.juicebox.setLanguage(result.user.attributes.settings.language)
@@ -227,7 +231,29 @@ export class LoginComponent implements OnInit {
     }
 
 
+    private web3ScriptsLoaded = false;
+
+    private loadWeb3Scripts(): Promise<void> {
+        if (this.web3ScriptsLoaded) return Promise.resolve();
+        const sources = [
+            'https://unpkg.com/web3@1.8.1/dist/web3.min.js',
+            'https://unpkg.com/web3modal@1.9.5/dist/index.js',
+            'https://unpkg.com/evm-chains@0.2.0/dist/umd/index.min.js',
+            'https://unpkg.com/@walletconnect/web3-provider@1.6.6/dist/umd/index.min.js'
+        ];
+        return Promise.all(sources.map(src => new Promise<void>((resolve, reject) => {
+            if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
+            const s = document.createElement('script');
+            s.src = src;
+            s.async = true;
+            s.onload = () => resolve();
+            s.onerror = () => reject(new Error(`Failed to load ${src}`));
+            document.head.appendChild(s);
+        }))).then(() => { this.web3ScriptsLoaded = true; });
+    }
+
     async loginWithWeb3() {
+        await this.loadWeb3Scripts();
         console.log('Creating the token...');
         const win: any = this.juicebox.getWindow();
 
@@ -284,7 +310,7 @@ export class LoginComponent implements OnInit {
                 if (accepted) document.location.replace('');
             } else {
                 this.handleError(result.error);
-                this.errorMessage = "Web3 Authentication Failed";
+                this.errorMessage.set("Web3 Authentication Failed");
             }
         });
     }
@@ -321,19 +347,16 @@ export class LoginComponent implements OnInit {
         return this.errorHandlerMap[errMsg];
     }
 
-    legalAgreementUIShown = false; // specific to CS Equipments project
-    legalAgreementValue: boolean; // specific to CS Equipments project
-
     private errorHandlerMap: { [errMsg: string]: () => any } = {
         LEGAL_AGREEMENT_NOT_ACCEPTED: () => {
-            this.errorMessage = 'LEGAL_AGREEMENT_NOT_ACCEPTED';
-            this.legalAgreementUIShown = true;
+            this.errorMessage.set('LEGAL_AGREEMENT_NOT_ACCEPTED');
+            this.legalAgreementUIShown.set(true);
         },
         DEFAULT: () => {
-            this.errorMessage = 'wrong_credentials';
+            this.errorMessage.set('wrong_credentials');
         },
         WEB3: () => {
-            this.errorMessage = 'wallet_authorization_failed';
+            this.errorMessage.set('wallet_authorization_failed');
         }
     }
 }
