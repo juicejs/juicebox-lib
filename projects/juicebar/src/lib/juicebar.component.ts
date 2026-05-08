@@ -28,21 +28,7 @@ import { JuiceboxService } from './core/shared/services/Juicebox.service';
       <router-outlet></router-outlet>
     }
   `,
-  styles: [`
-    .loading-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      gap: 20px;
-    }
-
-    .loading-container p {
-      font-size: 16px;
-      color: #666;
-    }
-  `],
+  styleUrl: './juicebar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class JuicebarComponent implements OnInit {

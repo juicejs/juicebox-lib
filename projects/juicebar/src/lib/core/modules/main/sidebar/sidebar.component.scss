@@ -1,4 +1,5 @@
-@import "../../../../../../src/lib/styles.scss";
+@import "../../../../styles";
+@import "../../../../ui-components/styles/variables";
 
 // Modern Sidebar Container
 .modern-sidebar-container {
@@ -19,9 +20,9 @@
   flex-direction: column;
   height: 100%;
   width: 100%;
-  background: white;
-  border-right: 1px solid #e0e0e0;
-  box-shadow: none;
+  background: var(--color-background-secondary);
+  border-left: 2px solid var(--color-border);
+  box-shadow: var(--shadow-md);
 
   // Header Section with Logo
   .sidebar-header {
@@ -29,7 +30,6 @@
     align-items: center;
     justify-content: center;
     padding: 20px 16px;
-    border-bottom: 1px solid #f0f0f0;
     min-height: 72px;
     transition: all 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
 
@@ -120,7 +120,7 @@
               font-size: 18px;
               width: 18px;
               height: 18px;
-              color: #5f6368;
+              color: var(--color-text-secondary);
               transition: color 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
             }
 
@@ -128,7 +128,7 @@
               font-size: 16px;
               width: 16px;
               height: 16px;
-              color: #9aa0a6;
+              color: var(--color-grey-500);
               cursor: grab;
             }
           }
@@ -137,7 +137,7 @@
             flex: 1;
             font-size: 14px;
             font-weight: 400;
-            color: #3c4043;
+            color: var(--color-text-primary);
             line-height: 20px;
             transition: all 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
             overflow: hidden;
@@ -154,35 +154,35 @@
 
         // Hover state
         &:hover:not(.active):not(.dragging) {
-          background-color: rgba(60, 64, 67, 0.04);
+          background-color: var(--color-grey-200);
 
           .menu-icon {
-            color: #1a73e8;
+            color: var(--color-tertiary);
           }
 
           .menu-label {
-            color: #1a73e8;
+            color: var(--color-tertiary);
           }
         }
 
         // Active state
         &.active {
-          background-color: rgba(26, 115, 232, 0.12);
+          background-color: var(--color-grey-300);
 
           .menu-icon {
-            color: #1a73e8;
+            color: var(--color-tertiary);
           }
 
           .menu-label {
-            color: #1a73e8;
+            color: var(--color-tertiary);
             font-weight: 500;
           }
         }
 
         // Dragging state
         &.dragging {
-          background-color: rgba(26, 115, 232, 0.08);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+          background-color: var(--color-grey-200);
+          box-shadow: var(--shadow-md);
           transform: rotate(2deg);
         }
       }
@@ -198,12 +198,12 @@
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      color: #5f6368;
+      color: var(--color-text-secondary);
       transition: all 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
 
       &:hover {
-        background-color: rgba(60, 64, 67, 0.08);
-        color: #1a73e8;
+        background-color: var(--color-grey-200);
+        color: var(--color-tertiary);
       }
 
       .collapse-icon {
@@ -236,16 +236,16 @@
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 8px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
-  background: white;
-  border: 1px solid #e0e0e0;
+  box-shadow: var(--shadow-xl);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
   transform: rotate(2deg);
 }
 
 .cdk-drag-placeholder {
   opacity: 0.3;
-  background: rgba(26, 115, 232, 0.08);
-  border: 2px dashed rgba(26, 115, 232, 0.3);
+  background: var(--color-grey-200);
+  border: 2px dashed var(--color-tertiary);
   border-radius: 8px;
 }
 

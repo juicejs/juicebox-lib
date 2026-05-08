@@ -1,15 +1,24 @@
 @import "../../../assets/theme";
+@import "../../../ui-components/styles/variables";
 
 .main-container-new-ui {
     display: flex;
+    flex-direction: column;
     height: 100vh;
     width: 100vw;
-    background: linear-gradient(135deg, lighten($primary, 10%) 0%, $primary 100%);
     font-family: 'Inter', sans-serif !important;
 
-    .right-section {
+    app-navigation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+    }
+
+    .main-content {
         display: flex;
-        flex-direction: column;
+        margin-top: 4rem;
         flex: 1;
         min-height: 0;
     }
@@ -17,17 +26,52 @@
     .content-container {
         flex: 1;
         overflow-y: auto;
-        background: white;
+        background: var(--color-background);
+        border: 1px solid var(--color-border);
 
         .navigation-container {
-            height: calc(100% - 4rem);
+            position: relative;
+
+            .floating-expand-btn {
+                position: sticky;
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 901;
+                margin: 0.5rem auto;
+                width: 1.5rem;
+                height: 1.5rem;
+                background: var(--color-background-secondary);
+                border: 1px solid var(--color-border);
+                box-shadow: var(--shadow-md);
+                color: var(--color-tertiary);
+                animation: slideDown 0.3s ease;
+
+                &:hover {
+                    background: var(--color-grey-200);
+                    box-shadow: var(--shadow-lg);
+                    transform: translateX(-50%) translateY(2px);
+                }
+            }
 
             .location-container, .search-container {
                 display: flex;
                 width: 100%;
                 padding: 1rem 1.5rem;
-                background: white;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                background: var(--color-background-secondary);
+                border-bottom: 1px solid var(--color-border);
+                position: sticky;
+                top: 0;
+                z-index: 900;
+                transition: transform 0.3s ease, opacity 0.3s ease;
+                overflow: hidden;
+
+                &.collapsed {
+                    transform: translateY(-100%);
+                    opacity: 0;
+                    height: 0;
+                    pointer-events: none;
+                }
 
                 .location {
                     flex-grow: 1;
@@ -35,7 +79,7 @@
                     .title {
                         font-size: 1.7rem;
                         margin-bottom: 0rem;
-                        color: #333;
+                        color: var(--color-text-primary);
 
                         .icon-container {
                             padding-bottom: 5px;
@@ -77,6 +121,19 @@
                     }
                 }
 
+                .collapse-btn {
+                    width: 32px;
+                    height: 32px;
+                    margin-left: 0.5rem;
+                    color: var(--color-text-secondary);
+                    transition: all 0.3s ease;
+
+                    &:hover {
+                        color: var(--color-tertiary);
+                        background-color: var(--color-grey-200);
+                    }
+                }
+
                 .button-bar {
                     display: flex;
                     align-items: center;
@@ -88,12 +145,14 @@
                         gap: 0.5rem;
                         padding: 0.5rem 1rem;
                         border-radius: 8px;
+                        border: 1px solid var(--color-border);
                         transition: all 0.3s ease;
-                        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                        box-shadow: var(--shadow-sm);
 
                         &:hover {
                             transform: translateY(-1px);
-                            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                            box-shadow: var(--shadow-md);
+                            border-color: var(--color-tertiary);
                         }
                     }
                 }
@@ -102,18 +161,19 @@
             &.searchResults {
                 .parent {
                     padding: 1.5rem;
-                    background: #f8f9fa;
+                    background: var(--color-background-secondary);
 
                     .jc-module {
                         margin-bottom: 2rem;
-                        background: white;
+                        background: var(--color-background);
                         border-radius: 12px;
+                        border: 1px solid var(--color-border);
                         padding: 1.5rem;
-                        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                        box-shadow: var(--shadow-lg);
 
                         .title {
                             font-size: 1.1rem;
-                            color: #333;
+                            color: var(--color-text-primary);
                             font-weight: 600;
                             margin-bottom: 1rem;
 
@@ -124,7 +184,7 @@
                             }
 
                             small {
-                                color: #666;
+                                color: var(--color-text-secondary);
                                 font-weight: normal;
                                 margin-left: 0.5rem;
                             }
@@ -134,11 +194,11 @@
                             .result {
                                 padding: 1rem;
                                 margin-bottom: 0.75rem;
-                                background: #f8f9fa;
+                                background: var(--color-background-secondary);
                                 border-radius: 8px;
                                 cursor: pointer;
                                 transition: all 0.2s ease;
-                                border: 2px solid transparent;
+                                border: 1px solid var(--color-border);
 
                                 &:hover {
                                     background: rgba($primary, 0.05);
@@ -150,13 +210,13 @@
                                 .name {
                                     font-size: 1rem;
                                     font-weight: 500;
-                                    color: #333;
+                                    color: var(--color-text-primary);
                                     margin-bottom: 0.5rem;
                                 }
 
                                 .details {
                                     font-size: 0.875rem;
-                                    color: #666;
+                                    color: var(--color-text-secondary);
                                 }
                             }
                         }
@@ -177,10 +237,22 @@
     height: 36px !important;
     margin-right: 8px;
     margin-left: -8px;
-    color: #666;
+    color: var(--color-text-secondary);
 
     &:hover {
         color: $primary;
-        background-color: rgba(0, 0, 0, 0.04);
+        background-color: var(--color-grey-200);
+    }
+}
+
+// Animations
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
     }
 }

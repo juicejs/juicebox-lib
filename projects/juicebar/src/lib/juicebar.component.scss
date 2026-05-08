@@ -1,9 +1,18 @@
+@import 'ui-components/styles/variables';
+
 .loading-container {
   height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #fafafa;
+  gap: 20px;
+  background-color: var(--color-background);
+
+  p {
+    font-size: 16px;
+    color: var(--color-text-secondary);
+  }
 }
 
 .sidenav-container {
@@ -12,7 +21,7 @@
 
 .sidenav {
   width: 250px;
-  background: #c4c4c4;
+  background: var(--color-background-secondary);
 }
 
 .content {

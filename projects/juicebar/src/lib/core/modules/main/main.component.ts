@@ -44,6 +44,7 @@ export class MainComponent implements OnInit {
     public text = signal<string>(null);
     public module = signal<string>(null);
     public navigationVisible!: Signal<boolean>;
+    public headerCollapsed = signal<boolean>(false);
 
     private subscription$: Subscription = new Subscription();
 
@@ -183,6 +184,10 @@ export class MainComponent implements OnInit {
 
     ngOnDestroy() {
         this.subscription$.unsubscribe();
+    }
+
+    toggleHeaderCollapse() {
+        this.headerCollapsed.update(value => !value);
     }
 
     getButtonColor(buttonType: string): 'primary' | 'accent' | 'warn' | 'basic' {

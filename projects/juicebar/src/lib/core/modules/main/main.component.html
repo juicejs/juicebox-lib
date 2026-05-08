@@ -1,17 +1,25 @@
-<div [class]="juicebox.nextUi ? 'main-container-new-ui' : 'main-container-old-ui'">
+<div class="main-container-new-ui">
     @if (navigationVisible()) {
-        <app-sidebar></app-sidebar>
+        <app-navigation (helpTextUpdatedEventEmitter)="helpTextUpdated()"></app-navigation>
     }
 
-    <div class="right-section">
+    <div class="main-content">
         @if (navigationVisible()) {
-            <app-navigation (helpTextUpdatedEventEmitter)="helpTextUpdated()"></app-navigation>
+            <app-sidebar></app-sidebar>
         }
-
         <div class="content-container">
         <div class="flex-column navigation-container next" [style.display]="juicebox.searchActive ? 'none' : 'flex'">
+            @if (navigationVisible() && headerCollapsed()) {
+                <button app-button
+                        appearance="icon"
+                        class="floating-expand-btn"
+                        (click)="toggleHeaderCollapse()"
+                        [appTooltip]="'Expand header'">
+                    <app-icon [icon]="'expand_more'"></app-icon>
+                </button>
+            }
             @if (navigationVisible()) {
-                <div class="location-container">
+                <div class="location-container" [class.collapsed]="headerCollapsed()">
                     <div class="location ellipsis">
                         <div class="title">
                             <div class="d-flex align-center">
@@ -34,8 +42,8 @@
                         </button>
                     }
 
-                    @if (juicebox.actionButtons && juicebox.actionButtons.length) {
-                        <div class="button-bar">
+                    <div class="button-bar">
+                        @if (juicebox.actionButtons && juicebox.actionButtons.length) {
                             @for (button of juicebox.actionButtons; track button) {
                                 <button (click)="button.callAction()"
                                         [promiseBtn]="button.promise"
@@ -50,8 +58,15 @@
                                     {{button.title}}
                                 </button>
                             }
-                        </div>
-                    }
+                        }
+                        <button app-button
+                                appearance="icon"
+                                class="collapse-btn"
+                                (click)="toggleHeaderCollapse()"
+                                [appTooltip]="headerCollapsed() ? 'Expand header' : 'Collapse header'">
+                            <app-icon [icon]="headerCollapsed() ? 'expand_more' : 'expand_less'"></app-icon>
+                        </button>
+                    </div>
                 </div>
             }
             <div class="router-container">
@@ -96,6 +111,8 @@
                 </div>
             }
         </div>
-    </div>
+        </div>
+
+
     </div>
 </div>
