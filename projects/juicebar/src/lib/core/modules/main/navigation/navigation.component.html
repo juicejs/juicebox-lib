@@ -23,27 +23,29 @@
   <!-- Right Section - User Actions -->
   <div class="nav-right-section">
 
-    <!-- Help Button -->
-    @if (fileInfo || this.juicebox.hasPermission('juicebox:role#edit-help-document')) {
-      <button app-button
-              appearance="icon"
-              class="action-button help-btn"
-              (click)="getHelp()"
-              [appTooltip]="'help' | translate">
-        <app-icon [icon]="'help_outline'"></app-icon>
-      </button>
-    }
+    <div class="action-cluster">
 
-    <!-- Language Switcher -->
-    @if (languages && languages.length > 1) {
-      <button app-button
-              appearance="icon"
-              class="action-button language-btn"
-              [cdkMenuTriggerFor]="languageMenu"
-              [appTooltip]="'change_language' | translate">
-        <app-icon [icon]="'language'"></app-icon>
-      </button>
-    }
+      <!-- Help Button -->
+      @if (fileInfo() || this.juicebox.hasPermission('juicebox:role#edit-help-document')) {
+        <button app-button
+                appearance="icon"
+                class="action-button help-btn"
+                (click)="getHelp()"
+                [appTooltip]="'help' | translate">
+          <app-icon [icon]="'help_outline'"></app-icon>
+        </button>
+      }
+
+      <!-- Language Switcher -->
+      @if (languages().length > 1) {
+        <button app-button
+                appearance="icon"
+                class="action-button language-btn"
+                [cdkMenuTriggerFor]="languageMenu"
+                [appTooltip]="'change_language' | translate">
+          <app-icon [icon]="'language'"></app-icon>
+        </button>
+      }
 
     <ng-template #languageMenu>
       <div class="menu-panel menu-dropdown" cdkMenu>
@@ -51,7 +53,7 @@
           <span class="menu-title">Language</span>
         </div>
         <div class="languages-listing">
-          @for (language of languages; track language.key) {
+          @for (language of languages(); track language.code) {
             <button (click)="changeLanguage(language)"
                     app-button
                     cdkMenuItem
@@ -66,22 +68,26 @@
       </div>
     </ng-template>
 
-    <!-- Theme Toggle -->
-    <button app-button
-            appearance="icon"
-            class="action-button theme-btn"
-            (click)="toggleTheme()"
-            [appTooltip]="(theme() === 'light' ? 'switch_to_dark' : 'switch_to_light') | translate">
-      <app-icon [icon]="theme() === 'light' ? 'dark_mode' : 'light_mode'"></app-icon>
-    </button>
+      <!-- Theme Toggle -->
+      <button app-button
+              appearance="icon"
+              class="action-button theme-btn"
+              (click)="toggleTheme()"
+              [appTooltip]="(theme() === 'light' ? 'switch_to_dark' : 'switch_to_light') | translate">
+        <app-icon [icon]="theme() === 'light' ? 'dark_mode' : 'light_mode'"></app-icon>
+      </button>
+
+    </div>
+
+    <div class="nav-divider"></div>
 
     <!-- Organization Switcher (Google Drive-like) -->
-    @if (userOrganisations && userOrganisations.length > 1) {
+    @if (userOrganisations().length > 1) {
       <button app-button
               class="org-switcher-btn"
               [cdkMenuTriggerFor]="orgMenu">
         <app-icon [icon]="'business'" class="org-icon"></app-icon>
-        <span class="org-label">{{ organisationName }}</span>
+        <span class="org-label">{{ organisationName() }}</span>
         <app-icon [icon]="'keyboard_arrow_down'" class="dropdown-arrow"></app-icon>
       </button>
     }
@@ -91,7 +97,7 @@
         <div class="menu-header">
           <span class="menu-title">Switch Organization</span>
         </div>
-        @for (org of userOrganisations; track org._id) {
+        @for (org of userOrganisations(); track org._id) {
           <button (click)="onOrganisationSwitch(org._id)"
                   cdkMenuItem
                   class="org-menu-item">
@@ -120,8 +126,8 @@
           <div class="profile-info">
             <app-icon [icon]="'account_circle'" class="profile-avatar"></app-icon>
             <div class="profile-details">
-              <div class="profile-name">{{ userName }}</div>
-              <div class="profile-email">{{ userEmail || 'user@example.com' }}</div>
+              <div class="profile-name">{{ userName() }}</div>
+              <div class="profile-email">{{ userEmail() || 'user@example.com' }}</div>
             </div>
           </div>
         </div>

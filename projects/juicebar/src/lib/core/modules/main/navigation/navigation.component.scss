@@ -99,43 +99,68 @@
   .nav-right-section {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: var(--spacing-sm);
     flex-shrink: 0;
+
+    // Grouped action icons (help, language, theme)
+    .action-cluster {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    // Vertical divider between action cluster and org/profile
+    .nav-divider {
+      width: 1px;
+      height: 24px;
+      background-color: var(--color-border);
+      margin: 0 var(--spacing-xs);
+      flex-shrink: 0;
+    }
 
     // Organization Switcher
     .org-switcher-btn {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 16px;
+      padding: 0 14px;
       border-radius: 20px;
-      background: transparent;
-      border: 1px solid var(--color-border);
+      background-color: var(--color-grey-100);
+      border: 1px solid var(--color-border-dark);
       color: var(--color-text-primary);
       font-weight: 500;
       text-transform: none;
       min-width: auto;
       height: 40px;
+      transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 
       &:hover {
-        background-color: var(--color-grey-100);
+        background-color: var(--color-grey-200);
+        border-color: var(--color-tertiary);
         box-shadow: var(--shadow-sm);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-tertiary);
+        outline-offset: 2px;
       }
 
       .org-icon {
         font-size: 18px;
         width: 18px;
         height: 18px;
+        color: var(--color-text-primary);
       }
-      
+
       .org-label {
         font-size: 14px;
-        max-width: 120px;
+        max-width: 140px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        color: var(--color-text-primary);
       }
-      
+
       .dropdown-arrow {
         font-size: 16px;
         width: 16px;
@@ -144,15 +169,25 @@
       }
     }
 
-    // Action Buttons (Language, Help, Apps)
+    // Action Buttons (Language, Help, Theme)
     .action-button {
       width: 40px;
       height: 40px;
       border-radius: 50%;
+      background-color: transparent;
+      border: none;
       color: var(--color-text-secondary);
+      transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 
       &:hover {
         background-color: var(--color-grey-200);
+        color: var(--color-text-primary);
+        transform: scale(1.05);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-tertiary);
+        outline-offset: 2px;
       }
     }
 
@@ -160,30 +195,43 @@
     .profile-button {
       min-width: auto;
       padding: 0;
+      border: none;
+      background-color: transparent;
       border-radius: 50%;
       width: 40px;
       height: 40px;
-      
+      transition: transform 0.15s ease;
+
       .user-avatar {
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
         overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #1a73e8;
-        
+        background-color: var(--color-tertiary);
+        transition: box-shadow 0.15s ease, transform 0.15s ease;
+
         .avatar-icon {
-          font-size: 24px;
-          width: 24px;
-          height: 24px;
-          color: white;
+          font-size: 26px;
+          width: 26px;
+          height: 26px;
+          color: var(--color-tertiary-contrast);
         }
       }
-      
+
       &:hover .user-avatar {
-        box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+        box-shadow: 0 0 0 2px var(--color-tertiary);
+        transform: scale(1.05);
+      }
+
+      &:focus-visible {
+        outline: none;
+
+        .user-avatar {
+          box-shadow: 0 0 0 2px var(--color-tertiary);
+        }
       }
     }
   }
@@ -330,8 +378,20 @@
     }
     
     .nav-right-section {
+      gap: var(--spacing-xs);
+
+      .nav-divider {
+        display: none;
+      }
+
       .org-switcher-btn {
+        padding: 0 10px;
+
         .org-label {
+          display: none;
+        }
+
+        .dropdown-arrow {
           display: none;
         }
       }
@@ -342,22 +402,37 @@
 @media (max-width: 480px) {
   .modern-navigation {
     height: 56px;
-    
+
     .search-section {
       margin: 0 8px;
-      
+
       .search-container {
         height: 36px;
       }
     }
-    
+
     .nav-right-section {
       gap: 2px;
-      
+
+      .action-cluster {
+        gap: 0;
+      }
+
       .action-button,
       .profile-button {
         width: 36px;
         height: 36px;
+      }
+
+      .profile-button .user-avatar {
+        width: 32px;
+        height: 32px;
+
+        .avatar-icon {
+          font-size: 22px;
+          width: 22px;
+          height: 22px;
+        }
       }
     }
   }

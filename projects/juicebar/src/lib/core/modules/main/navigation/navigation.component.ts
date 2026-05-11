@@ -1,19 +1,32 @@
-import {Component, EventEmitter, inject, OnDestroy, OnInit, output, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject, OnInit, output, ChangeDetectionStrategy, signal} from '@angular/core';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
-import {Router, RouterLink} from '@angular/router';
-import {CommonModule, Location} from '@angular/common';
+import {Router} from '@angular/router';
+import {CommonModule} from '@angular/common';
 import {DialogService} from '../../../../ui-components/dialog/dialog.service';
 import {HelpComponent} from './help/help.component';
 import {MainTranslationPipe} from '../i18n/main.translation';
-import {Subscription} from 'rxjs';
-import {ClientRoutesService} from '../../../shared/services/client-routes.service';
 import {CdkMenuModule} from '@angular/cdk/menu';
 import {SharedModule} from '../../../shared/shared.module';
 import {ThemeService, Theme} from '../../../shared/services/theme.service';
 
 export interface Language {
-  name: string,
-  code: string
+  name: string;
+  code: string;
+}
+
+interface UserShape {
+  _id: string;
+  email: string;
+  firstname?: string;
+  lastname?: string;
+  attributes?: { settings?: { theme?: string; language?: string } };
+}
+
+interface FileInfo {
+  name: string;
+  extension: string;
+  type: string;
+  path: string;
 }
 
 @Component({
@@ -23,122 +36,88 @@ export interface Language {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    RouterLink,
     CdkMenuModule,
     SharedModule,
     MainTranslationPipe
   ]
 })
+export class NavigationComponent implements OnInit {
 
-export class NavigationComponent implements OnInit, OnDestroy {
+  public languages = signal<Array<Language>>([]);
+  public fileInfo = signal<FileInfo | null>(null);
+  public userName = signal<string>('');
+  public userEmail = signal<string>('');
+  public searching = signal<boolean>(false);
 
-  public locationTitle: any;
-  public subject: string;
-  public link: string;
-  public selectedLanguage: any;
-  public code: any;
-  public languages: Array<Language>;
-  public user: any;
-  public i18n: any;
-  public fileInfo: { name: string, extension: string, type: string, path: string };
-  public userName;
-  public userEmail;
-
-  public organisationLogo: string = "assets/juicebar/images/logo_small";
-
-  public breadcrumps: Array<any> = null;
-
-  private subscription$: Subscription = new Subscription();
-
-  public userOrganisations: Array<any> = [];
+  public userOrganisations = signal<Array<any>>([]);
   public selectedUserOrganisation: string;
-  public selectedUserOrganisationName: string;
+  public organisationName = signal<string>('');
 
-  public organisationName;
-
-  public projectTitle: string;
+  private user: UserShape | null = null;
+  private i18n!: MainTranslationPipe;
+  private selectedLanguage = signal<Language | null>(null);
 
   helpTextUpdatedEventEmitter = output<any>();
 
   public juicebox = inject(JuiceboxService);
   public router = inject(Router);
-  private clientRoutes = inject(ClientRoutesService);
-  public juiceboxService = inject(JuiceboxService);
-  public location = inject(Location);
   public dialog = inject(DialogService);
   private themeService = inject(ThemeService);
   public theme = this.themeService.theme;
 
-  constructor() {
-    this.projectTitle = this.juicebox.getProjectTitle();
-    this.organisationLogo += ".png";
-  }
-
   async ngOnInit() {
-    this.subscription$ = this.juicebox.navigationEvent$.subscribe(event => {
-      this.locationTitle = (<any>event).location;
-      this.breadcrumps = (<any>event).breadcrumps;
-    });
-
     this.i18n = new MainTranslationPipe(this.juicebox);
-    this.user = this.juicebox.getUser();
+    this.user = this.juicebox.getUser() as UserShape;
+
     const storedTheme: Theme = this.user?.attributes?.settings?.theme === 'light' ? 'light' : 'dark';
     this.themeService.init(storedTheme);
-    this.userName = (this.user.firstname && this.user.lastname) ?
-      `${this.user.firstname} ${this.user.lastname}` : `${this.user.email}`;
-    this.userEmail = this.user.email;
-    this.languages = this.getLanguages();
-    this.selectedLanguage = this.getPreselectedLanguage();
-    await this.getFileInfo();
+
+    this.userName.set(
+      (this.user?.firstname && this.user?.lastname)
+        ? `${this.user.firstname} ${this.user.lastname}`
+        : `${this.user?.email ?? ''}`
+    );
+    this.userEmail.set(this.user?.email ?? '');
+
+    this.languages.set(this.getLanguages());
+    this.selectedLanguage.set(this.getPreselectedLanguage());
+
+    await this.loadFileInfo();
 
     this.juicebox.getAvailableOrganisations(0, 200, {hideOrganisationsNotInRoles: true}).then(res => {
       if (!res.success) return;
-
-      this.userOrganisations = res.payload.items;
-
-      this.userOrganisations.sort((a, b) => {
+      const items = [...res.payload.items].sort((a, b) => {
         if (a.name < b.name) return -1;
         if (a.name > b.name) return 1;
         return 0;
       });
-    })
-
-    this.canSwitchOrganisations = (this.userOrganisations.length > 1);
+      this.userOrganisations.set(items);
+    });
 
     this.juicebox.getLoggedInOrganisation().then(res => {
-      this.organisationName = res.name
+      this.organisationName.set(res.name);
       this.selectedUserOrganisation = res._id;
     });
   }
 
-  public canSwitchOrganisations: boolean = false;
-
   onOrganisationSwitch(organisationId: string) {
     this.juicebox.switchActiveOrganisation(organisationId).then(async res => {
-      console.log(res)
-      // @ts-ignore
+      // @ts-ignore — service typed as Promise<void> but returns truthy on failure
       if (!res) {
-        this.juicebox.getLoggedInOrganisation().then(res => {
-          this.organisationName = res.name
-          this.selectedUserOrganisation = res._id;
+        this.juicebox.getLoggedInOrganisation().then(r => {
+          this.organisationName.set(r.name);
+          this.selectedUserOrganisation = r._id;
         });
       }
     });
   }
 
-  ngOnDestroy(): void {
-    this.subscription$.unsubscribe();
-  }
-
   private getLanguages(): Array<Language> {
     const options = this.juicebox.getOptions();
-    if (options.languages && options.languages.length)
+    if (options.languages && options.languages.length) {
       return [...options.languages];
+    }
     return [];
-  }
-
-  public goto(location) {
-    console.log("niw");
   }
 
   private getPreselectedLanguage(): Language {
@@ -147,28 +126,29 @@ export class NavigationComponent implements OnInit, OnDestroy {
       userLanguageCode = this.i18n.defaultLanguage;
     }
 
-    const supportedLanguage = this.languages.find(lang => lang.code === userLanguageCode)
-    if (supportedLanguage) {
-      this.juicebox.setLanguage(supportedLanguage.code);
-      return supportedLanguage;
-    } else {
-      const fallBackLanguage = this.languages[0];
-      this.juicebox.setLanguage(fallBackLanguage.code);
-      return fallBackLanguage;
+    const supported = this.languages().find(lang => lang.code === userLanguageCode);
+    if (supported) {
+      this.juicebox.setLanguage(supported.code);
+      return supported;
     }
+    const fallback = this.languages()[0];
+    this.juicebox.setLanguage(fallback.code);
+    return fallback;
   }
 
-  private async getFileInfo() {
-    const result = await this.juicebox.getHelpFileInfo(this.router.url.split("/")[2], this.juicebox.getLanguage());
-    this.fileInfo = result && result.success ? result.payload : null;
+  private async loadFileInfo() {
+    const result = await this.juicebox.getHelpFileInfo(this.router.url.split('/')[2], this.juicebox.getLanguage());
+    this.fileInfo.set(result && result.success ? result.payload : null);
   }
 
   async changeLanguage(language: Language) {
-    if (language === this.selectedLanguage) return;
+    if (language === this.selectedLanguage()) return;
 
-    this.selectedLanguage = language;
-    this.juicebox.setLanguage(this.selectedLanguage.code);
-    await this.juicebox.saveUserSettings(this.user._id, {language: this.selectedLanguage.code});
+    this.selectedLanguage.set(language);
+    this.juicebox.setLanguage(language.code);
+    if (this.user) {
+      await this.juicebox.saveUserSettings(this.user._id, {language: language.code});
+    }
     location.reload();
   }
 
@@ -180,19 +160,18 @@ export class NavigationComponent implements OnInit, OnDestroy {
     });
   }
 
-  public searching: boolean = false;
-
-  doSearch($event) {
-    if ($event.target.value == "") {
+  doSearch($event: Event) {
+    const value = ($event.target as HTMLInputElement).value;
+    if (value === '') {
       this.juicebox.searchActive = false;
-      this.searching = false;
+      this.searching.set(false);
       return;
     }
 
     this.juicebox.searchActive = true;
-    this.searching = true;
-    this.juicebox.doSearch($event.target.value).then(result => {
-      this.searching = false;
+    this.searching.set(true);
+    this.juicebox.doSearch(value).then(() => {
+      this.searching.set(false);
     });
   }
 
@@ -201,20 +180,10 @@ export class NavigationComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    this.juiceboxService.logout();
-  }
-
-  async back() {
-    await this.router.navigate([this.link]);
-  }
-
-  async goHome() {
-    await this.router.navigate(['']);
+    this.juicebox.logout();
   }
 
   async goToUserProfile() {
     await this.router.navigate(['/main/user-profile']);
   }
 }
-
-
