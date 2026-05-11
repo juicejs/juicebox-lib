@@ -99,7 +99,15 @@ export class MainComponent implements OnInit {
         }
     }
 
-    ngOnInit() {}
+    async ngOnInit() {
+        const url = this.router.url.split('?')[0].replace(/\/$/, '');
+        if (url === '/main') {
+            const route = await this.sidebarService.getFirstAccessibleRoute();
+            if (route) {
+                await this.router.navigateByUrl('/main/' + route);
+            }
+        }
+    }
 
     private setTitle() {
         const options = this.juicebox.getOptions();

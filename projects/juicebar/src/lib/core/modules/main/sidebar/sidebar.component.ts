@@ -7,7 +7,8 @@ import type {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {moveItemInArray} from '@angular/cdk/drag-drop';
 import {ImageCroppedEvent, ImageCropperComponent} from 'ngx-image-cropper';
 import {MainTranslationPipe} from '../i18n/main.translation';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import {filter} from 'rxjs/operators';
 import {Subscription} from 'rxjs/internal/Subscription';
 import {CommonModule} from '@angular/common';
 import {SharedModule} from '../../../shared/shared.module';
@@ -48,6 +49,7 @@ export class SidebarComponent implements OnInit, OnDestroy{
     public hasAvatars: boolean = false;
 
     protected readonly organisationLogo = signal<string>("assets/images/logo_small");
+    protected readonly currentUrl = signal<string>('');
 
     // -- Dragging & Ordering of sidebar
     protected readonly isDragging = signal<boolean>(false);
@@ -119,6 +121,11 @@ export class SidebarComponent implements OnInit, OnDestroy{
     }
 
     ngOnInit() {
+        this.currentUrl.set(this.router.url);
+        this.subscription.add(
+            this.router.events.pipe(filter(e => e instanceof NavigationEnd))
+                .subscribe((e: NavigationEnd) => this.currentUrl.set(e.urlAfterRedirects))
+        );
         this.subscription.add(
             this.sidebarService.toggleSidebar$.subscribe(() => {
                 this.collapse();
@@ -131,25 +138,9 @@ export class SidebarComponent implements OnInit, OnDestroy{
     }
 
     private async loadSidebarItems() {
-        const sidebar: { visible: SidebarItem[], hidden: SidebarItem[] } = {visible: [], hidden: []};
-
-        const options = await this.juicebox.getOptions();
-
-        if(options.sidebarPermissions){
-            // get sidebar items with permissions
-            sidebar.visible = await this.sidebarService.getSidebarItemsWithPermissions(this.user(), this.i18n);
-        } else {
-            // get old way of storing items
-            const res = await this.sidebarService.getSidebarItems(this.juicebox.getUserId(), this.juicebox.getUserOrganisationId());
-            // if no items came out with permissions use old way
-            if (sidebar.visible.length == 0){
-                if (res && res.visible){
-                    sidebar.visible = res.visible;
-                }
-            }
-        }
-
-        this.menu.set(sidebar.visible);
+        const visible = await this.sidebarService.getVisibleSidebarItems();
+        // stores the visible sidebar items
+        this.menu.set(visible);
     }
 
     ngOnDestroy() {
@@ -210,8 +201,7 @@ export class SidebarComponent implements OnInit, OnDestroy{
     }
 
     isActiveRoute(route) {
-        let curl = window.location.pathname;
-        return curl.indexOf("main/" + route) != -1;
+        return this.currentUrl().indexOf("main/" + route) != -1;
     }
 
   // Add this method to your existing sidebar.component.ts

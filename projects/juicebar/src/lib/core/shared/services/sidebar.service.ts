@@ -93,6 +93,31 @@ export class SidebarService implements OnDestroy {
         return sidebar.visible;
     }
 
+    private visibleSidebarItemsPromise: Promise<SidebarItem[]> | null = null;
+
+    getVisibleSidebarItems(): Promise<SidebarItem[]> {
+        if (!this.visibleSidebarItemsPromise) {
+            this.visibleSidebarItemsPromise = this.computeVisibleSidebarItems();
+        }
+        return this.visibleSidebarItemsPromise;
+    }
+
+    private async computeVisibleSidebarItems(): Promise<SidebarItem[]> {
+        const user = this.juicebox.getUser();
+        if (!user) return [];
+        const options = await this.juicebox.getOptions();
+        if (options.sidebarPermissions) {
+            return this.getSidebarItemsWithPermissions(user, this.mainTranslationPipe);
+        }
+        const res = await this.getSidebarItems(this.juicebox.getUserId(), this.juicebox.getUserOrganisationId());
+        return res?.visible ?? [];
+    }
+
+    async getFirstAccessibleRoute(): Promise<string | null> {
+        const visible = await this.getVisibleSidebarItems();
+        return visible.length ? visible[0].router : null;
+    }
+
     // ordered and hidden sidebar modules depending on the role - OLD WAY
     async getSidebarItems(userId: string, organisationId: string): Promise<{ visible: SidebarItem[], hidden: SidebarItem[] }> {
         const sidebar: { visible: SidebarItem[], hidden: SidebarItem[] } = {visible: [], hidden: []};
