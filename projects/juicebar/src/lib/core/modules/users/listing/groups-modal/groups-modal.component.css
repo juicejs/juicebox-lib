@@ -4,6 +4,11 @@
     padding-top: 10px;
 }
 
+.groups-content {
+  background: var(--color-background);
+  padding: 2rem;
+}
+
 .custom-disabled {
     cursor: not-allowed !important;
 

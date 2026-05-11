@@ -217,3 +217,45 @@ projects/
 - No need to run build commands.
 - Always check existing custom UI components (ui-components) before creating new ones or reaching for external libraries.
 - When updating a component: logic in `.ts`, styles in `.scss`, template in `.html`.
+
+## Avoid Function Calls in Templates
+
+Function calls in templates re-execute on every change detection cycle, which can be hundreds of times per second. This wastes CPU, makes behavior unpredictable, and causes hard-to-debug issues — especially harmful since we use OnPush + signals.
+
+### Anti-Patterns — NEVER Do These
+
+Never call methods directly in interpolation: {{ getFullName() }}.
+Never call methods inside @for track expressions or @if conditions: @if (isUserActive(user)).
+Never call methods in property bindings: [disabled]="isFormInvalid()".
+Never use getters that perform computation — they behave like function calls in templates.
+
+### Use Instead
+
+**computed()** for derived state — only re-runs when its signal dependencies change.
+**Signals** for values that change over time.
+**Pure pipes** for transformations on inputs (Angular caches the result).
+**P
+lain properties** for static or one-time computed values.
+
+### Example
+typescript
+// ❌ Bad — runs on every change detection cycle
+export class UserCardComponent {
+  user = input.required<User>();
+
+  getFullName() {
+    return `${this.user().firstName} ${this.user().lastName}`;
+  }
+}
+html
+<span>{{ getFullName() }}</span>
+typescript
+// ✅ Good — recomputes only when user signal changes
+export class UserCardComponent {
+  user = input.required<User>();
+  protected readonly fullName = computed(
+    () => `${this.user().firstName} ${this.user().lastName}`
+  );
+}
+html
+<span>{{ fullName() }}</span>

@@ -1,4 +1,4 @@
-import {Component, inject, OnDestroy, OnInit, TemplateRef, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit, TemplateRef, ChangeDetectionStrategy, signal} from '@angular/core';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {SidebarItem, SidebarService} from '../../../shared/services/sidebar.service';
 import {SocketService} from '../../../shared/services/socket.service';
@@ -33,24 +33,24 @@ export class SidebarComponent implements OnInit, OnDestroy{
     public temp: Array<{label, role, icon, router, index}>
     public roles: Array<{label, role, icon, router, index}>
 
-    public user;
+    protected readonly user = signal<any>(null);
 
-    public menu: Array<any>;
-    public userName: string;
-    public userID: string;
+    protected readonly menu = signal<Array<any>>([]);
+    protected readonly userName = signal<string>('');
+    protected readonly userID = signal<string>('');
 
-    public userPicture: string;
-    public imageChangedEvent: any = '';
-    public croppedImage: any = '';
+    protected readonly userPicture = signal<string | null>(null);
+    protected readonly imageChangedEvent = signal<any>('');
+    protected readonly croppedImage = signal<any>('');
 
     public promiseBtn;
     public i18n: MainTranslationPipe;
     public hasAvatars: boolean = false;
 
-    public organisationLogo: string = "assets/images/logo_small";
+    protected readonly organisationLogo = signal<string>("assets/images/logo_small");
 
     // -- Dragging & Ordering of sidebar
-    isDragging: boolean = false;
+    protected readonly isDragging = signal<boolean>(false);
     subs = new Subscription();
 
     private sidebarService = inject(SidebarService);
@@ -58,7 +58,6 @@ export class SidebarComponent implements OnInit, OnDestroy{
     private router = inject(Router);
     public juicebox = inject(JuiceboxService);
     private dialog = inject(DialogService);
-    private cdr = inject(ChangeDetectorRef);
 
     constructor() {
       this.i18n = new MainTranslationPipe(this.juicebox);
@@ -77,29 +76,34 @@ export class SidebarComponent implements OnInit, OnDestroy{
 
         const user = juicebox.getUser();
         if (user.attributes && user.attributes.organisationLogo) {
-            this.organisationLogo = user.attributes.organisationLogo;
+            this.organisationLogo.set(user.attributes.organisationLogo + ".png");
+        } else {
+            this.organisationLogo.update(logo => logo + ".png");
         }
 
-        this.organisationLogo += ".png";
         this.hasAvatars = this.juicebox.getOptions().avatars;
 
     }
 
     onMenuDrop(event: CdkDragDrop<any[]>) {
         if (event.previousIndex !== event.currentIndex) {
-            moveItemInArray(this.menu, event.previousIndex, event.currentIndex);
+            this.menu.update(currentMenu => {
+                const updatedMenu = [...currentMenu];
+                moveItemInArray(updatedMenu, event.previousIndex, event.currentIndex);
+                return updatedMenu;
+            });
 
             // Save the new order to the backend
             const orderMapping = {};
             let i = 0;
-            this.menu.forEach(item => { orderMapping[item.role] = i++; });
+            this.menu().forEach(item => { orderMapping[item.role] = i++; });
             this.juicebox.saveSidebarSettings(orderMapping);
         }
-        this.isDragging = false;
+        this.isDragging.set(false);
     }
 
     onMenuDragStarted() {
-        this.isDragging = true;
+        this.isDragging.set(true);
     }
 
     trackByRole(index: number, item: any): any {
@@ -141,10 +145,7 @@ export class SidebarComponent implements OnInit, OnDestroy{
             }
         }
 
-        this.menu = sidebar.visible;
-
-      // Trigger change detection since we're using OnPush strategy
-      this.cdr.markForCheck();
+        this.menu.set(sidebar.visible);
     }
 
     ngOnDestroy() {
@@ -154,26 +155,26 @@ export class SidebarComponent implements OnInit, OnDestroy{
 
     getUserInfo() {
         const user = this.juicebox.getUser();
-        this.user = user;
+        this.user.set(user);
         if (!user) return;
 
-        this.userName = (user.firstname && user.lastname) ? `${user.firstname} ${user.lastname}` : `${user.email}`;
-        this.userID = user._id;
-        this.userPicture = user.attributes && user.attributes.settings && user.attributes.settings.profile_picture ? user.attributes.settings.profile_picture : null;
+        this.userName.set((user.firstname && user.lastname) ? `${user.firstname} ${user.lastname}` : `${user.email}`);
+        this.userID.set(user._id);
+        this.userPicture.set(user.attributes && user.attributes.settings && user.attributes.settings.profile_picture ? user.attributes.settings.profile_picture : null);
     }
 
     fileChangeEvent(event: any): void {
-        this.imageChangedEvent = event;
+        this.imageChangedEvent.set(event);
     }
     imageCropped(event: ImageCroppedEvent) {
-        this.croppedImage = event.base64;
+        this.croppedImage.set(event.base64);
     }
     updateProfilePicture(modal) {
         this.promiseBtn = (async () => {
-            const result = await this.juicebox.saveUserSettings(this.userID, {profile_picture: this.croppedImage})
+            const result = await this.juicebox.saveUserSettings(this.userID(), {profile_picture: this.croppedImage()})
             if (result.success) {
                 this.juicebox.showToast("success", this.i18n.transform('profile_picture_changed'))
-                this.userPicture = this.croppedImage;
+                this.userPicture.set(this.croppedImage());
                 modal.close();
             } else {
                 this.juicebox.showToast("error", this.i18n.transform('profile_picture_change_failed'))

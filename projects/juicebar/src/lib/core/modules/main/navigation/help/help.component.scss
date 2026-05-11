@@ -1,19 +1,31 @@
+@import '../../../../../ui-components/styles/variables';
+
+.help-content {
+  background: var(--color-background);
+  padding: 2rem;
+}
+
 .help-dialog {
   min-width: 500px;
   max-width: 700px;
+  background: var(--color-grey-100);
+  color: var(--color-text-primary);
 }
 
 .dialog-content {
   padding: 20px 0;
+  color: var(--color-text-primary);
 }
 
 .section-title {
   margin-bottom: 16px;
   font-weight: 500;
+  color: var(--color-text-primary);
 }
 
 .section-divider {
   margin: 24px 0;
+  border-color: var(--color-border);
 }
 
 .file-upload-section {
@@ -25,6 +37,11 @@
   .file-input {
     flex: 1;
     cursor: pointer;
+    background: var(--color-grey-200);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
   }
 }
 
@@ -38,11 +55,12 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: var(--color-text-primary);
   }
 
   .no-file {
     flex: 1;
-    color: rgba(0, 0, 0, 0.6);
+    color: var(--color-text-secondary);
   }
 
   .action-buttons {

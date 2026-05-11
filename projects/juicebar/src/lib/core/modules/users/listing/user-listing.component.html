@@ -3,7 +3,7 @@
 <div class="parent">
 
   <filter-bar
-    [filters]="filterConfigs"
+    [filters]="filterConfigs()"
     (filterChanged)="onFilterChanged($event)"
     (filterSearched)="onFilterSearched($event)">
   </filter-bar>
@@ -14,7 +14,7 @@
     <app-data-table
       [rows]="rows"
       [columns]="tableColumns"
-      [totalCount]="count"
+      [totalCount]="count()"
       [pageSize]="itemsPerPage"
       [pageIndex]="page - 1"
       [pageSizeOptions]="[10, 20, 30, 50]"

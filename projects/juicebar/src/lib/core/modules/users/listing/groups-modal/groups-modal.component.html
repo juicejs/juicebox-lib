@@ -1,4 +1,4 @@
-<div app-dialog-content>
+<div app-dialog-content class="groups-content">
     <h2>
         {{'groups_editor' | translate}}
         <button app-button class="close-button" (click)="close()">
@@ -116,10 +116,9 @@
         </app-paginator>
         }
     </div>
-</div>
-
-<div app-actions align="end">
-    <button app-button (click)="close()">
-        {{"close" | translate}}
-    </button>
+    <div app-actions align="end">
+        <button app-button (click)="close()">
+            {{"close" | translate}}
+        </button>
+    </div>
 </div>

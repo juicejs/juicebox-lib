@@ -2,10 +2,9 @@
   @for (filter of filters(); track filter.key) {
     <div class="filter-button" [class.active]="filter.selectedValue">
       <button app-button
-              appearance="stroked"
+              class="filter-btn"
               cdkOverlayOrigin
               #trigger="cdkOverlayOrigin"
-              class="filter-btn"
               (click)="toggle(filter.key)">
         <app-icon [icon]="filter.icon" class="filter-icon"></app-icon>
         <span class="filter-label">{{ getDisplayValue(filter) }}</span>

@@ -14,7 +14,7 @@
     font-size: 0.95rem;
     line-height: 1.5;
     color: var(--color-text-primary);
-    background: var(--color-background, #fff);
+    background: var(--color-grey-200);
     border: 1.5px solid var(--color-border);
     border-radius: var(--radius-md);
     outline: none;
@@ -36,7 +36,7 @@
 
     &[readonly],
     &:disabled {
-      background: var(--color-grey-50);
+      background: var(--color-grey-100);
       color: var(--color-text-secondary);
       cursor: not-allowed;
     }
@@ -54,7 +54,7 @@
     input,
     select,
     textarea {
-      background: var(--color-grey-50);
+      background: var(--color-grey-100);
       border-color: transparent;
       border-bottom: 2px solid var(--color-border);
       border-radius: var(--radius-md) var(--radius-md) 0 0;

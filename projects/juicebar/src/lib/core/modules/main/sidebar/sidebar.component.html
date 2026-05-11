@@ -6,7 +6,7 @@
     <!-- Logo Section -->
     <div class="sidebar-header" [class.collapsed]="juicebox.collapsed">
       <div class="logo-container">
-        <img [src]="organisationLogo" [alt]="'Company Logo'" class="company-logo">
+        <img [src]="organisationLogo()" [alt]="'Company Logo'" class="company-logo">
       </div>
     </div>
 
@@ -17,29 +17,29 @@
          [cdkDropListDisabled]="!juicebox.getOptions().sidebarPermissions">
          
       <div class="menu-section">
-        @for (menuItem of this.menu; track trackByRole($index, menuItem)) {
+        @for (menuItem of menu(); track trackByRole($index, menuItem)) {
           <div class="menu-item-container"
              cdkDrag
              [cdkDragDisabled]="!juicebox.getOptions().sidebarPermissions"
              (cdkDragStarted)="onMenuDragStarted()">
-             
+
           <div class="menu-item"
                [class.active]="isActiveRoute(menuItem.router)"
-               [class.dragging]="isDragging"
+               [class.dragging]="isDragging()"
                (click)="menuItemClicked($event, menuItem.router)"
                [appTooltip]="juicebox.collapsed ? menuItem.label : ''"
                appTooltipPosition="right">
-               
+
             <div class="menu-item-content">
               <div class="menu-icon-container">
-                @if (!isDragging) {
+                @if (!isDragging()) {
                   <app-icon class="menu-icon" [icon]="getMatIcon(menuItem.icon)"></app-icon>
                 }
-                @if (isDragging) {
+                @if (isDragging()) {
                   <app-icon class="drag-handle" [icon]="'drag_indicator'"></app-icon>
                 }
               </div>
-              
+
               <span class="menu-label" [class.collapsed]="juicebox.collapsed">
                 {{menuItem.label}}
               </span>
@@ -70,7 +70,7 @@
 <ng-template #picture let-modal>
   <app-dialog-content>
     <app-dialog-title>
-      {{userName}} - {{'profile_picture' | translate}}
+      {{userName()}} - {{'profile_picture' | translate}}
     </app-dialog-title>
 
     <div class="profile-upload-section">
@@ -79,10 +79,10 @@
              type="file"
              class="file-input"/>
 
-      @if (imageChangedEvent) {
+      @if (imageChangedEvent()) {
       <div class="cropper-section">
         <image-cropper
-          [imageChangedEvent]="imageChangedEvent"
+          [imageChangedEvent]="imageChangedEvent()"
           [maintainAspectRatio]="true"
           [aspectRatio]="1"
           [resizeToWidth]="128"
@@ -94,10 +94,10 @@
       </div>
       }
 
-      @if (croppedImage) {
+      @if (croppedImage()) {
       <div class="preview-section">
         <div class="user-logo">
-          <img [src]="croppedImage" class="user-placeholder" alt="Profile Preview" />
+          <img [src]="croppedImage()" class="user-placeholder" alt="Profile Preview" />
         </div>
       </div>
       }
@@ -113,7 +113,7 @@
             color="primary"
             (click)="updateProfilePicture(modal)"
             [promiseBtn]="promiseBtn"
-            [disabled]="!croppedImage">
+            [disabled]="!croppedImage()">
       {{'save' | translate}}
     </button>
   </app-dialog-actions>

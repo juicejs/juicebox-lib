@@ -1,6 +1,6 @@
-<app-dialog-title>{{'help' | translate}}</app-dialog-title>
-
 <app-dialog-content>
+  <div class="help-content">
+    <app-dialog-title>{{'help' | translate}}</app-dialog-title>
     <div class="help-file">
       <h4 class="section-title">{{'help_document' | translate}}</h4>
       <div class="file-upload-section">
@@ -72,11 +72,14 @@
         </button>
       </div>
     </div>
+
+    <app-dialog-actions align="end">
+      <button app-button
+              (click)="dialogRef.close(helpTextUpdated)">
+        {{'close' | translate}}
+      </button>
+    </app-dialog-actions>
+  </div>
 </app-dialog-content>
 
-<app-dialog-actions align="end">
-  <button app-button
-          (click)="dialogRef.close(helpTextUpdated)">
-    {{'close' | translate}}
-  </button>
-</app-dialog-actions>
+

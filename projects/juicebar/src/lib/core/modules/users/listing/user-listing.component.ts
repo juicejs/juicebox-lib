@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
 import { UsersService } from '../users.service';
 import { ListingComponent } from '../../../shared/components/listing/listing.component';
 import { Router, RouterLink } from '@angular/router';
@@ -46,30 +46,30 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     sort: ISort = { dir: 'asc', prop: 'lastname' }; // setting initial sort
     filter: Array<ISearchTerm> = [];
     i18n: UserTranslationPipe;
-    count: number;
+    protected readonly count = signal<number>(0);
     loggedInOrganisationId: string;
     projectTitle: string;
 
-    organisations: Array<any> = [];
-    organisationsCount: number = 0;
+    protected readonly organisations = signal<Array<any>>([]);
+    protected readonly organisationsCount = signal<number>(0);
     sortOrganisations: ISort = { dir: 'asc', prop: 'name' };
     filterOrganisations: Array<ISearchTerm> = [];
     pageOrganisations: number = 0;
 
-    groups: Array<any> = [];
-    filteredGroups: Array<any> = [];
+    protected readonly groups = signal<Array<any>>([]);
+    protected readonly filteredGroups = signal<Array<any>>([]);
 
-    roles: Array<any> = [];
-    filteredRoles: Array<any> = [];
+    protected readonly roles = signal<Array<any>>([]);
+    protected readonly filteredRoles = signal<Array<any>>([]);
     objectValues = Object.values;
 
     // Selected filter values for filter buttons
-    selectedOrganisation: any = null;
-    selectedRole: any = null;
-    selectedGroup: any = null;
+    protected readonly selectedOrganisation = signal<any>(null);
+    protected readonly selectedRole = signal<any>(null);
+    protected readonly selectedGroup = signal<any>(null);
 
     // Filter configurations for reusable filter component
-    filterConfigs: FilterConfig[] = [];
+    protected readonly filterConfigs = signal<FilterConfig[]>([]);
 
     actionButtons: Array<ActionButton> = [];
     displayedColumns: string[] = ['firstname', 'lastname', 'email', 'active', 'roles_count', 'groups', 'lastLogin', 'loginCount', 'actions'];
@@ -91,7 +91,6 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     private router = inject(Router);
     private dialog = inject(DialogService);
     private configurationService = inject(ConfigurationService);
-    private cdr = inject(ChangeDetectorRef);
 
     public override async ngOnInit(): Promise<void> {
         this.projectTitle = this.juicebox.getProjectTitle();
@@ -168,10 +167,7 @@ export class UserListingComponent extends ListingComponent implements OnInit {
         this.getLoginData(result.payload.items);
 
         this.rows = result.payload.items;
-        this.count = result.payload.count;
-
-        // Trigger change detection since we're using OnPush strategy
-        this.cdr.markForCheck();
+        this.count.set(result.payload.count);
     }
 
     getLoginData(users) {
@@ -281,13 +277,12 @@ export class UserListingComponent extends ListingComponent implements OnInit {
         if (!organisationResult || !organisationResult.success)
             return false;
 
-        this.organisations = [...this.organisations, ...organisationResult.payload.items];
-        this.organisationsCount = organisationResult.payload.count;
-        this.cdr.markForCheck();
+        this.organisations.update(orgs => [...orgs, ...organisationResult.payload.items]);
+        this.organisationsCount.set(organisationResult.payload.count);
     }
 
     async organisationChanged(organisation) {
-        this.selectedOrganisation = organisation;
+        this.selectedOrganisation.set(organisation);
 
         if (!organisation || !organisation._id) {
             return this.resetOrganisation();
@@ -306,7 +301,7 @@ export class UserListingComponent extends ListingComponent implements OnInit {
         this.filterOrganisations = result.filter;
 
         if (!result.resolved) {
-            this.organisations = [];
+            this.organisations.set([]);
             await this.getOrganisations();
         }
     }
@@ -316,14 +311,14 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     };
 
     async onScrollOrganisations() {
-        if (this.organisations.length < this.organisationsCount) {
-            this.pageOrganisations = this.organisations.length / 10;
+        if (this.organisations().length < this.organisationsCount()) {
+            this.pageOrganisations = this.organisations().length / 10;
             await this.getOrganisations();
         }
     }
 
     async resetOrganisation() {
-        this.selectedOrganisation = null;
+        this.selectedOrganisation.set(null);
         const tmpFilter: Array<ISearchTerm> = this.filter.filter(value => value.property !== 'organisation');
         this.filter = [...tmpFilter];
         await this.fetchUsers();
@@ -336,13 +331,12 @@ export class UserListingComponent extends ListingComponent implements OnInit {
 
         const result = await this.usersService.getAllGroups();
         if (!result.success) return false;
-        this.groups = result.payload;
-        this.filteredGroups = [...this.groups]; // Initialize filtered array
-        this.cdr.markForCheck();
+        this.groups.set(result.payload);
+        this.filteredGroups.set([...result.payload]); // Initialize filtered array
     }
 
     async groupChanged(group: any) {
-        this.selectedGroup = group;
+        this.selectedGroup.set(group);
 
         if (!group || !group.key) {
             return this.resetGroup();
@@ -355,7 +349,7 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     }
 
     async resetGroup() {
-        this.selectedGroup = null;
+        this.selectedGroup.set(null);
         const tmpFilter: Array<ISearchTerm> = this.filter.filter(value => value.property !== 'groups');
         this.filter = [...tmpFilter];
         await this.fetchUsers();
@@ -367,13 +361,12 @@ export class UserListingComponent extends ListingComponent implements OnInit {
         if (!result || !result.success)
             return;
 
-        this.roles = result.payload;
-        this.filteredRoles = [...this.roles]; // Initialize filtered array
-        this.cdr.markForCheck();
+        this.roles.set(result.payload);
+        this.filteredRoles.set([...result.payload]); // Initialize filtered array
     }
 
     async roleChanged(role: any) {
-        this.selectedRole = role;
+        this.selectedRole.set(role);
 
         if (!role || !role.key) {
             return this.resetRole();
@@ -386,7 +379,7 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     }
 
     async resetRole() {
-        this.selectedRole = null;
+        this.selectedRole.set(null);
         const tmpFilter: Array<ISearchTerm> = this.filter.filter(value => value.property !== 'roles');
         this.filter = [...tmpFilter];
         await this.fetchUsers();
@@ -394,23 +387,23 @@ export class UserListingComponent extends ListingComponent implements OnInit {
 
     searchRoles(searchTerm: string) {
         if (!searchTerm || searchTerm.trim() === '') {
-            this.filteredRoles = [...this.roles];
+            this.filteredRoles.set([...this.roles()]);
         } else {
             const term = searchTerm.toLowerCase().trim();
-            this.filteredRoles = this.roles.filter(role =>
+            this.filteredRoles.set(this.roles().filter(role =>
                 role.name && role.name.toLowerCase().includes(term)
-            );
+            ));
         }
     }
 
     searchGroups(searchTerm: string) {
         if (!searchTerm || searchTerm.trim() === '') {
-            this.filteredGroups = [...this.groups];
+            this.filteredGroups.set([...this.groups()]);
         } else {
             const term = searchTerm.toLowerCase().trim();
-            this.filteredGroups = this.groups.filter(group =>
+            this.filteredGroups.set(this.groups().filter(group =>
                 group.name && group.name.toLowerCase().includes(term)
-            );
+            ));
         }
     }
 
@@ -444,14 +437,14 @@ export class UserListingComponent extends ListingComponent implements OnInit {
 
     // Initialize filter configurations for reusable filter component
     private initializeFilterConfigs(): void {
-        this.filterConfigs = [
+        const configs: FilterConfig[] = [
             {
                 key: 'organisation',
                 label: this.i18n.transform('organisation'),
                 icon: 'business',
                 placeholder: this.i18n.transform('select_organisation'),
-                options: this.organisations,
-                selectedValue: this.selectedOrganisation,
+                options: this.organisations(),
+                selectedValue: this.selectedOrganisation(),
                 displayProperty: 'name'
             },
             {
@@ -459,43 +452,43 @@ export class UserListingComponent extends ListingComponent implements OnInit {
                 label: this.i18n.transform('role'),
                 icon: 'admin_panel_settings',
                 placeholder: this.i18n.transform('select_role'),
-                options: this.filteredRoles,
-                selectedValue: this.selectedRole,
+                options: this.filteredRoles(),
+                selectedValue: this.selectedRole(),
                 displayProperty: 'name'
             }
         ];
 
         // Only add group filter if user has permission
         if (this.juicebox.hasPermission('groups:role#read')) {
-            this.filterConfigs.push({
+            configs.push({
                 key: 'group',
                 label: this.i18n.transform('group'),
                 icon: 'group',
                 placeholder: this.i18n.transform('select_group'),
-                options: this.filteredGroups,
-                selectedValue: this.selectedGroup,
+                options: this.filteredGroups(),
+                selectedValue: this.selectedGroup(),
                 displayProperty: 'name'
             });
         }
+
+        this.filterConfigs.set(configs);
     }
 
     // Update filter configurations when options change
     private updateFilterConfigs(): void {
-        this.filterConfigs.forEach(config => {
-            switch (config.key) {
-                case 'organisation':
-                    config.options = [...this.organisations]; // Create new array reference
-                    config.selectedValue = this.selectedOrganisation;
-                    break;
-                case 'role':
-                    config.options = [...this.filteredRoles]; // Create new array reference
-                    config.selectedValue = this.selectedRole;
-                    break;
-                case 'group':
-                    config.options = [...this.filteredGroups]; // Create new array reference
-                    config.selectedValue = this.selectedGroup;
-                    break;
-            }
+        this.filterConfigs.update(configs => {
+            return configs.map(config => {
+                switch (config.key) {
+                    case 'organisation':
+                        return { ...config, options: [...this.organisations()], selectedValue: this.selectedOrganisation() };
+                    case 'role':
+                        return { ...config, options: [...this.filteredRoles()], selectedValue: this.selectedRole() };
+                    case 'group':
+                        return { ...config, options: [...this.filteredGroups()], selectedValue: this.selectedGroup() };
+                    default:
+                        return config;
+                }
+            });
         });
     }
 

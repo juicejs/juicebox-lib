@@ -52,8 +52,6 @@ export class FilterBarComponent {
   }
 
   onFilterSelected(filterKey: string, value: any) {
-    const filter = this.filters().find(f => f.key === filterKey);
-    if (filter) filter.selectedValue = value;
     this.filterChanged.emit({ key: filterKey, value });
     this.close();
   }

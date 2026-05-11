@@ -4,7 +4,7 @@
   <div class="search-section">
     <div class="search-container">
       <button app-button appearance="icon" class="search-icon-btn">
-        <app-icon class="search-icon" [icon]="searching ? 'fa-spinner fa-spin' : 'fa-search'"></app-icon>
+        <app-icon [icon]="'search'" class="search-icon"></app-icon>
       </button>
       <input type="text"
              class="search-input"
@@ -50,16 +50,19 @@
         <div class="menu-header">
           <span class="menu-title">Language</span>
         </div>
-        @for (language of languages; track language.key) {
-          <button (click)="changeLanguage(language)"
-                  cdkMenuItem
-                  class="language-menu-item">
-            <div class="menu-item-content">
-              <app-icon [icon]="'language'" class="menu-item-icon"></app-icon>
-              <span class="menu-item-label">{{language.name | translate}}</span>
-            </div>
-          </button>
-        }
+        <div class="languages-listing">
+          @for (language of languages; track language.key) {
+            <button (click)="changeLanguage(language)"
+                    app-button
+                    cdkMenuItem
+                    class="language-menu-item">
+              <div class="menu-item-content">
+                <app-icon [icon]="'language'" class="menu-item-icon"></app-icon>
+                <span class="menu-item-label">{{language.name | translate}}</span>
+              </div>
+            </button>
+          }
+        </div>
       </div>
     </ng-template>
 
@@ -114,14 +117,16 @@
           </div>
         </div>
         <app-divider></app-divider>
-        <button cdkMenuItem (click)="goToUserProfile()" class="profile-menu-item">
-          <app-icon [icon]="'person'" class="menu-item-icon"></app-icon>
-          <span class="menu-item-label">{{'user_profile' | translate}}</span>
-        </button>
-        <button cdkMenuItem (click)="logout()" class="profile-menu-item logout-item">
-          <app-icon [icon]="'logout'" class="menu-item-icon"></app-icon>
-          <span class="menu-item-label">{{'logout' | translate}}</span>
-        </button>
+        <div class="user-buttons">
+          <button app-button cdkMenuItem (click)="goToUserProfile()" class="profile-menu-item">
+            <app-icon [icon]="'person'" class="menu-item-icon"></app-icon>
+            <span class="menu-item-label">{{'user_profile' | translate}}</span>
+          </button>
+          <button app-button cdkMenuItem (click)="logout()" class="profile-menu-item logout-item">
+            <app-icon [icon]="'logout'" class="menu-item-icon"></app-icon>
+            <span class="menu-item-label">{{'logout' | translate}}</span>
+          </button>
+        </div>
       </div>
     </ng-template>
 

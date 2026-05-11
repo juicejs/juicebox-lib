@@ -1,52 +1,54 @@
-<h2>
-    {{'groups_name_editor' | translate}}
-    <button app-button appearance="icon" class="close-button" (click)="close()">
-        <app-icon [icon]="'close'"></app-icon>
-    </button>
-</h2>
-
 <app-dialog-content>
-    @if (groupForm) {
-    <form class="m-0" [formGroup]="groupForm">
-
-        <app-form-field appearance="outline" class="full-width">
-            <app-label>{{'name' | translate}}*</app-label>
-            <input appInput type="text" formControlName="name">
-            @if (groupForm.get('name')?.hasError('required')) {
-                <app-error>{{'name' | translate}} is required</app-error>
-            }
-        </app-form-field>
-
-        <app-form-field appearance="outline" class="full-width">
-            <app-label>{{'key' | translate}}*</app-label>
-            <span class="input-prefix">group:</span>
-            <input appInput type="text" formControlName="key"
-                   (keydown.space)="$event.preventDefault()"
-                   placeholder="{{'group key' | translate}}" [readonly]="!!group">
-            @if (groupForm.get('key')?.hasError('required')) {
-                <app-error>{{'key' | translate}} is required</app-error>
-            }
-        </app-form-field>
-
-        <div [hasPermissionsHide]="'superAdmin:role#read'" class="full-width d-flex align-center">
-            <app-slide-toggle
-                [checked]="!!groupForm.controls['superAdmin'].value"
-                (change)="groupForm.controls['superAdmin'].setValue($event); enable = $event">
-                {{'superAdminEdit' | translate}}
-            </app-slide-toggle>
-        </div>
-
-    </form>
-    }
+    <div class="groups-editor-content">
+        <h2>
+            {{'groups_name_editor' | translate}}
+            <button app-button appearance="icon" class="close-button" (click)="close()">
+                <app-icon [icon]="'close'"></app-icon>
+            </button>
+        </h2>
+        @if (groupForm) {
+        <form class="m-0" [formGroup]="groupForm">
+    
+            <app-form-field appearance="outline" class="full-width">
+                <app-label>{{'name' | translate}}*</app-label>
+                <input appInput type="text" formControlName="name">
+                @if (groupForm.get('name')?.hasError('required')) {
+                    <app-error>{{'name' | translate}} is required</app-error>
+                }
+            </app-form-field>
+    
+            <app-form-field appearance="outline" class="full-width">
+                <app-label>{{'key' | translate}}*</app-label>
+                <span class="input-prefix">group:</span>
+                <input appInput type="text" formControlName="key"
+                       (keydown.space)="$event.preventDefault()"
+                       placeholder="{{'group key' | translate}}" [readonly]="!!group">
+                @if (groupForm.get('key')?.hasError('required')) {
+                    <app-error>{{'key' | translate}} is required</app-error>
+                }
+            </app-form-field>
+    
+            <div [hasPermissionsHide]="'superAdmin:role#read'" class="full-width d-flex align-center">
+                <app-slide-toggle
+                    [checked]="!!groupForm.controls['superAdmin'].value"
+                    (change)="groupForm.controls['superAdmin'].setValue($event); enable = $event">
+                    {{'superAdminEdit' | translate}}
+                </app-slide-toggle>
+            </div>
+    
+        </form>
+        }
+        <app-dialog-actions align="end">
+            <button app-button (click)="close()">
+                {{"cancel" | translate}}
+            </button>
+            <button app-button appearance="raised" color="primary" (click)="submit()"
+                    [disabled]="!groupForm || !groupForm.valid || !juicebox.hasPermission('groups:role#updated|update')"
+                    [promiseBtn]="promiseBtn">
+                {{"save" | translate}}
+            </button>
+        </app-dialog-actions>
+    </div>
 </app-dialog-content>
 
-<app-dialog-actions align="end">
-    <button app-button (click)="close()">
-        {{"cancel" | translate}}
-    </button>
-    <button app-button appearance="raised" color="primary" (click)="submit()"
-            [disabled]="!groupForm || !groupForm.valid || !juicebox.hasPermission('groups:role#updated|update')"
-            [promiseBtn]="promiseBtn">
-        {{"save" | translate}}
-    </button>
-</app-dialog-actions>
+
