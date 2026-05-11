@@ -118,7 +118,7 @@ export class SidebarComponent implements OnInit, OnDestroy{
         return false
     }
 
-    async ngOnInit() {
+    ngOnInit() {
         this.subscription.add(
             this.sidebarService.toggleSidebar$.subscribe(() => {
                 this.collapse();
@@ -127,13 +127,17 @@ export class SidebarComponent implements OnInit, OnDestroy{
         this.sidebarService.setSidebarCollapsed(this.juicebox.collapsed);
 
         this.getUserInfo();
+        this.loadSidebarItems();
+    }
+
+    private async loadSidebarItems() {
         const sidebar: { visible: SidebarItem[], hidden: SidebarItem[] } = {visible: [], hidden: []};
 
         const options = await this.juicebox.getOptions();
 
         if(options.sidebarPermissions){
             // get sidebar items with permissions
-            sidebar.visible = await this.sidebarService.getSidebarItemsWithPermissions(this.user, this.i18n);
+            sidebar.visible = await this.sidebarService.getSidebarItemsWithPermissions(this.user(), this.i18n);
         } else {
             // get old way of storing items
             const res = await this.sidebarService.getSidebarItems(this.juicebox.getUserId(), this.juicebox.getUserOrganisationId());

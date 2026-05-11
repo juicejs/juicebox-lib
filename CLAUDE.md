@@ -166,7 +166,7 @@ The juicebar (or juicebox) library supports extending built-in functionality via
 ## Styles (SCSS)
 
 - Use SCSS for all component styles.
-- Use global color variables defined in `/projects/juicebar/src/lib/ui-components/styles/variables.scss` (--color-secondary, --color-tertiary, etc.).
+- Use global color variables defined in `/projects/juicebar/src/lib/ui-components/styles/variables.scss` (--color-secondary, --color-tertiary, etc.), or in `projects/juicebar/src/lib/styles.scss`.
 - Check similar custom components and extend styles rather than writing from scratch.
 - Keep CSS as light and minimal as possible
 
