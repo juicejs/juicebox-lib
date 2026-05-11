@@ -1,0 +1,39 @@
+<app-dialog-title>
+  {{ 'two_step_verification' | translate }}
+</app-dialog-title>
+
+<app-dialog-content>
+  <form [formGroup]="twoFaForm" class="totp-form">
+    <p>1. {{ 'part_1' | translate }}</p>
+    <p>2. {{ 'part_2' | translate }}.</p>
+    <p>3. {{ 'part_3' | translate }}:</p>
+    @if (qrCode()) {
+      <img [src]="qrCode()" width="212" height="212" alt="QR code">
+    }
+    <p>{{ 'part_4' | translate }}.</p>
+    <p><strong>{{ secret() }}</strong></p>
+    <p>4. {{ 'part_5' | translate }}.</p>
+
+    <app-form-field appearance="outline" class="full-width">
+      <app-label>{{ 'two_factor_authorisation_code' | translate }}</app-label>
+      <input appInput type="text" inputmode="numeric" formControlName="code" maxlength="6" autocomplete="one-time-code">
+      @if (twoFaForm.get('code')?.touched && twoFaForm.get('code')?.errors?.['required']) {
+        <app-error>{{ 'field_required' | translate }}</app-error>
+      }
+      @if (twoFaForm.get('code')?.touched && twoFaForm.get('code')?.errors?.['pattern']) {
+        <app-error>{{ 'only_digits_allowed' | translate }}</app-error>
+      }
+    </app-form-field>
+  </form>
+</app-dialog-content>
+
+<app-dialog-actions>
+  <button app-button appearance="flat" type="button" (click)="close()">
+    {{ 'cancel' | translate }}
+  </button>
+  <button app-button appearance="raised" color="primary" type="button"
+          [disabled]="twoFaForm.invalid"
+          (click)="submit()">
+    {{ 'save' | translate }}
+  </button>
+</app-dialog-actions>

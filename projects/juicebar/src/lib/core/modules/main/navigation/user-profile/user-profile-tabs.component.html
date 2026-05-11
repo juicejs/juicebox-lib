@@ -1,0 +1,24 @@
+<div class="user-profile-tabs">
+  <nav class="tab-nav" role="tablist">
+    <button app-button
+            appearance="flat"
+            [routerLink]="['details']"
+            routerLinkActive="active"
+            role="tab">
+      {{ 'details' | translate }}
+    </button>
+    @if (!sidebarTabHidden()) {
+      <button app-button
+              appearance="flat"
+              [routerLink]="['sidebar']"
+              routerLinkActive="active"
+              role="tab">
+        {{ 'sidebar' | translate }}
+      </button>
+    }
+  </nav>
+
+  <div class="tab-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

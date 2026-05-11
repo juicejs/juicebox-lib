@@ -16,6 +16,7 @@ import { provideMain } from './core/modules/main/main.providers';
 import { Juice } from './core/shared/services/juice.service';
 import { JuiceboxService } from './core/shared/services/Juicebox.service';
 import { AuthGuard } from './core/shared/guards/auth.guard';
+import { UnsavedChangesGuard } from './core/shared/guards/unsaved-changes.guard';
 import { environment } from './environments/environment.development';
 
 export function provideJuicebar(config: BaseAppConfig, ...features: JuicebarFeature[]): EnvironmentProviders {
@@ -49,12 +50,44 @@ export function provideJuicebar(config: BaseAppConfig, ...features: JuicebarFeat
       multi: true,
     },
     AuthGuard,
+    UnsavedChangesGuard,
     ...(config.providers || []),
   ]);
 }
 
 function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], featureRoutes: Routes = []): Routes {
+  const userProfileRoute: Routes = [
+    {
+      path: 'user-profile',
+      loadComponent: () =>
+        import('./core/modules/main/navigation/user-profile/user-profile-tabs.component').then(
+          m => m.UserProfileTabsComponent
+        ),
+      canDeactivate: [UnsavedChangesGuard],
+      children: [
+        { path: '', redirectTo: 'details', pathMatch: 'full' as const },
+        {
+          path: 'details',
+          loadComponent: () =>
+            import('./core/modules/main/navigation/user-profile/tabs/details/user-profile-details.component').then(
+              m => m.UserProfileDetailsComponent
+            ),
+          canDeactivate: [UnsavedChangesGuard],
+        },
+        {
+          path: 'sidebar',
+          loadComponent: () =>
+            import('./core/modules/main/navigation/user-profile/tabs/sidebar/user-profile-sidebar.component').then(
+              m => m.UserProfileSidebarComponent
+            ),
+          canDeactivate: [UnsavedChangesGuard],
+        },
+      ],
+    },
+  ];
+
   const mainChildren = [
+    ...userProfileRoute,
     ...featureRoutes,
     ...(mainRoutes?.map(m => ({
       path: m.path,

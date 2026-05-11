@@ -65,7 +65,8 @@
 
         <div class="form-options">
           <app-checkbox
-            formControlName="remember">
+            [checked]="loginForm.get('remember')!.value"
+            (change)="loginForm.get('remember')!.setValue($event)">
             {{ 'remember_me' | translate }}
           </app-checkbox>
         </div>
