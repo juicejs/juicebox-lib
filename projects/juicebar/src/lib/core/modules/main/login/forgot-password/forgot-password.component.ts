@@ -19,7 +19,7 @@ import {
 @Component({
     selector: 'app-forgot-password',
     templateUrl: './forgot-password.component.html',
-    styleUrls: ['./forgot-password.component.css'],
+    styleUrl: './forgot-password.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,

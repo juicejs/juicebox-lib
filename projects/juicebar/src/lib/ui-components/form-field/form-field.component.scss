@@ -16,7 +16,7 @@
     color: var(--color-text-primary);
     background: var(--color-grey-200);
     border: 1.5px solid var(--color-border);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-xl);
     outline: none;
     box-sizing: border-box;
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
@@ -57,7 +57,7 @@
       background: var(--color-grey-100);
       border-color: transparent;
       border-bottom: 2px solid var(--color-border);
-      border-radius: var(--radius-md) var(--radius-md) 0 0;
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 
       &:focus {
         border-bottom-color: var(--color-secondary);

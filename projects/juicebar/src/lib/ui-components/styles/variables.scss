@@ -8,7 +8,14 @@
   --color-secondary: #ff6b35;
   --color-secondary-light: #ff8c61;
   --color-secondary-dark: #e85a2a;
+  --color-secondary-extra-light: #ffa06e;
   --color-secondary-contrast: #ffffff;
+
+  // Secondary colors (RGB for rgba gradients)
+  --color-secondary-rgb: 255, 107, 53;
+  --color-secondary-light-rgb: 255, 140, 97;
+  --color-secondary-dark-rgb: 232, 90, 42;
+  --color-secondary-extra-light-rgb: 255, 160, 110;
 
   // Tertiary colors
   --color-tertiary: #004e89;
@@ -79,7 +86,14 @@
   --color-secondary: #ff6b35;
   --color-secondary-light: #ff8c61;
   --color-secondary-dark: #e85a2a;
+  --color-secondary-extra-light: #ffa06e;
   --color-secondary-contrast: #ffffff;
+
+  // Secondary colors (RGB for rgba gradients)
+  --color-secondary-rgb: 255, 107, 53;
+  --color-secondary-light-rgb: 255, 140, 97;
+  --color-secondary-dark-rgb: 232, 90, 42;
+  --color-secondary-extra-light-rgb: 255, 160, 110;
 
   // Tertiary colors (blue accents like GitHub)
   --color-tertiary: #58a6ff;

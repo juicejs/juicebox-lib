@@ -14,14 +14,14 @@
     <app-card-content>
       <form [formGroup]="loginForm" class="login-form" (ngSubmit)="org() ? loginWithOrg() : login()">
         <app-form-field appearance="outline" class="full-width">
-          <app-label class="app-label">{{ 'email' | translate }}</app-label>
+          <app-label>{{ 'email' | translate }}</app-label>
           <input
             appInput
             type="email"
             formControlName="email"
             autocomplete="username"
             [readonly]="org() || !!twoFactorAuthTimestamp()">
-          @if (loginForm.get('email')?.errors?.['required']) {
+          @if (loginForm.get('email')?.touched && loginForm.get('email')?.errors?.['required']) {
             <app-error>{{ 'email_required' | translate }}</app-error>
           }
         </app-form-field>
@@ -34,7 +34,7 @@
             formControlName="password"
             autocomplete="current-password"
             [readonly]="org() || !!twoFactorAuthTimestamp()">
-          @if (loginForm.get('password')?.errors?.['required']) {
+          @if (loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['required']) {
             <app-error>{{ 'password_required' | translate }}</app-error>
           }
         </app-form-field>
@@ -113,6 +113,7 @@
         {{ 'sign_in' | translate }}
       </button>
 
+      <!-- COMMENTED: Web3 login button disabled
       <div class="auth-divider" aria-hidden="true">
         <span>{{ 'or' | translate }}</span>
       </div>
@@ -127,6 +128,7 @@
         <app-icon [icon]="'account_balance_wallet'"></app-icon>
         {{ 'web3_login' | translate }}
       </button>
+      -->
     </app-card-actions>
 
     <app-card-footer class="login-footer">

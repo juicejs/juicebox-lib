@@ -231,89 +231,90 @@ export class LoginComponent implements OnInit {
     }
 
 
-    private web3ScriptsLoaded = false;
-
-    private loadWeb3Scripts(): Promise<void> {
-        if (this.web3ScriptsLoaded) return Promise.resolve();
-        const sources = [
-            'https://unpkg.com/web3@1.8.1/dist/web3.min.js',
-            'https://unpkg.com/web3modal@1.9.5/dist/index.js',
-            'https://unpkg.com/evm-chains@0.2.0/dist/umd/index.min.js',
-            'https://unpkg.com/@walletconnect/web3-provider@1.6.6/dist/umd/index.min.js'
-        ];
-        return Promise.all(sources.map(src => new Promise<void>((resolve, reject) => {
-            if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
-            const s = document.createElement('script');
-            s.src = src;
-            s.async = true;
-            s.onload = () => resolve();
-            s.onerror = () => reject(new Error(`Failed to load ${src}`));
-            document.head.appendChild(s);
-        }))).then(() => { this.web3ScriptsLoaded = true; });
-    }
-
-    async loginWithWeb3() {
-        await this.loadWeb3Scripts();
-        console.log('Creating the token...');
-        const win: any = this.juicebox.getWindow();
-
-        const ethEnabled = async () => {
-            if (win.ethereum) {
-                await win.ethereum.request({method: 'eth_requestAccounts'});
-                // @ts-ignore
-                win.web3 = new Web3(win.ethereum);
-                return true;
-            }
-            return false;
-        };
-        await ethEnabled();
-
-
-        // @ts-ignore
-        const web3 = win.web3;
-        const address = await web3.eth.getAccounts();
-        console.log(address);
-
-        const message = 'Web3 login for ' + this.juicebox.getProjectTitle() + '\n' +
-            'This request will not trigger a blockchain transaction or cost any gas fees.' +
-            'You will be authorized with your Wallet for 24 hours.\n' +
-            'Wallet address:\n' + address[0];
-
-        await web3.eth.personal.sign(message, address[0], async (error, signature) => {
-            if (error) {
-                console.error(error);
-                return;
-            }
-            console.log(`New token created! (${address})`);
-
-            const result: any = await this.juicebox.auth(
-                'juicebox:wallet',
-                {
-                    signature: signature,
-                    message: message
-                }
-            );
-
-            if (result.success) {
-                const accepted = await this.showWelcomeDialogue(result.welcomeMessageKey);
-
-                // check if 2fa options are available and redirect user to activate 2fa
-                const config = await this.configuration.getByKey("juicebox");
-                const options = config.payload.options || {};
-
-                if (accepted && config.success && options.twoFactor && options.twoFactor.length && !result.hasTwoFactor) {
-                    localStorage.setItem("2fawarning", this.mainTranslationPipe.transform('set_two_factor'))
-                    document.location.replace('');
-                    return;
-                }
-
-                if (accepted) document.location.replace('');
-            } else {
-                this.handleError(result.error);
-                this.errorMessage.set("Web3 Authentication Failed");
-            }
-        });
-    }
+    // COMMENTED: Web3 login functionality disabled
+    // private web3ScriptsLoaded = false;
+    //
+    // private loadWeb3Scripts(): Promise<void> {
+    //     if (this.web3ScriptsLoaded) return Promise.resolve();
+    //     const sources = [
+    //         'https://unpkg.com/web3@1.8.1/dist/web3.min.js',
+    //         'https://unpkg.com/web3modal@1.9.5/dist/index.js',
+    //         'https://unpkg.com/evm-chains@0.2.0/dist/umd/index.min.js',
+    //         'https://unpkg.com/@walletconnect/web3-provider@1.6.6/dist/umd/index.min.js'
+    //     ];
+    //     return Promise.all(sources.map(src => new Promise<void>((resolve, reject) => {
+    //         if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
+    //         const s = document.createElement('script');
+    //         s.src = src;
+    //         s.async = true;
+    //         s.onload = () => resolve();
+    //         s.onerror = () => reject(new Error(`Failed to load ${src}`));
+    //         document.head.appendChild(s);
+    //     }))).then(() => { this.web3ScriptsLoaded = true; });
+    // }
+    //
+    // async loginWithWeb3() {
+    //     await this.loadWeb3Scripts();
+    //     console.log('Creating the token...');
+    //     const win: any = this.juicebox.getWindow();
+    //
+    //     const ethEnabled = async () => {
+    //         if (win.ethereum) {
+    //             await win.ethereum.request({method: 'eth_requestAccounts'});
+    //             // @ts-ignore
+    //             win.web3 = new Web3(win.ethereum);
+    //             return true;
+    //         }
+    //         return false;
+    //     };
+    //     await ethEnabled();
+    //
+    //
+    //     // @ts-ignore
+    //     const web3 = win.web3;
+    //     const address = await web3.eth.getAccounts();
+    //     console.log(address);
+    //
+    //     const message = 'Web3 login for ' + this.juicebox.getProjectTitle() + '\n' +
+    //         'This request will not trigger a blockchain transaction or cost any gas fees.' +
+    //         'You will be authorized with your Wallet for 24 hours.\n' +
+    //         'Wallet address:\n' + address[0];
+    //
+    //     await web3.eth.personal.sign(message, address[0], async (error, signature) => {
+    //         if (error) {
+    //             console.error(error);
+    //             return;
+    //         }
+    //         console.log(`New token created! (${address})`);
+    //
+    //         const result: any = await this.juicebox.auth(
+    //             'juicebox:wallet',
+    //             {
+    //                 signature: signature,
+    //                 message: message
+    //             }
+    //         );
+    //
+    //         if (result.success) {
+    //             const accepted = await this.showWelcomeDialogue(result.welcomeMessageKey);
+    //
+    //             // check if 2fa options are available and redirect user to activate 2fa
+    //             const config = await this.configuration.getByKey("juicebox");
+    //             const options = config.payload.options || {};
+    //
+    //             if (accepted && config.success && options.twoFactor && options.twoFactor.length && !result.hasTwoFactor) {
+    //                 localStorage.setItem("2fawarning", this.mainTranslationPipe.transform('set_two_factor'))
+    //                 document.location.replace('');
+    //                 return;
+    //             }
+    //
+    //             if (accepted) document.location.replace('');
+    //         } else {
+    //             this.handleError(result.error);
+    //             this.errorMessage.set("Web3 Authentication Failed");
+    //         }
+    //     });
+    // }
 
     async showWelcomeDialogue(welcomeMessageKey): Promise<boolean> {
         const result = await this.configuration.getByKey('juicebox:welcome-message');
@@ -355,8 +356,8 @@ export class LoginComponent implements OnInit {
         DEFAULT: () => {
             this.errorMessage.set('wrong_credentials');
         },
-        WEB3: () => {
-            this.errorMessage.set('wallet_authorization_failed');
-        }
+        // WEB3: () => {
+        //     this.errorMessage.set('wallet_authorization_failed');
+        // }
     }
 }

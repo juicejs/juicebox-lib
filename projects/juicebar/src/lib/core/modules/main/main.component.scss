@@ -7,6 +7,47 @@
     height: 100vh;
     width: 100vw;
     font-family: 'Inter', sans-serif !important;
+    position: relative;
+    --bg-accent: var(--color-secondary, #ff6b35);
+    --bg-accent-light: var(--color-secondary-light, #ff8c61);
+    --bg-accent-dark: var(--color-secondary-dark, #e85a2a);
+
+    background: var(--color-background);
+    background-attachment: fixed;
+    overflow: hidden;
+
+    &::after {
+        content: '';
+        position: fixed;
+        inset: -10%;
+        pointer-events: none;
+        z-index: 0;
+        background:
+            radial-gradient(50% 50% at 10% 8%, rgba(var(--color-secondary-rgb), 0.55) 0%, transparent 70%),
+            radial-gradient(55% 55% at 92% 92%, rgba(var(--color-secondary-light-rgb), 0.48) 0%, transparent 70%),
+            radial-gradient(45% 45% at 88% 12%, rgba(var(--color-secondary-dark-rgb), 0.42) 0%, transparent 70%),
+            radial-gradient(40% 40% at 12% 90%, rgba(var(--color-secondary-extra-light-rgb), 0.38) 0%, transparent 70%);
+        filter: blur(55px) saturate(1.1);
+        animation: bgDrift 24s ease-in-out infinite;
+    }
+
+    &::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        background-image: radial-gradient(circle, var(--color-text-secondary) 1px, transparent 1.5px);
+        background-size: 22px 22px;
+        opacity: 0.22;
+        mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
+        -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
+    }
+
+    > * {
+        position: relative;
+        z-index: 1;
+    }
 
     app-navigation {
         position: fixed;
@@ -26,7 +67,7 @@
     .content-container {
         flex: 1;
         overflow-y: auto;
-        background: var(--color-background);
+        background: transparent;
         border: 1px solid var(--color-border);
 
         .navigation-container {
@@ -58,7 +99,8 @@
                 display: flex;
                 width: 100%;
                 padding: 1rem 1.5rem;
-                background: var(--color-background-secondary);
+                background: rgba(13, 17, 23, 0.6);
+                backdrop-filter: blur(10px);
                 border-bottom: 1px solid var(--color-border);
                 position: sticky;
                 top: 0;
@@ -246,6 +288,18 @@
 }
 
 // Animations
+@keyframes bgDrift {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+    }
+    33% {
+        transform: translate(-2%, 1%) scale(1.04);
+    }
+    66% {
+        transform: translate(1.5%, -1.5%) scale(1.02);
+    }
+}
+
 @keyframes slideDown {
     from {
         opacity: 0;
