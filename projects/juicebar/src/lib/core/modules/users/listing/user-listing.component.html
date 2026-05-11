@@ -12,13 +12,13 @@
   <div class="w-100 p-0">
 
     <app-data-table
-      [rows]="rows"
+      [rows]="rowsSig()"
       [columns]="tableColumns"
       [totalCount]="count()"
-      [pageSize]="itemsPerPage"
-      [pageIndex]="page - 1"
+      [pageSize]="itemsPerPageSig()"
+      [pageIndex]="pageSig() - 1"
       [pageSizeOptions]="[10, 20, 30, 50]"
-      [sort]="sort"
+      [sort]="sortSig()"
       (pageChange)="onPageChange($event)"
       (sortChange)="onSort($event)"
       (rowClick)="onSelect({type: 'click', row: $event})">
@@ -88,12 +88,12 @@
       </ng-template>
 
       <ng-template [cellDef]="'groups'" let-row>
-        @if (row.groups && objectValues(row.groups) && objectValues(row.groups).length && objectValues(row.groups)[0].length) {
-          <span [appTooltip]="getGroupsTooltip(row.groups)" class="has-popover">
-            {{getGroups(row.groups)}}
+        @if (row.hasGroups) {
+          <span [appTooltip]="row.groupsTooltip" class="has-popover">
+            {{ row.groupsLabel }}
           </span>
         } @else {
-          <span class="grey-italic">{{'no_groups' | translate}}</span>
+          <span class="grey-italic">{{ 'no_groups' | translate }}</span>
         }
       </ng-template>
 
@@ -103,7 +103,7 @@
 
       <ng-template [cellDef]="'actions'" let-row>
         <div class="action-buttons" (click)="$event.stopPropagation()">
-          @if (juicebox.getUser().attributes?.settings?.twoFactor === 'totp') {
+          @if (canLoginAsOther()) {
             <button app-button
                     appearance="icon"
                     (click)="openModalToLoginAsAnotherUser(row);$event.stopPropagation();"

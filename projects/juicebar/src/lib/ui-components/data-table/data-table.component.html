@@ -1,5 +1,5 @@
 <div class="data-table-wrapper">
-  <table cdk-table [dataSource]="rows()" class="data-table">
+  <table cdk-table [dataSource]="rows()" [trackBy]="trackRow" class="data-table">
     @for (col of columns(); track trackKey($index, col)) {
       <ng-container [cdkColumnDef]="col.key">
         <th cdk-header-cell *cdkHeaderCellDef

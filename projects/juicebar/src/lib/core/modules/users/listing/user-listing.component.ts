@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { UsersService } from '../users.service';
 import { ListingComponent } from '../../../shared/components/listing/listing.component';
 import { Router, RouterLink } from '@angular/router';
@@ -43,10 +43,16 @@ export interface Sort {
 })
 export class UserListingComponent extends ListingComponent implements OnInit {
 
-    sort: ISort = { dir: 'asc', prop: 'lastname' }; // setting initial sort
-    filter: Array<ISearchTerm> = [];
+    protected readonly sortSig = signal<ISort>({ dir: 'asc', prop: 'lastname' });
+    protected readonly filterSig = signal<Array<ISearchTerm>>([]);
     i18n: UserTranslationPipe;
     protected readonly count = signal<number>(0);
+    protected readonly rowsSig = signal<Array<any>>([]);
+    protected readonly pageSig = signal<number>(1);
+    protected readonly itemsPerPageSig = signal<number>(10);
+    protected readonly canLoginAsOther = computed(() =>
+        this.juicebox.getUser().attributes?.settings?.twoFactor === 'totp'
+    );
     loggedInOrganisationId: string;
     projectTitle: string;
 
@@ -61,7 +67,6 @@ export class UserListingComponent extends ListingComponent implements OnInit {
 
     protected readonly roles = signal<Array<any>>([]);
     protected readonly filteredRoles = signal<Array<any>>([]);
-    objectValues = Object.values;
 
     // Selected filter values for filter buttons
     protected readonly selectedOrganisation = signal<any>(null);
@@ -150,27 +155,29 @@ export class UserListingComponent extends ListingComponent implements OnInit {
 
         this.loggedInOrganisationId = this.juicebox.getUser().organisation_id;
 
-        await this.fetchUsers();
-        await this.getOrganisations();
-        await this.fetchRoles();
-        await this.fetchGroups();
+        await Promise.all([
+            this.fetchUsers(),
+            this.getOrganisations(),
+            this.fetchRoles(),
+            this.fetchGroups()
+        ]);
 
         // Initialize filter configurations
         this.initializeFilterConfigs();
     }
 
     private async fetchUsers(): Promise<any> {
-        const result = await this.usersService.fetch(this.loggedInOrganisationId, this.page - 1, this.itemsPerPage, this.sort, this.filter);
+        const result = await this.usersService.fetch(this.loggedInOrganisationId, this.pageSig() - 1, this.itemsPerPageSig(), this.sortSig(), this.filterSig());
         if (!result.success)
             return false;
 
         this.getLoginData(result.payload.items);
 
-        this.rows = result.payload.items;
+        this.rowsSig.set(result.payload.items);
         this.count.set(result.payload.count);
     }
 
-    getLoginData(users) {
+    getLoginData(users: Array<any>) {
         for (const user of users) {
             if (user.attributes?.shopLoginCount) {
                 user.loginCount = user.loginCount ? user.loginCount + user.attributes.shopLoginCount : user.attributes.shopLoginCount;
@@ -182,43 +189,47 @@ export class UserListingComponent extends ListingComponent implements OnInit {
                     user.lastLogin = user.attributes.lastShopLogin;
                 }
             }
+
+            const groupList: any[] = user.groups ? Object.values(user.groups) : [];
+            user.groupsLabel = groupList.join(', ');
+            user.groupsTooltip = groupList.join('\n');
+            user.hasGroups = groupList.length > 0 && !!groupList[0]?.length;
         }
     }
 
-  override async changePage(page: number) {
-        this.page = page;
+    override async changePage(page: number) {
+        this.pageSig.set(page);
         await this.fetchUsers();
     }
 
     async onPageChange(event: PageEvent) {
-        this.page = event.pageIndex + 1;
-        this.itemsPerPage = event.pageSize;
+        this.pageSig.set(event.pageIndex + 1);
+        this.itemsPerPageSig.set(event.pageSize);
         await this.fetchUsers();
     }
 
-    async pageSizeChanged(pagesize){
-        this.itemsPerPage = pagesize;
-        this.page = 1;
-
+    async pageSizeChanged(pagesize: number) {
+        this.itemsPerPageSig.set(pagesize);
+        this.pageSig.set(1);
         await this.fetchUsers();
     }
 
     async onSort(event: SortState) {
-        this.sort = { prop: event.prop, dir: event.dir };
-        this.page = 1;
+        this.sortSig.set({ prop: event.prop, dir: event.dir });
+        this.pageSig.set(1);
         await this.fetchUsers();
     }
 
-    async onFilter(property: string, value: any) {
-        this.page = 1;
-        const result = this.helper.prepareSearchTerm(this.filter, property, value);
-        this.filter = result.filter;
+    async onFilter(property: string, value: string) {
+        this.pageSig.set(1);
+        const result = this.helper.prepareSearchTerm(this.filterSig(), property, value);
+        this.filterSig.set(result.filter);
 
         if (!result.resolved)
             await this.fetchUsers();
     }
 
-    async delete(user) {
+    async delete(user: User) {
         const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
             disableClose: true,
             data: {
@@ -242,7 +253,7 @@ export class UserListingComponent extends ListingComponent implements OnInit {
         });
     }
 
-    onSelect(event) {
+    onSelect(event: { type: string; row: User }) {
         if (event.type === 'click')
             this.router.navigate(['main/users/details', event.row._id]);
     }
@@ -260,14 +271,6 @@ export class UserListingComponent extends ListingComponent implements OnInit {
         });
     }
 
-    getGroups(groups: Array<any>, comma = true) {
-        return Object.values(groups).map(group => group).join(', ');
-    }
-
-    getGroupsTooltip(groups: Array<any>) {
-        return Object.values(groups).map(group => group).join('\n');
-    }
-
     //------ORGANISATIONS FILTER
     private async getOrganisations(): Promise<any> {
         const organisationResult = await this.juicebox.getAvailableOrganisations(this.pageOrganisations, 10, {
@@ -281,15 +284,16 @@ export class UserListingComponent extends ListingComponent implements OnInit {
         this.organisationsCount.set(organisationResult.payload.count);
     }
 
-    async organisationChanged(organisation) {
+    async organisationChanged(organisation: any) {
         this.selectedOrganisation.set(organisation);
 
         if (!organisation || !organisation._id) {
             return this.resetOrganisation();
         }
 
-        const tmpFilter: Array<ISearchTerm> = this.filter.filter(value => value.property !== 'organisation');
-        this.filter = [...tmpFilter, { language: false, fullText: true, property: 'organisation', term: organisation._id }];
+        this.pageSig.set(1);
+        const tmpFilter: Array<ISearchTerm> = this.filterSig().filter(v => v.property !== 'organisation');
+        this.filterSig.set([...tmpFilter, { language: false, fullText: true, property: 'organisation', term: organisation._id }]);
 
         await this.fetchUsers();
         await this.searchOrganisations({ term: '' });
@@ -319,8 +323,8 @@ export class UserListingComponent extends ListingComponent implements OnInit {
 
     async resetOrganisation() {
         this.selectedOrganisation.set(null);
-        const tmpFilter: Array<ISearchTerm> = this.filter.filter(value => value.property !== 'organisation');
-        this.filter = [...tmpFilter];
+        this.pageSig.set(1);
+        this.filterSig.set(this.filterSig().filter(v => v.property !== 'organisation'));
         await this.fetchUsers();
     }
 
@@ -342,16 +346,17 @@ export class UserListingComponent extends ListingComponent implements OnInit {
             return this.resetGroup();
         }
 
-        const tmpFilter: Array<ISearchTerm> = this.filter.filter(value => value.property !== 'groups');
-        this.filter = [...tmpFilter, { language: false, fullText: true, property: 'groups', term: group.key }];
+        this.pageSig.set(1);
+        const tmpFilter: Array<ISearchTerm> = this.filterSig().filter(v => v.property !== 'groups');
+        this.filterSig.set([...tmpFilter, { language: false, fullText: true, property: 'groups', term: group.key }]);
 
         await this.fetchUsers();
     }
 
     async resetGroup() {
         this.selectedGroup.set(null);
-        const tmpFilter: Array<ISearchTerm> = this.filter.filter(value => value.property !== 'groups');
-        this.filter = [...tmpFilter];
+        this.pageSig.set(1);
+        this.filterSig.set(this.filterSig().filter(v => v.property !== 'groups'));
         await this.fetchUsers();
     }
 
@@ -372,16 +377,17 @@ export class UserListingComponent extends ListingComponent implements OnInit {
             return this.resetRole();
         }
 
-        const tmpFilter: Array<ISearchTerm> = this.filter.filter(value => value.property !== 'roles');
-        this.filter = [...tmpFilter, { language: false, fullText: true, property: 'roles', term: role.key }];
+        this.pageSig.set(1);
+        const tmpFilter: Array<ISearchTerm> = this.filterSig().filter(v => v.property !== 'roles');
+        this.filterSig.set([...tmpFilter, { language: false, fullText: true, property: 'roles', term: role.key }]);
 
         await this.fetchUsers();
     }
 
     async resetRole() {
         this.selectedRole.set(null);
-        const tmpFilter: Array<ISearchTerm> = this.filter.filter(value => value.property !== 'roles');
-        this.filter = [...tmpFilter];
+        this.pageSig.set(1);
+        this.filterSig.set(this.filterSig().filter(v => v.property !== 'roles'));
         await this.fetchUsers();
     }
 
