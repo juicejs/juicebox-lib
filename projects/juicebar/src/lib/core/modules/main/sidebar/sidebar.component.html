@@ -4,10 +4,12 @@
   <app-sidenav opened mode="side" class="modern-sidebar">
 
     <!-- Logo Section -->
-    <div class="sidebar-header" [class.collapsed]="juicebox.collapsed">
-      <div class="logo-container">
-        <img [src]="organisationLogo()" [alt]="'Company Logo'" class="company-logo">
-      </div>
+    <div class="sidebar-header">
+      <img ngSrc="assets/juicebar/images/logo_small.png"
+           alt="Logo"
+           width="120" height="120"
+           class="brand-logo"
+           [class.vertical]="juicebox.collapsed">
     </div>
 
     <!-- Navigation Menu with Drag & Drop -->

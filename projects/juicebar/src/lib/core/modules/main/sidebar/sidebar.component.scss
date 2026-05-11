@@ -29,35 +29,19 @@
   // Header Section with Logo
   .sidebar-header {
     display: flex;
-    align-items: center;
     justify-content: center;
-    padding: 20px 16px;
-    min-height: 72px;
-    transition: all 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
+    padding: 10px 16px;
 
-    &.collapsed {
-      padding: 16px 8px;
-      min-height: 64px;
-    }
+    .brand-logo {
+      width: 140px;
+      height: auto;
+      transition: width 250ms cubic-bezier(0.4, 0.0, 0.2, 1),
+                  transform 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
 
-    .logo-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
-
-      .company-logo {
-        max-width: 160px;
-        max-height: 36px;
-        object-fit: contain;
-        transition: all 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
-      }
-    }
-
-    &.collapsed .logo-container {
-      .company-logo {
-        max-width: 28px;
-        max-height: 28px;
+      &.vertical {
+        width: 60px;
+        transform: rotate(90deg);
+        padding: 20px 0;
       }
     }
   }
@@ -147,9 +131,7 @@
             white-space: nowrap;
 
             &.collapsed {
-              opacity: 0;
-              width: 0;
-              margin-left: 0;
+              display: none;
             }
           }
         }
@@ -225,6 +207,7 @@
       .menu-item-container .menu-item .menu-item-content {
         justify-content: center;
         padding: 12px 8px;
+        gap: 0;
       }
     }
   }
@@ -267,22 +250,6 @@
     .modern-sidebar {
       .sidebar-header {
         padding: 16px 12px;
-        min-height: 64px;
-
-        &.collapsed {
-          padding: 12px 8px;
-          min-height: 56px;
-        }
-
-        .logo-container .company-logo {
-          max-width: 140px;
-          max-height: 32px;
-        }
-
-        &.collapsed .logo-container .company-logo {
-          max-width: 24px;
-          max-height: 24px;
-        }
       }
 
       .sidebar-menu {

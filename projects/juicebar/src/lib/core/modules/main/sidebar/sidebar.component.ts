@@ -10,7 +10,7 @@ import {MainTranslationPipe} from '../i18n/main.translation';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import {filter} from 'rxjs/operators';
 import {Subscription} from 'rxjs/internal/Subscription';
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {SharedModule} from '../../../shared/shared.module';
 
 @Component({
@@ -24,7 +24,8 @@ import {SharedModule} from '../../../shared/shared.module';
         RouterLinkActive,
         ImageCropperComponent,
         SharedModule,
-        MainTranslationPipe
+        MainTranslationPipe,
+        NgOptimizedImage
     ]
 })
 export class SidebarComponent implements OnInit, OnDestroy{
@@ -48,7 +49,6 @@ export class SidebarComponent implements OnInit, OnDestroy{
     public i18n: MainTranslationPipe;
     public hasAvatars: boolean = false;
 
-    protected readonly organisationLogo = signal<string>("assets/images/logo_small");
     protected readonly currentUrl = signal<string>('');
 
     // -- Dragging & Ordering of sidebar
@@ -74,13 +74,6 @@ export class SidebarComponent implements OnInit, OnDestroy{
         }
         else {
             (<any>this.roles) = Object.values(this.temp)[0];
-        }
-
-        const user = juicebox.getUser();
-        if (user.attributes && user.attributes.organisationLogo) {
-            this.organisationLogo.set(user.attributes.organisationLogo + ".png");
-        } else {
-            this.organisationLogo.update(logo => logo + ".png");
         }
 
         this.hasAvatars = this.juicebox.getOptions().avatars;
