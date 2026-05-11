@@ -107,8 +107,7 @@
         color="accent"
         type="submit"
         class="login-button"
-        (click)="org() ? loginWithOrg() : login()"
-        [disabled]="loginForm.invalid">
+        (click)="org() ? loginWithOrg() : login()">
         <app-icon [icon]="'login'"></app-icon>
         {{ 'sign_in' | translate }}
       </button>

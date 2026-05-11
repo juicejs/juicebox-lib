@@ -118,6 +118,11 @@ export class LoginComponent implements OnInit {
     }
 
     login() {
+        this.loginForm.markAllAsTouched();
+        if (!this.loginForm.value.email || !this.loginForm.value.password) {
+            this.errorMessage.set('fields_required');
+            return;
+        }
         this.promiseBtn = (async () => {
             this.errorMessage.set(null);
 
@@ -170,7 +175,10 @@ export class LoginComponent implements OnInit {
 
     loginWithOrg() {
         this.loginForm.markAllAsTouched();
-        if (this.loginForm.invalid || !this.loginForm.value.organisation_id) return;
+        if (!this.loginForm.value.email || !this.loginForm.value.password || !this.loginForm.value.organisation_id) {
+            this.errorMessage.set('fields_required');
+            return;
+        }
 
         this.promiseBtn = (async () => {
             this.errorMessage.set(null);

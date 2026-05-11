@@ -1044,6 +1044,10 @@ export const mainDictionary = {
     "en_GB": "Wrong credentials",
     "de_DE": "Falsche Anmeldedaten"
   },
+  "fields_required": {
+    "en_GB": "Please fill in all required fields",
+    "de_DE": "Bitte füllen Sie alle erforderlichen Felder aus"
+  },
   "wallet_authorization_failed": {
     "en_GB": "Wallet authorization failed",
     "de_DE": "Wallet-Autorisierung fehlgeschlagen"
