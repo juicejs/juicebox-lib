@@ -82,9 +82,8 @@
   --spacing-xl: 2rem;
 }
 
-// Light theme (optional - can be toggled)
-:root[data-theme="light"],
-.light-theme {
+// Light theme (toggled by ThemeService adding html.light-theme)
+html.light-theme {
   --color-primary: #ffffff;
   --color-primary-contrast: #000000;
   --color-grey-50: #fafafa;
@@ -107,6 +106,7 @@
   --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.15);
   --shadow-xl: 0 8px 16px rgba(0, 0, 0, 0.2);
+  --background-transparent: rgba(255, 255, 255, 0.6);
 }
 
 // =============================================================================

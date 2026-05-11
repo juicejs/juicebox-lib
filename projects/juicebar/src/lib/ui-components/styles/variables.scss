@@ -1,5 +1,5 @@
-// Color palette
-:root[data-theme="dark"], .light-theme {
+// Light theme overrides (high specificity so wins over :root dark below)
+html.light-theme {
   // Primary colors
   --color-primary: #ffffff;
   --color-primary-contrast: #000000;

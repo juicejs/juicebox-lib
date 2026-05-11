@@ -66,6 +66,15 @@
       </div>
     </ng-template>
 
+    <!-- Theme Toggle -->
+    <button app-button
+            appearance="icon"
+            class="action-button theme-btn"
+            (click)="toggleTheme()"
+            [appTooltip]="(theme() === 'light' ? 'switch_to_dark' : 'switch_to_light') | translate">
+      <app-icon [icon]="theme() === 'light' ? 'dark_mode' : 'light_mode'"></app-icon>
+    </button>
+
     <!-- Organization Switcher (Google Drive-like) -->
     @if (userOrganisations && userOrganisations.length > 1) {
       <button app-button

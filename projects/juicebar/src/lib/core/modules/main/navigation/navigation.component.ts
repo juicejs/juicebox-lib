@@ -9,6 +9,7 @@ import {Subscription} from 'rxjs';
 import {ClientRoutesService} from '../../../shared/services/client-routes.service';
 import {CdkMenuModule} from '@angular/cdk/menu';
 import {SharedModule} from '../../../shared/shared.module';
+import {ThemeService, Theme} from '../../../shared/services/theme.service';
 
 export interface Language {
   name: string,
@@ -65,6 +66,8 @@ export class NavigationComponent implements OnInit, OnDestroy {
   public juiceboxService = inject(JuiceboxService);
   public location = inject(Location);
   public dialog = inject(DialogService);
+  private themeService = inject(ThemeService);
+  public theme = this.themeService.theme;
 
   constructor() {
     this.projectTitle = this.juicebox.getProjectTitle();
@@ -79,6 +82,8 @@ export class NavigationComponent implements OnInit, OnDestroy {
 
     this.i18n = new MainTranslationPipe(this.juicebox);
     this.user = this.juicebox.getUser();
+    const storedTheme: Theme = this.user?.attributes?.settings?.theme === 'light' ? 'light' : 'dark';
+    this.themeService.init(storedTheme);
     this.userName = (this.user.firstname && this.user.lastname) ?
       `${this.user.firstname} ${this.user.lastname}` : `${this.user.email}`;
     this.userEmail = this.user.email;
@@ -189,6 +194,10 @@ export class NavigationComponent implements OnInit, OnDestroy {
     this.juicebox.doSearch($event.target.value).then(result => {
       this.searching = false;
     });
+  }
+
+  toggleTheme() {
+    this.themeService.toggle();
   }
 
   logout() {
