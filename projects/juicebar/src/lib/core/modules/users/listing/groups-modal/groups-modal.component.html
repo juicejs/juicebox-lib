@@ -5,71 +5,75 @@
             <app-icon icon="close">close</app-icon>
         </button>
     </h2>
+
     <div class="filter-bar">
         <div class="form-group d-flex" style="width:100%;">
-            @if (groups && groups.length) {
-            <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
-                <app-label>{{'groups' | translate}}</app-label>
-                <app-select (selectionChange)="groupChanged($event.value)">
-                    @for (group of groups; track group.key) {
-                        <app-option [value]="group">{{group.name}}</app-option>
-                    }
-                </app-select>
-            </app-form-field>
-            }
-
-            <button app-button color="primary" [hasPermissions]="'groups:role#super-admin'"
-                    (click)="createGroup()">{{'create' | translate}}</button>
-        </div>
-
-        @if (this.selectedGroup) {
-        <div class="form-group d-flex">
-            @if (roles && roles.length && this.selectedGroup) {
-            <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
-                <app-label>{{'add_role' | translate}}</app-label>
-                <app-select [(value)]="selectedRole" name="role">
-                    @for (role of roles; track role.key) {
-                        <app-option [value]="role.key" [disabled]="role.disabled">{{role.name}}</app-option>
-                    }
-                </app-select>
-            </app-form-field>
+            @if (groups().length) {
+                <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
+                    <app-label>{{'groups' | translate}}</app-label>
+                    <app-select (selectionChange)="groupChanged($event.value)">
+                        @for (group of groups(); track group._id) {
+                            <app-option [value]="group">{{group.name}}</app-option>
+                        }
+                    </app-select>
+                </app-form-field>
             }
 
             <button app-button color="primary"
-                    appearance="raised"
-                    [promiseBtn]="promiseBtn"
                     [hasPermissions]="'groups:role#super-admin'"
-                    (click)="addRole()">{{'add' | translate}}</button>
-
-            @if (selectedGroup) {
-                <button app-button color="primary" class="ml-2" [hasPermissions]="'groups:role#super-admin'"
-                        (click)="updateSelectedGroup()">{{'edit' | translate}}</button>
-            }
+                    (click)="createGroup()">
+                {{'create' | translate}}
+            </button>
         </div>
+
+        @if (selectedGroup()) {
+            <div class="form-group d-flex">
+                @if (roles().length) {
+                    <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
+                        <app-label>{{'add_role' | translate}}</app-label>
+                        <app-select [value]="selectedRole()"
+                                    (selectionChange)="selectedRole.set($event.value)">
+                            @for (role of roles(); track role.key) {
+                                <app-option [value]="role.key" [disabled]="role.disabled">{{role.name}}</app-option>
+                            }
+                        </app-select>
+                    </app-form-field>
+                }
+
+                <button app-button color="primary" appearance="raised"
+                        [hasPermissions]="'groups:role#super-admin'"
+                        (click)="addRole()">
+                    {{'add' | translate}}
+                </button>
+
+                <button app-button color="primary" class="ml-2"
+                        [hasPermissions]="'groups:role#super-admin'"
+                        (click)="updateSelectedGroup()">
+                    {{'edit' | translate}}
+                </button>
+            </div>
         }
     </div>
 
     <div class="col-12">
-        <cdk-table [dataSource]="rows" class="app-elevation-0">
-            
+        <cdk-table [dataSource]="rows()" class="app-elevation-0">
+
             <ng-container cdkColumnDef="name">
                 <cdk-header-cell *cdkHeaderCellDef>{{'name' | translate}}</cdk-header-cell>
                 <cdk-cell *cdkCellDef="let row">{{row.role | translate}}</cdk-cell>
             </ng-container>
 
-            @if (hasVisibilityFeature) {
-            <ng-container cdkColumnDef="visibility">
-                <cdk-header-cell *cdkHeaderCellDef>{{'visibility' | translate}}</cdk-header-cell>
-                <cdk-cell *cdkCellDef="let row">
-                    <div class="d-flex flex-wrap user-select-none pt-1">
-                        <app-slide-toggle 
+            @if (hasVisibilityFeature()) {
+                <ng-container cdkColumnDef="visibility">
+                    <cdk-header-cell *cdkHeaderCellDef>{{'visibility' | translate}}</cdk-header-cell>
+                    <cdk-cell *cdkCellDef="let row">
+                        <app-slide-toggle
                             [checked]="row.permissions['juicebox:visible']"
-                            (change)="toggleVisibility(row, $event.checked)"
+                            (change)="toggleVisibility(row, $event)"
                             [disabled]="!hasPermission('groups:role#super-admin')">
                         </app-slide-toggle>
-                    </div>
-                </cdk-cell>
-            </ng-container>
+                    </cdk-cell>
+                </ng-container>
             }
 
             <ng-container cdkColumnDef="permissions">
@@ -77,13 +81,13 @@
                 <cdk-cell *cdkCellDef="let row">
                     <div class="d-flex flex-wrap pt-1">
                         @for (permission of getRolePermissions(row); track permission.key) {
-                        <app-checkbox
-                            [(checked)]="row.permissions[permission.key]"
-                            [disabled]="!hasPermission('groups:role#super-admin')"
-                            (change)="updateGroupRolePermission(row)"
-                            class="mb-1 mr-1">
-                            {{permission.key}}
-                        </app-checkbox>
+                            <app-checkbox
+                                [(checked)]="row.permissions[permission.key]"
+                                [disabled]="!hasPermission('groups:role#super-admin')"
+                                (change)="updateGroupRolePermission(row)"
+                                class="mb-1 mr-1">
+                                {{permission.key}}
+                            </app-checkbox>
                         }
                     </div>
                 </cdk-cell>
@@ -92,30 +96,20 @@
             <ng-container cdkColumnDef="actions">
                 <cdk-header-cell *cdkHeaderCellDef>{{'actions' | translate}}</cdk-header-cell>
                 <cdk-cell *cdkCellDef="let row">
-                    <button app-button
+                    <button app-button appearance="icon"
                             [hasPermissions]="'groups:role#super-admin'"
-                            appearance="raised"
-                            [promiseBtn]="promiseBtn"
                             [appTooltip]="'delete' | translate"
-                            (click)="deleteRole(row);">
-                        <app-icon icon="">delete</app-icon>
+                            (click)="deleteRole(row)">
+                        <app-icon [icon]="'delete'"></app-icon>
                     </button>
                 </cdk-cell>
             </ng-container>
-            
-            <cdk-header-row *cdkHeaderRowDef="displayedColumns"></cdk-header-row>
-            <cdk-row *cdkRowDef="let row; columns: displayedColumns;"></cdk-row>
-        </cdk-table>
 
-        @if (count > itemsPerPage) {
-        <app-paginator
-            [length]="count"
-            [pageSize]="itemsPerPage"
-            [pageSizeOptions]="[5, 10, 25, 100]"
-            (page)="changePage($event, config)">
-        </app-paginator>
-        }
+            <cdk-header-row *cdkHeaderRowDef="displayedColumns()"></cdk-header-row>
+            <cdk-row *cdkRowDef="let row; columns: displayedColumns();"></cdk-row>
+        </cdk-table>
     </div>
+
     <div app-actions align="end">
         <button app-button (click)="close()">
             {{"close" | translate}}
