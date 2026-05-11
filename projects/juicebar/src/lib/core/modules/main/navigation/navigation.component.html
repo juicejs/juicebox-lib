@@ -81,7 +81,7 @@
 
     <div class="nav-divider"></div>
 
-    <!-- Organization Switcher (Google Drive-like) -->
+    <!-- Organization Switcher -->
     @if (userOrganisations().length > 1) {
       <button app-button
               class="org-switcher-btn"
@@ -93,20 +93,35 @@
     }
 
     <ng-template #orgMenu>
-      <div class="menu-panel menu-dropdown" cdkMenu>
+      <div class="menu-panel menu-dropdown org-menu" cdkMenu>
         <div class="menu-header">
           <span class="menu-title">Switch Organization</span>
         </div>
-        @for (org of userOrganisations(); track org._id) {
-          <button (click)="onOrganisationSwitch(org._id)"
-                  cdkMenuItem
-                  class="org-menu-item">
-            <div class="menu-item-content">
-              <app-icon [icon]="'business'" class="menu-item-icon"></app-icon>
-              <span class="menu-item-label">{{ org.name }}</span>
-            </div>
-          </button>
-        }
+        <div class="org-search" (click)="$event.stopPropagation()">
+          <app-icon [icon]="'search'" class="org-search-icon"></app-icon>
+          <input type="text"
+                 class="org-search-input"
+                 [value]="orgSearch()"
+                 (input)="onOrgSearch($event)"
+                 (keydown)="$event.stopPropagation()"
+                 placeholder="Search organization" />
+        </div>
+        <div class="org-list">
+          @for (org of filteredOrganisations(); track org._id) {
+            <button (click)="onOrganisationSwitch(org._id)"
+                    app-button
+                    cdkMenuItem
+                    class="org-menu-item">
+              <div class="menu-item-content">
+                <app-icon [icon]="'business'" class="menu-item-icon"></app-icon>
+                <span class="menu-item-label">{{ org.name }}</span>
+              </div>
+            </button>
+          }
+          @if (filteredOrganisations().length === 0) {
+            <div class="org-empty">No matches</div>
+          }
+        </div>
       </div>
     </ng-template>
 

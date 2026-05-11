@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, output, ChangeDetectionStrategy, signal} from '@angular/core';
+import {Component, inject, OnInit, output, ChangeDetectionStrategy, signal, computed} from '@angular/core';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
@@ -52,6 +52,12 @@ export class NavigationComponent implements OnInit {
   public userOrganisations = signal<Array<any>>([]);
   public selectedUserOrganisation: string;
   public organisationName = signal<string>('');
+  public orgSearch = signal<string>('');
+  public filteredOrganisations = computed(() => {
+    const q = this.orgSearch().trim().toLowerCase();
+    const all = this.userOrganisations();
+    return q ? all.filter(o => o.name?.toLowerCase().includes(q)) : all;
+  });
 
   private user: UserShape | null = null;
   private i18n!: MainTranslationPipe;
@@ -98,6 +104,10 @@ export class NavigationComponent implements OnInit {
       this.organisationName.set(res.name);
       this.selectedUserOrganisation = res._id;
     });
+  }
+
+  onOrgSearch($event: Event) {
+    this.orgSearch.set(($event.target as HTMLInputElement).value);
   }
 
   onOrganisationSwitch(organisationId: string) {
