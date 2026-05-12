@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, output, ChangeDetectionStrategy, signal, computed} from '@angular/core';
+import {Component, inject, OnInit, output, ChangeDetectionStrategy, signal, computed, viewChild, ElementRef} from '@angular/core';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
@@ -49,6 +49,9 @@ export class NavigationComponent implements OnInit {
   public userEmail = signal<string>('');
   public searching = signal<boolean>(false);
 
+  public locationTitle = signal<string | null>(null);
+  public breadcrumbs = signal<Array<any> | null>(null);
+
   public userOrganisations = signal<Array<any>>([]);
   public selectedUserOrganisation: string;
   public organisationName = signal<string>('');
@@ -65,13 +68,23 @@ export class NavigationComponent implements OnInit {
 
   helpTextUpdatedEventEmitter = output<any>();
 
+  readonly searchInputRef = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+
   public juicebox = inject(JuiceboxService);
   public router = inject(Router);
   public dialog = inject(DialogService);
   private themeService = inject(ThemeService);
   public theme = this.themeService.theme;
 
+  ngOnInit_breadcrumbs() {
+    this.juicebox.navigationEvent$.subscribe(event => {
+      this.locationTitle.set((event as any).location ?? null);
+      this.breadcrumbs.set((event as any).breadcrumps ?? null);
+    });
+  }
+
   async ngOnInit() {
+    this.ngOnInit_breadcrumbs();
     this.i18n = new MainTranslationPipe(this.juicebox);
     this.user = this.juicebox.getUser() as UserShape;
 
@@ -168,6 +181,18 @@ export class NavigationComponent implements OnInit {
       hasBackdrop: true,
       backdropClass: 'cdk-overlay-dark-backdrop'
     });
+  }
+
+  focusSearch() {
+    this.searchInputRef()?.nativeElement.focus();
+  }
+
+  onSearchBlur() {
+    const val = this.searchInputRef()?.nativeElement.value ?? '';
+    if (!val) {
+      this.juicebox.searchActive = false;
+      this.searching.set(false);
+    }
   }
 
   doSearch($event: Event) {

@@ -1,11 +1,5 @@
-@import '../styles/variables.scss';
-
 :host {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--color-secondary);
-  color: var(--color-secondary-contrast);
-  box-shadow: var(--shadow-md);
+  width: 100%;
 }

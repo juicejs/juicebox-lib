@@ -25,21 +25,23 @@
                    (input)="onFilterSearch(filter.key, $any($event.target).value)" />
           </div>
 
-          <button class="filter-option" type="button"
-                  (click)="onFilterSelected(filter.key, null)">
-            Clear
-          </button>
-
-          @for (option of filter.options; track option) {
+          <div class="filter-options-list">
             <button class="filter-option" type="button"
-                    (click)="onFilterSelected(filter.key, option)">
-              {{ optionLabel(option, filter) }}
+                    (click)="onFilterSelected(filter.key, null)">
+              Clear
             </button>
-          }
 
-          @if (filter.options.length === 0) {
-            <div class="filter-option disabled">No results found</div>
-          }
+            @for (option of filter.options; track option) {
+              <button class="filter-option" type="button"
+                      (click)="onFilterSelected(filter.key, option)">
+                {{ optionLabel(option, filter) }}
+              </button>
+            }
+
+            @if (filter.options.length === 0) {
+              <div class="filter-option disabled">No results found</div>
+            }
+          </div>
         </div>
       </ng-template>
     </div>

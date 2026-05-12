@@ -76,66 +76,81 @@ html.light-theme {
   --spacing-xl: 2rem;
 }
 
-// Dark theme (GitHub-inspired)
+// Dark theme (design palette)
 :root {
   // Primary colors
-  --color-primary: #0d1117;
-  --color-primary-contrast: #ffffff;
+  --color-primary: #0a0a0b;
+  --color-primary-contrast: #fafafa;
 
-  // Secondary colors (accent colors with pop)
-  --color-secondary: #ff6b35;
-  --color-secondary-light: #ff8c61;
-  --color-secondary-dark: #e85a2a;
-  --color-secondary-extra-light: #ffa06e;
-  --color-secondary-contrast: #ffffff;
+  // Secondary / accent — orange
+  --color-secondary: #f97316;
+  --color-secondary-light: #fb923c;
+  --color-secondary-dark: #ea6a0a;
+  --color-secondary-extra-light: #fdba74;
+  --color-secondary-contrast: #0a0a0b;
 
-  // Secondary colors (RGB for rgba gradients)
-  --color-secondary-rgb: 255, 107, 53;
-  --color-secondary-light-rgb: 255, 140, 97;
-  --color-secondary-dark-rgb: 232, 90, 42;
-  --color-secondary-extra-light-rgb: 255, 160, 110;
+  // Secondary (RGB for rgba gradients)
+  --color-secondary-rgb: 249, 115, 22;
+  --color-secondary-light-rgb: 251, 146, 60;
+  --color-secondary-dark-rgb: 234, 106, 10;
+  --color-secondary-extra-light-rgb: 253, 186, 116;
 
-  // Tertiary colors (blue accents like GitHub)
-  --color-tertiary: #58a6ff;
-  --color-tertiary-light: #79b8ff;
-  --color-tertiary-dark: #388bfd;
-  --color-tertiary-contrast: #0d1117;
+  // Tertiary — also orange (no blue in this design)
+  --color-tertiary: #f97316;
+  --color-tertiary-light: #fb923c;
+  --color-tertiary-dark: #ea6a0a;
+  --color-tertiary-contrast: #0a0a0b;
 
-  // Grey scale (GitHub dark palette)
-  --color-grey-50: #161b22;
-  --color-grey-100: #1c2128;
-  --color-grey-200: #21262d;
-  --color-grey-300: #30363d;
-  --color-grey-400: #484f58;
-  --color-grey-500: #6e7681;
-  --color-grey-600: #8b949e;
-  --color-grey-700: #b1bac4;
-  --color-grey-800: #c9d1d9;
-  --color-grey-900: #f0f6fc;
+  // Zinc grey scale
+  --color-grey-50: #18181b;
+  --color-grey-100: #1c1c1f;
+  --color-grey-200: #27272a;
+  --color-grey-300: #3f3f46;
+  --color-grey-400: #52525b;
+  --color-grey-500: #71717a;
+  --color-grey-600: #a1a1aa;
+  --color-grey-700: #d4d4d8;
+  --color-grey-800: #e4e4e7;
+  --color-grey-900: #fafafa;
 
-  // Semantic colors (adjusted for dark theme)
-  --color-success: #3fb950;
-  --color-warning: #d29922;
-  --color-error: #f85149;
-  --color-info: #58a6ff;
+  // Semantic colors
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-error: #fb7185;
+  --color-info: #60a5fa;
 
   // Text colors
-  --color-text-primary: #c9d1d9;
-  --color-text-secondary: #8b949e;
-  --color-text-disabled: #484f58;
+  --color-text-primary: #e4e4e7;
+  --color-text-secondary: #a1a1aa;
+  --color-text-disabled: #52525b;
 
   // Border colors
-  --color-border: #30363d;
-  --color-border-light: #21262d;
-  --color-border-dark: #484f58;
+  --color-border: #27272a;
+  --color-border-light: #1f1f23;
+  --color-border-dark: #3f3f46;
 
   // Background colors
-  --color-background: #0d1117;
-  --color-background-secondary: #161b22;
+  --color-background: #0a0a0b;
+  --color-background-secondary: #0c0c0d;
+  --background-transparent: rgba(12, 12, 13, 0.85);
 
-  // Shadows (adjusted for dark theme)
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 8px 16px rgba(0, 0, 0, 0.6);
+  // Shadows
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.6);
+
+  // Border radius
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-full: 50%;
+
+  // Spacing
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
 }

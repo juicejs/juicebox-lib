@@ -1,77 +1,78 @@
 <app-toolbar class="modern-navigation">
 
-  <!-- Center Section - Enhanced Search -->
-  <div class="search-section">
-    <div class="search-container">
-      <button app-button appearance="icon" class="search-icon-btn">
-        <app-icon [icon]="'search'" class="search-icon"></app-icon>
-      </button>
-      <input type="text"
-             class="search-input"
-             placeholder="Search"
-             debounceKeyUp
-             [debounceTime]="500"
-             (onEvent)="doSearch($event)">
-      @if (false) {
-        <button app-button appearance="icon" class="search-options-btn">
-          <app-icon [icon]="'tune'"></app-icon>
-        </button>
+  <!-- Left: breadcrumbs -->
+  @if (locationTitle()) {
+    <div class="nav-breadcrumbs">
+      @if (breadcrumbs()?.length) {
+        @for (crumb of breadcrumbs(); track $index) {
+          <span class="crumb-dim">{{ crumb }}</span>
+          <span class="crumb-sep">/</span>
+        }
       }
+      <span class="crumb-active">{{ locationTitle() }}</span>
     </div>
-  </div>
+  }
 
-  <!-- Right Section - User Actions -->
+  <!-- Center/Right: search + actions -->
   <div class="nav-right-section">
+
+    <!-- Command-palette search button -->
+    <button class="cmd-search-btn" (click)="focusSearch()">
+      <app-icon [icon]="'search'" class="cmd-icon"></app-icon>
+      <span class="cmd-placeholder">Search or jump to…</span>
+      <span class="cmd-kbd">⌘K</span>
+    </button>
+
+    <!-- Hidden real search input -->
+    <input #searchInput
+           type="text"
+           class="search-input-hidden"
+           placeholder="Search"
+           debounceKeyUp
+           [debounceTime]="500"
+           (onEvent)="doSearch($event)"
+           (blur)="onSearchBlur()">
 
     <div class="action-cluster">
 
-      <!-- Help Button -->
+      <!-- Help -->
       @if (fileInfo() || this.juicebox.hasPermission('juicebox:role#edit-help-document')) {
         <button app-button
                 appearance="icon"
-                class="action-button help-btn"
+                class="icon-btn"
                 (click)="getHelp()"
                 [appTooltip]="'help' | translate">
           <app-icon [icon]="'help_outline'"></app-icon>
         </button>
       }
 
-      <!-- Language Switcher -->
+      <!-- Language -->
       @if (languages().length > 1) {
         <button app-button
                 appearance="icon"
-                class="action-button language-btn"
+                class="icon-btn"
                 [cdkMenuTriggerFor]="languageMenu"
                 [appTooltip]="'change_language' | translate">
           <app-icon [icon]="'language'"></app-icon>
         </button>
       }
 
-    <ng-template #languageMenu>
-      <div class="menu-panel menu-dropdown" cdkMenu>
-        <div class="menu-header">
-          <span class="menu-title">Language</span>
-        </div>
-        <div class="languages-listing">
+      <ng-template #languageMenu>
+        <div class="nav-menu-panel" cdkMenu>
+          <div class="nav-menu-header">Language</div>
           @for (language of languages(); track language.code) {
-            <button (click)="changeLanguage(language)"
-                    app-button
-                    cdkMenuItem
-                    class="language-menu-item">
-              <div class="menu-item-content">
-                <app-icon [icon]="'language'" class="menu-item-icon"></app-icon>
-                <span class="menu-item-label">{{language.name | translate}}</span>
-              </div>
+            <button cdkMenuItem class="nav-menu-item" (click)="changeLanguage(language)">
+              <app-icon [icon]="'language'" class="nav-menu-item-icon"></app-icon>
+              <span>{{language.name | translate}}</span>
             </button>
           }
         </div>
-      </div>
-    </ng-template>
+      </ng-template>
 
-      <!-- Theme Toggle -->
+      <!-- Theme toggle -->
       <button app-button
               appearance="icon"
-              class="action-button theme-btn"
+              class="icon-btn"
               (click)="toggleTheme()"
               [appTooltip]="(theme() === 'light' ? 'switch_to_dark' : 'switch_to_light') | translate">
         <app-icon [icon]="theme() === 'light' ? 'dark_mode' : 'light_mode'"></app-icon>
@@ -81,80 +82,70 @@
 
     <div class="nav-divider"></div>
 
-    <!-- Organization Switcher -->
+    <!-- Org switcher -->
     @if (userOrganisations().length > 1) {
       <button app-button
-              class="org-switcher-btn"
+              class="org-btn"
               [cdkMenuTriggerFor]="orgMenu">
         <app-icon [icon]="'business'" class="org-icon"></app-icon>
         <span class="org-label">{{ organisationName() }}</span>
-        <app-icon [icon]="'keyboard_arrow_down'" class="dropdown-arrow"></app-icon>
+        <app-icon [icon]="'keyboard_arrow_down'" class="org-chevron"></app-icon>
       </button>
     }
 
     <ng-template #orgMenu>
-      <div class="menu-panel menu-dropdown org-menu" cdkMenu>
-        <div class="menu-header">
-          <span class="menu-title">Switch Organization</span>
-        </div>
-        <div class="org-search" (click)="$event.stopPropagation()">
+      <div class="nav-menu-panel org-menu-panel" cdkMenu>
+        <div class="nav-menu-header">Switch Organization</div>
+        <div class="org-search-row" (click)="$event.stopPropagation()">
           <app-icon [icon]="'search'" class="org-search-icon"></app-icon>
           <input type="text"
                  class="org-search-input"
                  [value]="orgSearch()"
                  (input)="onOrgSearch($event)"
                  (keydown)="$event.stopPropagation()"
-                 placeholder="Search organization" />
+                 placeholder="Search…" />
         </div>
-        <div class="org-list">
+        <div class="nav-menu-list">
           @for (org of filteredOrganisations(); track org._id) {
-            <button (click)="onOrganisationSwitch(org._id)"
-                    app-button
-                    cdkMenuItem
-                    class="org-menu-item">
-              <div class="menu-item-content">
-                <app-icon [icon]="'business'" class="menu-item-icon"></app-icon>
-                <span class="menu-item-label">{{ org.name }}</span>
-              </div>
+            <button cdkMenuItem class="nav-menu-item" (click)="onOrganisationSwitch(org._id)">
+              <app-icon [icon]="'business'" class="nav-menu-item-icon"></app-icon>
+              <span>{{ org.name }}</span>
             </button>
           }
           @if (filteredOrganisations().length === 0) {
-            <div class="org-empty">No matches</div>
+            <div class="nav-menu-empty">No matches</div>
           }
         </div>
       </div>
     </ng-template>
 
-    <!-- User Profile -->
+    <!-- User profile -->
     <button app-button
-            class="profile-button"
-            [cdkMenuTriggerFor]="profileMenu"
-            [appTooltip]="'user_profile' | translate">
-      <div class="user-avatar">
-        <app-icon [icon]="'account_circle'" class="avatar-icon"></app-icon>
+            class="profile-btn"
+            [cdkMenuTriggerFor]="profileMenu">
+      <div class="profile-avatar">
+        <app-icon [icon]="'account_circle'" class="profile-avatar-icon"></app-icon>
       </div>
     </button>
 
     <ng-template #profileMenu>
-      <div class="menu-panel menu-dropdown profile-menu" cdkMenu>
+      <div class="nav-menu-panel profile-menu-panel" cdkMenu>
         <div class="profile-menu-header">
-          <div class="profile-info">
-            <app-icon [icon]="'account_circle'" class="profile-avatar"></app-icon>
-            <div class="profile-details">
-              <div class="profile-name">{{ userName() }}</div>
-              <div class="profile-email">{{ userEmail() || 'user@example.com' }}</div>
-            </div>
+          <app-icon [icon]="'account_circle'" class="profile-menu-avatar"></app-icon>
+          <div>
+            <div class="profile-menu-name">{{ userName() }}</div>
+            <div class="profile-menu-email">{{ userEmail() }}</div>
           </div>
         </div>
         <app-divider></app-divider>
-        <div class="user-buttons">
-          <button app-button cdkMenuItem (click)="goToUserProfile()" class="profile-menu-item">
-            <app-icon [icon]="'person'" class="menu-item-icon"></app-icon>
-            <span class="menu-item-label">{{'user_profile' | translate}}</span>
+        <div class="nav-menu-list">
+          <button cdkMenuItem class="nav-menu-item" (click)="goToUserProfile()">
+            <app-icon [icon]="'person'" class="nav-menu-item-icon"></app-icon>
+            <span>{{'user_profile' | translate}}</span>
           </button>
-          <button app-button cdkMenuItem (click)="logout()" class="profile-menu-item logout-item">
-            <app-icon [icon]="'logout'" class="menu-item-icon"></app-icon>
-            <span class="menu-item-label">{{'logout' | translate}}</span>
+          <button cdkMenuItem class="nav-menu-item logout-item" (click)="logout()">
+            <app-icon [icon]="'logout'" class="nav-menu-item-icon"></app-icon>
+            <span>{{'logout' | translate}}</span>
           </button>
         </div>
       </div>

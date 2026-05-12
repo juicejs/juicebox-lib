@@ -1,16 +1,50 @@
-<!-- Action buttons now handled by main component actionButtons system -->
+<div class="users-page">
 
-<div class="parent">
+  <!-- Page header -->
+  <div class="page-head">
+    <div class="page-head-left">
+      <h1 class="page-title">{{ 'users' | translate }}</h1>
+      <p class="page-sub">{{ 'user_list' | translate }}</p>
+    </div>
+    <div class="page-head-actions">
+      @for (button of juicebox.actionButtons; track button) {
+        <button (click)="button.callAction()"
+                [promiseBtn]="button.promise"
+                [disabled]="button.disabled"
+                [hasPermissions]="button.permissions ?? null"
+                [hasPermissionsHide]="button.permissionsHide ?? null"
+                class="head-btn"
+                [class.head-btn-primary]="button.type === 'btn-primary'">
+          <app-icon [icon]="getButtonIcon(button.icon)"></app-icon>
+          {{ button.title }}
+        </button>
+      }
+    </div>
+  </div>
 
-  <filter-bar
-    [filters]="filterConfigs()"
-    (filterChanged)="onFilterChanged($event)"
-    (filterSearched)="onFilterSearched($event)">
-  </filter-bar>
+  <!-- Filter chips + advanced filters -->
+  <div class="filter-section">
+    <div class="filter-row">
+      <div class="status-chips">
+        @for (chip of statusChips; track chip.id) {
+          <button class="status-chip"
+                  [class.active]="activeStatusFilter() === chip.id"
+                  (click)="onStatusFilter(chip.id)">
+            {{ chip.label }}
+          </button>
+        }
+      </div>
 
+      <filter-bar
+        [filters]="filterConfigs()"
+        (filterChanged)="onFilterChanged($event)"
+        (filterSearched)="onFilterSearched($event)">
+      </filter-bar>
+    </div>
+  </div>
 
-  <div class="w-100 p-0">
-
+  <!-- Table -->
+  <div class="table-wrap">
     <app-data-table
       [rows]="rowsSig()"
       [columns]="tableColumns"
@@ -65,22 +99,31 @@
         </div>
       </ng-template>
 
+      <ng-template [cellDef]="'firstname'" let-row>
+        <div class="member-cell">
+          <div class="member-avatar" [style.background]="row._avatarBg ?? '#27272a'" [style.color]="row._avatarFg ?? '#a1a1aa'">
+            {{ (row.firstname?.[0] ?? '') + (row.lastname?.[0] ?? '') | uppercase }}
+          </div>
+          <div class="member-info">
+            <div class="member-name">{{ row.firstname }}</div>
+          </div>
+        </div>
+      </ng-template>
+
       <ng-template [cellDef]="'email'" let-row>
-        <span class="hidden-email">{{row.email}}</span>
+        <span class="member-email">{{ row.email }}</span>
       </ng-template>
 
       <ng-template [cellDef]="'active'" let-row>
-        @if (row.active == false) {
-          <app-icon [icon]="'block'" class="status-icon inactive"></app-icon>
-        }
-        @if (row.active == true) {
-          <app-icon [icon]="'check_circle'" class="status-icon active"></app-icon>
-        }
+        <span class="status-badge" [class.status-active]="row.active" [class.status-inactive]="!row.active">
+          <span class="status-dot"></span>
+          {{ row.active ? 'Active' : 'Inactive' }}
+        </span>
       </ng-template>
 
       <ng-template [cellDef]="'roles_count'" let-row>
         <span class="roles-count">
-          {{row.roles_count}}
+          {{ row.roles_count }}
           @if (!row.roles_count) {
             <app-icon [icon]="'warning'" class="warning-icon"></app-icon>
           }
@@ -89,16 +132,18 @@
 
       <ng-template [cellDef]="'groups'" let-row>
         @if (row.hasGroups) {
-          <span [appTooltip]="row.groupsTooltip" class="has-popover">
-            {{ row.groupsLabel }}
-          </span>
+          <span [appTooltip]="row.groupsTooltip" class="groups-label">{{ row.groupsLabel }}</span>
         } @else {
-          <span class="grey-italic">{{ 'no_groups' | translate }}</span>
+          <span class="dim-text">—</span>
         }
       </ng-template>
 
       <ng-template [cellDef]="'lastLogin'" let-row>
-        {{row.lastLogin | timeAgo}}
+        <span [class.dim-text]="!row.lastLogin">{{ row.lastLogin ? (row.lastLogin | timeAgo) : '—' }}</span>
+      </ng-template>
+
+      <ng-template [cellDef]="'loginCount'" let-row>
+        <span [class.dim-text]="!row.loginCount">{{ row.loginCount || '—' }}</span>
       </ng-template>
 
       <ng-template [cellDef]="'actions'" let-row>
@@ -125,6 +170,6 @@
       </ng-template>
 
     </app-data-table>
-
   </div>
+
 </div>

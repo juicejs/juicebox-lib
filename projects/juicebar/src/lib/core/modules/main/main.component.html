@@ -1,118 +1,59 @@
 <div class="main-container-new-ui">
+
+  <div class="main-content">
+
     @if (navigationVisible()) {
-        <app-navigation (helpTextUpdatedEventEmitter)="helpTextUpdated()"></app-navigation>
+      <app-sidebar></app-sidebar>
     }
 
-    <div class="main-content">
-        @if (navigationVisible()) {
-            <app-sidebar></app-sidebar>
-        }
-        <div class="content-container">
-        <div class="flex-column navigation-container next" [style.display]="juicebox.searchActive ? 'none' : 'flex'">
-            @if (navigationVisible() && headerCollapsed()) {
-                <button app-button
-                        appearance="icon"
-                        class="floating-expand-btn"
-                        (click)="toggleHeaderCollapse()"
-                        [appTooltip]="'Expand header'">
-                    <app-icon [icon]="'expand_more'"></app-icon>
-                </button>
-            }
-            @if (navigationVisible()) {
-                <div class="location-container" [class.collapsed]="headerCollapsed()">
-                    <div class="location ellipsis">
-                        <div class="title">
-                            <div class="d-flex align-center">
-                                <button app-button appearance="icon" class="back-nav-btn" (click)="goTo(locationLink())">
-                                    <app-icon [icon]="'keyboard_arrow_left'"></app-icon>
-                                </button>
-                                <div class="label">{{locationTitle()}} <small>{{locationSubject()}}</small></div>
-                            </div>
-                        </div>
-                    </div>
+    <div class="content-column">
 
-                    @if (text()) {
-                        <button type="button"
-                                app-button
-                                appearance="icon"
-                                class="question-mark"
-                                [appTooltip]="text()"
-                                (click)="openHelpModal()">
-                            ?
-                        </button>
-                    }
+      @if (navigationVisible()) {
+        <app-navigation (helpTextUpdatedEventEmitter)="helpTextUpdated()"></app-navigation>
+      }
 
-                    <div class="button-bar">
-                        @if (juicebox.actionButtons && juicebox.actionButtons.length) {
-                            @for (button of juicebox.actionButtons; track button) {
-                                <button (click)="button.callAction()"
-                                        [promiseBtn]="button.promise"
-                                        [disabled]="button.disabled"
-                                        [hasPermissions]="button.permissions ? button.permissions : null"
-                                        [hasPermissionsHide]="button.permissionsHide ? button.permissionsHide : null"
-                                        app-button
-                                        appearance="raised"
-                                        [color]="getButtonColor(button.type)"
-                                        class="action-button">
-                                    <app-icon [icon]="getButtonIcon(button.icon)"></app-icon>
-                                    {{button.title}}
-                                </button>
-                            }
-                        }
-                        <button app-button
-                                appearance="icon"
-                                class="collapse-btn"
-                                (click)="toggleHeaderCollapse()"
-                                [appTooltip]="headerCollapsed() ? 'Expand header' : 'Collapse header'">
-                            <app-icon [icon]="headerCollapsed() ? 'expand_more' : 'expand_less'"></app-icon>
-                        </button>
-                    </div>
-                </div>
-            }
-            <div class="router-container">
-                <router-outlet></router-outlet>
+      <div class="content-container">
+
+        <!-- Normal view -->
+        <div class="navigation-container" [style.display]="juicebox.searchActive ? 'none' : 'flex'">
+          <div class="router-container">
+            <router-outlet></router-outlet>
+          </div>
+        </div>
+
+        <!-- Search results -->
+        <div class="navigation-container searchResults" [style.display]="juicebox.searchActive ? 'block' : 'none'">
+          <div class="search-container">
+            <div class="title">
+              <div class="d-flex align-center">
+                <div class="label">{{ "search_results" | translate }}</div>
+              </div>
             </div>
-        </div>
+          </div>
 
-        <div class="navigation-container next searchResults" [style.display]="juicebox.searchActive ? 'block' : 'none'">
-            <div class="search-container">
-                <div class="location ellipsis">
-                    <div class="title">
-                        <div class="d-flex align-center">
-                            <button app-button appearance="icon" class="back-nav-btn">
-                                <app-icon [icon]="'keyboard_arrow_left'"></app-icon>
-                            </button>
-                            <div class="label">{{ "search_results" | translate }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            @if (juicebox.searchResults && juicebox.searchResults.length) {
-                <div class="parent">
-                    @for (module of juicebox.searchResults; track module) {
-                        <div class="jc-module">
-                            <div class="title">
-                                <i class="fas" [class]="module.icon"></i> {{module.name}}
-                                <small>
-                                    (found {{module.results && module.results.length ? module.results.length : '0'}} matching items)
-                                </small>
-                            </div>
-                            <div class="results">
-                                @for (result of module.results; track result) {
-                                    <div class="result" (click)="openResult(result)">
-                                        <div class="name">{{ result.title }}</div>
-                                        <div class="details">{{ result.details }}</div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
+          @if (juicebox.searchResults && juicebox.searchResults.length) {
+            <div class="parent">
+              @for (module of juicebox.searchResults; track module) {
+                <div class="jc-module">
+                  <div class="title">
+                    <i class="fas" [class]="module.icon"></i> {{module.name}}
+                    <small>(found {{module.results?.length ?? 0}} matching items)</small>
+                  </div>
+                  <div class="results">
+                    @for (result of module.results; track result) {
+                      <div class="result" (click)="openResult(result)">
+                        <div class="name">{{ result.title }}</div>
+                        <div class="details">{{ result.details }}</div>
+                      </div>
                     }
+                  </div>
                 </div>
-            }
-        </div>
+              }
+            </div>
+          }
         </div>
 
-
+      </div>
     </div>
+  </div>
 </div>

@@ -3,36 +3,44 @@
 
   <app-sidenav opened mode="side" class="modern-sidebar">
 
-    <!-- Logo Section -->
+    <!-- Logo + collapse button in header -->
     <div class="sidebar-header">
       <img ngSrc="assets/juicebar/images/logo_small.png"
            alt="Logo"
            width="120" height="120"
            class="brand-logo"
            [class.vertical]="juicebox.collapsed">
+      @if (!juicebox.collapsed) {
+        <span class="logo-text">Juicebox</span>
+      }
+      <button class="header-collapse-btn"
+              (click)="collapse()"
+              [appTooltip]="juicebox.collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+              appTooltipPosition="right">
+        <app-icon [icon]="juicebox.collapsed ? 'chevron_right' : 'chevron_left'"></app-icon>
+      </button>
     </div>
 
-    <!-- Navigation Menu with Drag & Drop -->
-    <div class="sidebar-menu" 
+    <!-- Navigation Menu -->
+    <div class="sidebar-menu"
          cdkDropList
          (cdkDropListDropped)="onMenuDrop($event)"
          [cdkDropListDisabled]="!juicebox.getOptions().sidebarPermissions">
-         
+
       <div class="menu-section">
         @for (menuItem of menu(); track trackByRole($index, menuItem)) {
           <div class="menu-item-container"
-             cdkDrag
-             [cdkDragDisabled]="!juicebox.getOptions().sidebarPermissions"
-             (cdkDragStarted)="onMenuDragStarted()">
+               cdkDrag
+               [cdkDragDisabled]="!juicebox.getOptions().sidebarPermissions"
+               (cdkDragStarted)="onMenuDragStarted()">
 
-          <div class="menu-item"
-               [class.active]="isActiveRoute(menuItem.router)"
-               [class.dragging]="isDragging()"
-               (click)="menuItemClicked($event, menuItem.router)"
-               [appTooltip]="juicebox.collapsed ? menuItem.label : ''"
-               appTooltipPosition="right">
+            <div class="menu-item"
+                 [class.active]="isActiveRoute(menuItem.router)"
+                 [class.dragging]="isDragging()"
+                 (click)="menuItemClicked($event, menuItem.router)"
+                 [appTooltip]="juicebox.collapsed ? menuItem.label : ''"
+                 appTooltipPosition="right">
 
-            <div class="menu-item-content">
               <div class="menu-icon-container">
                 @if (!isDragging()) {
                   <app-icon class="menu-icon" [icon]="getMatIcon(menuItem.icon)"></app-icon>
@@ -41,27 +49,28 @@
                   <app-icon class="drag-handle" [icon]="'drag_indicator'"></app-icon>
                 }
               </div>
-
               <span class="menu-label" [class.collapsed]="juicebox.collapsed">
-                {{menuItem.label}}
+                {{ menuItem.label }}
               </span>
             </div>
-          </div>
           </div>
         }
       </div>
     </div>
 
-    <!-- Sidebar Footer -->
+    <!-- Footer: user chip -->
     <div class="sidebar-footer">
-      <button app-button
-              appearance="icon"
-              class="collapse-btn"
-              (click)="collapse()"
-              [appTooltip]="juicebox.collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
-              appTooltipPosition="right">
-        <app-icon class="collapse-icon" [icon]="juicebox.collapsed ? 'menu_open' : 'menu'"></app-icon>
-      </button>
+      <div class="user-chip"
+           [appTooltip]="juicebox.collapsed ? userName() : ''"
+           appTooltipPosition="right">
+        <div class="user-avatar">{{ userName() | slice:0:2 | uppercase }}</div>
+        @if (!juicebox.collapsed) {
+          <div class="user-info">
+            <div class="user-name">{{ userName() }}</div>
+            <div class="user-meta">{{ user()?.email }}</div>
+          </div>
+        }
+      </div>
     </div>
 
   </app-sidenav>
@@ -82,34 +91,32 @@
              class="file-input"/>
 
       @if (imageChangedEvent()) {
-      <div class="cropper-section">
-        <image-cropper
-          [imageChangedEvent]="imageChangedEvent()"
-          [maintainAspectRatio]="true"
-          [aspectRatio]="1"
-          [resizeToWidth]="128"
-          [resizeToHeight]="128"
-          [roundCropper]="true"
-          format="png"
-          (imageCropped)="imageCropped($event)">
-        </image-cropper>
-      </div>
+        <div class="cropper-section">
+          <image-cropper
+            [imageChangedEvent]="imageChangedEvent()"
+            [maintainAspectRatio]="true"
+            [aspectRatio]="1"
+            [resizeToWidth]="128"
+            [resizeToHeight]="128"
+            [roundCropper]="true"
+            format="png"
+            (imageCropped)="imageCropped($event)">
+          </image-cropper>
+        </div>
       }
 
       @if (croppedImage()) {
-      <div class="preview-section">
-        <div class="user-logo">
-          <img [src]="croppedImage()" class="user-placeholder" alt="Profile Preview" />
+        <div class="preview-section">
+          <div class="user-logo">
+            <img [src]="croppedImage()" class="user-placeholder" alt="Profile Preview" />
+          </div>
         </div>
-      </div>
       }
     </div>
   </app-dialog-content>
 
   <app-dialog-actions align="end">
-    <button app-button (click)="modal.close()">
-      {{'cancel' | translate}}
-    </button>
+    <button app-button (click)="modal.close()">{{'cancel' | translate}}</button>
     <button app-button
             appearance="raised"
             color="primary"

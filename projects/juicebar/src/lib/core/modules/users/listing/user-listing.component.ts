@@ -45,6 +45,7 @@ export class UserListingComponent extends ListingComponent implements OnInit {
 
     protected readonly sortSig = signal<ISort>({ dir: 'asc', prop: 'lastname' });
     protected readonly filterSig = signal<Array<ISearchTerm>>([]);
+    protected readonly activeStatusFilter = signal<'all' | 'active' | 'inactive' | 'admins'>('all');
     i18n: UserTranslationPipe;
     protected readonly count = signal<number>(0);
     protected readonly rowsSig = signal<Array<any>>([]);
@@ -77,7 +78,22 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     protected readonly filterConfigs = signal<FilterConfig[]>([]);
 
     actionButtons: Array<ActionButton> = [];
-    displayedColumns: string[] = ['firstname', 'lastname', 'email', 'active', 'roles_count', 'groups', 'lastLogin', 'loginCount', 'actions'];
+
+    readonly statusChips: Array<{ id: 'all' | 'active' | 'inactive' | 'admins', label: string }> = [
+        { id: 'all',      label: 'All' },
+        { id: 'active',   label: 'Active' },
+        { id: 'inactive', label: 'Inactive' },
+        { id: 'admins',   label: 'Admins' },
+    ];
+
+    private static readonly avatarPalette = [
+        { bg: '#3b2a1f', fg: '#f59e0b' },
+        { bg: '#1a1f3b', fg: '#a78bfa' },
+        { bg: '#1f2a3b', fg: '#60a5fa' },
+        { bg: '#1f3b2a', fg: '#34d399' },
+        { bg: '#3b1f2a', fg: '#fb7185' },
+        { bg: '#3b3a1f', fg: '#facc15' },
+    ];
 
     tableColumns: ColumnConfig[] = [
         { key: 'firstname',   label: '', sortable: true },
@@ -88,7 +104,7 @@ export class UserListingComponent extends ListingComponent implements OnInit {
         { key: 'groups',      label: '', width: '180px' },
         { key: 'lastLogin',   label: '', width: '140px', sortable: true },
         { key: 'loginCount',  label: '', width: '100px', sortable: true },
-        { key: 'actions',     label: '', width: '140px', align: 'center', ellipsis: false }
+        { key: 'actions',     label: '', width: '100px', align: 'center', ellipsis: false },
     ];
 
     public usersService = inject(UsersService);
@@ -172,12 +188,12 @@ export class UserListingComponent extends ListingComponent implements OnInit {
             return false;
 
         this.getLoginData(result.payload.items);
-
         this.rowsSig.set(result.payload.items);
         this.count.set(result.payload.count);
     }
 
     getLoginData(users: Array<any>) {
+        const palette = UserListingComponent.avatarPalette;
         for (const user of users) {
             if (user.attributes?.shopLoginCount) {
                 user.loginCount = user.loginCount ? user.loginCount + user.attributes.shopLoginCount : user.attributes.shopLoginCount;
@@ -194,6 +210,11 @@ export class UserListingComponent extends ListingComponent implements OnInit {
             user.groupsLabel = groupList.join(', ');
             user.groupsTooltip = groupList.join('\n');
             user.hasGroups = groupList.length > 0 && !!groupList[0]?.length;
+
+            // Avatar color — stable per user, computed once
+            const code = ((user.firstname?.charCodeAt(0) ?? 0) + (user.lastname?.charCodeAt(0) ?? 0)) % palette.length;
+            user._avatarBg = palette[code].bg;
+            user._avatarFg = palette[code].fg;
         }
     }
 
@@ -217,6 +238,25 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     async onSort(event: SortState) {
         this.sortSig.set({ prop: event.prop, dir: event.dir });
         this.pageSig.set(1);
+        await this.fetchUsers();
+    }
+
+    async onStatusFilter(status: 'all' | 'active' | 'inactive' | 'admins') {
+        this.activeStatusFilter.set(status);
+        this.pageSig.set(1);
+
+        // Remove existing active/roles filters set by this method
+        let base = this.filterSig().filter(v => v.property !== 'active' && v.property !== 'admin');
+
+        if (status === 'active') {
+            base = [...base, { language: false, fullText: false, property: 'active', term: 'true' }];
+        } else if (status === 'inactive') {
+            base = [...base, { language: false, fullText: false, property: 'active', term: 'false' }];
+        } else if (status === 'admins') {
+            base = [...base, { language: false, fullText: true, property: 'admin', term: 'true' }];
+        }
+
+        this.filterSig.set(base);
         await this.fetchUsers();
     }
 
@@ -413,6 +453,17 @@ export class UserListingComponent extends ListingComponent implements OnInit {
         }
     }
 
+
+    getButtonIcon(faIcon: string): string {
+        const iconMap: Record<string, string> = {
+            'fa-plus-circle': 'add_circle', 'fa-plus': 'add', 'fa-edit': 'edit',
+            'fa-trash': 'delete', 'fa-download': 'download', 'fa-upload': 'upload',
+            'fa-save': 'save', 'fa-search': 'search', 'fa-filter': 'filter_list',
+            'fa-user': 'person', 'fa-users': 'group', 'fa-cog': 'settings',
+        };
+        const clean = faIcon?.startsWith('fa-') ? faIcon : `fa-${faIcon}`;
+        return iconMap[clean] || 'add';
+    }
 
     async openModalToLoginAsAnotherUser(user: User) {
         const config = await this.configurationService.getByKey('juicebox');
