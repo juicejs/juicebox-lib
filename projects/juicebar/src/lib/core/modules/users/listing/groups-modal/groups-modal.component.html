@@ -69,7 +69,7 @@
                     <cdk-cell *cdkCellDef="let row">
                         <app-slide-toggle
                             [checked]="row.permissions['juicebox:visible']"
-                            (change)="toggleVisibility(row, $event)"
+                            (toggled)="toggleVisibility(row, $event)"
                             [disabled]="!hasPermission('groups:role#super-admin')">
                         </app-slide-toggle>
                     </cdk-cell>

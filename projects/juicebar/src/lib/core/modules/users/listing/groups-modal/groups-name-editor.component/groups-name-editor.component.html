@@ -31,7 +31,7 @@
             <div [hasPermissionsHide]="'superAdmin:role#read'" class="full-width d-flex align-center">
                 <app-slide-toggle
                     [checked]="!!groupForm.controls['superAdmin'].value"
-                    (change)="groupForm.controls['superAdmin'].setValue($event); enable = $event">
+                    (toggled)="groupForm.controls['superAdmin'].setValue($event); enable = $event">
                     {{'superAdminEdit' | translate}}
                 </app-slide-toggle>
             </div>

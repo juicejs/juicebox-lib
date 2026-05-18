@@ -1,17 +1,19 @@
 import { Directive, OnDestroy, effect, inject, input, signal } from '@angular/core';
 import { Subscription, Observable, isObservable, from } from 'rxjs';
 import { finalize } from 'rxjs/operators';
+import { ButtonComponent } from '../../../ui-components/button/button.component';
 
 @Directive({
   selector: '[promiseBtn]',
   host: {
     '[class.app-button-loading]': 'isLoading()',
-    '[disabled]': 'isLoading() || null',
+    '[disabled]': 'isLoading() || button?.disabled() || null',
     '[attr.aria-busy]': 'isLoading()',
   }
 })
 export class PromiseButtonDirective implements OnDestroy {
   private subscription?: Subscription;
+  protected readonly button = inject(ButtonComponent, { optional: true });
   protected readonly isLoading = signal(false);
 
   promiseBtn = input<Promise<any> | Observable<any> | null>(null);

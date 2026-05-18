@@ -5,11 +5,11 @@
              [class.has-error]="!form.controls['firstname'].valid && form.controls['firstname'].touched">
             <app-form-field appearance="outline" class="w-100">
                 <app-label>{{"salutation" | translate}}</app-label>
-                <select appInput formControlName="salutation">
+                <app-select formControlName="salutation">
                     @for (salutation of juicebox.getSalutations(); track salutation.key) {
-                        <option [value]="salutation.key">{{salutation.name}}</option>
+                        <app-option [value]="salutation.key">{{salutation.name}}</app-option>
                     }
-                </select>
+                </app-select>
             </app-form-field>
             @if (form.controls['salutation'].hasError('required') && form.controls['salutation'].touched) {
                 <div class="alert alert-danger">{{"include_salutation" | translate}}</div>
@@ -48,11 +48,11 @@
         <div class="form-group">
             <app-form-field appearance="outline" class="w-100">
                 <app-label>{{"language" | translate}}</app-label>
-                <select appInput formControlName="language">
+                <app-select formControlName="language">
                     @for (language of languages(); track language.code) {
-                        <option [value]="language.code">{{language.name}}</option>
+                        <app-option [value]="language.code">{{language.name}}</app-option>
                     }
-                </select>
+                </app-select>
             </app-form-field>
         </div>
 
@@ -84,7 +84,7 @@
                     <div class="d-flex align-center">
                         <app-slide-toggle
                             [checked]="!!form.controls['active'].value"
-                            (change)="form.controls['active'].setValue($event)"
+                            (toggled)="form.controls['active'].setValue($event)"
                             class="mr-2">
                         </app-slide-toggle>
                         <span>{{"active" | translate}}</span>
@@ -93,7 +93,7 @@
                         <div class="d-flex align-center">
                             <app-slide-toggle
                                 [checked]="!!form.controls['admin'].value"
-                                (change)="form.controls['admin'].setValue($event)"
+                                (toggled)="form.controls['admin'].setValue($event)"
                                 class="mr-2">
                             </app-slide-toggle>
                             <span>{{"admin" | translate}}</span>
@@ -126,23 +126,19 @@
             </div>
 
             @if (pwForm.controls['password'].errors && pwForm.controls['password'].touched) {
-                <div class="form-control-feedback alert alert-danger">
-                    @if (pwForm.controls['password'].errors.required) {
-                        <div>{{"pass_required" | translate}}</div>
-                    }
-                    @if (pwForm.controls['password'].errors.password) {
-                        <div>{{"pass_regex_error" | translate}}</div>
-                    }
-                </div>
+                @if (pwForm.controls['password'].errors.required) {
+                    <app-error>{{"pass_required" | translate}}</app-error>
+                }
+                @if (pwForm.controls['password'].errors.password) {
+                    <app-error>{{"pass_regex_error" | translate}}</app-error>
+                }
             }
 
             @if (pwForm.errors?.['mismatch'] && pwForm.controls['repeatPassword'].touched) {
-                <div class="form-control-feedback alert alert-danger">
-                    {{"pass_not_same" | translate}}
-                </div>
+                <app-error>{{"pass_not_same" | translate}}</app-error>
             }
 
-            <div class="d-flex mb-5" style="margin-bottom: 3rem;">
+            <div class="d-flex mb-5" style="margin-bottom: 3rem; margin-top: 12px; gap: 8px;">
                 <div class="d-flex flex-column text-center">
                     <button app-button appearance="raised" color="primary"
                             [hasPermissions]="'users:role#updated|update'"
@@ -152,7 +148,7 @@
                         <span class="m-2" style="user-select: all">{{randomPassword()}}</span>
                     }
                 </div>
-                <button app-button appearance="raised" color="primary" class="ml-auto mb-auto" [promiseBtn]="updatePromise()"
+                <button app-button appearance="raised" color="primary" class="ml-auto mb-auto" [promiseBtn]="passwordPromise()"
                         [hasPermissions]="'users:role#updated|update'"
                         (click)="changePassword()">{{"pass_save" | translate}}
                 </button>
@@ -167,7 +163,7 @@
                             <app-label>{{"two_factor_authorisation_type" | translate}}</app-label>
                             <input appInput readonly [placeholder]="user().attributes.settings.twoFactor | translate">
                         </app-form-field>
-                        <button app-button appearance="raised" color="primary" [promiseBtn]="updatePromise()"
+                        <button app-button appearance="raised" color="primary"
                                 [hasPermissions]="'users:role#updated|update'"
                                 (click)="resetTwoFactor()">{{"reset" | translate}}
                         </button>
@@ -185,7 +181,7 @@
                             <input appInput [formControl]="walletCtrl"
                                    [placeholder]="'wallet_address' | translate">
                         </app-form-field>
-                        <button app-button appearance="raised" color="primary" [promiseBtn]="updatePromise()"
+                        <button app-button appearance="raised" color="primary" [promiseBtn]="walletPromise()"
                                 [hasPermissions]="'users:role#updated|update'"
                                 (click)="setWalletAddress()">{{"save" | translate}}
                         </button>

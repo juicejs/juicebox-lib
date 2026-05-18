@@ -5,7 +5,7 @@
             <div class="d-flex">
                 <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
                     <app-label>{{'organisation' | translate}}</app-label>
-                    <app-select [(value)]="selectedOrganisation" (selectionChange)="organisationChanged($event)">
+                    <app-select [(value)]="selectedOrganisation" (selectionChange)="organisationChanged($event.value)">
                         @for (org of organisations; track org._id) {
                             <app-option [value]="org._id">
                                 {{org.name}}
@@ -59,7 +59,7 @@
         @if (!loading) {
             <div class="col-sm-12 col-md-12" style="max-height: 100vh; padding:0 !important; width: 100%;">
 
-                <table cdk-table [dataSource]="rows" class="data-table fullscreen">
+                <table cdk-table [dataSource]="rows()" class="data-table fullscreen">
                     <!-- Name Column -->
                     <ng-container cdkColumnDef="name">
                         <th cdk-header-cell *cdkHeaderCellDef>{{'name' | translate}}</th>

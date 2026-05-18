@@ -23,7 +23,6 @@ import {SharedModule} from '../../../../shared/shared.module';
 })
 export class WalletsUserComponent extends ListingComponent{
 
-    override rows = [];
     public user: any;
     public searchTerm: string;
     displayedColumns: string[] = ['name', 'address'];
@@ -68,7 +67,7 @@ export class WalletsUserComponent extends ListingComponent{
             this.usersService.getUser(params['id']).then(result => {
                 this.user = result.payload;
                 this.id = result.payload._id;
-                this.rows = result.payload.wallets;
+                this.rows.set(result.payload.wallets);
 
                 this.juicebox.navigationEvent({
                     location: i18n.transform('users'),

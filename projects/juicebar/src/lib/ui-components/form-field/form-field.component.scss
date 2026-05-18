@@ -3,81 +3,70 @@
 .app-form-field {
   display: flex;
   flex-direction: column;
-  margin-bottom: var(--spacing-md);
+  gap: 6px;
+  margin-bottom: 14px;
 
   input,
   select,
   textarea {
     width: 100%;
-    padding: 0.75rem 1rem;
+    height: 32px;
+    padding: 0 10px;
     font-family: inherit;
-    font-size: 0.95rem;
-    line-height: 1.5;
+    font-size: 12.5px;
     color: var(--color-text-primary);
-    background: var(--color-grey-200);
-    border: 1.5px solid var(--color-border);
-    border-radius: var(--radius-xl);
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
     outline: none;
     box-sizing: border-box;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
     &::placeholder {
       color: var(--color-text-disabled);
     }
 
     &:hover:not(:disabled):not([readonly]) {
-      border-color: var(--color-secondary-light);
+      border-color: var(--color-border-dark);
     }
 
     &:focus {
       border-color: var(--color-secondary);
-      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+      box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.15);
     }
 
     &[readonly],
     &:disabled {
-      background: var(--color-grey-100);
+      background: var(--color-grey-200);
       color: var(--color-text-secondary);
       cursor: not-allowed;
     }
   }
 
+  textarea {
+    height: auto;
+    padding: 7px 10px;
+    resize: vertical;
+  }
+
   select {
     appearance: none;
     -webkit-appearance: none;
-    background-position: right 0.75rem center;
-    background-size: 1rem;
-    padding-right: 2.25rem;
+    padding-right: 28px;
+    cursor: pointer;
   }
 
-  &.app-form-field-fill {
+
+  &:has(.ng-invalid.ng-touched) {
     input,
     select,
-    textarea {
-      background: var(--color-grey-100);
-      border-color: transparent;
-      border-bottom: 2px solid var(--color-border);
-      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-
-      &:focus {
-        border-bottom-color: var(--color-secondary);
-        box-shadow: none;
-      }
-    }
-  }
-
-  &:has(input.ng-invalid.ng-touched),
-  &:has(select.ng-invalid.ng-touched),
-  &:has(textarea.ng-invalid.ng-touched) {
-    input,
-    select,
-    textarea {
+    textarea,
+    app-select .app-select-trigger {
       border-color: var(--color-error);
 
       &:focus {
-        box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.15);
+        box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.15);
       }
     }
   }
 }
-

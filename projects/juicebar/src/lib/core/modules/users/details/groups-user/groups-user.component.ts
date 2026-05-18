@@ -66,7 +66,7 @@ export class GroupsUserComponent extends ListingComponent {
                 link: '/main/users'
             });
 
-            this.rows = await this.getUserGroups(params['id']);
+            this.rows.set(await this.getUserGroups(params['id']));
         });
     }
 
@@ -105,8 +105,8 @@ export class GroupsUserComponent extends ListingComponent {
     }
 
     async organisationChanged(organisation: any) {
-        this.rows = [];
-        this.rows = await this.getUserGroups(this.user._id, organisation._id);
+        this.rows.set([]);
+        this.rows.set(await this.getUserGroups(this.user._id, organisation._id));
     }
 
     getGroupRoles(group) {
@@ -138,7 +138,7 @@ export class GroupsUserComponent extends ListingComponent {
             this.snackbar.open(`${this.pipe.transform('error')}: ${this.pipe.transform('error_adding_group_to_user')}`, 'error');
         }
 
-        this.rows = await this.getUserGroups(this.user._id, this.selectedOrganisation);
+        this.rows.set(await this.getUserGroups(this.user._id, this.selectedOrganisation));
         this.selectedGroup = null;
     }
 
@@ -159,7 +159,7 @@ export class GroupsUserComponent extends ListingComponent {
             }
 
             this.snackbar.open(`${this.pipe.transform('success')}: ${this.pipe.transform('successfully_deleted')} ${group.name}`, 'success');
-            this.rows = await this.getUserGroups(this.user._id, this.selectedOrganisation);
+            this.rows.set(await this.getUserGroups(this.user._id, this.selectedOrganisation));
             this.selectedGroup = null;
         });
 
@@ -172,7 +172,7 @@ export class GroupsUserComponent extends ListingComponent {
             disableClose: true
         });
         dialogRef.closed.subscribe(async (result) => {
-            this.rows = await this.getUserGroups(this.user._id);
+            this.rows.set(await this.getUserGroups(this.user._id));
         });
     }
 }

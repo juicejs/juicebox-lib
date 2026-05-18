@@ -4,6 +4,7 @@ import {
   inject,
   OnInit,
   output,
+  signal,
 } from '@angular/core';
 import { JuiceboxService } from '../../services/Juicebox.service';
 import { TableActions } from './table-data';
@@ -57,7 +58,7 @@ export class ListingComponent implements OnInit {
   //     this._columns = newColumns;
   // }
 
-  public rows: Array<any> = [];
+  public rows = signal<Array<any>>([]);
   public columns: Array<any> = [];
   public actions: Array<any> = TableActions;
   public name: Array<any> = [];
@@ -205,8 +206,9 @@ export class ListingComponent implements OnInit {
 
     let filteredData = this.changeFilter(this.data, this.config);
     let sortedData = this.changeSort(filteredData, this.config);
-    this.rows =
-      page && config.paging ? this.changePage(page, sortedData) : sortedData;
+    this.rows.set(
+      page && config.paging ? this.changePage(page, sortedData) : sortedData
+    );
     this.length = sortedData.length;
   }
 

@@ -4,23 +4,27 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-sm);
-  border: 1px solid var(--color-border-dark);
-  border-radius: var(--radius-md);
-  background: var(--color-grey-200);
-  color: var(--color-text-primary);
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid #27272a;
+  border-radius: 6px;
+  background: #1c1c1f;
+  color: #e4e4e7;
   cursor: pointer;
   font-family: inherit;
-  font-size: 14px;
-  transition: all 0.2s ease;
+  font-size: 12.5px;
+  font-weight: 500;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
 
   &:hover:not([disabled]) {
-    background: var(--color-grey-300);
-    border-color: var(--color-border-dark);
+    background: #27272a;
+    border-color: #3f3f46;
   }
 
   &[disabled] {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
   }
 }
@@ -49,30 +53,16 @@
   background: transparent;
 }
 
-// Primary color
-.app-button-primary {
-  background: var(--color-grey-100);
-  color: var(--color-text-primary);
-  border-color: var(--color-border);
+:host(.app-button-primary),
+:host(.app-button-accent) {
+  background: #f97316;
+  color: #0a0a0b;
+  border-color: #ea6a0a;
+  font-weight: 600;
 
   &:hover:not([disabled]) {
-    background: var(--color-grey-200);
-    border-color: var(--color-border-dark);
-  }
-
-  &.app-button-raised {
-    background: var(--color-grey-100);
-  }
-}
-
-// Accent/Secondary color (orange)
-.app-button-accent {
-  background: var(--color-secondary);
-  color: var(--color-secondary-contrast);
-  border-color: var(--color-secondary);
-
-  &:hover:not([disabled]) {
-    background: var(--color-secondary-dark);
+    background: #ea6a0a;
+    border-color: #d45f09;
   }
 }
 
@@ -111,7 +101,17 @@
 
 // Icon button
 .app-button-icon {
-  padding: var(--spacing-sm);
-  min-width: auto;
-  border-radius: var(--radius-full);
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 5px;
+  background: transparent;
+  border-color: #27272a;
+  color: #a1a1aa;
+
+  &:hover:not([disabled]) {
+    background: #161618;
+    border-color: #3f3f46;
+    color: #e4e4e7;
+  }
 }

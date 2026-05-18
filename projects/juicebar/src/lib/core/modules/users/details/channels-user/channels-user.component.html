@@ -7,7 +7,7 @@
     </app-card>
 
     <app-card>
-        <table cdk-table [dataSource]="rows" class="data-table">
+        <table cdk-table [dataSource]="rows()" class="data-table">
             <!-- Name Column -->
             <ng-container cdkColumnDef="name">
                 <th cdk-header-cell *cdkHeaderCellDef>{{'name' | translate}}</th>

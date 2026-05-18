@@ -17,7 +17,7 @@
 
     <div class="col-sm-12 col-md-12" style="max-height: 85vh;padding:0!important;">
         <app-card>
-            <table cdk-table [dataSource]="rows" class="data-table">
+            <table cdk-table [dataSource]="rows()" class="data-table">
                 <!-- Name Column -->
                 <ng-container cdkColumnDef="name">
                     <th cdk-header-cell *cdkHeaderCellDef>{{"name" | translate}}</th>

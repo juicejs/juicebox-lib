@@ -975,53 +975,72 @@ html, body {
     .gdrive-filter-btn {
         display: flex;
         align-items: center;
-        gap: 8px;
-        padding: 8px 16px;
-        //border-radius: 24px;
-        font-size: 14px;
-        font-weight: 500;
+        gap: 6px;
+        padding: 0 10px;
+        height: 34px;
+        font-size: 12.5px;
+        font-weight: 400;
         text-transform: none;
-        min-height: 40px;
         width: 100%;
-        transition: all 0.2s ease;
-        box-shadow: var(--shadow-sm);
+        background: #0f0f10;
+        border: 1px solid #27272a;
+        border-radius: 7px;
+        color: #e4e4e7;
+        transition: border-color 0.15s ease;
 
         &:hover {
-            background: var(--color-grey-300);
-            border-color: var(--color-border-dark);
-            box-shadow: var(--shadow-md);
+            border-color: #3f3f46;
+            background: #0f0f10;
+            box-shadow: none;
         }
 
         .filter-icon {
-            font-size: 18px !important;
-            width: 18px !important;
-            height: 18px !important;
-            color: var(--color-text-secondary) !important;
+            width: 12px !important;
+            height: 12px !important;
+            color: #71717a !important;
+            flex-shrink: 0;
+            margin-right: 4px;
+
+            .material-icons, i {
+                font-size: 12px !important;
+                width: 12px !important;
+                height: 12px !important;
+                line-height: 1 !important;
+            }
         }
 
         .filter-label {
-            max-width: 150px;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            color: #71717a;
+            font-weight: 500;
             white-space: nowrap;
         }
 
+        .filter-value {
+            display: inline-flex;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #1a0f08;
+            color: #fbbf24;
+            border: 1px solid #3a2410;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 140px;
+        }
+
         .dropdown-icon {
-            font-size: 20px !important;
-            width: 20px !important;
-            height: 20px !important;
-            color: var(--color-text-secondary) !important;
-            margin-left: 4px;
+            color: #71717a;
+            margin-left: auto;
+            flex-shrink: 0;
         }
     }
 
     &.active .filter-btn,
     &.active .gdrive-filter-btn {
-
-        .filter-icon,
-        .dropdown-icon {
-            color: var(--color-tertiary) !important;
-        }
+        border-color: #27272a;
     }
 
     // Hide the autocomplete input but keep it functional
@@ -1039,110 +1058,155 @@ html, body {
     }
 }
 
-// Autocomplete search styling (Dark theme)
+// Autocomplete search styling
 .autocomplete-search-container {
     display: flex;
     align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--color-border);
-    background: var(--color-grey-200);
+    gap: 8px;
+    height: 38px;
+    padding: 0 8px 0 12px;
+    border-bottom: 1px solid #1f1f23;
+    background: #0a0a0b;
     position: sticky;
     top: 0;
     z-index: 1;
 
     .search-icon {
-        color: var(--color-text-secondary) !important;
-        font-size: 20px !important;
-        width: 20px !important;
-        height: 20px !important;
-        margin-right: 12px;
+        color: #71717a !important;
+        font-size: 16px !important;
+        width: 16px !important;
+        height: 16px !important;
     }
 
     .autocomplete-search-input {
         flex: 1;
         border: none;
         outline: none;
-        font-size: 14px;
-        color: var(--color-text-primary);
+        font-size: 12.5px;
+        color: #e4e4e7;
         background: transparent;
 
         &::placeholder {
-            color: var(--color-text-secondary);
+            color: #71717a;
         }
     }
 }
 
-// Filter dropdown panel styling (Dark theme)
+// Filter dropdown panel styling
 .filter-panel {
-    background: var(--color-grey-200);
-    border: 1px solid var(--color-border);
+    background: #0c0c0d;
+    border: 1px solid #27272a;
     border-radius: 8px;
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.4);
     min-width: 300px;
     max-height: 400px;
-    overflow-y: auto;
-    margin-top: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 
-    &::-webkit-scrollbar {
-        width: 8px;
+    .autocomplete-search-container {
+        flex-shrink: 0;
+        margin: 0;
     }
 
-    &::-webkit-scrollbar-track {
-        background: var(--color-grey-100);
-        border-radius: 4px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: var(--color-grey-500);
-        border-radius: 4px;
-
-        &:hover {
-            background: var(--color-grey-600);
-        }
+    .filter-options-list {
+        overflow-y: auto;
+        padding: 4px;
     }
 }
 
 .filter-option {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     width: 100%;
-    padding: 12px 16px;
+    height: 30px;
+    padding: 0 10px;
     border: none;
+    border-radius: 5px;
     background: transparent;
-    color: var(--color-text-primary);
-    font-size: 14px;
+    color: #e4e4e7;
+    font-size: 12.5px;
+    font-family: inherit;
     text-align: left;
     cursor: pointer;
-    transition: background-color 0.15s ease;
+    transition: background-color 0.1s ease;
 
     &:hover:not(.disabled) {
-        background: var(--color-grey-300);
-    }
-
-    &:active:not(.disabled) {
-        background: var(--color-grey-400);
+        background: #161618;
     }
 
     &.disabled {
-        color: var(--color-text-disabled);
+        color: #52525b;
         cursor: default;
-        font-style: italic;
     }
 
-    &:first-of-type {
-        color: var(--color-text-secondary);
-        font-weight: 500;
-        border-bottom: 1px solid var(--color-border);
+    &.filter-option-selected {
+        background: #15100b;
+        color: #fafafa;
+    }
+
+    &.filter-option-clear {
+        color: #71717a;
 
         &:hover {
-            color: var(--color-error);
-            background: rgba(248, 81, 73, 0.1);
+            color: #f87171;
+            background: rgba(248, 113, 113, 0.08);
         }
     }
+}
+
+.filter-option-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 // =============================================================================
 // REUSABLE TABLE COMPONENT STYLES (for any table module)
 // =============================================================================
+
+// Shared CDK table styles — applies to any <table cdk-table class="data-table">
+table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #0a0a0b;
+    border: 1px solid #1f1f23;
+    border-radius: 8px;
+    overflow: hidden;
+
+    th[cdk-header-cell] {
+        padding: 10px 16px;
+        text-align: left;
+        font-size: 10.5px;
+        font-weight: 500;
+        color: #71717a;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        background: #0c0c0d;
+        border-bottom: 1px solid #1f1f23;
+        white-space: nowrap;
+
+        &.text-right { text-align: right; }
+    }
+
+    td[cdk-cell] {
+        padding: 14px 16px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #fafafa;
+        border-bottom: 1px solid #15151a;
+
+        &.text-right { text-align: right; }
+    }
+
+    tr[cdk-row] {
+        transition: background 0.08s;
+        &:last-child td[cdk-cell] { border-bottom: none; }
+        &:hover { background: #101012; }
+    }
+}
 
 // Filter card styling
 .filters-card {

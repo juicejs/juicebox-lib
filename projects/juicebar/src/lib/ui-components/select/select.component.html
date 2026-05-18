@@ -1,17 +1,24 @@
 <div class="app-select" cdkOverlayOrigin #trigger="cdkOverlayOrigin">
-  <div class="app-select-trigger"
-       [class.disabled]="disabled()"
-       [class.open]="isOpen()"
-       (click)="toggle()"
-       role="combobox"
-       [attr.aria-expanded]="isOpen()"
-       [attr.aria-disabled]="disabled()">
-    <span class="app-select-value">{{ displayValue() || placeholder() }}</span>
-    <span class="app-select-arrow">▼</span>
-  </div>
+  <button
+    type="button"
+    class="app-select-trigger"
+    [class.disabled]="disabled()"
+    [class.open]="isOpen()"
+    (click)="toggle()"
+    role="combobox"
+    [attr.aria-expanded]="isOpen()"
+    [attr.aria-disabled]="disabled()">
+    @if (displayValue()) {
+      <span class="app-select-value">{{ displayValue() }}</span>
+    } @else {
+      <span class="app-select-placeholder">{{ placeholder() }}</span>
+    }
+    <svg class="app-select-chevron" [class.rotated]="isOpen()" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </button>
 </div>
 
-<!-- Hidden content slot — options are queried via contentChildren, not rendered here -->
 <div hidden>
   <ng-content></ng-content>
 </div>
@@ -22,19 +29,48 @@
   [cdkConnectedOverlayOpen]="isOpen()"
   [cdkConnectedOverlayHasBackdrop]="true"
   cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
+  [cdkConnectedOverlayMinWidth]="trigger.elementRef.nativeElement.offsetWidth"
   (backdropClick)="close()"
   (detach)="close()">
   <div class="app-select-panel" role="listbox">
-    @for (option of getOptions(); track option.value()) {
-      <div class="app-option"
-           [class.app-option-selected]="isSelected(option)"
-           [class.app-option-disabled]="option.disabled()"
-           (click)="select(option)"
-           role="option"
-           [attr.aria-selected]="isSelected(option)"
-           [attr.aria-disabled]="option.disabled()">
-        {{ option.getLabel() }}
+    @if (searchable()) {
+      <div class="app-select-search">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          #searchInput
+          class="app-select-search-input"
+          type="text"
+          [placeholder]="searchPlaceholder()"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+          (keydown.escape)="close()"
+          (click)="$event.stopPropagation()" />
       </div>
     }
+    <div class="app-select-options">
+      @if (filteredOptions().length === 0) {
+        <div class="app-select-empty">No results</div>
+      } @else {
+        @for (option of filteredOptions(); track option.value()) {
+          <div class="app-option"
+               [class.app-option-selected]="equals(option.value(), selectedValue())"
+               [class.app-option-disabled]="option.disabled()"
+               (click)="select(option)"
+               role="option"
+               [attr.aria-selected]="equals(option.value(), selectedValue())"
+               [attr.aria-disabled]="option.disabled()">
+            <span class="app-option-label">{{ option.getLabel() }}</span>
+            @if (equals(option.value(), selectedValue())) {
+              <svg class="app-option-check" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#f97316" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m3 8 3 3 7-7"/>
+              </svg>
+            }
+          </div>
+        }
+      }
+    </div>
   </div>
 </ng-template>

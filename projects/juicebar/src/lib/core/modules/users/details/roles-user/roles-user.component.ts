@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ActivatedRoute} from '@angular/router';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
@@ -25,9 +25,10 @@ import {SharedModule} from '../../../../shared/shared.module';
 })
 export class RolesUserComponent implements OnInit {
 
+    rows = signal<any[]>([]);
+
     public userId: string;
     public user: any;
-    public rows = [];
     public userHasGroups: boolean;
 
     public selectedRole: string;
@@ -100,7 +101,7 @@ export class RolesUserComponent implements OnInit {
 
     private async getUserRoles() {
         this.user.roles = this.user.roles[this.selectedOrganisation] ? this.user.roles[this.selectedOrganisation] : [];
-        this.rows = [...(this.user.roles.sort((a,b) => {
+        this.rows.set([...(this.user.roles.sort((a,b) => {
             if (a.role < b.role) {
                 return -1;
             }
@@ -108,7 +109,7 @@ export class RolesUserComponent implements OnInit {
                 return 1;
             }
             return 0;
-        }))];
+        }))]);
     }
 
     private async getAvailableRoles(): Promise<any> {

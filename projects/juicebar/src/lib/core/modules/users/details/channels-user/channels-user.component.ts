@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ActivatedRoute } from "@angular/router";
 import { ConfigurationService} from '../../../../shared/services/configuration.service';
@@ -22,10 +22,11 @@ import { SharedModule } from '../../../../shared/shared.module';
 })
 export class ChannelsUserComponent implements OnInit {
 
+    rows = signal<any[]>([]);
+
     public userId: string;
     public user: any;
     public channels = [];
-    public rows = [];
     public allPermissions: { key: string; }[];
     public displayedColumns: string[] = ['name', 'permissions'];
 
@@ -79,7 +80,7 @@ export class ChannelsUserComponent implements OnInit {
                 permissions: rowPermissions,
             };
         });
-        this.rows = this.channels;
+        this.rows.set(this.channels);
     }
 
     async togglePermission(row) {

@@ -13,11 +13,11 @@ export class SlideToggleComponent {
   checked = model<boolean>(false);
   disabled = input<boolean>(false);
 
-  change = output<boolean>();
+  toggled = output<boolean>();
 
   onToggleChange(event: Event) {
     const target = event.target as HTMLInputElement;
     this.checked.set(target.checked);
-    this.change.emit(target.checked);
+    this.toggled.emit(target.checked);
   }
 }

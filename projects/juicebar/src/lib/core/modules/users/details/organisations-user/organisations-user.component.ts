@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ListingComponent} from '../../../../shared/components/listing/listing.component';
@@ -27,7 +27,7 @@ import { SharedModule } from '../../../../shared/shared.module';
 export class OrganisationsUserComponent extends ListingComponent implements OnInit {
 
     organisations: any[] = [];
-    selectedOrganisation: any = null;
+    selectedOrganisation = signal<any>(null);
     organisationControl = new FormControl();
 
     pageOrgs: number = 0;
@@ -69,7 +69,7 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
             return false;
 
         const tmpOrgs = organisationResult.payload.items.filter(o => {
-            if (this.rows.findIndex(row => row._id === o._id) < 0)
+            if (this.rows().findIndex(row => row._id === o._id) < 0)
                 return o;
         });
 
@@ -87,12 +87,14 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
         if (!result.payload || !result.payload.length)
             return false;
 
-        this.rows = [...result.payload.filter(org => organisations.includes(org._id))];
+        this.rows.set([...result.payload.filter(org => organisations.includes(org._id))]);
     }
 
     organisationChanged(org) {
-        this.selectedOrganisation = org;
+        this.selectedOrganisation.set(org);
     }
+
+    trackById = (_: number, row: any) => row._id;
 
     async searchOrganisations(event: any) {
         this.pageOrgs = 0;
@@ -139,26 +141,29 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
 
             this.juicebox.showToast("success", "Success");
             await this.getUserOrganisations(user_id);
+            this.organisations = [...this.organisations, org];
         });
     }
 
     add() {
-        if (!this.selectedOrganisation) {
+        if (!this.selectedOrganisation()) {
             this.juicebox.showToast('warning', "Select organisation");
             return;
         }
 
         this.promiseBtn = (async () => {
             const user_id = this.aRoute.snapshot.parent.params['id'];
-            const result = await this.juicebox.addOrganisationToUser(user_id, this.selectedOrganisation._id);
+            const result = await this.juicebox.addOrganisationToUser(user_id, this.selectedOrganisation()._id);
             if (!result.success) {
                 this.juicebox.showToast("error", result.error);
                 return;
             }
 
             this.juicebox.showToast("success", "Success");
+            const addedId = this.selectedOrganisation()._id;
             await this.getUserOrganisations(user_id);
-            this.selectedOrganisation = null;
+            this.organisations = this.organisations.filter(o => o._id !== addedId);
+            this.selectedOrganisation.set(null);
             this.organisationControl.setValue('');
         })();
     }

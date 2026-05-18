@@ -1,6 +1,4 @@
-@import '../styles/variables.scss';
-
-.app-select {
+app-select {
   display: block;
   width: 100%;
 }
@@ -8,66 +6,176 @@
 .app-select-trigger {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-background);
-  color: var(--color-text-primary);
+  gap: 8px;
+  width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  background: #0f0f10;
+  border: 1px solid #27272a;
+  border-radius: 7px;
+  color: #e4e4e7;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  transition: border-color 0.15s ease;
 
   &:hover:not(.disabled) {
-    border-color: var(--color-grey-400);
+    border-color: var(--color-border-dark);
   }
 
-  &:focus,
-  &.open {
+  &.open,
+  &:focus-visible {
+    outline: none;
     border-color: var(--color-secondary);
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+    box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.15);
   }
 
   &.disabled {
-    background: var(--color-grey-100);
+    color: var(--color-text-disabled);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+.app-select-value {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #1a0f08;
+  color: #fbbf24;
+  border: 1px solid #3a2410;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
+.app-select-placeholder {
+  flex: 1;
+  color: #52525b;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.app-select-chevron {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+  transition: transform 0.2s ease;
+
+  &.rotated {
+    transform: rotate(180deg);
+  }
+}
+
+// Panel — rendered in CDK overlay outside component DOM, requires ViewEncapsulation.None
+.app-select-panel {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+}
+
+.app-select-search {
+  height: 38px;
+  padding: 0 8px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--color-border-light);
+  background: var(--color-background);
+  flex-shrink: 0;
+
+  svg {
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+  }
+}
+
+.app-select-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #e4e4e7;
+  font-size: 12.5px;
+  font-family: inherit;
+
+  &::placeholder {
+    color: var(--color-text-secondary);
+  }
+}
+
+.app-select-options {
+  padding: 4px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.app-option {
+  width: 100%;
+  height: 30px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  color: #e4e4e7;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-family: inherit;
+  transition: background-color 0.1s ease;
+
+  &:hover:not(.app-option-disabled) {
+    background: var(--color-grey-200);
+  }
+
+  &.app-option-selected {
+    background: var(--color-grey-300);
+    color: var(--color-text-primary);
+  }
+
+  &.app-option-disabled {
     color: var(--color-text-disabled);
     cursor: not-allowed;
   }
 }
 
-.app-select-value {
+.app-option-label {
   flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.app-select-arrow {
-  margin-left: var(--spacing-sm);
+.app-option-check {
+  flex-shrink: 0;
+  color: var(--color-secondary);
+}
+
+.app-select-empty {
+  padding: 20px 12px;
   font-size: 12px;
+  color: var(--color-text-disabled);
+  text-align: center;
+  font-style: italic;
+}
+
+.app-select-group-label {
+  padding: 8px 10px 4px;
+  font-size: 10px;
   color: var(--color-text-secondary);
-}
-
-.app-select-panel {
-  max-height: 256px;
-  overflow-y: auto;
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-xl);
-  padding: var(--spacing-xs) 0;
-  min-width: 200px;
-}
-
-.app-option {
-  display: block;
-  padding: var(--spacing-sm) var(--spacing-md);
-  cursor: pointer;
-  color: var(--color-text-primary);
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background: var(--color-grey-100);
-  }
-
-  &.app-option-selected {
-    background: var(--color-secondary);
-    color: var(--color-secondary-contrast);
-  }
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
 }

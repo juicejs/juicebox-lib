@@ -2,7 +2,7 @@
     <app-form-field appearance="outline" style="width: 300px; margin-right: 1rem;">
         <app-label>{{'organisation' | translate}}</app-label>
         <app-select [(value)]="selectedOrganisation"
-                    (selectionChange)="organisationChanged($event)">
+                    (selectionChange)="organisationChanged($event.value)">
             @for (org of organisations; track org._id) {
                 <app-option [value]="org._id">
                     {{org.name}}
@@ -36,7 +36,7 @@
 
 <div class="parent">
     <app-card>
-        <table cdk-table [dataSource]="rows" class="data-table">
+        <table cdk-table [dataSource]="rows()" class="data-table">
             <!-- Name Column -->
             <ng-container cdkColumnDef="name">
                 <th cdk-header-cell *cdkHeaderCellDef>{{'name' | translate}}</th>
@@ -53,7 +53,7 @@
                         <div class="d-flex flex-wrap user-select-none">
                             <app-slide-toggle
                                 [checked]="row.permissions['juicebox:visible']"
-                                (change)="toggleVisibility(row.role, $event.checked, row.permissions)">
+                                (toggled)="toggleVisibility(row.role, $event, row.permissions)">
                             </app-slide-toggle>
                         </div>
                     </td>

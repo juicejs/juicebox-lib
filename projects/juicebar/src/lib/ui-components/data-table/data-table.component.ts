@@ -1,6 +1,7 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  ViewEncapsulation,
   ContentChildren,
   QueryList,
   TemplateRef,
@@ -22,6 +23,7 @@ import { ColumnConfig, SortDir, SortState } from './data-table.types';
   templateUrl: './data-table.component.html',
   styleUrls: ['./data-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
   imports: [CommonModule, CdkTableModule, PaginatorComponent, IconComponent]
 })
 export class DataTableComponent implements AfterContentInit {

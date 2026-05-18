@@ -14,7 +14,7 @@ import { SharedModule } from '../../../../shared/shared.module';
 @Component({
     selector: 'app-details-user',
     templateUrl: './details-user.component.html',
-    styleUrls: ['./details-user.component.css'],
+    styleUrls: ['./details-user.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
@@ -30,6 +30,8 @@ export class DetailsUserComponent implements OnInit {
     protected readonly passwordForm = signal<FormGroup | null>(null);
     protected readonly walletCtrl = new FormControl<string>('');
     protected readonly updatePromise = signal<Promise<any> | null>(null);
+    protected readonly passwordPromise = signal<Promise<any> | null>(null);
+    protected readonly walletPromise = signal<Promise<any> | null>(null);
     protected readonly randomPassword = signal('');
     protected readonly projectTitle = signal('');
     protected readonly languages = signal<any[]>([]);
@@ -109,7 +111,7 @@ export class DetailsUserComponent implements OnInit {
         const form = this.passwordForm();
         if (form.invalid) return;
 
-        this.updatePromise.set((async () => {
+        this.passwordPromise.set((async () => {
             const result = await this.userService.updatePassword(this.user()._id, form.value.password);
             if (result.success) {
                 this.juicebox.showToast('success', this.userPipe.transform('password_changed'));
@@ -155,8 +157,8 @@ export class DetailsUserComponent implements OnInit {
     }
 
     async setWalletAddress() {
-        await this.userService.updateUser(this.user()._id, {
+        this.walletPromise.set(this.userService.updateUser(this.user()._id, {
             wallet: this.walletCtrl.value
-        });
+        }));
     }
 }

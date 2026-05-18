@@ -24,9 +24,8 @@ export class FormFieldComponent {
   styles: [`
     :host {
       display: block;
-      margin-bottom: var(--spacing-xs, 0.25rem);
-      color: var(--color-text-secondary, rgba(0, 0, 0, 0.6));
-      font-size: 0.9rem;
+      color: #a1a1aa;
+      font-size: 11.5px;
       font-weight: 500;
     }
   `]
@@ -45,9 +44,8 @@ export class LabelComponent {}
   styles: [`
     :host {
       display: block;
-      margin-top: var(--spacing-xs, 0.25rem);
-      color: var(--color-error, #f44336);
-      font-size: 0.75rem;
+      color: var(--color-error);
+      font-size: 11px;
       font-weight: 500;
     }
   `]

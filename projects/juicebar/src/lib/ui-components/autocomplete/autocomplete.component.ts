@@ -41,25 +41,32 @@ export interface AutocompleteOption<T = any> {
       outline: none;
       background: transparent;
       font: inherit;
-      color: inherit;
+      color: #e4e4e7;
+      font-size: 12.5px;
       padding: 0.5rem 0.75rem;
     }
+    .app-autocomplete-input::placeholder { color: #71717a; }
     .app-autocomplete-panel {
-      background: var(--color-surface, #fff);
-      border: 1px solid var(--color-border, #ddd);
-      border-radius: 4px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      background: #0c0c0d;
+      border: 1px solid #27272a;
+      border-radius: 8px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.4);
       max-height: 240px;
       overflow-y: auto;
       min-width: 200px;
+      padding: 4px;
     }
     .app-autocomplete-option {
-      padding: 0.5rem 0.75rem;
+      height: 30px;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      border-radius: 5px;
       cursor: pointer;
+      color: #e4e4e7;
+      font-size: 12.5px;
     }
-    .app-autocomplete-option:hover {
-      background: var(--color-hover, #f5f5f5);
-    }
+    .app-autocomplete-option:hover { background: #161618; }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, OverlayModule],

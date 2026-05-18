@@ -1,0 +1,25 @@
+.organisations-user {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px 24px 24px;
+}
+
+.orgs-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: #0a0a0b;
+    border: 1px solid #1f1f23;
+    border-radius: 8px;
+}
+
+.orgs-select {
+    width: 300px;
+    flex-shrink: 0;
+}
+
+.orgs-create {
+    margin-left: auto;
+}
