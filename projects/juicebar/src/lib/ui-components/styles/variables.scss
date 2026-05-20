@@ -48,8 +48,10 @@ html.light-theme {
 
   // Border colors
   --color-border: var(--color-grey-300);
-  --color-border-light: var(--color-grey-200);
+  --color-border-light: #f0f0f0;
   --color-border-dark: var(--color-grey-400);
+  --color-warning-bg: rgba(255, 152, 0, 0.1);
+  --color-warning-border: rgba(255, 152, 0, 0.3);
 
   // Background colors
   --color-background: var(--color-primary);
@@ -125,9 +127,11 @@ html.light-theme {
   --color-text-disabled: #52525b;
 
   // Border colors
-  --color-border: #27272a;
-  --color-border-light: #1f1f23;
-  --color-border-dark: #3f3f46;
+  --color-border: #3f3f46;
+  --color-border-light: #30363d;
+  --color-border-dark: #52525b;
+  --color-warning-bg: rgba(251, 191, 36, 0.12);
+  --color-warning-border: rgba(251, 191, 36, 0.3);
 
   // Background colors
   --color-background: #0a0a0b;
