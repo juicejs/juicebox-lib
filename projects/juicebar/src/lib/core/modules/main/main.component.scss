@@ -1,18 +1,6 @@
 @import "../../../assets/theme";
 @import "../../../ui-components/styles/variables";
 
-@property --dot-r1 {
-    syntax: '<length>';
-    inherits: false;
-    initial-value: 1px;
-}
-
-@property --dot-r2 {
-    syntax: '<length>';
-    inherits: false;
-    initial-value: 1px;
-}
-
 .main-container-new-ui {
     display: flex;
     flex-direction: column;
@@ -21,51 +9,7 @@
     font-family: 'Inter', sans-serif !important;
     position: relative;
 
-    background-color: var(--color-grey-200);
-    background-image: radial-gradient(circle, rgba(180, 180, 180, 0.15) 1px, transparent 1px);
-    background-size: 24px 24px;
-    background-attachment: fixed;
-    overflow: hidden;
-
-    // Batch 1: top-left + bottom-right quadrants
-    &::before {
-        content: '';
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 0;
-        background-image: radial-gradient(circle, rgba(210, 210, 210, 0.55) var(--dot-r1), transparent calc(var(--dot-r1) + 0.5px));
-        background-size: 24px 24px;
-        animation: dotPulse1 4s ease-in-out infinite;
-        mask-image:
-            radial-gradient(ellipse 65% 65% at 20% 22%, black 0%, transparent 70%),
-            radial-gradient(ellipse 65% 65% at 80% 78%, black 0%, transparent 70%);
-        mask-composite: add;
-        -webkit-mask-image:
-            radial-gradient(ellipse 65% 65% at 20% 22%, black 0%, transparent 70%),
-            radial-gradient(ellipse 65% 65% at 80% 78%, black 0%, transparent 70%);
-        -webkit-mask-composite: source-over;
-    }
-
-    // Batch 2: top-right + bottom-left quadrants, half-period offset
-    &::after {
-        content: '';
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 0;
-        background-image: radial-gradient(circle, rgba(210, 210, 210, 0.55) var(--dot-r2), transparent calc(var(--dot-r2) + 0.5px));
-        background-size: 24px 24px;
-        animation: dotPulse2 4s ease-in-out infinite 2s;
-        mask-image:
-            radial-gradient(ellipse 65% 65% at 80% 22%, black 0%, transparent 70%),
-            radial-gradient(ellipse 65% 65% at 20% 78%, black 0%, transparent 70%);
-        mask-composite: add;
-        -webkit-mask-image:
-            radial-gradient(ellipse 65% 65% at 80% 22%, black 0%, transparent 70%),
-            radial-gradient(ellipse 65% 65% at 20% 78%, black 0%, transparent 70%);
-        -webkit-mask-composite: source-over;
-    }
+    background-color: var(--background-color);
 
     > * {
         position: relative;
@@ -311,17 +255,6 @@
         color: $primary;
         background-color: var(--color-grey-200);
     }
-}
-
-// Animations
-@keyframes dotPulse1 {
-    0%, 100% { --dot-r1: 1px; }
-    50% { --dot-r1: 2.5px; }
-}
-
-@keyframes dotPulse2 {
-    0%, 100% { --dot-r2: 1px; }
-    50% { --dot-r2: 2.5px; }
 }
 
 @keyframes slideDown {
