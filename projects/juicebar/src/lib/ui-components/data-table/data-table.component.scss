@@ -3,8 +3,8 @@
 .data-table-wrapper {
   width: 100%;
   overflow-x: auto;
-  background: #0a0a0b;
-  border: 1px solid #1f1f23;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -19,19 +19,19 @@
     text-align: left;
     font-size: 10.5px;
     font-weight: 500;
-    color: #71717a;
+    color: var(--color-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    background: #0c0c0d;
-    border-bottom: 1px solid #1f1f23;
+    background: var(--color-background-secondary);
+    border-bottom: 1px solid var(--color-border);
     white-space: nowrap;
     box-sizing: border-box;
 
     &.sortable {
       cursor: pointer;
       user-select: none;
-      &:hover { background: #111113; }
-      &:focus-visible { outline: 2px solid #f97316; outline-offset: -2px; }
+      &:hover { background: var(--color-grey-300); }
+      &:focus-visible { outline: 2px solid var(--color-tertiary); outline-offset: -2px; }
     }
 
     &.text-right .th-inner { justify-content: flex-end; }
@@ -43,8 +43,8 @@
   td {
     padding: 14px 16px;
     text-align: left;
-    border-bottom: 1px solid #15151a;
-    color: #fafafa;
+    border-bottom: 1px solid var(--color-border-light);
+    color: var(--color-text-primary);
     font-size: 13px;
     font-weight: 500;
     box-sizing: border-box;
@@ -71,8 +71,8 @@
     flex: 0 0 auto;
     font-size: 14px;
     opacity: 0.4;
-    color: #71717a;
-    &.active { opacity: 1; color: #f97316; }
+    color: var(--color-text-secondary);
+    &.active { opacity: 1; color: var(--color-secondary); }
   }
 
   .cell-ellipsis {
@@ -85,12 +85,12 @@
   tbody tr, tr[cdk-row] {
     transition: background 0.08s;
     &:last-child td { border-bottom: none; }
-    &:hover { background: #101012; }
+    &:hover { background: var(--color-grey-300); }
   }
 
   .clickable-row {
     cursor: pointer;
-    &:hover { background: #161618; }
+    &:hover { background: var(--color-grey-200); }
   }
 }
 

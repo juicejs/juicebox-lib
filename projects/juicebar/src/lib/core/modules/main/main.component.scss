@@ -102,7 +102,7 @@
 
                             i {
                                 font-size: 1.1rem;
-                                color: $primary;
+                                color: var(--color-tertiary);
                             }
                         }
 
@@ -252,7 +252,7 @@
     color: var(--color-text-secondary);
 
     &:hover {
-        color: $primary;
+        color: var(--color-tertiary);
         background-color: var(--color-grey-200);
     }
 }
