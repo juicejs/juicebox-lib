@@ -1422,3 +1422,43 @@ table.data-table {
     line-height: 1 !important;
 }
 
+// =============================================================================
+// DRAGULA DRAG-AND-DROP GLOBAL STYLES
+// =============================================================================
+// .gu-mirror is appended to <body> by dragula during drag, so component-scoped
+// styles cannot reach it — these must be global.
+
+.gu-mirror {
+    position: fixed !important;
+    margin: 0 !important;
+    z-index: 9999 !important;
+    padding: 10px 14px;
+    background-color: var(--color-secondary);
+    color: var(--color-secondary-contrast);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: grabbing !important;
+    pointer-events: none;
+    opacity: 0.95;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 240px;
+}
+
+.gu-hide {
+    display: none !important;
+}
+
+.gu-unselectable {
+    user-select: none !important;
+}
+
+.gu-transit {
+    opacity: 0.25 !important;
+    background-color: var(--color-grey-400) !important;
+    border-radius: var(--radius-md);
+}
+

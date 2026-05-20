@@ -2,9 +2,10 @@
     <div class="filter-bar">
         <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
             <app-label>{{'organisation' | translate}}</app-label>
-            <app-select [(value)]="selectedOrganisation"
+            <app-select [value]="selectedOrganisation()"
+                        (valueChange)="selectedOrganisation.set($event)"
                         (selectionChange)="organisationChanged()">
-                @for (org of organisations; track org._id) {
+                @for (org of organisations(); track org._id) {
                     <app-option [value]="org._id">
                         {{org.name}}
                     </app-option>
@@ -15,39 +16,41 @@
     <div class="wrapper">
         <div class="container" style="text-align: center;">
             <span class="group-handle">{{i18nMain.transform('visible')}}</span>
-            @if (!disabledDragAndDrop) {
-                <div class="container" style="height: 84px !important; min-width: 189px !important;" id="sidebar" dragula="DRAGULA_SIDEBAR" [(dragulaModel)]="sidebar">
-                    @for (item of sidebar; track item) {
+            @if (!disabledDragAndDrop()) {
+                <div class="container" id="sidebar" dragula="DRAGULA_SIDEBAR"
+                     [dragulaModel]="sidebar()" (dragulaModelChange)="sidebar.set($event)">
+                    @for (item of sidebar(); track item) {
                         <div class="SidebarItem" [innerHtml]="item.label"></div>
                     }
                 </div>
             } @else {
-                <div class="container" style="height: 84px !important; min-width: 189px !important;">
+                <div class="container">
                     <div class="text-center">
                         <i class="fas fa-spin fa-spinner fa-2x"></i>
                     </div>
-                    @for (item of sidebar; track item) {
+                    @for (item of sidebar(); track item) {
                         <div class="SidebarItem" [innerHtml]="item.label"></div>
                     }
                 </div>
             }
         </div>
 
-        @if (allowHidden) {
+        @if (allowHidden()) {
             <div class="container" style="text-align: center;">
                 <span class="group-handle">{{i18nMain.transform('hidden')}}</span>
-                @if (!disabledDragAndDrop) {
-                    <div class="container" style="height: 84px !important; min-width: 189px !important;" id="sidebarHidden" dragula="DRAGULA_SIDEBAR" [(dragulaModel)]="sidebarHidden">
-                        @for (item of sidebarHidden; track item) {
+                @if (!disabledDragAndDrop()) {
+                    <div class="container" id="sidebarHidden" dragula="DRAGULA_SIDEBAR"
+                         [dragulaModel]="sidebarHidden()" (dragulaModelChange)="sidebarHidden.set($event)">
+                        @for (item of sidebarHidden(); track item) {
                             <div class="SidebarItem" [innerHtml]="item.label"></div>
                         }
                     </div>
                 } @else {
-                    <div class="container" style="height: 84px !important; min-width: 189px !important;">
+                    <div class="container">
                         <div class="text-center">
                             <i class="fas fa-spin fa-spinner fa-2x"></i>
                         </div>
-                        @for (item of sidebarHidden; track item) {
+                        @for (item of sidebarHidden(); track item) {
                             <div class="SidebarItem" [innerHtml]="item.label"></div>
                         }
                     </div>

@@ -1,4 +1,4 @@
-import {Component, input, OnInit, ChangeDetectionStrategy, inject} from '@angular/core';
+import {Component, input, OnInit, OnDestroy, ChangeDetectionStrategy, inject, signal} from '@angular/core';
 import {SidebarItem, SidebarService} from '../../../../shared/services/sidebar.service';
 import {UsersService} from '../../users.service';
 import {UserTranslationPipe} from '../../i18n/user.translation';
@@ -19,7 +19,7 @@ import {SharedModule} from '../../../../shared/shared.module';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [CommonModule, SharedModule, DragulaModule]
 })
-export class SidebarUserComponent implements OnInit {
+export class SidebarUserComponent implements OnInit, OnDestroy {
     private sidebarService = inject(SidebarService);
     private usersService = inject(UsersService);
     private juicebox = inject(JuiceboxService);
@@ -29,17 +29,20 @@ export class SidebarUserComponent implements OnInit {
 
     i18n: UserTranslationPipe;
     i18nMain: MainTranslationPipe;
-    DRAGULA_SIDEBAR = 'DRAGULA_SIDEBAR';
-    public sidebar: SidebarItem[] = [];
-    public sidebarHidden: SidebarItem[] = [];
-    subs = new Subscription();
-    userId: string;
-    organisations: any[] = [];
-    selectedOrganisation: string;
-    disabledDragAndDrop = false;
+    readonly DRAGULA_SIDEBAR = 'DRAGULA_SIDEBAR';
+
+    protected readonly sidebar = signal<SidebarItem[]>([]);
+    protected readonly sidebarHidden = signal<SidebarItem[]>([]);
+    protected readonly organisations = signal<any[]>([]);
+    protected readonly selectedOrganisation = signal<string>('');
+    protected readonly disabledDragAndDrop = signal(false);
+
     // component is reusable, depending of the context where is it used, calls are different
     context = input<'user-profile' | null>();
     allowHidden = input<boolean>(true);
+
+    private subs = new Subscription();
+    private userId: string;
 
     constructor() {
       this.i18n = new UserTranslationPipe(this.juicebox);
@@ -56,26 +59,25 @@ export class SidebarUserComponent implements OnInit {
         await this.getOrganisations();
 
         this.subs.add(this.dragulaService.dropModel(this.DRAGULA_SIDEBAR)
-            .subscribe(async ({ target, source, item, sourceIndex, targetIndex,  sourceModel,
-                                  targetModel}) => {
-                this.disabledDragAndDrop = true;
+            .subscribe(async ({ target, item, targetIndex }) => {
+                this.disabledDragAndDrop.set(true);
                 const registeredSidebarModules = this.sidebarService.getAllRegisteredSidebarItems();
                 if (target.id === 'sidebarHidden') {
-                    const result = await this.sidebarService.hideUserSidebarItem(this.userId, this.selectedOrganisation, registeredSidebarModules, item.id);
+                    const result = await this.sidebarService.hideUserSidebarItem(this.userId, this.selectedOrganisation(), registeredSidebarModules, item.id);
                     if (!result.success) {
                         this.juicebox.showToast("error", "Error", this.i18n.transform(result.error));
                         return;
                     }
                 }
                 else {
-                    const result = await this.sidebarService.changeUserSidebarItemIndex(this.userId, this.selectedOrganisation, registeredSidebarModules, item.id, targetIndex);
+                    const result = await this.sidebarService.changeUserSidebarItemIndex(this.userId, this.selectedOrganisation(), registeredSidebarModules, item.id, targetIndex);
                     if (!result.success) {
                         this.juicebox.showToast("error", "Error", this.i18n.transform(result.error));
                         return;
                     }
                 }
                 await this.getSidebarItems();
-                this.disabledDragAndDrop = false;
+                this.disabledDragAndDrop.set(false);
             })
         );
         const getUser = await this.usersService.getUser(this.userId);
@@ -92,12 +94,12 @@ export class SidebarUserComponent implements OnInit {
     }
 
     async getSidebarItems() {
-        const sidebarItem =  await this.sidebarService.getSidebarItems(this.userId, this.selectedOrganisation);
+        const sidebarItem = await this.sidebarService.getSidebarItems(this.userId, this.selectedOrganisation());
         if (sidebarItem === null) {
             return;
         }
-        this.sidebar = JSON.parse(JSON.stringify(sidebarItem.visible));
-        this.sidebarHidden = JSON.parse(JSON.stringify(sidebarItem.hidden));
+        this.sidebar.set(JSON.parse(JSON.stringify(sidebarItem.visible)));
+        this.sidebarHidden.set(JSON.parse(JSON.stringify(sidebarItem.hidden)));
     }
 
     // only organisations in which users has roles
@@ -109,23 +111,22 @@ export class SidebarUserComponent implements OnInit {
         else {
             getUser = await this.usersService.getUser(this.userId);
         }
-       const userRoles = Object.keys(getUser.payload.roles);
+        const userRoles = Object.keys(getUser.payload.roles);
 
         const result = await this.juicebox.getOrganisations(this.userId);
         if (!result.payload || !result.payload.length) return false;
-        this.organisations = [...result.payload.filter(org => userRoles.includes(org._id))];
-        if (!this.selectedOrganisation) {
-            const find = this.organisations.find(organisation => organisation._id === this.juicebox.getUserOrganisationId())
-            if (find) {
-                this.selectedOrganisation = find._id;
-                return;
-            }
-            this.selectedOrganisation = this.organisations[0]._id;
+
+        const filtered = result.payload.filter((org: any) => userRoles.includes(org._id));
+        this.organisations.set(filtered);
+
+        if (!this.selectedOrganisation()) {
+            const find = filtered.find((org: any) => org._id === this.juicebox.getUserOrganisationId());
+            this.selectedOrganisation.set(find ? find._id : filtered[0]._id);
         }
     }
 
     organisationChanged() {
-        this.getSidebarItems()
+        this.getSidebarItems();
     }
 
 }

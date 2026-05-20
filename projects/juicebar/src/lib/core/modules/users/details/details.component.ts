@@ -38,8 +38,8 @@ export class DetailsUsersComponent implements OnInit, OnDestroy {
 
     private tabRoutes: string[] = [
         'details-user',
-        'organisations-user', 
         'roles-user',
+        'organisations-user',
         'groups-user',
         'sidebar-user',
         'customers-user',

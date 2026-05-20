@@ -3,7 +3,7 @@ import { SidebarUserComponent } from '../../../../../users/details/sidebar-user/
 
 @Component({
   selector: 'app-user-profile-sidebar',
-  template: `<app-sidebar-user context="user-profile" [allowHidden]="false"></app-sidebar-user>`,
+  template: `<app-sidebar-user context="user-profile"></app-sidebar-user>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [SidebarUserComponent]
 })

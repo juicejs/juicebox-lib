@@ -14,7 +14,7 @@ import { DialogService, SnackbarService } from '../../../../../ui-components';
 @Component({
     selector: 'groups-modal',
     templateUrl: './groups-modal.component.html',
-    styleUrls: ['./groups-modal.component.css'],
+    styleUrl: './groups-modal.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [CommonModule, FormsModule, SharedModule, UserTranslationPipe]
 })

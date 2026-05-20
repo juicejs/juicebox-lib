@@ -1,19 +1,22 @@
 @import "../../../../../assets/theme";
 
 .wrapper {
-    display: table;
+    display: flex;
+    gap: 1rem;
 }
 .container {
-    display: table-cell;
-    background-color: rgba(255, 255, 255, 0.2);
-    width: 50%;
+    height: unset;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: #fff3;
     border-radius: 5px;
     text-align: left;
+    padding: 1rem;
+    gap: 1rem;
 }
 .container div, .gu-mirror:not(.container) {
-    margin: 10px;
-    padding: 10px;
-    background-color: #e0e0e0;
+    padding: 1rem;
     transition: opacity 0.4s ease-in-out;
     border-radius: 5px;
 }
