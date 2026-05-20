@@ -9,7 +9,15 @@
         <app-icon [icon]="filter.icon" class="filter-icon"></app-icon>
         <span class="filter-label">{{ filter.label }}</span>
         @if (filter.selectedValue) {
-          <span class="filter-value">{{ filter.displayProperty ? filter.selectedValue[filter.displayProperty] : filter.selectedValue }}</span>
+          <span class="filter-value">
+            <span class="filter-value__label">{{ filter.displayProperty ? filter.selectedValue[filter.displayProperty] : filter.selectedValue }}</span>
+            <button type="button"
+                    class="filter-value__remove"
+                    [attr.aria-label]="'Remove ' + (filter.displayProperty ? filter.selectedValue[filter.displayProperty] : filter.selectedValue)"
+                    (click)="clearSelection(filter.key, $event)">
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+            </button>
+          </span>
         }
         <svg class="dropdown-icon" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m4 6 4 4 4-4"/></svg>
       </button>

@@ -1,2 +1,70 @@
-// This component uses global filter styles defined in styles.scss
-// No additional component-specific styles needed as everything is in the global .filter-bar class
+// Most filter-bar styles live globally in styles.scss (.filter-bar / .filter-button / .filter-value).
+// Component-scoped styles below refine the selected-value chip and add the inline remove (x) button.
+
+:host {
+  display: contents;
+}
+
+.filter-value {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 4px 2px 8px;
+  border-radius: 999px;
+  background: rgba(var(--color-secondary-rgb), 0.12);
+  color: var(--color-secondary);
+  border: 1px solid rgba(var(--color-secondary-rgb), 0.35);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  max-width: 180px;
+  overflow: visible;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: rgba(var(--color-secondary-rgb), 0.18);
+    border-color: rgba(var(--color-secondary-rgb), 0.55);
+  }
+
+  &__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 130px;
+    letter-spacing: 0.1px;
+  }
+
+  &__remove {
+    appearance: none;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-secondary);
+    border-radius: 50%;
+    cursor: pointer;
+    line-height: 0;
+    flex-shrink: 0;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      background: var(--color-secondary);
+      color: var(--color-secondary-contrast, #fff);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-secondary);
+      outline-offset: 1px;
+    }
+
+    svg {
+      width: 9px;
+      height: 9px;
+      stroke-width: 2.2;
+    }
+  }
+}

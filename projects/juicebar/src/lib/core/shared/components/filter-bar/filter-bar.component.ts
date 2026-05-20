@@ -56,6 +56,11 @@ export class FilterBarComponent {
     this.close();
   }
 
+  clearSelection(filterKey: string, event: Event) {
+    event.stopPropagation();
+    this.filterChanged.emit({ key: filterKey, value: null });
+  }
+
   onFilterSearch(filterKey: string, term: string) {
     this.filterSearched.emit({ key: filterKey, term });
   }
