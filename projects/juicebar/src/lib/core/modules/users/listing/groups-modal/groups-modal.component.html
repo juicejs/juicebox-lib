@@ -1,118 +1,164 @@
-<div app-dialog-content class="groups-content">
-    <h2>
-        {{'groups_editor' | translate}}
-        <button app-button class="close-button" (click)="close()">
-            <app-icon icon="close">close</app-icon>
-        </button>
-    </h2>
+<div app-dialog-content class="groups-modal">
 
-    <div class="filter-bar">
-        <div class="form-group d-flex" style="width:100%;">
-            @if (groups().length) {
-                <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
-                    <app-label>{{'groups' | translate}}</app-label>
-                    <app-select (selectionChange)="groupChanged($event.value)">
-                        @for (group of groups(); track group._id) {
-                            <app-option [value]="group">{{group.name}}</app-option>
+    <header class="modal-head">
+        <div class="head-titles">
+            <div class="eyebrow">{{ 'workspace' | translate }}</div>
+            <h2 class="title">{{ 'groups_editor' | translate }}</h2>
+            <p class="sub">{{ 'groups_editor_sub' | translate }}</p>
+        </div>
+        <button app-button appearance="icon" class="close-btn" (click)="close()">
+            <app-icon icon="close"></app-icon>
+        </button>
+    </header>
+
+    <div class="modal-body">
+
+        <!-- Group selector -->
+        <section class="section">
+            <div class="section-label">{{ 'group' | translate }}</div>
+            <div class="section-row">
+                <app-form-field appearance="outline" class="picker">
+                    <app-select [searchable]="true"
+                                (selectionChange)="groupChanged($event.value)"
+                                placeholder="{{ 'select_group' | translate }}">
+                        @for (g of groups(); track g._id) {
+                            <app-option [value]="g">{{ g.name }}</app-option>
                         }
                     </app-select>
                 </app-form-field>
-            }
 
-            <button app-button color="primary"
-                    [hasPermissions]="'groups:role#super-admin'"
-                    (click)="createGroup()">
-                {{'create' | translate}}
-            </button>
-        </div>
+                <button app-button appearance="stroked"
+                        [hasPermissions]="'groups:role#super-admin'"
+                        (click)="createGroup()">
+                    <app-icon [icon]="'add'"></app-icon>
+                    {{ 'new_group' | translate }}
+                </button>
+            </div>
+        </section>
 
+        <!-- Add role -->
         @if (selectedGroup()) {
-            <div class="form-group d-flex">
-                @if (roles().length) {
-                    <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
-                        <app-label>{{'add_role' | translate}}</app-label>
+            <section class="section">
+                <div class="section-label">{{ 'add_role' | translate }}</div>
+                <div class="section-row">
+                    <app-form-field appearance="outline" class="picker">
                         <app-select [value]="selectedRole()"
-                                    (selectionChange)="selectedRole.set($event.value)">
+                                    (selectionChange)="selectedRole.set($event.value)"
+                                    placeholder="{{ 'select_role' | translate }}…">
                             @for (role of roles(); track role.key) {
-                                <app-option [value]="role.key" [disabled]="role.disabled">{{role.name}}</app-option>
+                                <app-option [value]="role.key" [disabled]="role.disabled">
+                                    {{ role.name }}
+                                </app-option>
                             }
                         </app-select>
                     </app-form-field>
+
+                    <button app-button appearance="raised" color="primary"
+                            [disabled]="!selectedRole()"
+                            [hasPermissions]="'groups:role#super-admin'"
+                            (click)="addRole()">
+                        <app-icon [icon]="'add'"></app-icon>
+                        {{ 'add_role' | translate }}
+                    </button>
+
+                    <button app-button appearance="stroked"
+                            [hasPermissions]="'groups:role#super-admin'"
+                            (click)="updateSelectedGroup()">
+                        <app-icon [icon]="'edit'"></app-icon>
+                        {{ 'edit' | translate }}
+                    </button>
+                </div>
+            </section>
+
+            <!-- Assigned roles -->
+            <section class="section section-roles">
+                <div class="section-header">
+                    <div class="section-label">
+                        {{ 'assigned_roles' | translate }}
+                        <span class="muted">· {{ rows().length }}</span>
+                    </div>
+                    @if (hasVisibilityFeature()) {
+                        <span class="legend">{{ 'roles_legend' | translate }}</span>
+                    }
+                </div>
+
+                @if (rows().length === 0) {
+                    <div class="roles-empty">
+                        <div class="roles-empty-title">{{ 'no_roles_assigned' | translate }}</div>
+                    </div>
+                } @else {
+                    <div class="role-list">
+                        @for (row of rows(); track row.role) {
+                            <div class="role-card"
+                                 [class.role-card-disabled]="hasVisibilityFeature() && !row.permissions['juicebox:visible']">
+                                <div class="role-head">
+                                    <div class="role-head-main">
+                                        <div class="role-name-row">
+                                            <span class="role-name">{{ row.role | translate }}</span>
+                                            @if (hasVisibilityFeature()) {
+                                                <span class="status-pill"
+                                                      [class.status-active]="row.permissions['juicebox:visible']"
+                                                      [class.status-inactive]="!row.permissions['juicebox:visible']">
+                                                    <span class="status-dot"></span>
+                                                    {{ (row.permissions['juicebox:visible'] ? 'visible' : 'hidden') | translate }}
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="role-actions">
+                                        @if (hasVisibilityFeature()) {
+                                            <app-slide-toggle
+                                                [checked]="row.permissions['juicebox:visible']"
+                                                (toggled)="toggleVisibility(row, $event)"
+                                                [disabled]="!hasPermission('groups:role#super-admin')">
+                                            </app-slide-toggle>
+                                        }
+                                        <button app-button appearance="icon"
+                                                class="trash-btn"
+                                                [hasPermissions]="'groups:role#super-admin'"
+                                                [title]="'delete' | translate"
+                                                (click)="deleteRole(row)">
+                                            <app-icon [icon]="'delete'"></app-icon>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="perm-grid">
+                                    @for (permission of getRolePermissions(row); track permission.key) {
+                                        <app-checkbox
+                                            [(checked)]="row.permissions[permission.key]"
+                                            [disabled]="!hasPermission('groups:role#super-admin')"
+                                            (change)="updateGroupRolePermission(row)"
+                                            class="perm-chip">
+                                            {{ permission.key }}
+                                        </app-checkbox>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
                 }
-
-                <button app-button color="primary" appearance="raised"
-                        [hasPermissions]="'groups:role#super-admin'"
-                        (click)="addRole()">
-                    {{'add' | translate}}
-                </button>
-
-                <button app-button color="primary" class="ml-2"
-                        [hasPermissions]="'groups:role#super-admin'"
-                        (click)="updateSelectedGroup()">
-                    {{'edit' | translate}}
-                </button>
-            </div>
+            </section>
         }
     </div>
 
-    <div class="col-12">
-        <cdk-table [dataSource]="rows()" class="app-elevation-0">
-
-            <ng-container cdkColumnDef="name">
-                <cdk-header-cell *cdkHeaderCellDef>{{'name' | translate}}</cdk-header-cell>
-                <cdk-cell *cdkCellDef="let row">{{row.role | translate}}</cdk-cell>
-            </ng-container>
-
-            @if (hasVisibilityFeature()) {
-                <ng-container cdkColumnDef="visibility">
-                    <cdk-header-cell *cdkHeaderCellDef>{{'visibility' | translate}}</cdk-header-cell>
-                    <cdk-cell *cdkCellDef="let row">
-                        <app-slide-toggle
-                            [checked]="row.permissions['juicebox:visible']"
-                            (toggled)="toggleVisibility(row, $event)"
-                            [disabled]="!hasPermission('groups:role#super-admin')">
-                        </app-slide-toggle>
-                    </cdk-cell>
-                </ng-container>
+    <footer class="modal-foot">
+        <div class="foot-hint">
+            <app-icon [icon]="'info'"></app-icon>
+            @if (selectedGroup()) {
+                <span>
+                    {{ 'changes_apply_to_members_of' | translate }}
+                    <strong>{{ selectedGroup().name }}</strong>.
+                </span>
+            } @else {
+                <span>{{ 'pick_a_group_to_edit' | translate }}</span>
             }
+        </div>
+        <div class="foot-actions">
+            <button app-button appearance="stroked" (click)="close()">
+                {{ 'close' | translate }}
+            </button>
+        </div>
+    </footer>
 
-            <ng-container cdkColumnDef="permissions">
-                <cdk-header-cell *cdkHeaderCellDef>{{'permissions' | translate}}</cdk-header-cell>
-                <cdk-cell *cdkCellDef="let row">
-                    <div class="d-flex flex-wrap pt-1">
-                        @for (permission of getRolePermissions(row); track permission.key) {
-                            <app-checkbox
-                                [(checked)]="row.permissions[permission.key]"
-                                [disabled]="!hasPermission('groups:role#super-admin')"
-                                (change)="updateGroupRolePermission(row)"
-                                class="mb-1 mr-1">
-                                {{permission.key}}
-                            </app-checkbox>
-                        }
-                    </div>
-                </cdk-cell>
-            </ng-container>
-
-            <ng-container cdkColumnDef="actions">
-                <cdk-header-cell *cdkHeaderCellDef>{{'actions' | translate}}</cdk-header-cell>
-                <cdk-cell *cdkCellDef="let row">
-                    <button app-button appearance="icon"
-                            [hasPermissions]="'groups:role#super-admin'"
-                            [appTooltip]="'delete' | translate"
-                            (click)="deleteRole(row)">
-                        <app-icon [icon]="'delete'"></app-icon>
-                    </button>
-                </cdk-cell>
-            </ng-container>
-
-            <cdk-header-row *cdkHeaderRowDef="displayedColumns()"></cdk-header-row>
-            <cdk-row *cdkRowDef="let row; columns: displayedColumns();"></cdk-row>
-        </cdk-table>
-    </div>
-
-    <div app-actions align="end">
-        <button app-button (click)="close()">
-            {{"close" | translate}}
-        </button>
-    </div>
 </div>

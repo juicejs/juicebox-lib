@@ -1,108 +1,194 @@
-<div class="parent" style="max-height: 100vh; border-radius: 25px;">
-    <div class="form-group">
+<div class="groups-user">
 
-        <form class="form-group">
-            <div class="d-flex">
-                <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
-                    <app-label>{{'organisation' | translate}}</app-label>
-                    <app-select [(value)]="selectedOrganisation" (selectionChange)="organisationChanged($event.value)">
-                        @for (org of organisations; track org._id) {
-                            <app-option [value]="org._id">
-                                {{org.name}}
-                            </app-option>
-                        }
-                    </app-select>
-                </app-form-field>
+    <!-- Toolbar -->
+    <div class="groups-toolbar">
+        <div class="toolbar-left">
+            <app-slide-toggle
+                [checked]="cascadeToChildren()"
+                (toggled)="cascadeToChildren.set($event)"
+                [disabled]="loading()">
+            </app-slide-toggle>
+            <label class="cascade-label" (click)="cascadeToChildren.set(!cascadeToChildren())">
+                {{ 'auto_assign_to_child_organisations' | translate }}
+            </label>
+        </div>
+
+        <div class="toolbar-right">
+            <div class="visible-groups">
+                <button app-button appearance="stroked" (click)="toggleDropdown()">
+                    <app-icon [icon]="'visibility'"></app-icon>
+                    {{ 'select_groups_to_show' | translate }}
+                    <span class="count-pill">{{ selectedGroupKeys().size }}/{{ allGroups().length }}</span>
+                    <app-icon [icon]="dropdownOpen() ? 'expand_less' : 'expand_more'"></app-icon>
+                </button>
+
+                @if (dropdownOpen()) {
+                    <div class="visible-groups-menu">
+                        <div class="menu-head">
+                            <div class="menu-search">
+                                <app-icon [icon]="'search'"></app-icon>
+                                <input type="text"
+                                       class="menu-search-input"
+                                       [placeholder]="'search' | translate"
+                                       [ngModel]="groupDropdownSearchTerm()"
+                                       (ngModelChange)="groupDropdownSearchTerm.set($event)">
+                                @if (groupDropdownSearchTerm()) {
+                                    <button class="menu-search-clear" (click)="clearDropdownSearch()">
+                                        <app-icon [icon]="'close'"></app-icon>
+                                    </button>
+                                }
+                            </div>
+                            <div class="menu-actions">
+                                <button app-button appearance="stroked" (click)="selectAllGroups()">
+                                    {{ 'select_all' | translate }}
+                                </button>
+                                <button app-button appearance="stroked" (click)="clearAllGroups()">
+                                    {{ 'clear_all' | translate }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="menu-list">
+                            @for (group of dropdownFilteredGroups(); track group.key) {
+                                <label class="menu-item">
+                                    <input type="checkbox"
+                                           [checked]="selectedGroupKeys().has(group.key)"
+                                           (change)="toggleGroupSelection(group.key)">
+                                    <span>{{ group.name }}</span>
+                                </label>
+                            }
+                            @if (dropdownFilteredGroups().length === 0) {
+                                <div class="menu-empty">{{ 'no_data_to_display' | translate }}</div>
+                            }
+                        </div>
+                    </div>
+                }
             </div>
-        </form>
 
-        <form class="form-group">
-            <div class="d-flex">
-                <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
-                    <app-label>{{'group' | translate}}</app-label>
-                    <app-select [(value)]="selectedGroup">
-                        @for (group of groups; track group.key) {
-                            <app-option [value]="group.key" [disabled]="group.disabled">
-                                {{group.name}}
-                            </app-option>
-                        }
-                    </app-select>
-                </app-form-field>
+            <button app-button
+                    appearance="raised"
+                    color="primary"
+                    [promiseBtn]="promiseBtn"
+                    [hasPermissions]="'groups:role#updated|update'"
+                    [disabled]="!hasChanges() || loading()"
+                    (click)="saveChanges()">
+                <app-icon [icon]="'save'"></app-icon>
+                {{ 'save' | translate }}
+            </button>
 
-                <div class="form-group">
-                    <button app-button appearance="raised" color="primary" [promiseBtn]="promiseBtn"
-                            [hasPermissions]="'groups:role#updated|update'"
-                            (click)="addGroup()">
-                        <app-icon [icon]="'add'"></app-icon>
-                        {{'add' | translate}}
-                    </button>
-                </div>
-
-                <div class="form-group" style="margin-left: auto;">
-                    <button app-button appearance="raised" color="primary" [promiseBtn]="promiseBtn"
-                            [hasPermissions]="'groups:role#read'"
-                            (click)="openGroupEditor()">{{'group editor' | translate}}</button>
-                </div>
-            </div>
-        </form>
-
+            <button app-button
+                    appearance="stroked"
+                    [hasPermissions]="'groups:role#read'"
+                    (click)="openGroupEditor()">
+                <app-icon [icon]="'edit'"></app-icon>
+                {{ 'group editor' | translate }}
+            </button>
+        </div>
     </div>
 
-    <div class="d-flex position-relative">
-        @if (loading) {
-            <div style="top:2.5rem; left:0; z-index: 999;"
-                 class="w-100 h-100 d-flex justify-center align-center position-absolute">
+    <!-- Matrix table -->
+    <div class="matrix-wrap">
+        @if (loading()) {
+            <div class="matrix-loading">
                 <app-progress-spinner mode="indeterminate"></app-progress-spinner>
             </div>
         }
 
-        @if (!loading) {
-            <div class="col-sm-12 col-md-12" style="max-height: 100vh; padding:0 !important; width: 100%;">
-
-                <table cdk-table [dataSource]="rows()" class="data-table fullscreen">
-                    <!-- Name Column -->
-                    <ng-container cdkColumnDef="name">
-                        <th cdk-header-cell *cdkHeaderCellDef>{{'name' | translate}}</th>
-                        <td cdk-cell *cdkCellDef="let row">
-                            <strong>{{row.name}}</strong>
-                        </td>
-                    </ng-container>
-
-                    <!-- Roles Column -->
-                    <ng-container cdkColumnDef="roles">
-                        <th cdk-header-cell *cdkHeaderCellDef>{{'roles' | translate}}</th>
-                        <td cdk-cell *cdkCellDef="let row" class="roles-cell">
-                            <div class="row flex-column" style="flex-wrap: wrap; padding-top: 6px;">
-                                @for (role of getGroupRoles(row); track role.role) {
-                                    <label class="ml-3">
-                                        <strong>{{role.role | translate}}:</strong>
-                                        <span class="pl-2">{{role.permissions}}</span>
-                                    </label>
-                                }
-                            </div>
-                        </td>
-                    </ng-container>
-
-                    <!-- Actions Column -->
-                    <ng-container cdkColumnDef="actions">
-                        <th cdk-header-cell *cdkHeaderCellDef>{{'actions' | translate}}</th>
-                        <td cdk-cell *cdkCellDef="let row">
-                            <button app-button
-                                    appearance="icon"
-                                    [hasPermissions]="'users:role#updated|update'"
-                                    [promiseBtn]="promiseBtn"
-                                    [title]="'delete' | translate"
-                                    (click)="deleteGroup(row);">
-                                <app-icon [icon]="'delete'"></app-icon>
-                            </button>
-                        </td>
-                    </ng-container>
-
-                    <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
-                    <tr cdk-row *cdkRowDef="let row; columns: displayedColumns;"></tr>
+        @if (filteredGroups().length === 0) {
+            <div class="matrix-empty">
+                <div class="matrix-empty-title">{{ 'no_groups_visible' | translate }}</div>
+                <div class="matrix-empty-text">{{ 'pick_groups_to_show' | translate }}</div>
+            </div>
+        } @else {
+            <div class="matrix-scroll">
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th class="org-col">
+                                <div class="org-search">
+                                    <app-icon [icon]="'search'"></app-icon>
+                                    <input type="text"
+                                           [placeholder]="'organisation' | translate"
+                                           [ngModel]="searchTerm()"
+                                           (ngModelChange)="searchTerm.set($event)">
+                                    @if (isSearching()) {
+                                        <button class="org-search-clear" (click)="clearSearch()">
+                                            <app-icon [icon]="'close'"></app-icon>
+                                        </button>
+                                    }
+                                </div>
+                            </th>
+                            @for (group of filteredGroups(); track group.key) {
+                                <th class="group-col">
+                                    <div class="group-col-name" [title]="group.name">{{ group.name }}</div>
+                                </th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (isSearching()) {
+                            @for (org of searchResults(); track org._id) {
+                                <tr>
+                                    <td class="org-cell">
+                                        <div class="org-row">
+                                            <span class="bullet">•</span>
+                                            <strong>{{ org.name }}</strong>
+                                        </div>
+                                    </td>
+                                    @for (group of filteredGroups(); track group.key) {
+                                        <td class="group-cell">
+                                            <input type="checkbox"
+                                                   [checked]="!!userGroupMatrix()[org._id]?.[group.key]"
+                                                   (change)="toggleGroupAssignment(org._id, group.key, $any($event.target).checked)">
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                            @if (searchResults().length === 0) {
+                                <tr>
+                                    <td [attr.colspan]="filteredGroups().length + 1" class="empty-row">
+                                        {{ 'no_data_to_display' | translate }}
+                                    </td>
+                                </tr>
+                            }
+                        } @else {
+                            @for (row of visibleRows(); track row.node._id) {
+                                <tr>
+                                    <td class="org-cell">
+                                        <div class="org-row" [style.padding-left.px]="row.level * 20">
+                                            @if (row.hasChildren) {
+                                                <button class="chevron-btn"
+                                                        (click)="toggleNode(row.node._id)"
+                                                        [attr.aria-label]="'toggle'">
+                                                    <app-icon [icon]="expandedOrgs().has(row.node._id) ? 'expand_more' : 'chevron_right'"></app-icon>
+                                                </button>
+                                            } @else {
+                                                <span class="bullet">•</span>
+                                            }
+                                            <strong>{{ row.node.name }}</strong>
+                                        </div>
+                                    </td>
+                                    @for (group of filteredGroups(); track group.key) {
+                                        <td class="group-cell">
+                                            <input type="checkbox"
+                                                   [checked]="!!userGroupMatrix()[row.node._id]?.[group.key]"
+                                                   (change)="toggleGroupAssignment(row.node._id, group.key, $any($event.target).checked)">
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        }
+                    </tbody>
                 </table>
-
             </div>
         }
     </div>
+
+    @if (hasChanges()) {
+        <div class="changes-hint">
+            <app-icon [icon]="'info'"></app-icon>
+            <span>{{ 'unsaved_changes_hint' | translate }}</span>
+        </div>
+    }
+
 </div>

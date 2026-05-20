@@ -1,99 +1,130 @@
-<div class="menu-bar clear" style="padding: 16px;">
-    <app-form-field appearance="outline" style="width: 300px; margin-right: 1rem;">
-        <app-label>{{'organisation' | translate}}</app-label>
-        <app-select [(value)]="selectedOrganisation"
-                    (selectionChange)="organisationChanged($event.value)">
-            @for (org of organisations; track org._id) {
-                <app-option [value]="org._id">
-                    {{org.name}}
-                </app-option>
-            }
-        </app-select>
-    </app-form-field>
+<div class="roles-user">
 
-    <app-form-field appearance="outline" style="width: 300px; margin-right: 1rem;">
-        <app-label>{{'roles' | translate}}</app-label>
-        <app-select [(value)]="selectedRole">
-            @for (role of availableRoles; track role.key) {
-                <app-option [value]="role.key"
-                            [disabled]="role.disabled">
-                    {{role.key | translate}}
-                </app-option>
-            }
-        </app-select>
-    </app-form-field>
+    <div class="roles-toolbar">
+        <div class="toolbar-left">
+            <div class="tool-label">{{ 'organisation' | translate }}</div>
 
-    <button app-button
-            appearance="raised"
-            color="primary"
-            (click)="addSingleRole()"
-            [hasPermissionsHide]="'users:role#update|updated'"
-            [promiseBtn]="promiseBtn">
-        <app-icon [icon]="'add'"></app-icon>
-        {{'add' | translate}}
-    </button>
-</div>
+            <app-form-field appearance="outline" class="org-picker">
+                <app-select [value]="selectedOrganisation()"
+                            (selectionChange)="organisationChanged($event.value)"
+                            [searchable]="true"
+                            placeholder="{{ 'select_organisation' | translate }}">
+                    @for (org of organisations(); track org._id) {
+                        <app-option [value]="org._id">{{ org.name }}</app-option>
+                    }
+                </app-select>
+            </app-form-field>
 
-<div class="parent">
-    <app-card>
-        <table cdk-table [dataSource]="rows()" class="data-table">
-            <!-- Name Column -->
-            <ng-container cdkColumnDef="name">
-                <th cdk-header-cell *cdkHeaderCellDef>{{'name' | translate}}</th>
-                <td cdk-cell *cdkCellDef="let row">
-                    <span class="user-select-none">{{row.role | translate}}</span>
-                </td>
-            </ng-container>
+            <div class="role-count-chip">{{ rows().length }} {{ 'roles' | translate }}</div>
 
-            <!-- Visibility Column -->
             @if (hasVisibilityFeature) {
-                <ng-container cdkColumnDef="visibility">
-                    <th cdk-header-cell *cdkHeaderCellDef>{{'visibility' | translate}}</th>
+                <div class="stat">
+                    <span class="stat-label">{{ 'visibility' | translate }}</span>
+                    <span class="stat-value">
+                        {{ visibleCount() }}<span class="stat-total">/{{ rows().length }}</span>
+                    </span>
+                </div>
+            }
+
+            <div class="stat">
+                <span class="stat-label">{{ 'permissions' | translate }}</span>
+                <span class="stat-value">{{ totalPerms() }}</span>
+            </div>
+        </div>
+
+        <div class="toolbar-right">
+            <app-form-field appearance="outline" class="role-picker">
+                <app-select [value]="selectedRole()"
+                            (selectionChange)="selectedRole.set($event.value)"
+                            placeholder="{{ 'add_role' | translate }}…">
+                    @for (role of availableRoles(); track role.key) {
+                        <app-option [value]="role.key" [disabled]="role.disabled">
+                            {{ role.key | translate }}
+                        </app-option>
+                    }
+                </app-select>
+            </app-form-field>
+
+            <button app-button
+                    appearance="raised"
+                    color="primary"
+                    (click)="addSingleRole()"
+                    [disabled]="!selectedRole()"
+                    [hasPermissionsHide]="'users:role#update|updated'"
+                    [promiseBtn]="promiseBtn">
+                <app-icon [icon]="'add'"></app-icon>
+                {{ 'add' | translate }}
+            </button>
+        </div>
+    </div>
+
+    <div class="roles-table">
+        @if (rows().length === 0) {
+            <div class="roles-empty">
+                <div class="roles-empty-title">{{ 'no_data_to_display' | translate }}</div>
+            </div>
+        } @else {
+            <table cdk-table [dataSource]="rows()" class="data-table">
+                <ng-container cdkColumnDef="name">
+                    <th cdk-header-cell *cdkHeaderCellDef>{{ 'name' | translate }}</th>
                     <td cdk-cell *cdkCellDef="let row">
-                        <div class="d-flex flex-wrap user-select-none">
+                        <div class="row-name">{{ row.role | translate }}</div>
+                    </td>
+                </ng-container>
+
+                @if (hasVisibilityFeature) {
+                    <ng-container cdkColumnDef="visibility">
+                        <th cdk-header-cell *cdkHeaderCellDef class="col-visibility">{{ 'visibility' | translate }}</th>
+                        <td cdk-cell *cdkCellDef="let row" class="col-visibility">
                             <app-slide-toggle
                                 [checked]="row.permissions['juicebox:visible']"
                                 (toggled)="toggleVisibility(row.role, $event, row.permissions)">
                             </app-slide-toggle>
+                        </td>
+                    </ng-container>
+                }
+
+                <ng-container cdkColumnDef="permissions">
+                    <th cdk-header-cell *cdkHeaderCellDef>{{ 'permissions' | translate }}</th>
+                    <td cdk-cell *cdkCellDef="let row">
+                        <div class="perm-chips">
+                            @for (permission of getRolePermissions(row); track permission.key) {
+                                <app-checkbox
+                                    [(checked)]="row.permissions[permission.key]"
+                                    [hasPermissions]="'users:role#updated|update'"
+                                    (change)="togglePermission(row.role, row.permissions)"
+                                    class="permission-chip">
+                                    {{ permission.key }}
+                                </app-checkbox>
+                            }
                         </div>
                     </td>
                 </ng-container>
-            }
 
-            <!-- Permissions Column -->
-            <ng-container cdkColumnDef="permissions">
-                <th cdk-header-cell *cdkHeaderCellDef>{{'permissions' | translate}}</th>
-                <td cdk-cell *cdkCellDef="let row">
-                    <div class="d-flex flex-wrap user-select-none" style="gap: 0.5rem;">
-                        @for (permission of getRolePermissions(row); track permission.key) {
-                            <app-checkbox
-                                [(checked)]="row.permissions[permission.key]"
+                <ng-container cdkColumnDef="actions">
+                    <th cdk-header-cell *cdkHeaderCellDef class="col-actions">{{ 'actions' | translate }}</th>
+                    <td cdk-cell *cdkCellDef="let row" class="col-actions">
+                        <button app-button
+                                appearance="icon"
                                 [hasPermissions]="'users:role#updated|update'"
-                                (change)="togglePermission(row.role, row.permissions)"
-                                class="permission-checkbox">
-                                {{permission.key}}
-                            </app-checkbox>
-                        }
-                    </div>
-                </td>
-            </ng-container>
+                                [title]="'remove' | translate"
+                                (click)="removeRole(row); $event.stopPropagation();">
+                            <app-icon [icon]="'delete'"></app-icon>
+                        </button>
+                    </td>
+                </ng-container>
 
-            <!-- Actions Column -->
-            <ng-container cdkColumnDef="actions">
-                <th cdk-header-cell *cdkHeaderCellDef>{{'actions' | translate}}</th>
-                <td cdk-cell *cdkCellDef="let row">
-                    <button app-button
-                            appearance="icon"
-                            [hasPermissions]="'users:role#updated|update'"
-                            [title]="'remove' | translate"
-                            (click)="removeRole(row); $event.stopPropagation();">
-                        <app-icon [icon]="'delete'"></app-icon>
-                    </button>
-                </td>
-            </ng-container>
+                <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
+                <tr cdk-row *cdkRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        }
+    </div>
 
-            <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
-            <tr cdk-row *cdkRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-    </app-card>
+    @if (hasVisibilityFeature) {
+        <div class="roles-hint">
+            <app-icon [icon]="'info'"></app-icon>
+            <span>{{ 'toggling_visibility_hint' | translate }}</span>
+        </div>
+    }
+
 </div>

@@ -1,54 +1,73 @@
 <div class="organisations-user">
 
     <div class="orgs-toolbar">
-        <app-select class="orgs-select"
-                    [value]="selectedOrganisation()"
-                    (selectionChange)="organisationChanged($event.value)"
-                    [searchable]="true"
-                    searchPlaceholder="Search organisations...">
-            @for (org of organisations; track org._id) {
-                <app-option [value]="org">{{org.name}}</app-option>
-            }
-        </app-select>
+        <app-form-field appearance="outline" class="orgs-picker">
+            <app-select [value]="selectedOrganisation()"
+                        (selectionChange)="organisationChanged($event.value)"
+                        [searchable]="true"
+                        placeholder="{{ 'select_organisation' | translate }}"
+                        searchPlaceholder="{{ 'search_organisations' | translate }}">
+                @for (org of organisations; track org._id) {
+                    <app-option [value]="org">{{ org.name }}</app-option>
+                }
+            </app-select>
+        </app-form-field>
 
         <button app-button
+                appearance="stroked"
                 [disabled]="!juicebox.hasPermission('users:role#update') || !selectedOrganisation()"
                 [promiseBtn]="promiseBtn"
                 (click)="add()">
             <app-icon [icon]="'add'"></app-icon>
-            {{'add' | translate}}
+            {{ 'add' | translate }}
         </button>
 
-        <button app-button color="primary" class="orgs-create"
+        <span class="orgs-toolbar-spacer"></span>
+
+        <button app-button
+                appearance="raised"
+                color="primary"
+                class="orgs-create"
                 [hasPermissionsHide]="'users:role#super-admin'"
                 (click)="createNewOrg()">
             <app-icon [icon]="'add'"></app-icon>
-            {{'create' | translate}}
+            {{ 'create' | translate }}
         </button>
     </div>
 
-    <table cdk-table [dataSource]="rows()" class="data-table" [trackBy]="trackById">
-        <ng-container cdkColumnDef="name">
-            <th cdk-header-cell *cdkHeaderCellDef>{{'name' | translate}}</th>
-            <td cdk-cell *cdkCellDef="let row"><strong>{{row.name}}</strong></td>
-        </ng-container>
+    <div class="orgs-table">
+        @if (rows().length === 0) {
+            <div class="orgs-empty">
+                <div class="orgs-empty-title">{{ 'no_organisations_assigned' | translate }}</div>
+                <div class="orgs-empty-text">{{ 'pick_one_from_dropdown_above' | translate }}</div>
+            </div>
+        } @else {
+            <table cdk-table [dataSource]="rows()" class="data-table" [trackBy]="trackById">
+                <ng-container cdkColumnDef="name">
+                    <th cdk-header-cell *cdkHeaderCellDef>{{ 'name' | translate }}</th>
+                    <td cdk-cell *cdkCellDef="let row">
+                        <span class="org-name">{{ row.name }}</span>
+                    </td>
+                </ng-container>
 
-        <ng-container cdkColumnDef="actions">
-            <th cdk-header-cell *cdkHeaderCellDef class="text-right">{{'actions' | translate}}</th>
-            <td cdk-cell *cdkCellDef="let row" class="text-right">
-                @if (row._id !== loggedInOrganisationId || loggedInUserId !== userId) {
-                    <button app-button appearance="icon"
-                            [hasPermissions]="'users:role#update'"
-                            [title]="'delete' | translate"
-                            (click)="delete(row)">
-                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M5 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1M6 7v5M10 7v5M5 4l1 9a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1l1-9"/></svg>
-                    </button>
-                }
-            </td>
-        </ng-container>
+                <ng-container cdkColumnDef="actions">
+                    <th cdk-header-cell *cdkHeaderCellDef class="text-right">{{ 'actions' | translate }}</th>
+                    <td cdk-cell *cdkCellDef="let row" class="text-right">
+                        @if (row._id !== loggedInOrganisationId || loggedInUserId !== userId) {
+                            <button app-button appearance="icon"
+                                    [hasPermissions]="'users:role#update'"
+                                    [title]="'delete' | translate"
+                                    (click)="delete(row)">
+                                <app-icon [icon]="'delete'"></app-icon>
+                            </button>
+                        }
+                    </td>
+                </ng-container>
 
-        <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
-        <tr cdk-row *cdkRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
+                <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
+                <tr cdk-row *cdkRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        }
+    </div>
 
 </div>

@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, ChangeDetectionStrategy, signal} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy, signal, computed} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ActivatedRoute} from '@angular/router';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
@@ -13,7 +13,7 @@ import {SharedModule} from '../../../../shared/shared.module';
 
 @Component({
     selector: 'app-roles-user',
-    styleUrls: ['./roles-user.component.css'],
+    styleUrls: ['./roles-user.component.scss'],
     templateUrl: './roles-user.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
@@ -26,17 +26,16 @@ import {SharedModule} from '../../../../shared/shared.module';
 export class RolesUserComponent implements OnInit {
 
     rows = signal<any[]>([]);
+    selectedOrganisation = signal<string>('');
+    selectedRole = signal<string>('');
+    organisations = signal<any[]>([]);
+    availableRoles = signal<any[]>([]);
 
     public userId: string;
     public user: any;
     public userHasGroups: boolean;
 
-    public selectedRole: string;
-    public availableRoles = [];
     public allRoles = [];
-
-    public selectedOrganisation: string;
-    public organisations = [];
 
     i18n: UserTranslationPipe;
     public promiseBtn;
@@ -45,6 +44,23 @@ export class RolesUserComponent implements OnInit {
 
     public hasVisibilityFeature: boolean = false;
     displayedColumns: string[] = ['name', 'permissions', 'actions'];
+
+    protected readonly orgName = computed(() => {
+        const id = this.selectedOrganisation();
+        const org = this.organisations().find(o => o._id === id);
+        return org ? org.name : '';
+    });
+
+    protected readonly visibleCount = computed(() =>
+        this.rows().filter(r => r.permissions && r.permissions['juicebox:visible']).length
+    );
+
+    protected readonly totalPerms = computed(() =>
+        this.rows().reduce((acc, r) => {
+            if (!r.permissions) return acc;
+            return acc + Object.keys(r.permissions).filter(k => k !== 'juicebox:visible' && r.permissions[k]).length;
+        }, 0)
+    );
 
     private configurationService = inject(ConfigurationService);
     protected juicebox = inject(JuiceboxService);
@@ -59,7 +75,7 @@ export class RolesUserComponent implements OnInit {
 
     async ngOnInit() {
         this.userId = this.route.snapshot.parent.params['id'];
-        this.selectedOrganisation = this.juicebox.getUserOrganisationId();
+        this.selectedOrganisation.set(this.juicebox.getUserOrganisationId());
         await this.getOrganisations();
         await this.getUserData();
 
@@ -85,7 +101,7 @@ export class RolesUserComponent implements OnInit {
         const organisationResult = await this.juicebox.getOrganisations(this.userId);
         if (!organisationResult.payload || !organisationResult.payload.length) return false;
 
-        this.organisations = organisationResult.payload;
+        this.organisations.set(organisationResult.payload);
     }
 
     private async getUser() {
@@ -100,14 +116,11 @@ export class RolesUserComponent implements OnInit {
     }
 
     private async getUserRoles() {
-        this.user.roles = this.user.roles[this.selectedOrganisation] ? this.user.roles[this.selectedOrganisation] : [];
+        const orgId = this.selectedOrganisation();
+        this.user.roles = this.user.roles[orgId] ? this.user.roles[orgId] : [];
         this.rows.set([...(this.user.roles.sort((a,b) => {
-            if (a.role < b.role) {
-                return -1;
-            }
-            if (a.role > b.role) {
-                return 1;
-            }
+            if (a.role < b.role) return -1;
+            if (a.role > b.role) return 1;
             return 0;
         }))]);
     }
@@ -119,13 +132,13 @@ export class RolesUserComponent implements OnInit {
         this.allRoles = this.allRoles.concat(roles.payload);
         if (!this.allRoles) return false;
 
-        this.availableRoles = this.allRoles.map(role => {
-            let has = this.user.roles.find(_role => {
-                return _role.role == role.key;
-            });
+        const available = this.allRoles.map(role => {
+            let has = this.user.roles.find(_role => _role.role == role.key);
             role.disabled = !!has;
             return role;
         }).sort((a: any, b: any) => a.name.localeCompare(b.name));
+
+        this.availableRoles.set(available);
     }
 
     private _userHasGroups(): boolean {
@@ -137,20 +150,21 @@ export class RolesUserComponent implements OnInit {
 
     addRole() {
         this.promiseBtn = (async () => {
-            if (!this.selectedRole) return Promise.resolve();
+            const selected = this.selectedRole();
+            if (!selected) return Promise.resolve();
 
             const newRole = {
-                role: this.selectedRole,
+                role: selected,
                 permissions: {},
                 index: this.user.roles.filter(role => role.hasOwnProperty('index')).length + 1
             }
 
             const newRoles = [...this.user.roles, newRole];
 
-            const result = await this.userService.updateRoles(this.user._id, newRoles, this.selectedOrganisation);
+            const result = await this.userService.updateRoles(this.user._id, newRoles, this.selectedOrganisation());
             if (result && result.success) {
                 this.juicebox.showToast("success", this.i18n.transform('role_added'))
-                this.selectedRole = null;
+                this.selectedRole.set('');
                 await this.getUserData();
             } else {
                 this.juicebox.showToast("error", this.i18n.transform('role_add_failed'))
@@ -160,11 +174,12 @@ export class RolesUserComponent implements OnInit {
 
     async addSingleRole() {
         this.promiseBtn = (async (): Promise<any> => {
-            if (!this.selectedRole) {
+            const selected = this.selectedRole();
+            if (!selected) {
                 this.juicebox.showToast("error", "Error", this.i18n.transform('select_role_first'));
                 return await this.helperService.pause();
             }
-            const result = await this.userService.addRole(this.user._id, this.selectedRole, this.selectedOrganisation);
+            const result = await this.userService.addRole(this.user._id, selected, this.selectedOrganisation());
             if (!result || !result.success) {
                 this.juicebox.showToast("error", "Error", this.i18n.transform('role_add_failed'));
                 await this.helperService.pause();
@@ -172,7 +187,7 @@ export class RolesUserComponent implements OnInit {
             }
 
             this.juicebox.showToast("success", "Success", this.i18n.transform('role_added'), { timeOut: 1000 });
-            this.selectedRole = null;
+            this.selectedRole.set('');
             await this.getUserData();
         })()
     }
@@ -187,7 +202,7 @@ export class RolesUserComponent implements OnInit {
         });
         dialogRef.closed.subscribe(async (result) => {
             if (!result) return;
-            const deleteResult = await this.userService.removeRole(this.user._id, role.role, this.selectedOrganisation);
+            const deleteResult = await this.userService.removeRole(this.user._id, role.role, this.selectedOrganisation());
             if (!deleteResult || !deleteResult.success) {
                 this.juicebox.showToast("error", "Error", this.i18n.transform('role_delete_failed'));
                 return;
@@ -199,21 +214,21 @@ export class RolesUserComponent implements OnInit {
     }
 
     getRolePermissions(_role: any) {
-        const role = this.allRoles.find(role => {
-            return role.key === _role.role;
-        });
+        const role = this.allRoles.find(role => role.key === _role.role);
         if (role && role.permissions) return role.permissions;
 
         return [];
     }
 
-    async toggleVisibility(role: string, visible: boolean, permissions: { [key: string]: boolean }){
+    async toggleVisibility(role: string, visible: boolean, permissions: { [key: string]: boolean }) {
         permissions["juicebox:visible"] = visible;
-        const result = await this.userService.updatePermissions(this.user._id, role, permissions, this.selectedOrganisation);
+        this.rows.set([...this.rows()]);
+        await this.userService.updatePermissions(this.user._id, role, permissions, this.selectedOrganisation());
     }
 
     async togglePermission(role: string, permissions: { [key: string]: boolean }) {
-        const result = await this.userService.updatePermissions(this.user._id, role, permissions, this.selectedOrganisation);
+        this.rows.set([...this.rows()]);
+        const result = await this.userService.updatePermissions(this.user._id, role, permissions, this.selectedOrganisation());
         if (!result || !result.success) {
             this.juicebox.showToast("error", "Error", this.i18n.transform('permission_update_failed'));
             return;
@@ -223,7 +238,7 @@ export class RolesUserComponent implements OnInit {
     }
 
     async organisationChanged(event) {
-        this.selectedOrganisation = event;
+        this.selectedOrganisation.set(event);
         await this.getUserData();
     }
 }

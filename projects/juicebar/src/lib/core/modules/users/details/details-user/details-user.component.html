@@ -1,195 +1,264 @@
-<div class="d-flex p-3" style="gap: 2rem;">
+<div class="details-page">
+    <!-- Left column: Profile -->
     @if (userForm(); as form) {
-    <form class="col-4 p-0" [formGroup]="form">
-        <div class="form-group"
-             [class.has-error]="!form.controls['firstname'].valid && form.controls['firstname'].touched">
-            <app-form-field appearance="outline" class="w-100">
-                <app-label>{{"salutation" | translate}}</app-label>
-                <app-select formControlName="salutation">
-                    @for (salutation of juicebox.getSalutations(); track salutation.key) {
-                        <app-option [value]="salutation.key">{{salutation.name}}</app-option>
-                    }
-                </app-select>
-            </app-form-field>
-            @if (form.controls['salutation'].hasError('required') && form.controls['salutation'].touched) {
-                <div class="alert alert-danger">{{"include_salutation" | translate}}</div>
-            }
-        </div>
+        <app-card class="details-card">
+            <header class="card-head">
+                <div>
+                    <div class="card-title">{{ 'profile' | translate }}</div>
+                    <div class="card-sub">{{ 'basic_identity_and_locale' | translate }}</div>
+                </div>
+            </header>
+            <form class="card-body" [formGroup]="form">
+                <div class="field-row">
+                    <div class="field">
+                        <label class="field-label">
+                            {{ 'salutation' | translate }}
+                            <span class="field-opt">Optional</span>
+                        </label>
+                        <app-form-field appearance="outline" class="field-control">
+                            <app-select formControlName="salutation">
+                                @for (salutation of juicebox.getSalutations(); track salutation.key) {
+                                    <app-option [value]="salutation.key">{{ salutation.name }}</app-option>
+                                }
+                            </app-select>
+                        </app-form-field>
+                        @if (form.controls['salutation'].hasError('required') && form.controls['salutation'].touched) {
+                            <div class="field-error">{{ 'include_salutation' | translate }}</div>
+                        }
+                    </div>
 
-        <div class="form-group">
-            <app-form-field appearance="outline" class="w-100">
-                <app-label>{{"firstname" | translate}}*</app-label>
-                <input appInput formControlName="firstname">
-                @if (form.controls['firstname'].hasError('required')) {
-                    <app-error>{{"include_firstname" | translate}}</app-error>
+                    <div class="field">
+                        <label class="field-label">{{ 'language' | translate }}</label>
+                        <app-form-field appearance="outline" class="field-control">
+                            <app-select formControlName="language">
+                                @for (language of languages(); track language.code) {
+                                    <app-option [value]="language.code">{{ language.name }}</app-option>
+                                }
+                            </app-select>
+                        </app-form-field>
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <div class="field">
+                        <label class="field-label">
+                            {{ 'firstname' | translate }}<span class="field-req">*</span>
+                        </label>
+                        <app-form-field appearance="outline" class="field-control">
+                            <input appInput formControlName="firstname">
+                            @if (form.controls['firstname'].hasError('required')) {
+                                <app-error>{{ 'include_firstname' | translate }}</app-error>
+                            }
+                        </app-form-field>
+                    </div>
+
+                    <div class="field">
+                        <label class="field-label">
+                            {{ 'lastname' | translate }}<span class="field-req">*</span>
+                        </label>
+                        <app-form-field appearance="outline" class="field-control">
+                            <input appInput formControlName="lastname">
+                            @if (form.controls['lastname'].hasError('required')) {
+                                <app-error>{{ 'include_lastname' | translate }}</app-error>
+                            }
+                        </app-form-field>
+                    </div>
+                </div>
+
+                @if (juicebox.getProjectTitle() !== 'QualityCircle') {
+                    <div class="field">
+                        <label class="field-label">{{ 'nickname' | translate }}</label>
+                        <app-form-field appearance="outline" class="field-control">
+                            <input appInput formControlName="nickname">
+                        </app-form-field>
+                    </div>
                 }
-            </app-form-field>
-        </div>
 
-        <div class="form-group">
-            <app-form-field appearance="outline" class="w-100">
-                <app-label>{{"lastname" | translate}}*</app-label>
-                <input appInput formControlName="lastname">
-                @if (form.controls['lastname'].hasError('required')) {
-                    <app-error>{{"include_lastname" | translate}}</app-error>
+                <div class="field">
+                    <label class="field-label">
+                        {{ 'email' | translate }}<span class="field-req">*</span>
+                    </label>
+                    <app-form-field appearance="outline" class="field-control">
+                        <input appInput formControlName="email" [readonly]="projectTitle() === 'Equipments'">
+                        @if (form.controls['email'].hasError('required')) {
+                            <app-error>{{ 'include_email' | translate }}</app-error>
+                        }
+                        @if (form.controls['email'].hasError('email')) {
+                            <app-error>{{ 'invalid_email' | translate }}</app-error>
+                        }
+                    </app-form-field>
+                    <div class="field-hint">{{ 'used_for_signin_and_notifications' | translate }}</div>
+                </div>
+
+                @if (juicebox.getProjectTitle() !== 'QualityCircle') {
+                    <div class="field">
+                        <label class="field-label">{{ 'department' | translate }}</label>
+                        <app-form-field appearance="outline" class="field-control">
+                            <input appInput formControlName="department">
+                        </app-form-field>
+                    </div>
                 }
-            </app-form-field>
-        </div>
 
-        @if (juicebox.getProjectTitle() !== 'QualityCircle') {
-            <div class="form-group">
-                <app-form-field appearance="outline" class="w-100">
-                    <app-label>{{"nickname" | translate}}</app-label>
-                    <input appInput formControlName="nickname">
-                </app-form-field>
-            </div>
-        }
+                <div class="card-divider"></div>
 
-        <div class="form-group">
-            <app-form-field appearance="outline" class="w-100">
-                <app-label>{{"language" | translate}}</app-label>
-                <app-select formControlName="language">
-                    @for (language of languages(); track language.code) {
-                        <app-option [value]="language.code">{{language.name}}</app-option>
-                    }
-                </app-select>
-            </app-form-field>
-        </div>
-
-        <div class="form-group">
-            <app-form-field appearance="outline" class="w-100">
-                <app-label>{{"email" | translate}}*</app-label>
-                <input appInput formControlName="email" [readonly]="projectTitle() === 'Equipments'">
-                @if (form.controls['email'].hasError('required')) {
-                    <app-error>{{"include_email" | translate}}</app-error>
-                }
-                @if (form.controls['email'].hasError('email')) {
-                    <app-error>{{"invalid_email" | translate}}</app-error>
-                }
-            </app-form-field>
-        </div>
-
-        @if (juicebox.getProjectTitle() !== 'QualityCircle') {
-            <div class="form-group">
-                <app-form-field appearance="outline" class="w-100">
-                    <app-label>{{"department" | translate}}</app-label>
-                    <input appInput formControlName="department">
-                </app-form-field>
-            </div>
-        }
-
-        <div class="form-group">
-            <div class="d-flex align-center justify-between">
-                <div class="d-flex align-center" style="gap: 1.5rem;">
-                    <div class="d-flex align-center">
+                <div class="toggle-row">
+                    <div class="toggle-cell"
+                         (click)="form.controls['active'].setValue(!form.controls['active'].value)">
                         <app-slide-toggle
                             [checked]="!!form.controls['active'].value"
-                            (toggled)="form.controls['active'].setValue($event)"
-                            class="mr-2">
+                            (toggled)="form.controls['active'].setValue($event)">
                         </app-slide-toggle>
-                        <span>{{"active" | translate}}</span>
+                        <div class="toggle-text">
+                            <div class="toggle-label">{{ 'active' | translate }}</div>
+                            <div class="toggle-hint">{{ 'user_can_sign_in' | translate }}</div>
+                        </div>
                     </div>
+
                     @if (juicebox.hasPermission('users:role#super-admin')) {
-                        <div class="d-flex align-center">
+                        <div class="toggle-cell"
+                             (click)="form.controls['admin'].setValue(!form.controls['admin'].value)">
                             <app-slide-toggle
                                 [checked]="!!form.controls['admin'].value"
-                                (toggled)="form.controls['admin'].setValue($event)"
-                                class="mr-2">
+                                (toggled)="form.controls['admin'].setValue($event)">
                             </app-slide-toggle>
-                            <span>{{"admin" | translate}}</span>
+                            <div class="toggle-text">
+                                <div class="toggle-label">{{ 'admin' | translate }}</div>
+                                <div class="toggle-hint">{{ 'full_access_to_org_and_member_settings' | translate }}</div>
+                            </div>
                         </div>
                     }
                 </div>
-                <button app-button appearance="raised" color="primary" [promiseBtn]="updatePromise()"
-                        [hasPermissions]="'users:role#updated|update'"
-                        (click)="change()">{{"save" | translate}}
-                </button>
-            </div>
-        </div>
-    </form>
-    }
 
-    @if (passwordForm(); as pwForm) {
-    <form class="col-4 p-0" [formGroup]="pwForm">
-        @if (projectTitle() !== 'Equipments') {
-            <div class="form-group">
-                <app-form-field appearance="outline" class="w-100">
-                    <app-label>{{"password" | translate}}</app-label>
-                    <input appInput formControlName="password" type="password" [autocomplete]="'new-password'">
-                </app-form-field>
-            </div>
-            <div class="form-group">
-                <app-form-field appearance="outline" class="w-100">
-                    <app-label>{{"pass_repeat" | translate}}</app-label>
-                    <input appInput formControlName="repeatPassword" type="password" [autocomplete]="'new-password'">
-                </app-form-field>
-            </div>
-
-            @if (pwForm.controls['password'].errors && pwForm.controls['password'].touched) {
-                @if (pwForm.controls['password'].errors.required) {
-                    <app-error>{{"pass_required" | translate}}</app-error>
-                }
-                @if (pwForm.controls['password'].errors.password) {
-                    <app-error>{{"pass_regex_error" | translate}}</app-error>
-                }
-            }
-
-            @if (pwForm.errors?.['mismatch'] && pwForm.controls['repeatPassword'].touched) {
-                <app-error>{{"pass_not_same" | translate}}</app-error>
-            }
-
-            <div class="d-flex mb-5" style="margin-bottom: 3rem; margin-top: 12px; gap: 8px;">
-                <div class="d-flex flex-column text-center">
+                <div class="card-actions-row">
                     <button app-button appearance="raised" color="primary"
+                            [promiseBtn]="updatePromise()"
                             [hasPermissions]="'users:role#updated|update'"
-                            (click)="generateRandomPassword()">{{"generate_random" | translate}}
+                            (click)="change()">
+                        {{ 'save' | translate }}
                     </button>
-                    @if (randomPassword()) {
-                        <span class="m-2" style="user-select: all">{{randomPassword()}}</span>
-                    }
                 </div>
-                <button app-button appearance="raised" color="primary" class="ml-auto mb-auto" [promiseBtn]="passwordPromise()"
-                        [hasPermissions]="'users:role#updated|update'"
-                        (click)="changePassword()">{{"pass_save" | translate}}
-                </button>
-            </div>
-        }
-
-        @if (user()?.attributes?.settings?.twoFactor && juicebox.hasPermission('users:role#super-admin')) {
-            <div>
-                <div class="form-group">
-                    <div class="d-flex align-center">
-                        <app-form-field appearance="outline" class="flex-1 mr-2">
-                            <app-label>{{"two_factor_authorisation_type" | translate}}</app-label>
-                            <input appInput readonly [placeholder]="user().attributes.settings.twoFactor | translate">
-                        </app-form-field>
-                        <button app-button appearance="raised" color="primary"
-                                [hasPermissions]="'users:role#updated|update'"
-                                (click)="resetTwoFactor()">{{"reset" | translate}}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        }
-
-        @if (user()) {
-            <div [hasPermissions]="'users:role#admin'">
-                <div class="form-group">
-                    <div class="d-flex align-center">
-                        <app-form-field appearance="outline" class="flex-1 mr-2">
-                            <app-label>{{"wallet_authorization" | translate}}</app-label>
-                            <input appInput [formControl]="walletCtrl"
-                                   [placeholder]="'wallet_address' | translate">
-                        </app-form-field>
-                        <button app-button appearance="raised" color="primary" [promiseBtn]="walletPromise()"
-                                [hasPermissions]="'users:role#updated|update'"
-                                (click)="setWalletAddress()">{{"save" | translate}}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        }
-
-    </form>
+            </form>
+        </app-card>
     }
+
+    <!-- Right column: Password + Security + Wallet -->
+    <div class="details-stack">
+        @if (passwordForm(); as pwForm) {
+            @if (projectTitle() !== 'Equipments') {
+                <app-card class="details-card">
+                    <header class="card-head">
+                        <div>
+                            <div class="card-title">{{ 'password' | translate }}</div>
+                            <div class="card-sub">{{ 'set_new_password_or_generate' | translate }}</div>
+                        </div>
+                    </header>
+                    <form class="card-body" [formGroup]="pwForm">
+                        <div class="field">
+                            <label class="field-label">{{ 'password' | translate }}</label>
+                            <app-form-field appearance="outline" class="field-control">
+                                <input appInput formControlName="password" type="password"
+                                       [autocomplete]="'new-password'" placeholder="••••••••••">
+                            </app-form-field>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label">{{ 'pass_repeat' | translate }}</label>
+                            <app-form-field appearance="outline" class="field-control">
+                                <input appInput formControlName="repeatPassword" type="password"
+                                       [autocomplete]="'new-password'" placeholder="••••••••••">
+                            </app-form-field>
+                        </div>
+
+                        @if (pwForm.controls['password'].errors && pwForm.controls['password'].touched) {
+                            @if (pwForm.controls['password'].errors.required) {
+                                <app-error>{{ 'pass_required' | translate }}</app-error>
+                            }
+                            @if (pwForm.controls['password'].errors.password) {
+                                <app-error>{{ 'pass_regex_error' | translate }}</app-error>
+                            }
+                        }
+
+                        @if (pwForm.errors?.['mismatch'] && pwForm.controls['repeatPassword'].touched) {
+                            <app-error>{{ 'pass_not_same' | translate }}</app-error>
+                        }
+
+                        @if (randomPassword()) {
+                            <div class="random-pass" style="user-select: all">{{ randomPassword() }}</div>
+                        }
+
+                        <div class="card-actions-row card-actions-row--split">
+                            <button app-button appearance="stroked"
+                                    [hasPermissions]="'users:role#updated|update'"
+                                    (click)="generateRandomPassword()">
+                                {{ 'generate_random' | translate }}
+                            </button>
+                            <button app-button appearance="raised" color="primary"
+                                    [promiseBtn]="passwordPromise()"
+                                    [hasPermissions]="'users:role#updated|update'"
+                                    (click)="changePassword()">
+                                {{ 'pass_save' | translate }}
+                            </button>
+                        </div>
+                    </form>
+                </app-card>
+            }
+
+            @if (user()?.attributes?.settings?.twoFactor && juicebox.hasPermission('users:role#super-admin')) {
+                <app-card class="details-card">
+                    <header class="card-head">
+                        <div>
+                            <div class="card-title">{{ 'two_factor_authorisation_type' | translate }}</div>
+                            <div class="card-sub">{{ 'two_factor_subtitle' | translate }}</div>
+                        </div>
+                        <span class="card-tag">2FA</span>
+                    </header>
+                    <div class="card-body">
+                        <div class="field">
+                            <label class="field-label">{{ 'two_factor_authorisation_type' | translate }}</label>
+                            <div class="inline-input-row">
+                                <app-form-field appearance="outline" class="field-control inline-grow">
+                                    <input appInput readonly [placeholder]="user().attributes.settings.twoFactor | translate">
+                                </app-form-field>
+                                <button app-button appearance="raised" color="primary"
+                                        [hasPermissions]="'users:role#updated|update'"
+                                        (click)="resetTwoFactor()">
+                                    {{ 'reset' | translate }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </app-card>
+            }
+
+            @if (user()) {
+                <app-card class="details-card" [hasPermissions]="'users:role#admin'">
+                    <header class="card-head">
+                        <div>
+                            <div class="card-title">{{ 'wallet_authorization' | translate }}</div>
+                            <div class="card-sub">{{ 'optional_web3_signin' | translate }}</div>
+                        </div>
+                        <span class="card-tag">WEB3</span>
+                    </header>
+                    <div class="card-body">
+                        <div class="field">
+                            <label class="field-label">{{ 'wallet_address' | translate }}</label>
+                            <div class="inline-input-row">
+                                <app-form-field appearance="outline" class="field-control inline-grow">
+                                    <input appInput [formControl]="walletCtrl"
+                                           [placeholder]="'wallet_address' | translate">
+                                </app-form-field>
+                                <button app-button appearance="raised" color="primary"
+                                        [promiseBtn]="walletPromise()"
+                                        [hasPermissions]="'users:role#updated|update'"
+                                        (click)="setWalletAddress()">
+                                    {{ 'save' | translate }}
+                                </button>
+                            </div>
+                            <div class="field-hint">{{ 'evm_address_used_for_signature_auth' | translate }}</div>
+                        </div>
+                    </div>
+                </app-card>
+            }
+        }
+    </div>
 </div>

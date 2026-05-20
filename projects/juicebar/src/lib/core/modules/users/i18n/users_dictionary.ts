@@ -421,10 +421,105 @@ export const usersDictionary = {
     "de_DE": "Suchen",
     "hr_HR": "Pretraži"
   },
+  "auto_assign_to_child_organisations": {
+    "en_GB": "Auto-assign to child organisations",
+    "de_DE": "Untergeordneten Organisationen automatisch zuweisen",
+    "hr_HR": ""
+  },
+  "select_groups_to_show": {
+    "en_GB": "Visible groups",
+    "de_DE": "Sichtbare Gruppen",
+    "hr_HR": ""
+  },
+  "select_all": {
+    "en_GB": "Select all",
+    "de_DE": "Alle auswählen",
+    "hr_HR": ""
+  },
+  "clear_all": {
+    "en_GB": "Clear all",
+    "de_DE": "Alle löschen",
+    "hr_HR": ""
+  },
+  "no_groups_visible": {
+    "en_GB": "No groups visible",
+    "de_DE": "Keine Gruppen sichtbar",
+    "hr_HR": ""
+  },
+  "pick_groups_to_show": {
+    "en_GB": "Pick groups to show from the visible groups menu.",
+    "de_DE": "Wählen Sie im Menü „Sichtbare Gruppen“ aus, welche angezeigt werden sollen.",
+    "hr_HR": ""
+  },
+  "unsaved_changes_hint": {
+    "en_GB": "You have unsaved changes — click Save to apply them.",
+    "de_DE": "Sie haben ungespeicherte Änderungen — klicken Sie auf Speichern.",
+    "hr_HR": ""
+  },
+  "no_changes_to_save": {
+    "en_GB": "No changes to save",
+    "de_DE": "Keine Änderungen zu speichern",
+    "hr_HR": ""
+  },
   "groups_editor": {
     "en_GB": "Groups editor",
     "de_DE": "Gruppen-Editor",
     "hr_HR": "Groups editor"
+  },
+  "groups_editor_sub": {
+    "en_GB": "Manage roles and permissions for each group.",
+    "de_DE": "Verwalten Sie Rollen und Berechtigungen für jede Gruppe.",
+    "hr_HR": ""
+  },
+  "workspace": {
+    "en_GB": "Workspace",
+    "de_DE": "Arbeitsbereich",
+    "hr_HR": ""
+  },
+  "select_group": {
+    "en_GB": "Select a group…",
+    "de_DE": "Gruppe auswählen…",
+    "hr_HR": ""
+  },
+  "new_group": {
+    "en_GB": "New group",
+    "de_DE": "Neue Gruppe",
+    "hr_HR": ""
+  },
+  "assigned_roles": {
+    "en_GB": "Assigned roles",
+    "de_DE": "Zugewiesene Rollen",
+    "hr_HR": ""
+  },
+  "roles_legend": {
+    "en_GB": "Toggle visibility · Tick permissions",
+    "de_DE": "Sichtbarkeit umschalten · Berechtigungen aktivieren",
+    "hr_HR": ""
+  },
+  "no_roles_assigned": {
+    "en_GB": "No roles assigned to this group yet.",
+    "de_DE": "Dieser Gruppe sind noch keine Rollen zugewiesen.",
+    "hr_HR": ""
+  },
+  "changes_apply_to_members_of": {
+    "en_GB": "Changes apply immediately to all members of",
+    "de_DE": "Änderungen gelten sofort für alle Mitglieder von",
+    "hr_HR": ""
+  },
+  "pick_a_group_to_edit": {
+    "en_GB": "Pick a group to start editing its roles.",
+    "de_DE": "Wählen Sie eine Gruppe, um die Rollen zu bearbeiten.",
+    "hr_HR": ""
+  },
+  "visible": {
+    "en_GB": "Visible",
+    "de_DE": "Sichtbar",
+    "hr_HR": ""
+  },
+  "hidden": {
+    "en_GB": "Hidden",
+    "de_DE": "Versteckt",
+    "hr_HR": ""
   },
   "groups_name_editor": {
     "en_GB": "Groups name editor",
@@ -1325,6 +1420,11 @@ export const usersDictionary = {
     "de_DE": "Sichtbarkeit",
     "hr_HR": ""
   },
+  "toggling_visibility_hint": {
+    "en_GB": "Toggling visibility hides the role from this user without removing assigned permissions.",
+    "de_DE": "Das Umschalten der Sichtbarkeit blendet die Rolle für diesen Benutzer aus, ohne zugewiesene Berechtigungen zu entfernen.",
+    "hr_HR": ""
+  },
   "instant-win:role": {
     "en_GB": "Instantwin",
     "de_DE": "Instantwin",
@@ -1518,5 +1618,70 @@ export const usersDictionary = {
     "en_GB": "Choose email",
     "de_DE": "E-Mail auswählen",
     "hr_HR": ""
+  },
+  "profile": {
+    "en_GB": "Profile",
+    "de_DE": "Profil",
+    "hr_HR": "Profil"
+  },
+  "basic_identity_and_locale": {
+    "en_GB": "Basic identity and locale.",
+    "de_DE": "Grundlegende Identität und Sprache.",
+    "hr_HR": "Osnovni identitet i jezik."
+  },
+  "used_for_signin_and_notifications": {
+    "en_GB": "Used for sign-in and notifications.",
+    "de_DE": "Wird für Anmeldung und Benachrichtigungen verwendet.",
+    "hr_HR": "Koristi se za prijavu i obavijesti."
+  },
+  "user_can_sign_in": {
+    "en_GB": "User can sign in and access the workspace.",
+    "de_DE": "Benutzer kann sich anmelden und auf den Arbeitsbereich zugreifen.",
+    "hr_HR": "Korisnik se može prijaviti i pristupiti radnom prostoru."
+  },
+  "full_access_to_org_and_member_settings": {
+    "en_GB": "Full access to org & member settings.",
+    "de_DE": "Voller Zugriff auf Organisations- und Mitgliedereinstellungen.",
+    "hr_HR": "Potpuni pristup postavkama organizacije i članova."
+  },
+  "set_new_password_or_generate": {
+    "en_GB": "Set a new password or generate one.",
+    "de_DE": "Neues Passwort festlegen oder generieren.",
+    "hr_HR": "Postavite novu lozinku ili je generirajte."
+  },
+  "two_factor_subtitle": {
+    "en_GB": "Two-factor authentication settings.",
+    "de_DE": "Einstellungen für die Zwei-Faktor-Authentifizierung.",
+    "hr_HR": "Postavke dvofaktorske autentifikacije."
+  },
+  "optional_web3_signin": {
+    "en_GB": "Optional Web3 sign-in.",
+    "de_DE": "Optionale Web3-Anmeldung.",
+    "hr_HR": "Opcionalna Web3 prijava."
+  },
+  "evm_address_used_for_signature_auth": {
+    "en_GB": "EVM address used for signature-based auth.",
+    "de_DE": "EVM-Adresse für signaturbasierte Authentifizierung.",
+    "hr_HR": "EVM adresa koja se koristi za autentifikaciju potpisom."
+  },
+  "select_organisation": {
+    "en_GB": "Select an organisation…",
+    "de_DE": "Organisation auswählen…",
+    "hr_HR": "Odaberite organizaciju…"
+  },
+  "search_organisations": {
+    "en_GB": "Search organisations…",
+    "de_DE": "Organisationen suchen…",
+    "hr_HR": "Pretraži organizacije…"
+  },
+  "no_organisations_assigned": {
+    "en_GB": "No organisations assigned",
+    "de_DE": "Keine Organisationen zugewiesen",
+    "hr_HR": "Nema dodijeljenih organizacija"
+  },
+  "pick_one_from_dropdown_above": {
+    "en_GB": "Pick one from the dropdown above to get started.",
+    "de_DE": "Wählen Sie eine aus der obigen Liste, um zu beginnen.",
+    "hr_HR": "Odaberite jednu iz padajućeg izbornika iznad za početak."
   }
 }

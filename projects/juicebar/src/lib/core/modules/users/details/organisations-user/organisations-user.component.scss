@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
-    padding: 16px 24px 24px;
+    padding: 16px 28px 28px;
 }
 
 .orgs-toolbar {
@@ -10,16 +10,118 @@
     align-items: center;
     gap: 8px;
     padding: 10px 12px;
-    background: #0a0a0b;
-    border: 1px solid #1f1f23;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
 }
 
-.orgs-select {
-    width: 300px;
-    flex-shrink: 0;
+.orgs-picker {
+    flex: 1;
+    max-width: 520px;
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+:host ::ng-deep .orgs-toolbar .app-form-field {
+    margin-bottom: 0;
+}
+
+.orgs-toolbar-spacer {
+    flex: 1;
 }
 
 .orgs-create {
     margin-left: auto;
+}
+
+.orgs-table {
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+:host ::ng-deep .orgs-table .data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+:host ::ng-deep .orgs-table .data-table th {
+    text-align: left;
+    font-size: 10.5px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-secondary);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-background);
+}
+
+:host ::ng-deep .orgs-table .data-table th.text-right,
+:host ::ng-deep .orgs-table .data-table td.text-right {
+    text-align: right;
+}
+
+:host ::ng-deep .orgs-table .data-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-border-light, var(--color-border));
+    vertical-align: middle;
+    color: var(--color-text-primary);
+    font-size: 13px;
+}
+
+:host ::ng-deep .orgs-table .data-table tr:last-child td {
+    border-bottom: none;
+}
+
+:host ::ng-deep .orgs-table .data-table tbody tr:hover td {
+    background: var(--color-grey-100, var(--color-background));
+}
+
+.org-name {
+    font-size: 13px;
+    color: var(--color-text-primary);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.orgs-empty {
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.orgs-empty-title {
+    font-size: 13px;
+    color: var(--color-text-primary);
+    font-weight: 600;
+}
+
+.orgs-empty-text {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
+@media (max-width: 560px) {
+    .organisations-user {
+        padding: 16px;
+    }
+    .orgs-toolbar {
+        flex-wrap: wrap;
+    }
+    .orgs-picker {
+        flex-basis: 100%;
+        max-width: none;
+    }
+    .orgs-toolbar-spacer {
+        display: none;
+    }
+    .orgs-create {
+        margin-left: 0;
+    }
 }
