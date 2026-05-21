@@ -24,9 +24,9 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    // Redirect to login page with return url
-    return this.router.createUrlTree(['/login'], {
-      queryParams: { returnUrl: state.url }
-    });
+    if (state.url && state.url !== '/' && !state.url.startsWith('/login')) {
+      sessionStorage.setItem('postLoginRedirect', state.url);
+    }
+    return this.router.createUrlTree(['/login']);
   }
 }

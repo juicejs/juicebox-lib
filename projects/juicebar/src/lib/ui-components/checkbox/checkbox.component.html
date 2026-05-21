@@ -1,11 +1,17 @@
-<label class="app-checkbox">
+<label class="app-checkbox" [class.is-checked]="checked()" [class.is-disabled]="disabled()">
   <input
     type="checkbox"
+    class="app-checkbox-input"
     [checked]="checked()"
     [disabled]="disabled()"
     (change)="onCheckboxChange($event)"
   />
   <span class="app-checkbox-label">
     <ng-content></ng-content>
+  </span>
+  <span class="app-checkbox-check" aria-hidden="true">
+    <svg viewBox="0 0 16 16" width="14" height="14">
+      <path d="M3.5 8.5l3 3 6-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
   </span>
 </label>

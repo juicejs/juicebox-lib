@@ -1,36 +1,6 @@
-<app-tabs [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onTabChange($event)">
-    <app-tab [label]="'details' | translate"></app-tab>
-
-    @if (projectTitle !== 'Equipments' && projectTitle !== 'CSJuicEcommerce' && projectTitle !== 'CSWP' && projectTitle !== 'Carl Stahl Configurator') {
-      <app-tab [label]="'organisations' | translate"></app-tab>
-    }
-
-    @if (juicebox.hasPermission('users:role#roles')) {
-      <app-tab [disabled]="!juicebox.hasPermission('users:role#roles')" [label]="'roles' | translate"></app-tab>
-    }
-
-    @if (juicebox.hasPermission('groups:role#read')) {
-      <app-tab [disabled]="!juicebox.hasPermission('groups:role#read')" [label]="'groups' | translate"></app-tab>
-    }
-
-    @if (!deprecated()) {
-      <app-tab [label]="'sidebar' | translate"></app-tab>
-    }
-
-    @if (juicebox.hasPermission('customers:role#read')) {
-      <app-tab [disabled]="!juicebox.hasPermission('customers:role#read')" [label]="'customers' | translate"></app-tab>
-    }
-
-    @if (juicebox.hasPermission('customers:role#allowed-types')) {
-      <app-tab [disabled]="!juicebox.hasPermission('customers:role#allowed-types')" [label]="'allowed_types' | translate"></app-tab>
-    }
-
-    @if (juicebox.hasPermission('clients:role#super-admin') && juicebox.hasPermission('pdf:role')) {
-      <app-tab [label]="'clients' | translate"></app-tab>
-    }
-
-    @if (channels && channels.length > 1 && juicebox.hasPermission('users:role#roles')) {
-      <app-tab [label]="'channels' | translate"></app-tab>
+<app-tabs [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="onTabChange($event)">
+    @for (tab of visibleTabs(); track tab.route) {
+        <app-tab [label]="tab.label | translate"></app-tab>
     }
 </app-tabs>
 

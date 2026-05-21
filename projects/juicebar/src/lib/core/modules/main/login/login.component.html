@@ -64,11 +64,11 @@
         }
 
         <div class="form-options">
-          <app-checkbox
+          <app-slide-toggle
             [checked]="loginForm.get('remember')!.value"
-            (change)="loginForm.get('remember')!.setValue($event)">
+            (toggled)="loginForm.get('remember')!.setValue($event)">
             {{ 'remember_me' | translate }}
-          </app-checkbox>
+          </app-slide-toggle>
         </div>
 
         @if (legalAgreementUIShown()) {

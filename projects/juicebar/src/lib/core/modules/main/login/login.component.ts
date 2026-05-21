@@ -67,7 +67,8 @@ export class LoginComponent implements OnInit {
             two_factor_authorisation_code: new FormControl(null)
         })
 
-        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+        this.returnUrl = sessionStorage.getItem('postLoginRedirect') || '/';
+        sessionStorage.removeItem('postLoginRedirect');
         if (this.juicebox.isLoggedIn()) {
             let redirectUrl;
             if (this.juicebox.getEndPoint().indexOf('localhost') != -1)
@@ -111,7 +112,7 @@ export class LoginComponent implements OnInit {
                     this.org.set(true);
                     this.organisations.set([...(<any>success).organisations]);
                 } else {
-                    document.location.replace('');
+                    document.location.replace(this.returnUrl);
                 }
             }
         })();
@@ -164,11 +165,11 @@ export class LoginComponent implements OnInit {
 
                 if (accepted && config.success && options.twoFactor && options.twoFactor.length && !result.hasTwoFactor) {
                     localStorage.setItem("2fawarning", this.mainTranslationPipe.transform('set_two_factor'))
-                    document.location.replace('');
+                    document.location.replace(this.returnUrl);
                     return;
                 }
 
-                if (accepted) document.location.replace('');
+                if (accepted) document.location.replace(this.returnUrl);
             }
         })();
     }
@@ -206,11 +207,11 @@ export class LoginComponent implements OnInit {
                     const options = config.payload.options || {};
                     if (accepted && config.success && options.twoFactor && options.twoFactor.length && !result.hasTwoFactor) {
                         localStorage.setItem("2fawarning", this.mainTranslationPipe.transform('set_two_factor'))
-                        document.location.replace('');
+                        document.location.replace(this.returnUrl);
                         return;
                     }
 
-                    if (accepted) document.location.replace('');
+                    if (accepted) document.location.replace(this.returnUrl);
                 }
             } else {
                 this.handleError(result.error);
@@ -312,11 +313,11 @@ export class LoginComponent implements OnInit {
     //
     //             if (accepted && config.success && options.twoFactor && options.twoFactor.length && !result.hasTwoFactor) {
     //                 localStorage.setItem("2fawarning", this.mainTranslationPipe.transform('set_two_factor'))
-    //                 document.location.replace('');
+    //                 document.location.replace(this.returnUrl);
     //                 return;
     //             }
     //
-    //             if (accepted) document.location.replace('');
+    //             if (accepted) document.location.replace(this.returnUrl);
     //         } else {
     //             this.handleError(result.error);
     //             this.errorMessage.set("Web3 Authentication Failed");
