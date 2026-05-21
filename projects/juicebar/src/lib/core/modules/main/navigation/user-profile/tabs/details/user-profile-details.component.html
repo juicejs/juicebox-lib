@@ -1,171 +1,206 @@
 <div class="profile-details-page">
 
-  <!-- User Details -->
-  <app-card>
-    <app-card-header>
-      <app-card-title>{{ 'user_details' | translate }}</app-card-title>
-    </app-card-header>
-    <app-card-content>
-      <form [formGroup]="detailsForm" class="form-grid">
-        <app-form-field appearance="outline">
-          <app-label>{{ 'firstname' | translate }}</app-label>
-          <input appInput type="text" formControlName="firstname">
-        </app-form-field>
+  <!-- Left column: User Details -->
+  <app-card class="details-card">
+    <header class="card-head">
+      <div>
+        <div class="card-title">{{ 'user_details' | translate }}</div>
+        <div class="card-sub">{{ 'basic_identity_and_locale' | translate }}</div>
+      </div>
+    </header>
+    <form class="card-body" [formGroup]="detailsForm">
+      <div class="field-row">
+        <div class="field">
+          <app-label class="field-label">{{ 'firstname' | translate }}</app-label>
+          <app-form-field appearance="outline" class="field-control">
+            <input appInput type="text" formControlName="firstname">
+          </app-form-field>
+        </div>
 
-        <app-form-field appearance="outline">
-          <app-label>{{ 'lastname' | translate }}</app-label>
-          <input appInput type="text" formControlName="lastname">
-        </app-form-field>
+        <div class="field">
+          <app-label class="field-label">{{ 'lastname' | translate }}</app-label>
+          <app-form-field appearance="outline" class="field-control">
+            <input appInput type="text" formControlName="lastname">
+          </app-form-field>
+        </div>
+      </div>
 
-        <app-form-field appearance="outline">
-          <app-label>{{ 'email' | translate }}</app-label>
+      <div class="field">
+        <app-label class="field-label">{{ 'email' | translate }}</app-label>
+        <app-form-field appearance="outline" class="field-control">
           <input appInput type="email" formControlName="email">
         </app-form-field>
-      </form>
-    </app-card-content>
-    <app-card-actions>
-      <button app-button appearance="raised" color="primary" type="button" (click)="saveUserDetails()">
-        {{ 'save' | translate }}
-      </button>
-    </app-card-actions>
-  </app-card>
+      </div>
 
-  <!-- Password -->
-  <app-card>
-    <app-card-header>
-      <app-card-title>{{ 'password' | translate }}</app-card-title>
-    </app-card-header>
-    <app-card-content>
-      <form [formGroup]="passwordForm" class="form-grid">
-        <app-form-field appearance="outline">
-          <app-label>{{ 'current_password' | translate }}</app-label>
-          <input appInput type="password" formControlName="currentPassword" autocomplete="current-password">
-          @if (passwordForm.get('currentPassword')?.touched && passwordForm.get('currentPassword')?.errors?.['required']) {
-            <app-error>{{ 'pass_required' | translate }}</app-error>
-          }
-        </app-form-field>
-
-        <app-form-field appearance="outline">
-          <app-label>{{ 'new_password' | translate }}</app-label>
-          <input appInput type="password" formControlName="password" autocomplete="new-password">
-          @if (passwordForm.get('password')?.touched && passwordForm.get('password')?.errors?.['required']) {
-            <app-error>{{ 'pass_required' | translate }}</app-error>
-          }
-          @if (passwordForm.get('password')?.touched && passwordForm.get('password')?.errors?.['password']) {
-            <app-error>{{ 'pass_regex_error' | translate }}</app-error>
-          }
-        </app-form-field>
-
-        <app-form-field appearance="outline">
-          <app-label>{{ 'pass_repeat' | translate }}</app-label>
-          <input appInput type="password" formControlName="repeatPassword" autocomplete="new-password">
-          @if (passwordForm.errors?.['mismatch'] && passwordForm.get('repeatPassword')?.touched) {
-            <app-error>{{ 'pass_not_same' | translate }}</app-error>
-          }
-        </app-form-field>
-
-        @if (randomPassword()) {
-          <div class="random-password">{{ randomPassword() }}</div>
-        }
-      </form>
-    </app-card-content>
-    <app-card-actions>
-      <button app-button appearance="flat" type="button" (click)="generateRandomPassword()">
-        {{ 'generate_random' | translate }}
-      </button>
-      <button app-button appearance="raised" color="primary" type="button" (click)="changePassword()">
-        {{ 'pass_save' | translate }}
-      </button>
-    </app-card-actions>
-  </app-card>
-
-  <!-- Wallet Authorization -->
-  @if (user()) {
-    <app-card>
-      <app-card-header>
-        <app-card-title>{{ 'wallet_authorization' | translate }}</app-card-title>
-      </app-card-header>
-      <app-card-content>
-        <app-form-field appearance="outline" class="full-width">
-          <app-label>{{ 'wallet_address' | translate }}</app-label>
-          <input appInput type="text"
-                 [value]="user()?.wallet ?? ''"
-                 (input)="updateWallet($any($event.target).value)"
-                 [placeholder]="'wallet_address' | translate">
-        </app-form-field>
-      </app-card-content>
-      <app-card-actions>
-        <button app-button appearance="raised" color="primary" type="button" (click)="setWalletAddress()">
+      <div class="card-actions-row">
+        <button app-button appearance="raised" color="primary" type="button" (click)="saveUserDetails()">
           {{ 'save' | translate }}
         </button>
-      </app-card-actions>
-    </app-card>
-  }
+      </div>
+    </form>
+  </app-card>
 
-  <!-- User Settings -->
-  <app-card>
-    <app-card-header>
-      <app-card-title>{{ 'user_settings' | translate }}</app-card-title>
-    </app-card-header>
-    <app-card-content>
-      <form [formGroup]="settingsForm" class="form-grid">
+  <!-- Middle column: Password + Wallet -->
+  <div class="details-stack">
+    <app-card class="details-card">
+      <header class="card-head">
+        <div>
+          <div class="card-title">{{ 'password' | translate }}</div>
+          <div class="card-sub">{{ 'set_new_password_or_generate' | translate }}</div>
+        </div>
+      </header>
+      <form class="card-body" [formGroup]="passwordForm">
+        <div class="field">
+          <app-label class="field-label">{{ 'current_password' | translate }}</app-label>
+          <app-form-field appearance="outline" class="field-control">
+            <input appInput type="password" formControlName="currentPassword" autocomplete="current-password">
+            @if (passwordForm.get('currentPassword')?.touched && passwordForm.get('currentPassword')?.errors?.['required']) {
+              <app-error>{{ 'pass_required' | translate }}</app-error>
+            }
+          </app-form-field>
+        </div>
+
+        <div class="field">
+          <app-label class="field-label">{{ 'new_password' | translate }}</app-label>
+          <app-form-field appearance="outline" class="field-control">
+            <input appInput type="password" formControlName="password" autocomplete="new-password">
+            @if (passwordForm.get('password')?.touched && passwordForm.get('password')?.errors?.['required']) {
+              <app-error>{{ 'pass_required' | translate }}</app-error>
+            }
+            @if (passwordForm.get('password')?.touched && passwordForm.get('password')?.errors?.['password']) {
+              <app-error>{{ 'pass_regex_error' | translate }}</app-error>
+            }
+          </app-form-field>
+        </div>
+
+        <div class="field">
+          <app-label class="field-label">{{ 'pass_repeat' | translate }}</app-label>
+          <app-form-field appearance="outline" class="field-control">
+            <input appInput type="password" formControlName="repeatPassword" autocomplete="new-password">
+            @if (passwordForm.errors?.['mismatch'] && passwordForm.get('repeatPassword')?.touched) {
+              <app-error>{{ 'pass_not_same' | translate }}</app-error>
+            }
+          </app-form-field>
+        </div>
+
+        @if (randomPassword()) {
+          <div class="random-pass" style="user-select: all">{{ randomPassword() }}</div>
+        }
+
+        <div class="card-actions-row card-actions-row--split">
+          <button app-button appearance="stroked" type="button" (click)="generateRandomPassword()">
+            {{ 'generate_random' | translate }}
+          </button>
+          <button app-button appearance="raised" color="primary" type="button" (click)="changePassword()">
+            {{ 'pass_save' | translate }}
+          </button>
+        </div>
+      </form>
+    </app-card>
+
+    <!-- Wallet Authorization -->
+    @if (user()) {
+      <app-card class="details-card">
+        <header class="card-head">
+          <div>
+            <div class="card-title">{{ 'wallet_authorization' | translate }}</div>
+            <div class="card-sub">{{ 'optional_web3_signin' | translate }}</div>
+          </div>
+          <span class="card-tag">WEB3</span>
+        </header>
+        <div class="card-body">
+          <div class="field">
+            <app-label class="field-label">{{ 'wallet_address' | translate }}</app-label>
+            <div class="inline-input-row">
+              <app-form-field appearance="outline" class="field-control inline-grow">
+                <input appInput type="text"
+                       [value]="user()?.wallet ?? ''"
+                       (input)="updateWallet($any($event.target).value)"
+                       [placeholder]="'wallet_address' | translate">
+              </app-form-field>
+              <button app-button appearance="raised" color="primary" type="button" (click)="setWalletAddress()">
+                {{ 'save' | translate }}
+              </button>
+            </div>
+            <div class="field-hint">{{ 'evm_address_used_for_signature_auth' | translate }}</div>
+          </div>
+        </div>
+      </app-card>
+    }
+  </div>
+
+  <!-- Right column: User Settings -->
+    <app-card class="details-card">
+      <header class="card-head">
+        <div>
+          <div class="card-title">{{ 'user_settings' | translate }}</div>
+          <div class="card-sub">{{ 'language_country_and_security' | translate }}</div>
+        </div>
+      </header>
+      <form class="card-body" [formGroup]="settingsForm">
 
         @if (languages().length > 0) {
-          <app-form-field appearance="outline">
-            <app-label>{{ 'default_language' | translate }}</app-label>
-            <select appInput formControlName="language">
-              @for (lang of languages(); track lang.code) {
-                <option [value]="lang.code">{{ lang.name | translate }}</option>
-              }
-            </select>
-          </app-form-field>
+          <div class="field">
+            <app-label class="field-label">{{ 'default_language' | translate }}</app-label>
+            <app-form-field appearance="outline" class="field-control">
+              <app-select formControlName="language">
+                @for (lang of languages(); track lang.code) {
+                  <app-option [value]="lang.code">{{ lang.name | translate }}</app-option>
+                }
+              </app-select>
+            </app-form-field>
+          </div>
         }
 
         @if (countries().length > 0) {
-          <app-form-field appearance="outline">
-            <app-label>{{ 'country_of_origin' | translate }}</app-label>
-            <select appInput formControlName="country">
-              @for (country of countries(); track country.code) {
-                <option [value]="country.code">{{ country.name }}</option>
-              }
-            </select>
-          </app-form-field>
+          <div class="field">
+            <app-label class="field-label">{{ 'country_of_origin' | translate }}</app-label>
+            <app-form-field appearance="outline" class="field-control">
+              <app-select formControlName="country">
+                @for (country of countries(); track country.code) {
+                  <app-option [value]="country.code">{{ country.name }}</app-option>
+                }
+              </app-select>
+            </app-form-field>
+          </div>
         }
 
         @if (twoFactorTypes().length > 0) {
-          <app-form-field appearance="outline">
-            <app-label [style.font-weight]="!settingsForm.get('twoFactor')?.value ? 'bold' : 'normal'">
+          <div class="field">
+            <app-label class="field-label" [style.font-weight]="!settingsForm.get('twoFactor')?.value ? '600' : '500'">
               {{ 'two_factor_authorisation_type' | translate }}
             </app-label>
-            <select appInput formControlName="twoFactor"
-                    (click)="onOpen2FADropdown()"
-                    (change)="on2FAChanged($any($event.target).value)">
-              <option value="">—</option>
-              @for (type of twoFactorTypes(); track type.code ?? type) {
-                <option [value]="type.code ?? type">{{ (type.name ?? type) | translate }}</option>
-              }
-            </select>
+            <app-form-field appearance="outline" class="field-control">
+              <app-select formControlName="twoFactor"
+                          (click)="onOpen2FADropdown()"
+                          (selectionChange)="on2FAChanged($event.value)">
+                <app-option [value]="''">—</app-option>
+                @for (type of twoFactorTypes(); track type.code ?? type) {
+                  <app-option [value]="type.code ?? type">{{ (type.name ?? type) | translate }}</app-option>
+                }
+              </app-select>
+            </app-form-field>
             @if (!settingsForm.get('twoFactor')?.value) {
-              <app-error>{{ 'set_two_factor' | translate }}</app-error>
+              <div class="field-hint field-hint--warn">{{ 'set_two_factor' | translate }}</div>
             }
-          </app-form-field>
+          </div>
 
           @if (user()?.attributes?.settings?.twoFactor) {
-            <div>
-              <button app-button appearance="flat" color="warn" type="button" (click)="reset2fa()">
+            <div class="card-actions-row card-actions-row--start">
+              <button app-button appearance="stroked" color="warn" type="button" (click)="reset2fa()">
                 {{ 'reset_2fa' | translate }}
               </button>
             </div>
           }
         }
 
+        <div class="card-actions-row">
+          <button app-button appearance="raised" color="primary" type="button" (click)="saveSettings()">
+            {{ 'save' | translate }}
+          </button>
+        </div>
       </form>
-    </app-card-content>
-    <app-card-actions>
-      <button app-button appearance="raised" color="primary" type="button" (click)="saveSettings()">
-        {{ 'save' | translate }}
-      </button>
-    </app-card-actions>
-  </app-card>
+    </app-card>
+
 
 </div>

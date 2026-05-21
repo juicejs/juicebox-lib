@@ -1343,30 +1343,7 @@ table.data-table {
 // ACTION BUTTONS & ICONS STYLING
 // =============================================================================
 
-// Action buttons in table rows
-.action-buttons {
-    display: flex;
-    gap: $spacing-xs;
-    align-items: center;
-
-    .action-btn {
-        transition: all 0.2s ease;
-
-        &.login-btn {
-            &:hover {
-                background-color: var(--color-grey-200);
-                color: var(--color-tertiary);
-            }
-        }
-
-        &.delete-btn {
-            &:hover {
-                background-color: var(--color-grey-200);
-                color: var(--color-error);
-            }
-        }
-    }
-}
+// Action buttons in table rows — see data-table.component.scss for compact in-table styling.
 
 // Status icons styling
 .status-icon {

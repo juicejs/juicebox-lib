@@ -1055,5 +1055,30 @@ export const mainDictionary = {
   "LEGAL_AGREEMENT_NOT_ACCEPTED": {
     "en_GB": "You must accept the legal agreement to continue",
     "de_DE": "Sie müssen den rechtlichen Bestimmungen zustimmen, um fortzufahren"
+  },
+  "basic_identity_and_locale": {
+    "en_GB": "Basic identity and locale",
+    "de_DE": "Grundidentität und Sprache",
+    "hr_HR": "Osnovni identitet i lokalizacija"
+  },
+  "set_new_password_or_generate": {
+    "en_GB": "Set a new password or generate one",
+    "de_DE": "Neues Passwort festlegen oder generieren",
+    "hr_HR": "Postavi novu lozinku ili generiraj"
+  },
+  "optional_web3_signin": {
+    "en_GB": "Optional Web3 sign-in",
+    "de_DE": "Optionale Web3-Anmeldung",
+    "hr_HR": "Opcionalna Web3 prijava"
+  },
+  "evm_address_used_for_signature_auth": {
+    "en_GB": "EVM address used for signature authentication",
+    "de_DE": "EVM-Adresse für die Signatur-Authentifizierung",
+    "hr_HR": "EVM adresa korištena za autentifikaciju potpisom"
+  },
+  "language_country_and_security": {
+    "en_GB": "Language, country and security",
+    "de_DE": "Sprache, Land und Sicherheit",
+    "hr_HR": "Jezik, država i sigurnost"
   }
 }

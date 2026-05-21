@@ -94,7 +94,7 @@ export class UserProfileDetailsComponent implements OnInit {
     this.juicebox.navigationEvent({
       location: this.i18n.transform('user_profile'),
       subject: null,
-      link: null
+      link: '/main/users'
     });
   }
 
