@@ -5,17 +5,19 @@ import { User } from '../../models/user.model';
 import { UserTranslationPipe } from '../../i18n/user.translation';
 import { UsersService } from '../../users.service';
 import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
+import { TraineesService } from '../../../../shared/services/trainees.service';
+import { Trainee } from '../../../../shared/models/trainee.model';
 import { PromiseButtonDirective } from '../../../../shared/directives/PromiseButton';
 import {
     FormFieldComponent, LabelComponent, ErrorComponent, InputDirective,
-    AutocompleteComponent, ButtonComponent
+    AutocompleteComponent, ButtonComponent, CardComponent,
+    SelectComponent, OptionComponent
 } from '../../../../../ui-components';
-// import {TraineesService} from "../../../trainees/trainees.service";
-// import {Trainee} from "../../../../models/trainee.model";
 
 @Component({
     selector: 'app-main-user-wizard',
     templateUrl: './main-wizard.component.html',
+    styleUrls: ['./main-wizard.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         ReactiveFormsModule,
@@ -23,6 +25,8 @@ import {
         PromiseButtonDirective,
         FormFieldComponent, LabelComponent, ErrorComponent, InputDirective,
         AutocompleteComponent, ButtonComponent,
+        CardComponent,
+        SelectComponent, OptionComponent,
     ],
 })
 export class MainWizardComponent implements OnInit {
@@ -30,9 +34,9 @@ export class MainWizardComponent implements OnInit {
     public userForm: FormGroup;
     public user: User;
 
-    // public trainees: Trainee[] = [];
-    filteredTrainees: any[] = [];
-    emailAutocompleteOptions: Array<{value: any, label: string}> = [];
+    public trainees: Trainee[] = [];
+    filteredTrainees: Trainee[] = [];
+    emailAutocompleteOptions: Array<{ value: any, label: string }> = [];
     configuration: any;
     projectTitle: string;
 
@@ -48,6 +52,7 @@ export class MainWizardComponent implements OnInit {
     private router = inject(Router);
     private route = inject(ActivatedRoute);
     private userService = inject(UsersService);
+    private traineesService = inject(TraineesService);
     public juicebox = inject(JuiceboxService);
     private userPipe = inject(UserTranslationPipe);
 
@@ -172,15 +177,20 @@ export class MainWizardComponent implements OnInit {
 
     async typed() {
         const organisationId = this.juicebox.getUserOrganisationId();
-        // const result = await this.traineesService.fetchAllTraineesWithoutUserProfile(organisationId);
-        //
-        // if (!result.success) return;
-        //
-        // this.trainees = result.payload;
-        // this.filteredTrainees = [...this.trainees];
-        //
-        // //remove trainees with email null
-        // this.trainees = this.trainees.filter(item => item.email !== null);
+        const result = await this.traineesService.fetchAllTraineesWithoutUserProfile(organisationId);
+
+        if (!result.success) return;
+
+        this.trainees = (result.payload ?? []).filter(item => item.email !== null);
+        this.filteredTrainees = [...this.trainees];
+        this.emailAutocompleteOptions = this.buildOptions(this.filteredTrainees);
+    }
+
+    private buildOptions(trainees: Trainee[]): Array<{ value: any, label: string }> {
+        return trainees.map(t => ({
+            value: t,
+            label: this.getDisplayValue(t)
+        }));
     }
 
     customSearchEmail(term: string, item: any) {
@@ -195,17 +205,17 @@ export class MainWizardComponent implements OnInit {
     }
 
     onSearch(data: any) {
-        // this.filteredTrainees = [...this.trainees];
-
         const searchTerm = (typeof data === 'string' ? data : data?.term)?.trim() || '';
-        //
-        // if (!searchTerm) {
-        //     this.filteredTrainees = [...this.trainees];
-        // } else {
-        //     this.filteredTrainees = this.trainees.filter(item =>
-        //         this.customSearchEmail(searchTerm, item)
-        //     );
-        // }
+
+        if (!searchTerm) {
+            this.filteredTrainees = [...this.trainees];
+        } else {
+            this.filteredTrainees = this.trainees.filter(item =>
+                this.customSearchEmail(searchTerm, item)
+            );
+        }
+
+        this.emailAutocompleteOptions = this.buildOptions(this.filteredTrainees);
     }
 
 }

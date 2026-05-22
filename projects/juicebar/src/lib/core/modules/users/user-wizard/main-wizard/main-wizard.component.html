@@ -1,117 +1,132 @@
-<div class="parent">
+<div class="details-page">
     @if (userForm) {
-    <form [formGroup]="userForm" class="col-4">
+        <app-card class="details-card">
+            <header class="card-head">
+                <div>
+                    <div class="card-title">{{ 'create_user' | translate }}</div>
+                    <div class="card-sub">{{ 'basic_identity_and_locale' | translate }}</div>
+                </div>
+            </header>
+            <form class="card-body" [formGroup]="userForm">
+                <div class="field-row">
+                    <div class="field">
+                        <app-label class="field-label">
+                            {{ 'salutation' | translate }}
+                            <span class="field-opt">Optional</span>
+                        </app-label>
+                        <app-form-field appearance="outline" class="field-control">
+                            <app-select formControlName="salutation">
+                                @for (salutation of salutations; track salutation.key) {
+                                    <app-option [value]="salutation.key">{{ salutation.name }}</app-option>
+                                }
+                            </app-select>
+                            @if (userForm.controls['salutation'].touched && userForm.controls['salutation'].hasError('required')) {
+                                <app-error>{{ 'include_salutation' | translate }}</app-error>
+                            }
+                        </app-form-field>
+                    </div>
 
-        <div class="form-group">
-            <app-form-field appearance="outline" class="w-100">
-                <app-label>{{"salutation" | translate}}</app-label>
-                <select appInput formControlName="salutation">
-                    @for (salutation of salutations; track salutation.key) {
-                        <option [value]="salutation.key">{{salutation.name}}</option>
+                    <div class="field">
+                        <app-label class="field-label">{{ 'language' | translate }}</app-label>
+                        <app-form-field appearance="outline" class="field-control">
+                            <app-select formControlName="language">
+                                @for (language of languages; track language.code) {
+                                    <app-option [value]="language.code">{{ language.name }}</app-option>
+                                }
+                            </app-select>
+                        </app-form-field>
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <div class="field">
+                        <app-label class="field-label">
+                            {{ 'firstname' | translate }}<span class="field-req">*</span>
+                        </app-label>
+                        <app-form-field appearance="outline" class="field-control">
+                            <input appInput type="text" formControlName="firstname">
+                            @if (userForm.controls['firstname'].touched && userForm.controls['firstname'].hasError('required')) {
+                                <app-error>{{ 'include_firstname' | translate }}</app-error>
+                            }
+                        </app-form-field>
+                    </div>
+
+                    <div class="field">
+                        <app-label class="field-label">
+                            {{ 'lastname' | translate }}<span class="field-req">*</span>
+                        </app-label>
+                        <app-form-field appearance="outline" class="field-control">
+                            <input appInput type="text" formControlName="lastname">
+                            @if (userForm.controls['lastname'].touched && userForm.controls['lastname'].hasError('required')) {
+                                <app-error>{{ 'include_lastname' | translate }}</app-error>
+                            }
+                        </app-form-field>
+                    </div>
+                </div>
+
+                @if (juicebox.getProjectTitle() !== 'QualityCircle') {
+                    <div class="field">
+                        <app-label class="field-label">{{ 'nickname' | translate }}</app-label>
+                        <app-form-field appearance="outline" class="field-control">
+                            <input appInput type="text" formControlName="nickname">
+                        </app-form-field>
+                    </div>
+                }
+
+                @if (projectTitle === 'QualityCircle' || projectTitle === 'FireCircle') {
+                    <div class="field">
+                        <app-label class="field-label">
+                            {{ 'choose_email' | translate }}<span class="field-req">*</span>
+                        </app-label>
+                        <app-form-field appearance="outline" class="field-control">
+                            <app-autocomplete formControlName="email"
+                                              [options]="emailAutocompleteOptions"
+                                              (inputChange)="onSearch($event)"
+                                              (optionSelected)="onSelectChange($event)"></app-autocomplete>
+                            @if (userForm.controls['email'].touched && userForm.controls['email'].hasError('required')) {
+                                <app-error>{{ 'include_email' | translate }}</app-error>
+                            }
+                            @if (userForm.controls['email'].touched && userForm.controls['email'].hasError('email')) {
+                                <app-error>{{ 'invalid_email' | translate }}</app-error>
+                            }
+                        </app-form-field>
+                    </div>
+                } @else {
+                    <div class="field">
+                        <app-label class="field-label">
+                            {{ 'email' | translate }}<span class="field-req">*</span>
+                        </app-label>
+                        <app-form-field appearance="outline" class="field-control">
+                            <input appInput formControlName="email">
+                            @if (userForm.controls['email'].touched && userForm.controls['email'].hasError('required')) {
+                                <app-error>{{ 'include_email' | translate }}</app-error>
+                            }
+                            @if (userForm.controls['email'].touched && userForm.controls['email'].hasError('email')) {
+                                <app-error>{{ 'invalid_email' | translate }}</app-error>
+                            }
+                        </app-form-field>
+                        <div class="field-hint">{{ 'used_for_signin_and_notifications' | translate }}</div>
+                    </div>
+                }
+
+                <div class="card-actions-row">
+                    @if (!multipleTabs) {
+                        <button app-button appearance="raised" color="primary"
+                                (click)="publish()"
+                                [promiseBtn]="promiseBtn">
+                            {{ 'create' | translate }}
+                        </button>
                     }
-                </select>
-                @if (userForm.controls['salutation'].touched && userForm.controls['salutation'].hasError('required')) {
-                    <app-error>{{"include_salutation" | translate}}</app-error>
-                }
-            </app-form-field>
-        </div>
 
-        @if (projectTitle === 'QualityCircle' || projectTitle === 'FireCircle') {
-        <div class="form-group">
-            <app-form-field appearance="outline" class="w-100">
-                <app-label>{{ 'choose_email' | translate}}</app-label>
-                <app-autocomplete formControlName="email"
-                                  [options]="emailAutocompleteOptions"
-                                  (inputChange)="onSearch($event)"
-                                  (optionSelected)="onSelectChange($event)"></app-autocomplete>
-                @if (userForm.controls['email'].touched && userForm.controls['email'].hasError('required')) {
-                    <app-error>{{"include_email" | translate}}</app-error>
-                }
-                @if (userForm.controls['email'].touched && userForm.controls['email'].hasError('email')) {
-                    <app-error>{{"invalid_email" | translate}}</app-error>
-                }
-            </app-form-field>
-        </div>
-        }
-
-        <div class="form-group">
-            <app-form-field appearance="outline" class="w-100">
-                <app-label>{{"firstname" | translate}}</app-label>
-                <input appInput type="text" formControlName="firstname">
-                @if (userForm.controls['firstname'].touched && userForm.controls['firstname'].hasError('required')) {
-                    <app-error>{{"include_firstname" | translate}}</app-error>
-                }
-            </app-form-field>
-        </div>
-
-        <div class="form-group">
-            <app-form-field appearance="outline" class="w-100">
-                <app-label>{{"lastname" | translate}}</app-label>
-                <input appInput type="text" formControlName="lastname">
-                @if (userForm.controls['lastname'].touched && userForm.controls['lastname'].hasError('required')) {
-                    <app-error>{{"include_lastname" | translate}}</app-error>
-                }
-            </app-form-field>
-        </div>
-
-        @if (juicebox.getProjectTitle() !== 'QualityCircle') {
-        <div class="form-group">
-            <app-form-field appearance="outline" class="w-100">
-                <app-label>{{"nickname" | translate}}</app-label>
-                <input appInput type="text" formControlName="nickname">
-            </app-form-field>
-        </div>
-        }
-
-        <div class="form-group">
-            <app-form-field appearance="outline" class="w-100">
-                <app-label>{{"language" | translate}}</app-label>
-                <select appInput formControlName="language">
-                    @for (language of languages; track language.code) {
-                        <option [value]="language.code">{{language.name}}</option>
+                    @if (multipleTabs) {
+                        <button app-button appearance="raised" color="primary"
+                                [disabled]="!userForm.valid"
+                                (click)="next()">
+                            {{ 'next' | translate }}
+                        </button>
                     }
-                </select>
-            </app-form-field>
-        </div>
-
-        @if (projectTitle !== 'QualityCircle' && projectTitle !== 'FireCircle') {
-        <div class="form-group">
-            <app-form-field appearance="outline" class="w-100">
-                <app-label>{{"email" | translate}}*</app-label>
-                <input appInput type="email" formControlName="email">
-                @if (userForm.controls['email'].touched && userForm.controls['email'].hasError('required')) {
-                    <app-error>{{"include_email" | translate}}</app-error>
-                }
-                @if (userForm.controls['email'].touched && userForm.controls['email'].hasError('email')) {
-                    <app-error>{{"invalid_email" | translate}}</app-error>
-                }
-            </app-form-field>
-        </div>
-        }
-
-        <div class="form-group d-flex justify-end">
-            @if (!multipleTabs) {
-                <button app-button
-                        appearance="raised"
-                        color="primary"
-                        class="action-button"
-                        (click)="publish()"
-                        [promiseBtn]="promiseBtn">
-                    {{"create" | translate}}
-                </button>
-            }
-
-            @if (multipleTabs) {
-                <button app-button
-                        appearance="raised"
-                        color="primary"
-                        class="action-button"
-                        [disabled]="!userForm.valid"
-                        (click)="next()">
-                    {{"next" | translate}}
-                </button>
-            }
-        </div>
-    </form>
+                </div>
+            </form>
+        </app-card>
     }
 </div>
