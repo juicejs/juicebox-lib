@@ -5,24 +5,17 @@
 .groups-modal {
     display: flex;
     flex-direction: column;
-    max-width: 90vw;
-    max-height: calc(100vh - 48px);
-    background: var(--color-background-secondary);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    box-shadow: var(--shadow-xl, 0 24px 64px rgba(0, 0, 0, 0.6));
-    overflow: hidden;
 }
 
 /* Header */
 .modal-head {
-    padding: 20px 24px 18px;
+    padding: 0 0 var(--spacing-md) 0;
+    margin-bottom: var(--spacing-md);
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
-    border-bottom: 1px solid var(--color-border);
-    background: var(--color-background-secondary);
+    border-bottom: 1px solid var(--color-border-light);
 }
 
 .head-titles {
@@ -57,12 +50,26 @@
 
 /* Body */
 .modal-body {
-    padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 18px;
-    overflow: auto;
-    background: var(--color-background);
+    overflow-y: auto;
+    max-height: 60vh;
+
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-grey-400) transparent;
+
+    &::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: var(--color-grey-400);
+        border-radius: var(--radius-md);
+    }
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
 }
 
 .section {
@@ -241,13 +248,13 @@
 
 /* Footer */
 .modal-foot {
-    padding: 14px 20px;
+    padding: var(--spacing-md) 0 0 0;
+    margin-top: var(--spacing-md);
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    border-top: 1px solid var(--color-border);
-    background: var(--color-background-secondary);
+    border-top: 1px solid var(--color-border-light);
 }
 
 .foot-hint {
@@ -273,28 +280,12 @@
 }
 
 @media (max-width: 768px) {
-    .groups-modal {
-        width: 100%;
-        max-width: 95vw;
-        max-height: calc(100vh - 24px);
-        border-radius: 10px;
-    }
-
-    .modal-head {
-        padding: 16px 16px 14px;
-    }
-
-    .modal-body {
-        padding: 16px;
-    }
-
     .section-row {
         flex-direction: column;
         align-items: stretch;
     }
 
     .modal-foot {
-        padding: 12px 16px;
         flex-direction: column;
         align-items: stretch;
     }

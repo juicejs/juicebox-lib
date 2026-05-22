@@ -3,7 +3,7 @@ import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
 import {JuiceboxService} from '../../services/Juicebox.service';
 import { SharedTranslationPipe} from '../../i18n/shared-translation.pipe';
 import {CommonModule} from '@angular/common';
-import {ButtonComponent} from "../../../../ui-components";
+import {ButtonComponent, DialogTitleComponent, DialogContentComponent, DialogActionsComponent} from "../../../../ui-components";
 
 export interface ConfirmationDialogData {
   action?: string;
@@ -25,6 +25,9 @@ export interface ConfirmationDialogData {
     imports: [
         CommonModule,
         ButtonComponent,
+        DialogTitleComponent,
+        DialogContentComponent,
+        DialogActionsComponent,
         SharedTranslationPipe
     ]
 })

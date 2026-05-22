@@ -1,15 +1,17 @@
-<div class="dialog-header">
-  <h2 [innerHTML]="title || ''"></h2>
-</div>
+@if (title) {
+  <app-dialog-title>
+    <span [innerHTML]="title"></span>
+  </app-dialog-title>
+}
 
-<div class="dialog-content">
-  <p [innerHTML]="(completeMessage ?  (excludeQuestionMark ? completeMessage : completeMessage + '?') :  (message || ('are_you_sure' | translate)) + ' ' + (action || '') + ' ' + (subject || '') + '?')"></p>
+<app-dialog-content>
+  <p class="dialog-message" [innerHTML]="(completeMessage ?  (excludeQuestionMark ? completeMessage : completeMessage + '?') :  (message || ('are_you_sure' | translate)) + ' ' + (action || '') + ' ' + (subject || '') + '?')"></p>
   @if (info) {
     <p class="dialog-info" [innerHTML]="info"></p>
   }
-</div>
+</app-dialog-content>
 
-<div class="dialog-actions">
+<app-dialog-actions align="end">
   <button app-button
           appearance="flat"
           (click)="dialogRef.close(false)"
@@ -23,4 +25,4 @@
           type="button">
     {{confirm | translate}}
   </button>
-</div>
+</app-dialog-actions>

@@ -1,23 +1,15 @@
-.confirmation-dialog h2::first-letter,
-.dialog-content p::first-letter {
+.dialog-message {
+    margin: 0;
+    color: var(--color-text-primary);
+}
+
+.dialog-message::first-letter {
     text-transform: uppercase;
 }
 
-.confirmation-dialog {
-    min-width: 300px;
-}
-
-.dialog-content {
-    margin: 20px 0;
-}
-
 .dialog-info {
-    margin-top: 10px;
+    margin: 10px 0 0 0;
     opacity: 0.7;
     font-style: italic;
-}
-
-mat-dialog-actions {
-    padding: 16px 0;
-    gap: 8px;
+    color: var(--color-text-secondary);
 }

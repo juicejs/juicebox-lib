@@ -628,23 +628,28 @@ export const mainDictionary = {
   },
   "text_updated": {
     "en_GB": "Help text updated",
-    "de_DE": "Help text updated",
-    "hr_HR": "Help text updated"
+    "de_DE": "Hilfetext aktualisiert",
+    "hr_HR": "Tekst pomoći ažuriran"
   },
   "text_update_failed": {
     "en_GB": "Failed to update",
-    "de_DE": "Failed to update",
-    "hr_HR": "Failed to update"
+    "de_DE": "Aktualisierung fehlgeschlagen",
+    "hr_HR": "Ažuriranje nije uspjelo"
   },
   "file_uploaded": {
     "en_GB": "File uploaded",
-    "de_DE": "File uploaded",
-    "hr_HR": "File uploaded"
+    "de_DE": "Datei hochgeladen",
+    "hr_HR": "Datoteka učitana"
   },
   "file_upload_failed": {
     "en_GB": "Failed to upload",
-    "de_DE": "Failed to upload",
-    "hr_HR": "Failed to upload"
+    "de_DE": "Hochladen fehlgeschlagen",
+    "hr_HR": "Učitavanje nije uspjelo"
+  },
+  "help_text": {
+    "en_GB": "Help text",
+    "de_DE": "Hilfetext",
+    "hr_HR": "Tekst pomoći"
   },
   "close": {
     "en_GB": "Close",
@@ -657,24 +662,39 @@ export const mainDictionary = {
     "hr_HR": "Obriši"
   },
   "help_document": {
-    "en_GB": "Help",
-    "de_DE": "Hilfe",
-    "hr_HR": "Help dokument"
+    "en_GB": "Help document",
+    "de_DE": "Hilfedokument",
+    "hr_HR": "Dokument pomoći"
   },
   "upload": {
     "en_GB": "Upload",
     "de_DE": "Hochladen",
     "hr_HR": "Upload"
   },
+  "download": {
+    "en_GB": "Download",
+    "de_DE": "Herunterladen",
+    "hr_HR": "Preuzmi"
+  },
+  "no_file": {
+    "en_GB": "No file uploaded",
+    "de_DE": "Keine Datei hochgeladen",
+    "hr_HR": "Nema učitane datoteke"
+  },
+  "help_text_placeholder": {
+    "en_GB": "Enter help text...",
+    "de_DE": "Hilfetext eingeben...",
+    "hr_HR": "Unesite tekst pomoći..."
+  },
   "file_deleted": {
     "en_GB": "File deleted",
-    "de_DE": "File deleted",
-    "hr_HR": "File deleted"
+    "de_DE": "Datei gelöscht",
+    "hr_HR": "Datoteka obrisana"
   },
   "file_delete_failed": {
     "en_GB": "Failed to delete file",
-    "de_DE": "Failed to delete file",
-    "hr_HR": "Failed to delete file"
+    "de_DE": "Löschen der Datei fehlgeschlagen",
+    "hr_HR": "Brisanje datoteke nije uspjelo"
   },
   "pass_regex_error": {
     "en_GB": "Password should contain 8-64 characters except of ($, §), at least 1 uppercase character, at least 1 lowercase character and 1 number",

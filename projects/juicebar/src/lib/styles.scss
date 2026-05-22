@@ -7,6 +7,157 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 // =============================================================================
+// GLOBAL DIALOG STYLES (mirrors ui-components/dialog/dialog.scss)
+// Inlined here because lib/styles.scss is the only SCSS shipped to consumers.
+// =============================================================================
+
+.app-dialog-panel {
+  background: var(--color-grey-200);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  padding: var(--spacing-lg);
+  min-width: 300px;
+  width: 560px;
+  max-width: 80vw;
+  max-height: 80vh;
+  color: var(--color-text-primary);
+  display: block;
+  overflow: hidden;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-xl), 0 0 0 2px var(--color-tertiary);
+  }
+}
+
+.app-dialog-panel--sm { width: 400px; }
+.app-dialog-panel--md { width: 560px; }
+.app-dialog-panel--lg { width: 800px; }
+.app-dialog-panel--xl { width: 1100px; }
+
+.app-dialog-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0 0 var(--spacing-md) 0;
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text-primary);
+
+  .app-dialog-title__close {
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+}
+
+.app-dialog-content {
+  display: block;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+  overflow-y: auto;
+  max-height: 60vh;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-grey-400) transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-grey-400);
+    border-radius: var(--radius-md);
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+.app-dialog-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: flex-end;
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.cdk-overlay-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  transition: opacity 150ms cubic-bezier(.2, .8, .2, 1);
+}
+
+.cdk-overlay-container {
+  z-index: 1000;
+}
+
+.cdk-overlay-pane {
+  max-width: 95vw;
+  max-height: 95vh;
+}
+
+.cdk-overlay-pane:has(> .app-dialog-panel) {
+  animation: app-dialog-enter 150ms cubic-bezier(.2, .8, .2, 1);
+}
+
+@keyframes app-dialog-enter {
+  from { opacity: 0; transform: scale(.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.app-dialog-panel {
+  input, textarea, select {
+    background: var(--color-grey-100);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-tertiary);
+      box-shadow: 0 0 0 1px var(--color-tertiary);
+    }
+
+    &::placeholder {
+      color: var(--color-text-disabled);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+  }
+}
+
+@media (max-width: 600px) {
+  .app-dialog-panel,
+  .app-dialog-panel--sm,
+  .app-dialog-panel--md,
+  .app-dialog-panel--lg,
+  .app-dialog-panel--xl {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    border: none;
+  }
+
+  .app-dialog-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+}
+
+// =============================================================================
 // CSS CUSTOM PROPERTIES - DARK THEME (DEFAULT)
 // =============================================================================
 

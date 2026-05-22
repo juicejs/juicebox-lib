@@ -1,6 +1,6 @@
+<app-dialog-title>{{'help' | translate}}</app-dialog-title>
 <app-dialog-content>
   <div class="help-content">
-    <app-dialog-title>{{'help' | translate}}</app-dialog-title>
     <div class="help-file">
       <h4 class="section-title">{{'help_document' | translate}}</h4>
       <div class="file-upload-section">
@@ -26,7 +26,7 @@
             {{fileInfo.name}}{{fileInfo.extension}}
           </div>
         } @else {
-          <span class="no-file">-</span>
+          <span class="no-file">{{'no_file' | translate}}</span>
         }
 
         <div class="action-buttons">
@@ -34,7 +34,7 @@
                   color="primary"
                   (click)="downloadFile()"
                   [disabled]="!fileInfo">
-            Download
+            {{'download' | translate}}
           </button>
           <button app-button
                   color="primary"
@@ -57,29 +57,27 @@
                     #text
                     [formControl]="helpDataCtrl"
                     rows="6"
-                    placeholder="Enter help text..."></textarea>
+                    [placeholder]="'help_text_placeholder' | translate"></textarea>
         </app-form-field>
-
-        <button app-button
-                appearance="raised"
-                color="primary"
-                type="submit"
-                class="update-button"
-                [hasPermissions]="'juicebox:role#edit-help-document'"
-                (click)="addHelpText(text.value)"
-                [promiseBtn]="promiseBtn">
-          {{ 'update' | translate }}
-        </button>
       </div>
     </div>
 
-    <app-dialog-actions align="end">
-      <button app-button
-              (click)="dialogRef.close(helpTextUpdated)">
-        {{'close' | translate}}
-      </button>
-    </app-dialog-actions>
   </div>
 </app-dialog-content>
+<app-dialog-actions align="end">
+  <button app-button
+          (click)="dialogRef.close(helpTextUpdated)">
+    {{'close' | translate}}
+  </button>
+  <button app-button
+          appearance="raised"
+          color="primary"
+          type="submit"
+          [hasPermissions]="'juicebox:role#edit-help-document'"
+          (click)="addHelpText(text.value)"
+          [promiseBtn]="promiseBtn">
+    {{ 'update' | translate }}
+  </button>
+</app-dialog-actions>
 
 
