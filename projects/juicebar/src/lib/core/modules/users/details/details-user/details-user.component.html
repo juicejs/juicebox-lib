@@ -102,12 +102,8 @@
                 <div class="card-divider"></div>
 
                 <div class="toggle-row">
-                    <div class="toggle-cell"
-                         (click)="form.controls['active'].setValue(!form.controls['active'].value)">
-                        <app-slide-toggle
-                            [checked]="!!form.controls['active'].value"
-                            (toggled)="form.controls['active'].setValue($event)">
-                        </app-slide-toggle>
+                    <div class="toggle-cell">
+                        <app-slide-toggle formControlName="active"></app-slide-toggle>
                         <div class="toggle-text">
                             <div class="toggle-label">{{ 'active' | translate }}</div>
                             <div class="toggle-hint">{{ 'user_can_sign_in' | translate }}</div>
@@ -115,12 +111,8 @@
                     </div>
 
                     @if (juicebox.hasPermission('users:role#super-admin')) {
-                        <div class="toggle-cell"
-                             (click)="form.controls['admin'].setValue(!form.controls['admin'].value)">
-                            <app-slide-toggle
-                                [checked]="!!form.controls['admin'].value"
-                                (toggled)="form.controls['admin'].setValue($event)">
-                            </app-slide-toggle>
+                        <div class="toggle-cell">
+                            <app-slide-toggle formControlName="admin"></app-slide-toggle>
                             <div class="toggle-text">
                                 <div class="toggle-label">{{ 'admin' | translate }}</div>
                                 <div class="toggle-hint">{{ 'full_access_to_org_and_member_settings' | translate }}</div>

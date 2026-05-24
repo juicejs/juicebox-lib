@@ -27,10 +27,9 @@
   cdkConnectedOverlay
   [cdkConnectedOverlayOrigin]="trigger"
   [cdkConnectedOverlayOpen]="isOpen()"
-  [cdkConnectedOverlayHasBackdrop]="true"
-  cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
+  [cdkConnectedOverlayHasBackdrop]="false"
   [cdkConnectedOverlayMinWidth]="trigger.elementRef.nativeElement.offsetWidth"
-  (backdropClick)="close()"
+  (overlayOutsideClick)="close()"
   (detach)="close()">
   <div class="app-select-panel" role="listbox">
     @if (searchable()) {

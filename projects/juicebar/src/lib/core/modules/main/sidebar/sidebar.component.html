@@ -10,6 +10,14 @@
            width="120" height="120"
            class="brand-logo"
            [class.vertical]="juicebox.collapsed">
+      <button class="collapse-btn"
+              (click)="collapse()"
+              [appTooltip]="juicebox.collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+              appTooltipPosition="right">
+        <app-icon class="collapse-icon"
+                  [class.flipped]="juicebox.collapsed"
+                  [icon]="'chevron_left'"></app-icon>
+      </button>
     </div>
 
     <!-- Navigation Menu with Drag & Drop -->
@@ -54,14 +62,15 @@
 
     <!-- Sidebar Footer -->
     <div class="sidebar-footer">
-      <button app-button
-              appearance="icon"
-              class="collapse-btn"
-              (click)="collapse()"
-              [appTooltip]="juicebox.collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
-              appTooltipPosition="right">
-        <app-icon class="collapse-icon" [icon]="juicebox.collapsed ? 'menu_open' : 'menu'"></app-icon>
-      </button>
+      <div class="user-section" [class.collapsed]="juicebox.collapsed">
+        <div class="user-avatar-initials">{{ userInitials() }}</div>
+        @if (!juicebox.collapsed) {
+          <div class="user-info">
+            <div class="user-full-name">{{ userDisplayName() }}</div>
+            <div class="user-org">{{ organisationName() }}</div>
+          </div>
+        }
+      </div>
     </div>
 
   </app-sidenav>

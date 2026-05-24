@@ -1,12 +1,11 @@
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, NavigationEnd, NavigationStart, Router, RouterEvent, RouterOutlet } from '@angular/router';
+import { NavigationEnd, NavigationStart, Router, RouterEvent, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { JuiceboxService} from '../../shared/services/Juicebox.service';
 import { SocketService} from '../../shared/services/socket.service';
 import { isNumber} from '../../shared/util';
 import {OnInit, Component, ViewEncapsulation, signal, Signal, ChangeDetectionStrategy, inject} from '@angular/core';
 import {Subscription} from 'rxjs';
-import {HelpComponent} from './navigation/help/help.component';
 import {SidebarService} from '../../shared/services/sidebar.service';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {CommonModule} from '@angular/common';
@@ -14,7 +13,7 @@ import {NavigationComponent} from './navigation/navigation.component';
 import {SidebarComponent} from './sidebar/sidebar.component';
 import {SharedModule} from '../../shared/shared.module';
 import {GlobalTranslationPipe} from '../../i18n/global.translation';
-import {ButtonComponent, IconComponent, DialogService, TooltipDirective} from '../../../ui-components';
+import {ButtonComponent, IconComponent} from '../../../ui-components';
 
 @Component({
   selector: 'app-main',
@@ -32,7 +31,6 @@ import {ButtonComponent, IconComponent, DialogService, TooltipDirective} from '.
     GlobalTranslationPipe,
     ButtonComponent,
     IconComponent,
-    TooltipDirective
   ]
 })
 export class MainComponent implements OnInit {
@@ -44,7 +42,6 @@ export class MainComponent implements OnInit {
     public text = signal<string>(null);
     public module = signal<string>(null);
     public navigationVisible!: Signal<boolean>;
-    public headerCollapsed = signal<boolean>(false);
 
     private subscription$: Subscription = new Subscription();
 
@@ -52,8 +49,6 @@ export class MainComponent implements OnInit {
     private router = inject(Router);
     public juicebox = inject(JuiceboxService);
     public socketService = inject(SocketService);
-    private dialog = inject(DialogService);
-    public route = inject(ActivatedRoute);
     public sidebarService = inject(SidebarService);
 
     constructor() {
@@ -139,27 +134,13 @@ export class MainComponent implements OnInit {
         }
     }
 
-    public async goTo(url){
+    public async goTo(url: string) {
         await this.router.navigateByUrl(url);
     }
 
     public async openResult(result){
         this.juicebox.searchActive = false;
         await this.router.navigateByUrl(result.link);
-    }
-
-    public openHelpModal() {
-        const dialogRef = this.dialog.open<HelpComponent, { text: string }, boolean>(HelpComponent, {
-            width: '800px',
-            maxWidth: '90vw',
-            data: { text: this.text() }
-        });
-
-        dialogRef.closed.subscribe(result => {
-            if (result) {
-                this.helpTextUpdated();
-            }
-        });
     }
 
     private verifyConnection(): void {
@@ -184,66 +165,8 @@ export class MainComponent implements OnInit {
         await this.getHelpText();
     }
 
-    getContentContainerStyle() {
-        return {
-            'margin-top': this.navigationVisible() ? '3.5rem' : '0'
-        };
-    }
-
     ngOnDestroy() {
         this.subscription$.unsubscribe();
     }
 
-    toggleHeaderCollapse() {
-        this.headerCollapsed.update(value => !value);
-    }
-
-    getButtonColor(buttonType: string): 'primary' | 'accent' | 'warn' | 'basic' {
-        switch (buttonType) {
-            case 'btn-primary': return 'primary';
-            case 'btn-secondary': return 'accent';
-            case 'btn-success': return 'primary';
-            case 'btn-danger': return 'warn';
-            case 'btn-warning': return 'accent';
-            case 'btn-info': return 'primary';
-            default: return 'primary';
-        }
-    }
-
-    getButtonIcon(faIcon: string): string {
-        const iconMap: { [key: string]: string } = {
-            'fa-plus-circle': 'add_circle',
-            'fa-plus': 'add',
-            'fa-edit': 'edit',
-            'fa-trash': 'delete',
-            'fa-download': 'download',
-            'fa-upload': 'upload',
-            'fa-save': 'save',
-            'fa-search': 'search',
-            'fa-filter': 'filter_list',
-            'fa-user': 'person',
-            'fa-users': 'group',
-            'fa-cog': 'settings',
-            'fa-home': 'home',
-            'fa-arrow-left': 'arrow_back',
-            'fa-arrow-right': 'arrow_forward',
-            'fa-check': 'check',
-            'fa-times': 'close',
-            'fa-info': 'info',
-            'fa-warning': 'warning',
-            'fa-refresh': 'refresh',
-            'fa-copy': 'content_copy',
-            'fa-print': 'print',
-            'fa-file': 'description',
-            'fa-folder': 'folder',
-            'fa-calendar': 'event',
-            'fa-clock': 'schedule',
-            'fa-mail': 'mail',
-            'fa-phone': 'phone',
-            'fa-star': 'star'
-        };
-
-        const cleanIcon = faIcon.startsWith('fa-') ? faIcon : `fa-${faIcon}`;
-        return iconMap[cleanIcon] || 'add';
-    }
 }

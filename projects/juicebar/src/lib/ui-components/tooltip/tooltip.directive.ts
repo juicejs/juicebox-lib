@@ -21,17 +21,29 @@ export class TooltipDirective implements OnDestroy {
   private elementRef = inject(ElementRef);
   private overlayRef?: OverlayRef;
 
-  private getPosition(): ConnectedPosition {
+  private getPositions(): ConnectedPosition[] {
     switch (this.appTooltipPosition()) {
       case 'right':
-        return { originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center', offsetX: 8 };
+        return [
+          { originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center', offsetX: 8 },
+          { originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center', offsetX: -8 },
+        ];
       case 'left':
-        return { originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center', offsetX: -8 };
+        return [
+          { originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center', offsetX: -8 },
+          { originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center', offsetX: 8 },
+        ];
       case 'bottom':
-        return { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top', offsetY: 8 };
+        return [
+          { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top', offsetY: 8 },
+          { originX: 'center', originY: 'top', overlayX: 'center', overlayY: 'bottom', offsetY: -8 },
+        ];
       case 'top':
       default:
-        return { originX: 'center', originY: 'top', overlayX: 'center', overlayY: 'bottom', offsetY: -8 };
+        return [
+          { originX: 'center', originY: 'top', overlayX: 'center', overlayY: 'bottom', offsetY: -8 },
+          { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top', offsetY: 8 },
+        ];
     }
   }
 
@@ -42,7 +54,10 @@ export class TooltipDirective implements OnDestroy {
 
     const positionStrategy = this.overlayPositionBuilder
       .flexibleConnectedTo(this.elementRef)
-      .withPositions([this.getPosition()]);
+      .withFlexibleDimensions(false)
+      .withPush(false)
+      .withViewportMargin(8)
+      .withPositions(this.getPositions());
 
     this.overlayRef = this.overlay.create({ positionStrategy });
     const tooltipPortal = new ComponentPortal(TooltipComponent);

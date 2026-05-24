@@ -27,7 +27,6 @@ export class GroupsNameEditorComponent implements OnInit {
     groupForm: FormGroup;
     promiseBtn: any;
 
-    enable: boolean = false;
 
     private dialogRef = inject<DialogRef<any>>(DialogRef);
     public data = inject<{ group?: any }>(DIALOG_DATA);
@@ -44,13 +43,12 @@ export class GroupsNameEditorComponent implements OnInit {
         return new FormGroup({
             name: new FormControl(this.group ? this.group.name : '', Validators.required),
             key: new FormControl(this.group && this.group.key ? this.group.key.split(':')[1] : '', Validators.required),
-            superAdmin: new FormControl('', Validators.nullValidator)
+            superAdmin: new FormControl(this.group?.options?.superAdmin ?? false)
         })
     }
 
     ngOnInit() {
         this.groupForm = this.createGroupForm();
-        this.enable = this.group && this.group.options && this.group.options.superAdmin ? this.group.options.superAdmin : false;
     }
 
     submit() {
@@ -70,7 +68,7 @@ export class GroupsNameEditorComponent implements OnInit {
             else {
                 const updateData = this.group;
                 updateData.name = data.name;
-                updateData.superAdmin = this.enable;
+                updateData.superAdmin = !!this.groupForm.controls['superAdmin'].value;
                 result = await this.userService.updateGroup(updateData);
                 if (!result.success) {
                     this.snackbar.open(`Error: ${result.error}`, 'error');

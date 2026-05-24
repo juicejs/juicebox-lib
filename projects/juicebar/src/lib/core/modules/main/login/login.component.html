@@ -64,9 +64,7 @@
         }
 
         <div class="form-options">
-          <app-slide-toggle
-            [checked]="loginForm.get('remember')!.value"
-            (toggled)="loginForm.get('remember')!.setValue($event)">
+          <app-slide-toggle formControlName="remember">
             {{ 'remember_me' | translate }}
           </app-slide-toggle>
         </div>

@@ -1,73 +1,23 @@
 <div class="main-container-new-ui">
     @if (navigationVisible()) {
-        <app-navigation (helpTextUpdatedEventEmitter)="helpTextUpdated()"></app-navigation>
+        <app-sidebar></app-sidebar>
     }
 
     <div class="main-content">
         @if (navigationVisible()) {
-            <app-sidebar></app-sidebar>
+            <app-navigation
+                (helpTextUpdatedEventEmitter)="helpTextUpdated()"
+                [locationTitle]="locationTitle()"
+                [locationSubject]="locationSubject()"
+                [locationLink]="locationLink()">
+            </app-navigation>
         }
         <div class="content-container">
         <div class="flex-column navigation-container next" [style.display]="juicebox.searchActive ? 'none' : 'flex'">
-            @if (navigationVisible() && headerCollapsed()) {
-                <button app-button
-                        appearance="icon"
-                        class="floating-expand-btn"
-                        (click)="toggleHeaderCollapse()"
-                        [appTooltip]="'Expand header'">
-                    <app-icon [icon]="'expand_more'"></app-icon>
+            @if (navigationVisible() && locationLink()) {
+                <button app-button appearance="icon" class="back-nav-btn" (click)="goTo(locationLink())">
+                    <app-icon [icon]="'keyboard_arrow_left'"></app-icon>
                 </button>
-            }
-            @if (navigationVisible()) {
-                <div class="location-container" [class.collapsed]="headerCollapsed()">
-                    <div class="location ellipsis">
-                        <div class="title">
-                            <div class="d-flex align-center">
-                                <button app-button appearance="icon" class="back-nav-btn" (click)="goTo(locationLink())">
-                                    <app-icon [icon]="'keyboard_arrow_left'"></app-icon>
-                                </button>
-                                <div class="label">{{locationTitle()}} <small>{{locationSubject()}}</small></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    @if (text()) {
-                        <button type="button"
-                                app-button
-                                appearance="icon"
-                                class="question-mark"
-                                [appTooltip]="text()"
-                                (click)="openHelpModal()">
-                            ?
-                        </button>
-                    }
-
-                    <div class="button-bar">
-                        @if (juicebox.actionButtons && juicebox.actionButtons.length) {
-                            @for (button of juicebox.actionButtons; track button) {
-                                <button (click)="button.callAction()"
-                                        [promiseBtn]="button.promise"
-                                        [disabled]="button.disabled"
-                                        [hasPermissions]="button.permissions ? button.permissions : null"
-                                        [hasPermissionsHide]="button.permissionsHide ? button.permissionsHide : null"
-                                        app-button
-                                        appearance="raised"
-                                        [color]="getButtonColor(button.type)"
-                                        class="action-button">
-                                    <app-icon [icon]="getButtonIcon(button.icon)"></app-icon>
-                                    {{button.title}}
-                                </button>
-                            }
-                        }
-                        <button app-button
-                                appearance="icon"
-                                class="collapse-btn"
-                                (click)="toggleHeaderCollapse()"
-                                [appTooltip]="headerCollapsed() ? 'Expand header' : 'Collapse header'">
-                            <app-icon [icon]="headerCollapsed() ? 'expand_more' : 'expand_less'"></app-icon>
-                        </button>
-                    </div>
-                </div>
             }
             <div class="router-container">
                 <router-outlet></router-outlet>

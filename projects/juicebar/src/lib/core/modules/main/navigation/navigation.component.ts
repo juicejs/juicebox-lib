@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, output, ChangeDetectionStrategy, signal, computed} from '@angular/core';
+import {Component, inject, OnInit, output, input, ChangeDetectionStrategy, signal, computed} from '@angular/core';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
@@ -43,10 +43,12 @@ interface FileInfo {
 })
 export class NavigationComponent implements OnInit {
 
+  readonly locationTitle = input<string>(null);
+  readonly locationSubject = input<string>(null);
+  readonly locationLink = input<any>(null);
+
   public languages = signal<Array<Language>>([]);
   public fileInfo = signal<FileInfo | null>(null);
-  public userName = signal<string>('');
-  public userEmail = signal<string>('');
   public searching = signal<boolean>(false);
 
   public userOrganisations = signal<Array<any>>([]);
@@ -77,13 +79,6 @@ export class NavigationComponent implements OnInit {
 
     const storedTheme: Theme = this.user?.attributes?.settings?.theme === 'light' ? 'light' : 'dark';
     this.themeService.init(storedTheme);
-
-    this.userName.set(
-      (this.user?.firstname && this.user?.lastname)
-        ? `${this.user.firstname} ${this.user.lastname}`
-        : `${this.user?.email ?? ''}`
-    );
-    this.userEmail.set(this.user?.email ?? '');
 
     this.languages.set(this.getLanguages());
     this.selectedLanguage.set(this.getPreselectedLanguage());
@@ -189,11 +184,8 @@ export class NavigationComponent implements OnInit {
     this.themeService.toggle();
   }
 
-  logout() {
-    this.juicebox.logout();
+  async goTo(url: string) {
+    if (url) await this.router.navigateByUrl(url);
   }
 
-  async goToUserProfile() {
-    await this.router.navigate(['/main/user-profile']);
-  }
 }

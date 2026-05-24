@@ -1,27 +1,30 @@
 <app-toolbar class="modern-navigation">
 
-  <!-- Center Section - Enhanced Search -->
-  <div class="search-section">
-    <div class="search-container">
-      <button app-button appearance="icon" class="search-icon-btn">
-        <app-icon [icon]="'search'" class="search-icon"></app-icon>
-      </button>
-      <input type="text"
-             class="search-input"
-             placeholder="Search"
-             debounceKeyUp
-             [debounceTime]="500"
-             (onEvent)="doSearch($event)">
-      @if (false) {
-        <button app-button appearance="icon" class="search-options-btn">
-          <app-icon [icon]="'tune'"></app-icon>
-        </button>
+  <!-- Left Section - Breadcrumbs -->
+  <div class="breadcrumbs-section">
+    @if (locationTitle()) {
+      <button class="breadcrumb-title" (click)="goTo(locationLink())">{{ locationTitle() }}</button>
+      @if (locationSubject()) {
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-subject">{{ locationSubject() }}</span>
       }
-    </div>
+    }
   </div>
 
   <!-- Right Section - User Actions -->
   <div class="nav-right-section">
+
+    <!-- Search -->
+    <div class="search-cmd">
+      <app-icon [icon]="'search'" class="search-cmd-icon"></app-icon>
+      <input type="text"
+             class="search-cmd-input"
+             placeholder="Search or jump to…"
+             debounceKeyUp
+             [debounceTime]="500"
+             (onEvent)="doSearch($event)">
+      <span class="search-kbd">⌘K</span>
+    </div>
 
     <div class="action-cluster">
 
@@ -48,20 +51,11 @@
       }
 
     <ng-template #languageMenu>
-      <div class="menu-panel menu-dropdown" cdkMenu>
-        <div class="menu-header">
-          <span class="menu-title">Language</span>
-        </div>
-        <div class="languages-listing">
+      <div class="lang-panel" cdkMenu>
+        <div class="lang-panel-options">
           @for (language of languages(); track language.code) {
-            <button (click)="changeLanguage(language)"
-                    app-button
-                    cdkMenuItem
-                    class="language-menu-item">
-              <div class="menu-item-content">
-                <app-icon [icon]="'language'" class="menu-item-icon"></app-icon>
-                <span class="menu-item-label">{{language.name | translate}}</span>
-              </div>
+            <button class="lang-option" cdkMenuItem (click)="changeLanguage(language)">
+              {{ language.name | translate }}
             </button>
           }
         </div>
@@ -83,79 +77,32 @@
 
     <!-- Organization Switcher -->
     @if (userOrganisations().length > 1) {
-      <button app-button
-              class="org-switcher-btn"
-              [cdkMenuTriggerFor]="orgMenu">
-        <app-icon [icon]="'business'" class="org-icon"></app-icon>
+      <button class="org-switcher-btn" [cdkMenuTriggerFor]="orgMenu">
         <span class="org-label">{{ organisationName() }}</span>
-        <app-icon [icon]="'keyboard_arrow_down'" class="dropdown-arrow"></app-icon>
+        <app-icon [icon]="'keyboard_arrow_down'" class="org-arrow"></app-icon>
       </button>
     }
 
     <ng-template #orgMenu>
-      <div class="menu-panel menu-dropdown org-menu" cdkMenu>
-        <div class="menu-header">
-          <span class="menu-title">Switch Organization</span>
-        </div>
-        <div class="org-search" (click)="$event.stopPropagation()">
-          <app-icon [icon]="'search'" class="org-search-icon"></app-icon>
+      <div class="org-panel" cdkMenu>
+        <div class="org-panel-search" (click)="$event.stopPropagation()">
+          <app-icon [icon]="'search'" class="org-panel-search-icon"></app-icon>
           <input type="text"
-                 class="org-search-input"
+                 class="org-panel-search-input"
                  [value]="orgSearch()"
                  (input)="onOrgSearch($event)"
                  (keydown)="$event.stopPropagation()"
-                 placeholder="Search organization" />
+                 placeholder="Search…" />
         </div>
-        <div class="org-list">
+        <div class="org-panel-options">
           @for (org of filteredOrganisations(); track org._id) {
-            <button (click)="onOrganisationSwitch(org._id)"
-                    app-button
-                    cdkMenuItem
-                    class="org-menu-item">
-              <div class="menu-item-content">
-                <app-icon [icon]="'business'" class="menu-item-icon"></app-icon>
-                <span class="menu-item-label">{{ org.name }}</span>
-              </div>
+            <button class="org-option" cdkMenuItem (click)="onOrganisationSwitch(org._id)">
+              {{ org.name }}
             </button>
           }
           @if (filteredOrganisations().length === 0) {
-            <div class="org-empty">No matches</div>
+            <div class="org-panel-empty">No matches</div>
           }
-        </div>
-      </div>
-    </ng-template>
-
-    <!-- User Profile -->
-    <button app-button
-            class="profile-button"
-            [cdkMenuTriggerFor]="profileMenu"
-            [appTooltip]="'user_profile' | translate">
-      <div class="user-avatar">
-        <app-icon [icon]="'account_circle'" class="avatar-icon"></app-icon>
-      </div>
-    </button>
-
-    <ng-template #profileMenu>
-      <div class="menu-panel menu-dropdown profile-menu" cdkMenu>
-        <div class="profile-menu-header">
-          <div class="profile-info">
-            <app-icon [icon]="'account_circle'" class="profile-avatar"></app-icon>
-            <div class="profile-details">
-              <div class="profile-name">{{ userName() }}</div>
-              <div class="profile-email">{{ userEmail() || 'user@example.com' }}</div>
-            </div>
-          </div>
-        </div>
-        <app-divider></app-divider>
-        <div class="user-buttons">
-          <button app-button cdkMenuItem (click)="goToUserProfile()" class="profile-menu-item">
-            <app-icon [icon]="'person'" class="menu-item-icon"></app-icon>
-            <span class="menu-item-label">{{'user_profile' | translate}}</span>
-          </button>
-          <button app-button cdkMenuItem (click)="logout()" class="profile-menu-item logout-item">
-            <app-icon [icon]="'logout'" class="menu-item-icon"></app-icon>
-            <span class="menu-item-label">{{'logout' | translate}}</span>
-          </button>
         </div>
       </div>
     </ng-template>

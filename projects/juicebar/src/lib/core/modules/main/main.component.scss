@@ -3,7 +3,7 @@
 
 .main-container-new-ui {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     height: 100vh;
     width: 100vw;
     font-family: 'Inter', sans-serif !important;
@@ -16,159 +16,34 @@
         z-index: 1;
     }
 
-    app-navigation {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
+    app-sidebar {
+        flex-shrink: 0;
+        height: 100vh;
         z-index: 1000;
     }
 
     .main-content {
         display: flex;
-        margin-top: 4rem;
+        flex-direction: column;
         flex: 1;
+        min-width: 0;
         min-height: 0;
+        height: 100vh;
+    }
+
+    app-navigation {
+        flex-shrink: 0;
+        width: 100%;
+        z-index: 100;
     }
 
     .content-container {
         flex: 1;
         overflow-y: auto;
         background: transparent;
-        border: 1px solid var(--color-border);
 
         .navigation-container {
             position: relative;
-
-            .floating-expand-btn {
-                position: sticky;
-                top: 0;
-                left: 50%;
-                transform: translateX(-50%);
-                z-index: 901;
-                margin: 0.5rem auto;
-                width: 1.5rem;
-                height: 1.5rem;
-                background: var(--color-background-secondary);
-                border: 1px solid var(--color-border);
-                box-shadow: var(--shadow-md);
-                color: var(--color-tertiary);
-                animation: slideDown 0.3s ease;
-
-                &:hover {
-                    background: var(--color-grey-200);
-                    box-shadow: var(--shadow-lg);
-                    transform: translateX(-50%) translateY(2px);
-                }
-            }
-
-            .location-container, .search-container {
-                display: flex;
-                width: 100%;
-                padding: 1rem 1.5rem;
-                background: var(--color-background);
-                backdrop-filter: blur(5px);
-                // border-bottom: 1px solid var(--color-border);
-                position: sticky;
-                top: 0;
-                z-index: 900;
-                transition: transform 0.3s ease, opacity 0.3s ease;
-                overflow: hidden;
-
-                &.collapsed {
-                    transform: translateY(-100%);
-                    opacity: 0;
-                    height: 0;
-                    padding: 0;
-                    border-bottom: none;
-                    pointer-events: none;
-                    visibility: hidden;
-                }
-
-                .location {
-                    flex-grow: 1;
-
-                    .title {
-                        font-size: 1.7rem;
-                        margin-bottom: 0rem;
-                        color: var(--color-text-primary);
-
-                        .icon-container {
-                            padding-bottom: 5px;
-
-                            &.cursor {
-                                cursor: pointer;
-                            }
-
-                            i {
-                                font-size: 1.1rem;
-                                color: var(--color-tertiary);
-                            }
-                        }
-
-                        .label {
-                            margin-left: 5px;
-                        }
-                    }
-                }
-
-                .question-mark {
-                    background: linear-gradient(135deg, lighten($primary, 10%), $primary);
-                    color: white;
-                    width: 32px;
-                    height: 32px;
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 1rem;
-                    font-weight: bold;
-                    cursor: pointer;
-                    box-shadow: 0 2px 8px rgba($primary, 0.3);
-                    transition: all 0.3s ease;
-
-                    &:hover {
-                        transform: translateY(-2px);
-                        box-shadow: 0 4px 15px rgba($primary, 0.4);
-                    }
-                }
-
-                .collapse-btn {
-                    width: 32px;
-                    height: 32px;
-                    margin-left: 0.5rem;
-                    color: var(--color-text-secondary);
-                    transition: all 0.3s ease;
-
-                    &:hover {
-                        color: var(--color-tertiary);
-                        background-color: var(--color-grey-200);
-                    }
-                }
-
-                .button-bar {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.75rem;
-
-                    .action-button {
-                        display: flex;
-                        align-items: center;
-                        gap: 0.5rem;
-                        padding: 0.5rem 1rem;
-                        border-radius: 8px;
-                        border: 1px solid var(--color-border);
-                        transition: all 0.3s ease;
-                        box-shadow: var(--shadow-sm);
-
-                        &:hover {
-                            transform: translateY(-1px);
-                            box-shadow: var(--shadow-md);
-                            border-color: var(--color-tertiary);
-                        }
-                    }
-                }
-            }
 
             &.searchResults {
                 .parent {
@@ -243,27 +118,17 @@
     }
 }
 
-// Back navigation button styling
 .back-nav-btn {
+    position: sticky;
+    top: 1rem;
+    margin: 1rem 0 0 1rem;
     width: 36px !important;
     height: 36px !important;
-    margin-right: 8px;
-    margin-left: -8px;
     color: var(--color-text-secondary);
+    z-index: 10;
 
     &:hover {
         color: var(--color-tertiary);
         background-color: var(--color-grey-200);
-    }
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
     }
 }

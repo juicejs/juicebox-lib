@@ -1,10 +1,7 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ListingComponent} from '../../../../shared/components/listing/listing.component';
 import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
-import { ISearchTerm} from '../../../../shared/interfaces/ISearchTerm';
-import { HelperService} from '../../../../shared/services/helper.service';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { UsersService } from '../../users.service';
 import { ConfirmationDialogComponent} from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -19,7 +16,6 @@ import { SharedModule } from '../../../../shared/shared.module';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        ReactiveFormsModule,
         SharedModule,
         UserTranslationPipe
     ]
@@ -28,10 +24,7 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
 
     organisations: any[] = [];
     selectedOrganisation = signal<any>(null);
-    organisationControl = new FormControl();
 
-    pageOrgs: number = 0;
-    filterOrganisations: ISearchTerm[] = [];
     organisationsCount: number = 0;
 
     promiseBtn: any;
@@ -42,7 +35,6 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
     userId: string;
     displayedColumns: string[] = ['name', 'actions'];
 
-    private helper = inject(HelperService);
     private aRoute = inject(ActivatedRoute);
     private userService = inject(UsersService);
     private router = inject(Router);
@@ -61,19 +53,16 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
     }
 
     private async getOrganisations(): Promise<any> {
-        const organisationResult = await this.juicebox.getAvailableOrganisations(this.pageOrgs, 10, {
+        const organisationResult = await this.juicebox.getAvailableOrganisations(0, 1000, {
             sort: { prop: "name", dir: "asc" },
-            filter: this.filterOrganisations
+            filter: []
         });
         if (!organisationResult || !organisationResult.success)
             return false;
 
-        const tmpOrgs = organisationResult.payload.items.filter(o => {
-            if (this.rows().findIndex(row => row._id === o._id) < 0)
-                return o;
-        });
-
-        this.organisations = [...this.organisations, ...tmpOrgs];
+        this.organisations = organisationResult.payload.items.filter(o =>
+            this.rows().findIndex(row => row._id === o._id) < 0
+        );
         this.organisationsCount = organisationResult.payload.count;
     }
 
@@ -95,32 +84,6 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
     }
 
     trackById = (_: number, row: any) => row._id;
-
-    async searchOrganisations(event: any) {
-        this.pageOrgs = 0;
-        const result = this.helper.prepareSearchTerm(this.filterOrganisations, 'name', event.term);
-        this.filterOrganisations = result.filter;
-
-        if (!result.resolved){
-            this.organisations = [];
-            await this.getOrganisations();
-        }
-    }
-
-    displayOrgName = (org: any): string => {
-        return org?.name || '';
-    }
-
-    customSearchOrganisations = (term: string, items: any) => {
-        return true;
-    }
-
-    async onScrollOrganisations() {
-        if (this.organisations.length < this.organisationsCount) {
-            this.pageOrgs = this.organisations.length / 10;
-            await this.getOrganisations();
-        }
-    }
 
     delete(org) {
         const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
@@ -164,7 +127,6 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
             await this.getUserOrganisations(user_id);
             this.organisations = this.organisations.filter(o => o._id !== addedId);
             this.selectedOrganisation.set(null);
-            this.organisationControl.setValue('');
         })();
     }
 
