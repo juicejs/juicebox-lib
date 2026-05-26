@@ -54,7 +54,7 @@ export class MainComponent implements OnInit {
     constructor() {
         this.navigationVisible = toSignal(this.sidebarService.navigationVisible$, { initialValue: true });
 
-        this.juicebox.actionButtons = [];
+        this.juicebox.actionButtons.set([]);
         this.juicebox.searchResults = [];
 
         this.router.events.subscribe(async event => {
@@ -76,7 +76,7 @@ export class MainComponent implements OnInit {
         // @ts-ignore
         this.router.events.pipe(filter((e: Event): e is RouterEvent => e instanceof NavigationStart)
         ).subscribe((e) => {
-            this.juicebox.actionButtons = [];
+            this.juicebox.actionButtons.set([]);
         });
 
         this.subscription$ = this.juicebox.navigationEvent$.subscribe(async event => {

@@ -1,4 +1,4 @@
-import {inject, Injectable, Injector, isDevMode, Type} from '@angular/core';
+import {inject, Injectable, Injector, isDevMode, signal, Type} from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {SnackbarService} from "../../../ui-components";
 import { interval, Observable, Subject, Subscription } from 'rxjs';
@@ -49,7 +49,7 @@ export class JuiceboxService {
     public searchActive: boolean = false;
     public searchResults: Array<any> = [];
 
-    public actionButtons: Array<any> = [];
+    public actionButtons = signal<Array<ActionButton>>([]);
 
     //component registry
     public registry = new Map<string, Type<any>>();
@@ -90,7 +90,7 @@ export class JuiceboxService {
                 };
                 processedButtons.push(newButton);
             }
-            this.actionButtons = processedButtons;
+            this.actionButtons.set(processedButtons);
         }, 0);
     }
 

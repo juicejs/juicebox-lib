@@ -14,10 +14,30 @@
         }
         <div class="content-container">
         <div class="flex-column navigation-container next" [style.display]="juicebox.searchActive ? 'none' : 'flex'">
-            @if (navigationVisible() && locationLink()) {
-                <button app-button appearance="icon" class="back-nav-btn" (click)="goTo(locationLink())">
-                    <app-icon [icon]="'keyboard_arrow_left'"></app-icon>
-                </button>
+            @if (navigationVisible() && (locationLink() || juicebox.actionButtons().length)) {
+                <div class="location-container">
+                    @if (locationLink()) {
+                        <button app-button appearance="icon" class="back-nav-btn" (click)="goTo(locationLink())">
+                            <app-icon [icon]="'keyboard_arrow_left'"></app-icon>
+                        </button>
+                    }
+                    <div class="button-bar">
+                        @for (button of juicebox.actionButtons(); track button.title) {
+                            <button app-button
+                                    appearance="raised"
+                                    color="accent"
+                                    (click)="button.callAction ? button.callAction() : button.callback?.()"
+                                    [disabled]="button.disabled"
+                                    [hasPermissions]="button.permissions || ''"
+                                    [hasPermissionsHide]="button.permissionsHide || ''">
+                                @if (button.icon) {
+                                    <app-icon [icon]="button.icon"></app-icon>
+                                }
+                                {{ button.title }}
+                            </button>
+                        }
+                    </div>
+                </div>
             }
             <div class="router-container">
                 <router-outlet></router-outlet>
