@@ -873,6 +873,10 @@ export const mainDictionary = {
     "en_GB": "Profile",
     "de_DE": "Profil"
   },
+  "view_profile": {
+    "en_GB": "View profile",
+    "de_DE": "Profil anzeigen"
+  },
   "template": {
     "en_GB": "Template",
     "de_DE": "Vorlagen"

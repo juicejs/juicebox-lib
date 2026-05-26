@@ -196,6 +196,14 @@ export class SidebarComponent implements OnInit, OnDestroy{
         this.sidebarService.setSidebarCollapsed(this.juicebox.collapsed);
     }
 
+    goToProfile() {
+        this.router.navigate(['main/user-profile/details']);
+    }
+
+    logout() {
+        this.juicebox.logout();
+    }
+
     menuItemClicked(event, router) {
         if (event.type !== 'click') return false;
 

@@ -123,14 +123,14 @@ export class UserListingComponent extends ListingComponent implements OnInit {
         const actionButtons = [{
             title: this.i18n.transform("add_new"),
             type: "btn-primary",
-            icon: "fa-plus-circle",
+            icon: "add",
             permissions: "users:role#create",
             routerLink: "user-wizard",
             callback: () => { this.router.navigate(["/main/users/user-wizard"]) }
         }, {
             title: this.i18n.transform("groups"),
             type: "btn-primary",
-            icon: "fa-plus-circle",
+            icon: "group_add",
             permissions: "groups:role#read",
             routerLink: "user-wizard",
             callback: () => { this.openGroupsModal() }

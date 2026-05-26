@@ -61,8 +61,12 @@
     </div>
 
     <!-- Sidebar Footer -->
-    <div class="sidebar-footer">
-      <div class="user-section" [class.collapsed]="juicebox.collapsed">
+    <div class="sidebar-footer" [class.collapsed]="juicebox.collapsed">
+      <button class="user-section"
+              [class.collapsed]="juicebox.collapsed"
+              (click)="goToProfile()"
+              [appTooltip]="'view_profile' | translate"
+              appTooltipPosition="right">
         <div class="user-avatar-initials">{{ userInitials() }}</div>
         @if (!juicebox.collapsed) {
           <div class="user-info">
@@ -70,7 +74,14 @@
             <div class="user-org">{{ organisationName() }}</div>
           </div>
         }
-      </div>
+      </button>
+
+      <button class="logout-btn"
+              (click)="logout()"
+              [appTooltip]="'logout' | translate"
+              appTooltipPosition="right">
+        <app-icon [icon]="'logout'"></app-icon>
+      </button>
     </div>
 
   </app-sidenav>
