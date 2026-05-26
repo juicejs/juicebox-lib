@@ -15,3 +15,10 @@ export class HeaderDefDirective {
   readonly headerDef = input.required<string>();
   readonly templateRef = inject(TemplateRef);
 }
+
+@Directive({
+  selector: '[selectionDetailDef]'
+})
+export class SelectionDetailDefDirective {
+  readonly templateRef = inject(TemplateRef);
+}

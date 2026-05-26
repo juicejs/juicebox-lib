@@ -1,6 +1,6 @@
 <div class="data-table-wrapper">
   <table cdk-table [dataSource]="displayedRows()" [trackBy]="trackRow" class="data-table">
-    @for (col of columns(); track trackKey($index, col)) {
+    @for (col of columnsForRender(); track trackKey($index, col)) {
       <ng-container [cdkColumnDef]="col.key">
         <th cdk-header-cell *cdkHeaderCellDef
             [style.width]="col.width || null"
@@ -10,30 +10,44 @@
             [attr.role]="col.sortable ? 'button' : null"
             [attr.tabindex]="col.sortable ? 0 : null"
             [attr.aria-sort]="col.sortable ? (sortDirFor(col.key) === 'asc' ? 'ascending' : sortDirFor(col.key) === 'desc' ? 'descending' : 'none') : null"
-            (click)="toggleSort(col)"
+            (click)="col.key === '__select__' ? null : toggleSort(col)"
             (keydown)="onSortKey($event, col)">
-          <span class="th-inner">
-            @if (headerTpl(col.key); as h) {
-              <ng-container *ngTemplateOutlet="h; context: { $implicit: col }"></ng-container>
-            } @else {
-              <span class="th-label" [title]="col.label">{{ col.label }}</span>
-            }
-            @if (col.sortable) {
-              <app-icon
-                class="sort-icon"
-                [class.active]="sortDirFor(col.key) !== ''"
-                [icon]="sortIcon(col.key)">
-              </app-icon>
-            }
-          </span>
+          @if (col.key !== '__select__') {
+            <span class="th-inner">
+              @if (headerTpl(col.key); as h) {
+                <ng-container *ngTemplateOutlet="h; context: { $implicit: col }"></ng-container>
+              } @else {
+                <span class="th-label" [title]="col.label">{{ col.label }}</span>
+              }
+              @if (col.sortable) {
+                <app-icon
+                  class="sort-icon"
+                  [class.active]="sortDirFor(col.key) !== ''"
+                  [icon]="sortIcon(col.key)">
+                </app-icon>
+              }
+            </span>
+          }
         </th>
         <td cdk-cell *cdkCellDef="let row"
             [style.width]="col.width || null"
-            [class.cell-ellipsis]="col.ellipsis !== false"
+            [class.cell-ellipsis]="col.ellipsis !== false && col.key !== '__select__'"
             [class.text-right]="col.align === 'right'"
             [class.text-center]="col.align === 'center'"
-            (click)="rowClick.emit(row)">
-          @if (cellTpl(col.key); as t) {
+            (click)="col.key === '__select__' ? null : rowClick.emit(row)">
+          @if (col.key === '__select__') {
+            <div class="dt-select-cell"
+                 role="checkbox"
+                 tabindex="0"
+                 [attr.aria-checked]="isRowSelected(row)"
+                 (click)="$event.stopPropagation(); toggleRow(row)"
+                 (keydown.space)="$event.preventDefault(); $event.stopPropagation(); toggleRow(row)"
+                 (keydown.enter)="$event.preventDefault(); $event.stopPropagation(); toggleRow(row)">
+              <span class="dt-select-box" [class.is-checked]="isRowSelected(row)" aria-hidden="true">
+                <app-icon [icon]="'check'"></app-icon>
+              </span>
+            </div>
+          } @else if (cellTpl(col.key); as t) {
             <ng-container *ngTemplateOutlet="t; context: { $implicit: row, row: row }"></ng-container>
           } @else {
             <span [title]="value(row, col.key)">{{ value(row, col.key) ?? '-' }}</span>
@@ -45,7 +59,18 @@
       <td cdk-cell *cdkCellDef="let marker"
           [attr.colspan]="columnKeys().length"
           class="detail-cell">
-        @if (cellTpl('__detail__'); as t) {
+        @if (selectable() && selectionDetailDef) {
+          <div class="dt-selection-row" role="toolbar">
+            <ng-container *ngTemplateOutlet="selectionDetailDef.templateRef; context: { $implicit: marker.source, row: marker.source }"></ng-container>
+            <button class="dt-clear-action"
+                    type="button"
+                    [attr.aria-label]="clearAriaLabel()"
+                    [title]="clearAriaLabel()"
+                    (click)="clearSelection()">
+              <app-icon [icon]="'close'"></app-icon>
+            </button>
+          </div>
+        } @else if (cellTpl('__detail__'); as t) {
           <ng-container *ngTemplateOutlet="t; context: { $implicit: marker.source, row: marker.source }"></ng-container>
         }
       </td>

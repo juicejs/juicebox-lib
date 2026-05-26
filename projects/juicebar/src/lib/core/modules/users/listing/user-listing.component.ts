@@ -3,7 +3,7 @@ import { UsersService } from '../users.service';
 import { ListingComponent } from '../../../shared/components/listing/listing.component';
 import { Router, RouterLink } from '@angular/router';
 import { UserTranslationPipe } from '../i18n/user.translation';
-import { DialogService, PageEvent, DataTableComponent, CellDefDirective, HeaderDefDirective, ColumnConfig, SortState } from '../../../../ui-components';
+import { DialogService, PageEvent, DataTableComponent, CellDefDirective, HeaderDefDirective, SelectionDetailDefDirective, ColumnConfig, SortState } from '../../../../ui-components';
 import { GroupsModalComponent } from './groups-modal/groups-modal.component';
 import { HelperService} from '../../../shared/services/helper.service';
 import { ISearchTerm} from '../../../shared/interfaces/ISearchTerm';
@@ -38,7 +38,8 @@ export interface Sort {
         AutoLanguagePipe,
         DataTableComponent,
         CellDefDirective,
-        HeaderDefDirective
+        HeaderDefDirective,
+        SelectionDetailDefDirective
     ]
 })
 export class UserListingComponent extends ListingComponent implements OnInit {
@@ -53,11 +54,6 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     protected readonly canLoginAsOther = computed(() =>
         this.juicebox.getUser().attributes?.settings?.twoFactor === 'totp'
     );
-    protected readonly selectedId = signal<string | null>(null);
-    protected readonly selectedRow = computed<User | null>(() =>
-        this.rowsSig().find(r => r._id === this.selectedId()) ?? null
-    );
-    protected readonly isSelectedRow = (r: any) => r?._id === this.selectedId();
     loggedInOrganisationId: string;
     projectTitle: string;
 
@@ -82,10 +78,9 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     protected readonly filterConfigs = signal<FilterConfig[]>([]);
 
     actionButtons: Array<ActionButton> = [];
-    displayedColumns: string[] = ['selection', 'firstname', 'lastname', 'email', 'active', 'roles_count', 'groups', 'lastLogin', 'loginCount'];
+    displayedColumns: string[] = ['firstname', 'lastname', 'email', 'active', 'roles_count', 'groups', 'lastLogin', 'loginCount'];
 
     tableColumns: ColumnConfig[] = [
-        { key: 'selection',   label: '', width: '44px', align: 'center', ellipsis: false },
         { key: 'firstname',   label: '', sortable: true },
         { key: 'lastname',    label: '', sortable: true },
         { key: 'email',       label: '', sortable: true },
@@ -172,7 +167,6 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     }
 
     private async fetchUsers(): Promise<any> {
-        this.clearSelection();
         const result = await this.usersService.fetch(this.loggedInOrganisationId, this.pageSig() - 1, this.itemsPerPageSig(), this.sortSig(), this.filterSig());
         if (!result.success)
             return false;
@@ -181,14 +175,6 @@ export class UserListingComponent extends ListingComponent implements OnInit {
 
         this.rowsSig.set(result.payload.items);
         this.count.set(result.payload.count);
-    }
-
-    protected toggleRowSelection(row: User): void {
-        this.selectedId.update(curr => curr === row._id ? null : row._id);
-    }
-
-    protected clearSelection(): void {
-        this.selectedId.set(null);
     }
 
     getLoginData(users: Array<any>) {
