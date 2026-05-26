@@ -1,5 +1,5 @@
 <div class="data-table-wrapper">
-  <table cdk-table [dataSource]="rows()" [trackBy]="trackRow" class="data-table">
+  <table cdk-table [dataSource]="displayedRows()" [trackBy]="trackRow" class="data-table">
     @for (col of columns(); track trackKey($index, col)) {
       <ng-container [cdkColumnDef]="col.key">
         <th cdk-header-cell *cdkHeaderCellDef
@@ -41,8 +41,19 @@
         </td>
       </ng-container>
     }
+    <ng-container cdkColumnDef="__detail__">
+      <td cdk-cell *cdkCellDef="let marker"
+          [attr.colspan]="columnKeys().length"
+          class="detail-cell">
+        @if (cellTpl('__detail__'); as t) {
+          <ng-container *ngTemplateOutlet="t; context: { $implicit: marker.source, row: marker.source }"></ng-container>
+        }
+      </td>
+    </ng-container>
+
     <tr cdk-header-row *cdkHeaderRowDef="columnKeys(); sticky: true"></tr>
-    <tr cdk-row *cdkRowDef="let row; columns: columnKeys();" class="clickable-row"></tr>
+    <tr cdk-row *cdkRowDef="let row; columns: ['__detail__']; when: isDetailRow" class="detail-row"></tr>
+    <tr cdk-row *cdkRowDef="let row; columns: columnKeys(); when: isDataRow" class="clickable-row"></tr>
   </table>
 
   <app-paginator

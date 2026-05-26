@@ -92,6 +92,15 @@
     cursor: pointer;
     &:hover { background: var(--color-grey-200); }
   }
+
+  .detail-row {
+    &:hover { background: transparent; }
+
+    td.detail-cell {
+      padding: 0;
+      border-bottom: none;
+    }
+  }
 }
 
 .data-table td:has(.action-buttons) {

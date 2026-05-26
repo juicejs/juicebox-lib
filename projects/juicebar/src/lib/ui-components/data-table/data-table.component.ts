@@ -34,6 +34,7 @@ export class DataTableComponent implements AfterContentInit {
   pageSizeOptions = input<number[]>([5, 10, 25, 50]);
   pageIndex = input<number>(0);
   sort = input<SortState>({ prop: '', dir: '' });
+  detailRowFor = input<(row: any) => boolean>(() => false);
 
   pageChange = output<PageEvent>();
   rowClick = output<any>();
@@ -46,6 +47,19 @@ export class DataTableComponent implements AfterContentInit {
   private headerMap = signal<Map<string, TemplateRef<any>>>(new Map());
 
   columnKeys = computed(() => this.columns().map(c => c.key));
+
+  displayedRows = computed(() => {
+    const matches = this.detailRowFor();
+    const out: any[] = [];
+    for (const r of this.rows()) {
+      if (matches(r)) out.push({ __detail: true, source: r });
+      out.push(r);
+    }
+    return out;
+  });
+
+  isDetailRow = (_: number, r: any) => !!r?.__detail;
+  isDataRow   = (_: number, r: any) => !r?.__detail;
 
   ngAfterContentInit(): void {
     this.refresh();
@@ -101,5 +115,6 @@ export class DataTableComponent implements AfterContentInit {
   }
 
   trackKey = (_: number, c: ColumnConfig) => c.key;
-  trackRow = (i: number, r: any) => r?._id ?? i;
+  trackRow = (i: number, r: any) =>
+    r?.__detail ? `__detail_${r.source?._id ?? i}` : (r?._id ?? i);
 }

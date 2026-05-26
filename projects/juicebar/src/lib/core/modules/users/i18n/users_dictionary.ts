@@ -1683,5 +1683,20 @@ export const usersDictionary = {
     "en_GB": "Pick one from the dropdown above to get started.",
     "de_DE": "Wählen Sie eine aus der obigen Liste, um zu beginnen.",
     "hr_HR": "Odaberite jednu iz padajućeg izbornika iznad za početak."
+  },
+  "selected": {
+    "en_GB": "Selected",
+    "de_DE": "Ausgewählt",
+    "hr_HR": "Odabrano"
+  },
+  "selected_actions": {
+    "en_GB": "Selected row actions",
+    "de_DE": "Aktionen für ausgewählte Zeile",
+    "hr_HR": "Akcije za odabrani redak"
+  },
+  "clear": {
+    "en_GB": "Clear",
+    "de_DE": "Aufheben",
+    "hr_HR": "Poništi"
   }
 }
