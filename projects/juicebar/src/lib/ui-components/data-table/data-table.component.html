@@ -61,7 +61,9 @@
           class="detail-cell">
         @if (selectable() && selectionDetailDef) {
           <div class="dt-selection-row" role="toolbar">
-            <ng-container *ngTemplateOutlet="selectionDetailDef.templateRef; context: { $implicit: marker.source, row: marker.source }"></ng-container>
+            <div class="dt-selection-content">
+              <ng-container *ngTemplateOutlet="selectionDetailDef.templateRef; context: { $implicit: marker.source, row: marker.source }"></ng-container>
+            </div>
             <button class="dt-clear-action"
                     type="button"
                     [attr.aria-label]="clearAriaLabel()"
