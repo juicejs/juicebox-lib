@@ -124,6 +124,80 @@
     justify-content: space-between;
     padding: 1rem 1rem 0 1rem;
     gap: 0.75rem;
+    height: 3.5rem;
+
+    .page-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .page-header-avatar {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-avatar-bg);
+        color: var(--color-avatar-text);
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
+
+    .page-header-text {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        line-height: 1.2;
+    }
+
+    .page-header-eyebrow {
+        font-size: 10.5px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-text-secondary);
+    }
+
+    .page-header-title {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        min-width: 0;
+        letter-spacing: -0.02em;
+    }
+
+    .page-header-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--color-text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .page-header-meta {
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--color-text-secondary);
+        font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
+    }
+
+    .page-header-subtitle {
+        font-size: 12px;
+        color: var(--color-text-secondary);
+        margin-top: 2px;
+    }
 
     .button-bar {
         display: flex;

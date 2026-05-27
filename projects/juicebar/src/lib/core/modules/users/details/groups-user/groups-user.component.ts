@@ -125,12 +125,6 @@ export class GroupsUserComponent extends ListingComponent {
             this.user = result.payload;
             if (!this.user.groups) this.user.groups = [];
 
-            this.juicebox.navigationEvent({
-                location: this.pipe.transform('users'),
-                subject: this.user ? this.user.email : this.pipe.transform('groups'),
-                link: '/main/users'
-            });
-
             await this.initializeMatrix(params['id']);
         });
     }

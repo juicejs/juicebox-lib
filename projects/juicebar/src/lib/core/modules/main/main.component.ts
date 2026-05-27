@@ -22,6 +22,7 @@ import {ButtonComponent, IconComponent} from '../../../ui-components';
   styles:[`.my-custom-class { max-width: 500px; width: 400px; background: #F2F2F2; border: 2px solid #F66802; border-radius: 20px; } .my-custom-class > .arrow { right: 0.5em !important; }`],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [GlobalTranslationPipe],
   imports: [
     CommonModule,
     RouterOutlet,
@@ -50,6 +51,7 @@ export class MainComponent implements OnInit {
     public juicebox = inject(JuiceboxService);
     public socketService = inject(SocketService);
     public sidebarService = inject(SidebarService);
+    private globalPipe = inject(GlobalTranslationPipe);
 
     constructor() {
         this.navigationVisible = toSignal(this.sidebarService.navigationVisible$, { initialValue: true });
@@ -59,12 +61,13 @@ export class MainComponent implements OnInit {
 
         this.router.events.subscribe(async event => {
             if(event instanceof NavigationEnd) {
-                const url = event.url;
+                const url = (event as any).urlAfterRedirects ?? event.url;
                 const splitUrl = url.split('/');
                 const currentModule = splitUrl[2];
                 if(currentModule != this.module())
                     await this.getHelpText();
                 this.module.set(currentModule);
+                this.resolvePageHeader(url);
             }
         })
 
@@ -138,6 +141,22 @@ export class MainComponent implements OnInit {
         await this.router.navigateByUrl(url);
     }
 
+    private resolvePageHeader(url: string) {
+        const current = this.juicebox.pageHeader();
+        if (current?.scope && url.startsWith(current.scope)) return;
+
+        const segment = url.split('/')[2]?.split('?')[0];
+        if (!segment) {
+            this.juicebox.setPageHeader(null);
+            return;
+        }
+        const translated = this.globalPipe.transform(segment);
+        const title = (typeof translated === 'string' && !translated.startsWith('@'))
+            ? translated
+            : segment.charAt(0).toUpperCase() + segment.slice(1);
+        this.juicebox.setPageHeader({ title });
+    }
+
     public async openResult(result){
         this.juicebox.searchActive = false;
         await this.router.navigateByUrl(result.link);
@@ -168,5 +187,4 @@ export class MainComponent implements OnInit {
     ngOnDestroy() {
         this.subscription$.unsubscribe();
     }
-
 }

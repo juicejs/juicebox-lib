@@ -89,12 +89,6 @@ export class RolesUserComponent implements OnInit {
         await this.getUser();
         await this.getUserRoles();
         await this.getAvailableRoles();
-
-        this.juicebox.navigationEvent({
-            location: this.i18n.transform('users'),
-            subject: this.user ? this.user.email + ' - ' + this.i18n.transform('roles') : 'details',
-            link: '/main/users'
-        });
     }
 
     private async getOrganisations(): Promise<any> {

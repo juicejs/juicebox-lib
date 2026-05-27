@@ -10,6 +10,15 @@ import { switchMap } from 'rxjs/operators';
 import { ActionButton } from '../types/ActionButton';
 import { Result } from '../types/Result';
 
+export interface PageHeader {
+    scope?: string;
+    eyebrow?: string;
+    title: string;
+    subtitle?: string;
+    initials?: string;
+    meta?: string;
+}
+
 class AckButton {
     set promiseBtn(passedValue: any) {
         console.log("now");
@@ -585,6 +594,11 @@ export class JuiceboxService {
 
     navigationEvent(details: { location: string, subject?: string, link: string, breadcrumps?: Array<any> }) {
         this._navigationEvent.next(details);
+    }
+
+    public pageHeader = signal<PageHeader | null>(null);
+    setPageHeader(header: PageHeader | null) {
+        this.pageHeader.set(header);
     }
 
     setTitleAndBreadcrumps(title: string, breadcrumps?: Array<{

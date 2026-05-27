@@ -83,12 +83,6 @@ export class DetailsUserComponent implements OnInit {
         })));
 
         this.userForm().markAsPristine();
-
-        this.juicebox.navigationEvent({
-            location: this.userPipe.transform('users'),
-            subject: userData.email + ' - ' + this.userPipe.transform('details'),
-            link: '/main/users'
-        });
     }
 
     change() {

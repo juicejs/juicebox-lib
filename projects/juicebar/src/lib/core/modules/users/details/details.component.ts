@@ -8,6 +8,7 @@ import { ConfigurationService} from '../../../shared/services/configuration.serv
 import { TabsComponent, TabComponent } from '../../../../ui-components';
 import {SharedModule} from '../../../shared/shared.module';
 import {UserTranslationPipe} from '../i18n/user.translation';
+import {UsersService} from '../users.service';
 
 interface TabDef {
     label: string;
@@ -35,6 +36,7 @@ export class DetailsUsersComponent implements OnInit, OnDestroy {
     public email: Array<any> = [];
     private sub: Subscription;
     private id: any;
+    private user: any;
     public name: any;
     projectTitle: string;
     protected readonly channels = signal<Array<string>>([]);
@@ -46,6 +48,8 @@ export class DetailsUsersComponent implements OnInit, OnDestroy {
     private router = inject(Router);
     public juicebox = inject(JuiceboxService);
     private configurationService = inject(ConfigurationService);
+    private usersService = inject(UsersService);
+    private userPipe = inject(UserTranslationPipe);
 
     protected readonly visibleTabs = computed<TabDef[]>(() => {
         const tabs: TabDef[] = [{ label: 'details', route: 'details-user' }];
@@ -99,8 +103,45 @@ export class DetailsUsersComponent implements OnInit, OnDestroy {
         this.sub.add(
             this.router.events
                 .pipe(filter(e => e instanceof NavigationEnd))
-                .subscribe(() => this.syncSelectedTabFromUrl())
+                .subscribe(() => {
+                    this.syncSelectedTabFromUrl();
+                    this.updateBreadcrumb();
+                })
         );
+
+        await this.setUserPageHeader();
+        this.updateBreadcrumb();
+    }
+
+    private async setUserPageHeader() {
+        if (!this.id) return;
+        const result = await this.usersService.getUser(this.id);
+        const u = result?.payload;
+        if (!u) return;
+        this.user = u;
+        const initials = ((u.firstname?.[0] ?? '') + (u.lastname?.[0] ?? '')).toUpperCase();
+        const fullName = [u.firstname, u.lastname].filter(Boolean).join(' ') || u.email || '';
+        this.juicebox.setPageHeader({
+            scope: `/main/users/details/${this.id}`,
+            eyebrow: this.userPipe.transform('user'),
+            title: fullName,
+            initials,
+            meta: u.email || undefined,
+        });
+        this.updateBreadcrumb();
+    }
+
+    private updateBreadcrumb() {
+        if (!this.user) return;
+        const child = this.route.snapshot.firstChild;
+        const segment = child?.url[0]?.path;
+        const tab = this.visibleTabs().find(t => t.route === segment);
+        const tabLabel = tab ? this.userPipe.transform(tab.label) : this.userPipe.transform('details');
+        this.juicebox.navigationEvent({
+            location: this.userPipe.transform('users'),
+            subject: `${this.user.email} - ${tabLabel}`,
+            link: '/main/users',
+        });
     }
 
     private syncSelectedTabFromUrl() {
@@ -130,5 +171,6 @@ export class DetailsUsersComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.sub.unsubscribe();
+        this.juicebox.setPageHeader(null);
     }
 }

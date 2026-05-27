@@ -50,12 +50,14 @@ export class SidebarUserComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
-        if (this.context() === 'user-profile') {
+        const isUserProfile = this.context() === 'user-profile';
+
+        if (isUserProfile) {
             this.userId = this.juicebox.getUserId();
-        }
-        else {
+        } else {
             this.userId = this.route.snapshot.parent.params['id'];
         }
+
         await this.getOrganisations();
 
         this.subs.add(this.dragulaService.dropModel(this.DRAGULA_SIDEBAR)
@@ -80,12 +82,16 @@ export class SidebarUserComponent implements OnInit, OnDestroy {
                 this.disabledDragAndDrop.set(false);
             })
         );
-        const getUser = await this.usersService.getUser(this.userId);
-        this.juicebox.navigationEvent({
-            location: this.context() === 'user-profile' ? this.i18nMain.transform('user_profile') : this.i18n.transform('users'),
-            subject: getUser.payload.email + ' - ' + this.i18n.transform('sidebar'),
-            link: this.context() === 'user-profile' ? null : '/main/users'
-        });
+
+        if (isUserProfile) {
+            const getUser = await this.usersService.getUser(this.userId);
+            this.juicebox.navigationEvent({
+                location: this.i18nMain.transform('user_profile'),
+                subject: getUser.payload.email + ' - ' + this.i18n.transform('sidebar'),
+                link: null
+            });
+        }
+
         this.getSidebarItems();
     }
 

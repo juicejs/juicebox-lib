@@ -1,4 +1,19 @@
 export const globalDictionary = {
+  "users": {
+    "en_GB": "Users",
+    "de_DE": "Benutzer",
+    "hr_HR": "Korisnici"
+  },
+  "user": {
+    "en_GB": "User",
+    "de_DE": "Benutzer",
+    "hr_HR": "Korisnik"
+  },
+  "exports": {
+    "en_GB": "Exports",
+    "de_DE": "Exporte",
+    "hr_HR": "Izvozi"
+  },
   "missing_parameters": {
     "en_GB": "Internal error: missing parameters",
     "de_DE": "Internal error: missing parameters",

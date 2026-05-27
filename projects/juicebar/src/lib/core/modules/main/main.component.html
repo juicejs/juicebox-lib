@@ -14,12 +14,33 @@
         }
         <div class="content-container">
         <div class="flex-column navigation-container next" [style.display]="juicebox.searchActive ? 'none' : 'flex'">
-            @if (navigationVisible() && (locationLink() || juicebox.actionButtons().length)) {
+            @if (navigationVisible() && (locationLink() || juicebox.actionButtons().length || juicebox.pageHeader())) {
                 <div class="location-container">
                     @if (locationLink()) {
                         <button app-button appearance="icon" class="back-nav-btn" (click)="goTo(locationLink())">
                             <app-icon [icon]="'keyboard_arrow_left'"></app-icon>
                         </button>
+                    }
+                    @if (juicebox.pageHeader(); as header) {
+                        <div class="page-header">
+                            @if (header.initials) {
+                                <div class="page-header-avatar">{{ header.initials }}</div>
+                            }
+                            <div class="page-header-text">
+                                @if (header.eyebrow) {
+                                    <div class="page-header-eyebrow">{{ header.eyebrow }}</div>
+                                }
+                                <div class="page-header-title">
+                                    <span class="page-header-name">{{ header.title }}</span>
+                                    @if (header.meta) {
+                                        <span class="page-header-meta">{{ header.meta }}</span>
+                                    }
+                                </div>
+                                @if (header.subtitle) {
+                                    <div class="page-header-subtitle">{{ header.subtitle }}</div>
+                                }
+                            </div>
+                        </div>
                     }
                     <div class="button-bar">
                         @for (button of juicebox.actionButtons(); track button.title) {

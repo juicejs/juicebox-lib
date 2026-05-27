@@ -68,13 +68,6 @@ export class WalletsUserComponent extends ListingComponent{
                 this.user = result.payload;
                 this.id = result.payload._id;
                 this.rows.set(result.payload.wallets);
-
-                this.juicebox.navigationEvent({
-                    location: i18n.transform('users'),
-                    subject: result.payload.email + ' - ' + i18n.transform('wallet'),
-                    link: '/main/users'
-                });
-
             });
         });
     }
