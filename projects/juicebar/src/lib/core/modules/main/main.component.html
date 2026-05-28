@@ -13,7 +13,7 @@
             </app-navigation>
         }
         <div class="content-container">
-        <div class="flex-column navigation-container next" [style.display]="juicebox.searchActive ? 'none' : 'flex'">
+        <div class="flex-column navigation-container next" [style.display]="juicebox.searchActive() ? 'none' : 'flex'">
             @if (navigationVisible() && (locationLink() || juicebox.actionButtons().length || juicebox.pageHeader())) {
                 <div class="location-container">
                     @if (locationLink()) {
@@ -65,7 +65,7 @@
             </div>
         </div>
 
-        <div class="navigation-container next searchResults" [style.display]="juicebox.searchActive ? 'block' : 'none'">
+        <div class="navigation-container next searchResults" [style.display]="juicebox.searchActive() ? 'block' : 'none'">
             <div class="search-container">
                 <div class="location ellipsis">
                     <div class="title">
@@ -79,9 +79,9 @@
                 </div>
             </div>
 
-            @if (juicebox.searchResults && juicebox.searchResults.length) {
+            @if (juicebox.searchResults().length) {
                 <div class="parent">
-                    @for (module of juicebox.searchResults; track module) {
+                    @for (module of juicebox.searchResults(); track module) {
                         <div class="jc-module">
                             <div class="title">
                                 <i class="fas" [class]="module.icon"></i> {{module.name}}

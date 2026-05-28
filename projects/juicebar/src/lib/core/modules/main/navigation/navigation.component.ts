@@ -168,12 +168,12 @@ export class NavigationComponent implements OnInit {
   doSearch($event: Event) {
     const value = ($event.target as HTMLInputElement).value;
     if (value === '') {
-      this.juicebox.searchActive = false;
+      this.juicebox.searchActive.set(false);
       this.searching.set(false);
       return;
     }
 
-    this.juicebox.searchActive = true;
+    this.juicebox.searchActive.set(true);
     this.searching.set(true);
     this.juicebox.doSearch(value).then(() => {
       this.searching.set(false);

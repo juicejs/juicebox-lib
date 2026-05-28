@@ -57,7 +57,7 @@ export class MainComponent implements OnInit {
         this.navigationVisible = toSignal(this.sidebarService.navigationVisible$, { initialValue: true });
 
         this.juicebox.actionButtons.set([]);
-        this.juicebox.searchResults = [];
+        this.juicebox.searchResults.set([]);
 
         this.router.events.subscribe(async event => {
             if(event instanceof NavigationEnd) {
@@ -158,7 +158,7 @@ export class MainComponent implements OnInit {
     }
 
     public async openResult(result){
-        this.juicebox.searchActive = false;
+        this.juicebox.searchActive.set(false);
         await this.router.navigateByUrl(result.link);
     }
 

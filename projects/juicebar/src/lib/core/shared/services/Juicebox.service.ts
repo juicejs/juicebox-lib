@@ -55,8 +55,8 @@ export class JuiceboxService {
     public nextUi: boolean = false;
 
     public searchProvider: Array<any> = new Array<any>();
-    public searchActive: boolean = false;
-    public searchResults: Array<any> = [];
+    public searchActive = signal<boolean>(false);
+    public searchResults = signal<Array<any>>([]);
 
     public actionButtons = signal<Array<ActionButton>>([]);
 
@@ -117,17 +117,17 @@ export class JuiceboxService {
     }
 
     async doSearch(token: string) {
-        this.searchActive = true;
-        this.searchResults = [];
+        this.searchActive.set(true);
+        this.searchResults.set([]);
         const searchRequests = [];
         for (let provider of this.searchProvider) {
             if (this.hasRole(provider.role)) {
                 searchRequests.push(provider.provider.search(token).then(results => {
-                    this.searchResults.push({
+                    this.searchResults.update(arr => [...arr, {
                         name: provider.name,
                         icon: provider.icon,
                         results: results
-                    });
+                    }]);
                 }));
             }
         }

@@ -21,21 +21,25 @@ export function provideUsers(customization?: ModuleCustomization): JuicebarFeatu
         juicebox.registerSearchProvider(
           {
             search: async (token: string) => {
-              const results = await userService.search([
-                { property: 'firstname', fullText: true, language: false, term: token },
-                { property: 'lastname', fullText: true, language: false, term: token },
-                { property: 'email', fullText: true, language: false, term: token },
-              ], 0, 10);
+              const organisationId = juicebox.getUser().organisation_id;
+              const results = await userService.fetch(
+                organisationId,
+                0,
+                10,
+                { dir: 'asc', prop: 'lastname' },
+                [{ property: 'email', term: token, fullText: true, language: false }],
+              );
+              if (!results?.success) return [];
               return results.payload.items.map(user => ({
-                title: user.firstname + ' ' + user.lastname,
-                details: user.email + ' - ',
+                title: `${user.firstname} ${user.lastname}`,
+                details: user.email,
                 link: 'main/users/details/' + user._id + '/details-user',
               }));
             },
           },
           'Users',
           'fa-users',
-          'users#role'
+          'users:role',
         );
       }),
     ]),
