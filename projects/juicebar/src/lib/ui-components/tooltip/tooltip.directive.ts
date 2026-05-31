@@ -15,6 +15,7 @@ export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 export class TooltipDirective implements OnDestroy {
   appTooltip = input<string>('');
   appTooltipPosition = input<TooltipPosition>('top');
+  appTooltipTitle = input<string>('');
 
   private overlay = inject(Overlay);
   private overlayPositionBuilder = inject(OverlayPositionBuilder);
@@ -63,6 +64,7 @@ export class TooltipDirective implements OnDestroy {
     const tooltipPortal = new ComponentPortal(TooltipComponent);
     const tooltipRef = this.overlayRef.attach(tooltipPortal);
     tooltipRef.instance.text = this.appTooltip();
+    tooltipRef.instance.title = this.appTooltipTitle();
   }
 
   hide() {

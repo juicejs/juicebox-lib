@@ -71,11 +71,12 @@
       </ng-template>
 
       <ng-template [cellDef]="'active'" let-row>
-        @if (row.active == false) {
-          <app-icon [icon]="'block'" class="status-icon inactive"></app-icon>
-        }
-        @if (row.active == true) {
-          <app-icon [icon]="'check_circle'" class="status-icon active"></app-icon>
+        @if (row.active) {
+          <span class="check-badge">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3 3 7-7"/></svg>
+          </span>
+        } @else {
+          <span class="dash-badge">—</span>
         }
       </ng-template>
 
@@ -90,11 +91,16 @@
 
       <ng-template [cellDef]="'groups'" let-row>
         @if (row.hasGroups) {
-          <span [appTooltip]="row.groupsTooltip" class="has-popover">
-            {{ row.groupsLabel }}
-          </span>
+          <div class="group-chips" [appTooltip]="row.groupsTooltip" [appTooltipTitle]="'groups' | translate">
+            @for (group of row.groupsList.slice(0, 2); track group) {
+              <span class="group-chip">{{ group }}</span>
+            }
+            @if (row.groupsList.length > 2) {
+              <span class="group-chip-more">+{{ row.groupsList.length - 2 }}</span>
+            }
+          </div>
         } @else {
-          <span class="grey-italic">{{ 'no_groups' | translate }}</span>
+          <span class="no-groups">{{ 'no_groups' | translate }}</span>
         }
       </ng-template>
 
@@ -104,7 +110,6 @@
 
       <ng-template selectionDetailDef let-row>
         <span class="dt-selection-label">
-          <app-icon [icon]="'check_circle'"></app-icon>
           {{ 'selected' | translate }}: {{ row.firstname }} {{ row.lastname }}
         </span>
         <div class="dt-selection-actions">

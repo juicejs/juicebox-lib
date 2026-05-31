@@ -190,10 +190,12 @@ export class UserListingComponent extends ListingComponent implements OnInit {
                 }
             }
 
-            const groupList: any[] = user.groups ? Object.values(user.groups) : [];
-            user.groupsLabel = groupList.join(', ');
-            user.groupsTooltip = groupList.join('\n');
-            user.hasGroups = groupList.length > 0 && !!groupList[0]?.length;
+            const groupList: string[] = user.groups
+                ? (Object.values(user.groups) as string[][]).flat().filter(g => !!g && g.trim().length > 0)
+                : [];
+            user.groupsList = groupList;
+            user.groupsTooltip = groupList.join(', ');
+            user.hasGroups = groupList.length > 0;
         }
     }
 

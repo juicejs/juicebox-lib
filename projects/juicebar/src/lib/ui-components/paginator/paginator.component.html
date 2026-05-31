@@ -1,7 +1,23 @@
 <div class="app-paginator">
   <span class="paginator-range">
-    {{ pageIndex() * pageSize() + 1 }} - {{ Math.min((pageIndex() + 1) * pageSize(), length()) }} of {{ length() }}
+    {{ pageIndex() * pageSize() + 1 }}–{{ Math.min((pageIndex() + 1) * pageSize(), length()) }} of {{ length() }}
   </span>
-  <button (click)="previousPage()" [disabled]="pageIndex() === 0">Previous</button>
-  <button (click)="nextPage()" [disabled]="pageIndex() >= totalPages - 1">Next</button>
+
+  <div class="paginator-pages">
+    <button class="pager-arrow" (click)="previousPage()" [disabled]="pageIndex() === 0">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m10 3-5 5 5 5"/></svg>
+    </button>
+
+    @for (p of pages(); track $index) {
+      @if (p === '…') {
+        <span class="pager-dots">…</span>
+      } @else {
+        <button class="pager-num" [class.active]="p === pageIndex() + 1" (click)="goToPage(p)">{{ p }}</button>
+      }
+    }
+
+    <button class="pager-arrow" (click)="nextPage()" [disabled]="pageIndex() >= totalPages - 1">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 3 5 5-5 5"/></svg>
+    </button>
+  </div>
 </div>

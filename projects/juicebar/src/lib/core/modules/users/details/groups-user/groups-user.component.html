@@ -15,54 +15,18 @@
 
         <div class="toolbar-right">
             <div class="visible-groups">
-                <button app-button appearance="stroked" (click)="toggleDropdown()">
-                    <app-icon [icon]="'visibility'"></app-icon>
-                    {{ 'select_groups_to_show' | translate }}
-                    <span class="count-pill">{{ selectedGroupKeys().size }}/{{ allGroups().length }}</span>
-                    <app-icon [icon]="dropdownOpen() ? 'expand_less' : 'expand_more'"></app-icon>
-                </button>
-
-                @if (dropdownOpen()) {
-                    <div class="visible-groups-menu">
-                        <div class="menu-head">
-                            <div class="menu-search">
-                                <app-icon [icon]="'search'"></app-icon>
-                                <input type="text"
-                                       class="menu-search-input"
-                                       [placeholder]="'search' | translate"
-                                       [ngModel]="groupDropdownSearchTerm()"
-                                       (ngModelChange)="groupDropdownSearchTerm.set($event)">
-                                @if (groupDropdownSearchTerm()) {
-                                    <button class="menu-search-clear" (click)="clearDropdownSearch()">
-                                        <app-icon [icon]="'close'"></app-icon>
-                                    </button>
-                                }
-                            </div>
-                            <div class="menu-actions">
-                                <button app-button appearance="stroked" (click)="selectAllGroups()">
-                                    {{ 'select_all' | translate }}
-                                </button>
-                                <button app-button appearance="stroked" (click)="clearAllGroups()">
-                                    {{ 'clear_all' | translate }}
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="menu-list">
-                            @for (group of dropdownFilteredGroups(); track group.key) {
-                                <label class="menu-item">
-                                    <input type="checkbox"
-                                           [checked]="selectedGroupKeys().has(group.key)"
-                                           (change)="toggleGroupSelection(group.key)">
-                                    <span>{{ group.name }}</span>
-                                </label>
-                            }
-                            @if (dropdownFilteredGroups().length === 0) {
-                                <div class="menu-empty">{{ 'no_data_to_display' | translate }}</div>
-                            }
-                        </div>
-                    </div>
-                }
+                <app-form-field appearance="outline" class="groups-picker">
+                    <app-select [value]="selectedGroupKeys()"
+                                (selectionChange)="selectedGroupKeys.set($event.value)"
+                                [multiple]="true"
+                                [searchable]="true"
+                                placeholder="{{ 'select_groups_to_show' | translate }}"
+                                searchPlaceholder="{{ 'search' | translate }}">
+                        @for (group of allGroups(); track group.key) {
+                            <app-option [value]="group.key">{{ group.name }}</app-option>
+                        }
+                    </app-select>
+                </app-form-field>
             </div>
 
             <button app-button

@@ -8,10 +8,18 @@
     role="combobox"
     [attr.aria-expanded]="isOpen()"
     [attr.aria-disabled]="disabled()">
-    @if (displayValue()) {
-      <span class="app-select-value">{{ displayValue() }}</span>
+    @if (multiple()) {
+      @if (selectedCount() > 0) {
+        <span class="app-select-multi-count">{{ selectedCount() }}/{{ totalCount() }}</span>
+      } @else {
+        <span class="app-select-placeholder">{{ placeholder() }}</span>
+      }
     } @else {
-      <span class="app-select-placeholder">{{ placeholder() }}</span>
+      @if (displayValue()) {
+        <span class="app-select-value">{{ displayValue() }}</span>
+      } @else {
+        <span class="app-select-placeholder">{{ placeholder() }}</span>
+      }
     }
     <svg class="app-select-chevron" [class.rotated]="isOpen()" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="6 9 12 15 18 9"></polyline>
@@ -31,7 +39,7 @@
   [cdkConnectedOverlayMinWidth]="trigger.elementRef.nativeElement.offsetWidth"
   (overlayOutsideClick)="close()"
   (detach)="close()">
-  <div class="app-select-panel" role="listbox">
+  <div class="app-select-panel" role="listbox" [class.app-select-panel-multi]="multiple()">
     @if (searchable()) {
       <div class="app-select-search">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -49,21 +57,27 @@
           (click)="$event.stopPropagation()" />
       </div>
     }
+    @if (multiple()) {
+      <div class="app-select-multi-actions">
+        <button type="button" class="app-select-action-btn" (click)="selectAll()">Select all</button>
+        <button type="button" class="app-select-action-btn" (click)="clearAll()">Clear all</button>
+      </div>
+    }
     <div class="app-select-options">
       @if (filteredOptions().length === 0) {
         <div class="app-select-empty">No results</div>
       } @else {
         @for (option of filteredOptions(); track option.value()) {
           <div class="app-option"
-               [class.app-option-selected]="equals(option.value(), selectedValue())"
+               [class.app-option-selected]="isSelected(option)"
                [class.app-option-disabled]="option.disabled()"
                (click)="select(option)"
                role="option"
-               [attr.aria-selected]="equals(option.value(), selectedValue())"
+               [attr.aria-selected]="isSelected(option)"
                [attr.aria-disabled]="option.disabled()">
             <span class="app-option-label">{{ option.getLabel() }}</span>
-            @if (equals(option.value(), selectedValue())) {
-              <svg class="app-option-check" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#f97316" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            @if (isSelected(option)) {
+              <svg class="app-option-check" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m3 8 3 3 7-7"/>
               </svg>
             }

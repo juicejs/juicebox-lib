@@ -37,17 +37,15 @@ export class GroupsUserComponent extends ListingComponent {
 
     loading = signal<boolean>(false);
     cascadeToChildren = signal<boolean>(false);
-    dropdownOpen = signal<boolean>(false);
 
     searchTerm = signal<string>('');
-    groupDropdownSearchTerm = signal<string>('');
 
     organisations = signal<any[]>([]);
     organisationTree = signal<OrgNode[]>([]);
     allGroups = signal<any[]>([]);
 
     expandedOrgs = signal<Set<string>>(new Set());
-    selectedGroupKeys = signal<Set<string>>(new Set());
+    selectedGroupKeys = signal<string[]>([]);
 
     userGroupMatrix = signal<{ [orgId: string]: { [groupKey: string]: boolean } }>({});
     originalMatrix = signal<{ [orgId: string]: { [groupKey: string]: boolean } }>({});
@@ -57,14 +55,7 @@ export class GroupsUserComponent extends ListingComponent {
     /** Groups currently displayed as columns. */
     protected readonly filteredGroups = computed(() => {
         const selected = this.selectedGroupKeys();
-        return this.allGroups().filter(g => selected.has(g.key));
-    });
-
-    /** Groups list filtered by the column-picker dropdown search. */
-    protected readonly dropdownFilteredGroups = computed(() => {
-        const term = this.groupDropdownSearchTerm().trim().toLowerCase();
-        if (!term) return this.allGroups();
-        return this.allGroups().filter(g => g.name.toLowerCase().includes(term));
+        return this.allGroups().filter(g => selected.includes(g.key));
     });
 
     protected readonly isSearching = computed(() => this.searchTerm().trim().length > 0);
@@ -162,7 +153,7 @@ export class GroupsUserComponent extends ListingComponent {
             a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
         );
         this.allGroups.set(sortedGroups);
-        this.selectedGroupKeys.set(new Set(sortedGroups.map(g => g.key)));
+        this.selectedGroupKeys.set(sortedGroups.map(g => g.key));
 
         const matrix: { [orgId: string]: { [key: string]: boolean } } = {};
         const flat = this.flattenTree(tree);
@@ -263,33 +254,8 @@ export class GroupsUserComponent extends ListingComponent {
         this.expandedOrgs.set(next);
     }
 
-    toggleGroupSelection(key: string) {
-        const next = new Set(this.selectedGroupKeys());
-        if (next.has(key)) next.delete(key);
-        else next.add(key);
-        this.selectedGroupKeys.set(next);
-    }
-
-    selectAllGroups() {
-        this.selectedGroupKeys.set(new Set(this.allGroups().map(g => g.key)));
-    }
-
-    clearAllGroups() {
-        this.selectedGroupKeys.set(new Set());
-    }
-
-    toggleDropdown() {
-        const open = !this.dropdownOpen();
-        this.dropdownOpen.set(open);
-        if (!open) this.groupDropdownSearchTerm.set('');
-    }
-
     clearSearch() {
         this.searchTerm.set('');
-    }
-
-    clearDropdownSearch() {
-        this.groupDropdownSearchTerm.set('');
     }
 
     async openGroupEditor() {

@@ -3,7 +3,12 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-tooltip',
-  template: '{{ text }}',
+  template: `
+    @if (title) {
+      <div class="tooltip-title">{{ title }}</div>
+    }
+    <div class="tooltip-body">{{ text }}</div>
+  `,
   styleUrls: ['./tooltip.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
@@ -13,4 +18,5 @@ import { CommonModule } from '@angular/common';
 })
 export class TooltipComponent {
   text = '';
+  title = '';
 }

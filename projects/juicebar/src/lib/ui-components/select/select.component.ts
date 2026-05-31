@@ -52,6 +52,7 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
   placeholder = input<string>('Select an option');
   searchable = input<boolean>(false);
   searchPlaceholder = input<string>('Search...');
+  multiple = input<boolean>(false);
 
   selectionChange = output<{ value: any }>();
 
@@ -67,7 +68,7 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
   private onTouched: () => void = () => {};
 
   protected readonly displayValue = computed(() => {
-    // First try to find the label from current options (works when open or options loaded)
+    if (this.multiple()) return '';
     const val = this.value();
     if (val === null || val === undefined) return '';
     const opts = this.options();
@@ -76,11 +77,20 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
       const label = match.getLabel();
       if (label) return label;
     }
-    // Fall back to stored label (set when user picks an option)
     return this.storedLabel();
   });
 
   protected readonly selectedValue = computed(() => this.value());
+
+  protected readonly selectedArray = computed<any[]>(() => {
+    if (!this.multiple()) return [];
+    const val = this.value();
+    return Array.isArray(val) ? val : [];
+  });
+
+  protected readonly selectedCount = computed(() => this.selectedArray().length);
+
+  protected readonly totalCount = computed(() => this.options().length);
 
   protected readonly filteredOptions = computed(() => {
     const query = this.searchQuery().toLowerCase();
@@ -88,6 +98,13 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
     return this.options().filter(o =>
       o.getLabel().toLowerCase().includes(query)
     );
+  });
+
+  protected readonly allFilteredSelected = computed(() => {
+    const filtered = this.filteredOptions();
+    if (!filtered.length) return false;
+    const sel = this.selectedArray();
+    return filtered.every(o => sel.some(v => this.equals(v, o.value())));
   });
 
   ngAfterContentInit() {}
@@ -117,11 +134,54 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
 
   select(option: OptionComponent) {
     if (option.disabled()) return;
-    this.storedLabel.set(option.getLabel());
-    this.value.set(option.value());
-    this.onChange(option.value());
-    this.selectionChange.emit({ value: option.value() });
-    this.close();
+
+    if (this.multiple()) {
+      const current = this.selectedArray();
+      const exists = current.some(v => this.equals(v, option.value()));
+      const next = exists
+        ? current.filter(v => !this.equals(v, option.value()))
+        : [...current, option.value()];
+      this.value.set(next);
+      this.onChange(next);
+      this.selectionChange.emit({ value: next });
+    } else {
+      this.storedLabel.set(option.getLabel());
+      this.value.set(option.value());
+      this.onChange(option.value());
+      this.selectionChange.emit({ value: option.value() });
+      this.close();
+    }
+  }
+
+  isSelected(option: OptionComponent): boolean {
+    if (this.multiple()) {
+      return this.selectedArray().some(v => this.equals(v, option.value()));
+    }
+    return this.equals(this.value(), option.value());
+  }
+
+  selectAll() {
+    const next = this.filteredOptions()
+      .filter(o => !o.disabled())
+      .map(o => o.value());
+    // merge with any already-selected options outside the filtered set
+    const outside = this.selectedArray().filter(
+      v => !this.filteredOptions().some(o => this.equals(o.value(), v))
+    );
+    const merged = [...outside, ...next];
+    this.value.set(merged);
+    this.onChange(merged);
+    this.selectionChange.emit({ value: merged });
+  }
+
+  clearAll() {
+    // only clear options visible in current filter, keep others
+    const outside = this.selectedArray().filter(
+      v => !this.filteredOptions().some(o => this.equals(o.value(), v))
+    );
+    this.value.set(outside);
+    this.onChange(outside);
+    this.selectionChange.emit({ value: outside });
   }
 
   protected equals(a: any, b: any): boolean {

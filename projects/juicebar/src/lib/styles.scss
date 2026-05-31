@@ -1408,7 +1408,12 @@ table.data-table {
 // Table content styling
 .hidden-email {
     font-family: monospace;
-    font-size: 14px;
+    filter: blur(4px);
+    transition: filter 0.2s ease;
+
+    &:hover {
+        filter: none;
+    }
 }
 
 .grey-italic {
@@ -1464,11 +1469,6 @@ table.data-table {
     }
 }
 
-.hidden-email {
-    font-family: monospace;
-    font-size: $font-size-sm;
-}
-
 .grey-italic {
     color: var(--color-text-secondary);
     font-style: italic;
@@ -1511,28 +1511,11 @@ table.data-table {
 
 // Action buttons in table rows — see data-table.component.scss for compact in-table styling.
 
-// Status icons styling
-.status-icon {
-    font-size: 18px !important;
-    height: 18px !important;
-    width: 18px !important;
-
-    &.active {
-        color: $success !important;
-    }
-
-    &.inactive {
-        color: $error !important;
-    }
-}
 
 // Warning icon styling
 .warning-icon {
-    font-size: 16px !important;
-    height: 16px !important;
-    width: 16px !important;
-    color: $warning !important;
-    margin-left: $spacing-xs;
+    color: var(--color-warning) !important;
+    margin-left: 4px;
     vertical-align: middle;
 }
 
@@ -1540,7 +1523,7 @@ table.data-table {
 .roles-count {
     display: flex;
     align-items: center;
-    gap: $spacing-xs;
+    gap: 4px;
 }
 
 // =============================================================================

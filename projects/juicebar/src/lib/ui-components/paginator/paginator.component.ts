@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output, model } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, model, computed } from '@angular/core';
 
 export interface PageEvent {
   pageIndex: number;
@@ -24,6 +24,31 @@ export class PaginatorComponent {
 
   get totalPages(): number {
     return Math.ceil(this.length() / this.pageSize());
+  }
+
+  protected readonly pages = computed<(number | '…')[]>(() => {
+    const total = Math.ceil(this.length() / this.pageSize());
+    const current = this.pageIndex() + 1;
+    const result: (number | '…')[] = [];
+    const win = 2;
+
+    result.push(1);
+    if (current - win > 2) result.push('…');
+    for (let p = Math.max(2, current - win); p <= Math.min(total - 1, current + win); p++) {
+      result.push(p);
+    }
+    if (current + win < total - 1) result.push('…');
+    if (total > 1) result.push(total);
+
+    return result;
+  });
+
+  goToPage(p: number | '…') {
+    if (p === '…') return;
+    const idx = (p as number) - 1;
+    if (idx === this.pageIndex()) return;
+    this.pageIndex.set(idx);
+    this.emitPageEvent();
   }
 
   previousPage() {
