@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 
 @Component({
@@ -8,11 +8,5 @@ import {RouterOutlet} from '@angular/router';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [RouterOutlet]
 })
-export class ExportsComponent implements OnInit {
-
-    constructor() {
-    }
-
-    ngOnInit() {
-    }
+export class ExportsComponent {
 }

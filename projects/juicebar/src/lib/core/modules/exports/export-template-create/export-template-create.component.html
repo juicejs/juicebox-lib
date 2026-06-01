@@ -1,6 +1,6 @@
 <div class="parent">
-    @if (templateForm) {
-    <div [formGroup]="templateForm" class="template-form-container">
+    @if (templateForm(); as form) {
+    <div [formGroup]="form" class="template-form-container">
 
         <app-form-field appearance="outline" class="template-form-field">
             <app-label>{{'name' | translate}} *</app-label>
@@ -8,36 +8,72 @@
                    type="text"
                    formControlName="name"
                    [placeholder]="'name' | translate">
-            @if (templateForm.get('name')?.errors?.['required']) {
+            @if (form.get('name')?.errors?.['required']) {
                 <app-error>{{'field_required' | translate}}</app-error>
             }
         </app-form-field>
 
-        <app-form-field appearance="outline" class="template-form-field">
-            <app-label>{{'datasource' | translate}} *</app-label>
-            <select appInput
-                    formControlName="data_source_key"
-                    (change)="onDataSourceChange($any($event.target).value)">
-                @for (dataSource of dataSources; track dataSource.key) {
-                    <option [value]="dataSource.key">{{ dataSource.name | autoLanguage }}</option>
-                }
-            </select>
-            @if (templateForm.get('data_source_key')?.errors?.['required']) {
+        <div class="dropdown-field template-form-field">
+            <app-label class="dropdown-label-tag">{{'datasource' | translate}} *</app-label>
+            <button type="button"
+                    class="dropdown-trigger"
+                    [class.dropdown-trigger--invalid]="form.get('data_source_key')?.touched && form.get('data_source_key')?.errors?.['required']"
+                    [cdkMenuTriggerFor]="dataSourceMenu">
+                <span class="dropdown-trigger-label">
+                    @if (selectedDataSource(); as ds) {
+                        {{ ds.name | autoLanguage }}
+                    } @else {
+                        <span class="dropdown-trigger-placeholder">{{'datasource' | translate}}</span>
+                    }
+                </span>
+                <app-icon icon="keyboard_arrow_down" class="dropdown-trigger-arrow"></app-icon>
+            </button>
+            @if (form.get('data_source_key')?.touched && form.get('data_source_key')?.errors?.['required']) {
                 <app-error>{{'field_required' | translate}}</app-error>
             }
-        </app-form-field>
+        </div>
 
-        @if (!groupColumns) {
+        <ng-template #dataSourceMenu>
+            <div class="dropdown-panel" cdkMenu>
+                <div class="dropdown-panel-search" (click)="$event.stopPropagation()">
+                    <app-icon icon="search" class="dropdown-panel-search-icon"></app-icon>
+                    <input type="text"
+                           class="dropdown-panel-search-input"
+                           [value]="dataSourceSearch()"
+                           (input)="onDataSourceSearch($event)"
+                           (keydown)="$event.stopPropagation()"
+                           placeholder="Search…" />
+                </div>
+                <div class="dropdown-panel-options">
+                    @for (ds of filteredDataSources(); track ds.key) {
+                        <button type="button"
+                                class="dropdown-option"
+                                cdkMenuItem
+                                (click)="selectDataSource(ds.key)">
+                            <span class="dropdown-option-label">{{ ds.name | autoLanguage }}</span>
+                            @if (selectedDataSource()?.key === ds.key) {
+                                <app-icon icon="check" class="dropdown-option-check"></app-icon>
+                            }
+                        </button>
+                    }
+                    @if (filteredDataSources().length === 0) {
+                        <div class="dropdown-panel-empty">No matches</div>
+                    }
+                </div>
+            </div>
+        </ng-template>
+
+        @if (!groupColumns()) {
         <div class="columns-section">
             <app-label class="section-label">{{'columns' | translate}} *</app-label>
             <div class="columns-container" cdkDropListGroup>
                 <div class="columns-card dragula-container"
                      cdkDropList
                      #availableList="cdkDropList"
-                     [cdkDropListData]="columns"
+                     [cdkDropListData]="columns()"
                      [cdkDropListConnectedTo]="[selectedList]"
                      (cdkDropListDropped)="onColumnDrop($event)">
-                    @for (column of columns; track column.id) {
+                    @for (column of columns(); track column.id) {
                     <div class="column-item dragula-label"
                          cdkDrag
                          [appTooltip]="column.description ? (column.description | autoLanguage) : ''">
@@ -70,10 +106,10 @@
                 <div class="columns-card dragula-container"
                      cdkDropList
                      #selectedList="cdkDropList"
-                     [cdkDropListData]="selectedColumns"
+                     [cdkDropListData]="selectedColumns()"
                      [cdkDropListConnectedTo]="[availableList]"
                      (cdkDropListDropped)="onColumnDrop($event)">
-                    @for (column of selectedColumns; track column.id) {
+                    @for (column of selectedColumns(); track column.id) {
                     <div class="column-item dragula-label"
                          cdkDrag
                          [appTooltip]="column.description ? (column.description | autoLanguage) : ''">
@@ -91,11 +127,11 @@
         </div>
         }
 
-        @if (groupColumns) {
+        @if (groupColumns(); as gc) {
         <div class="columns-section">
             <app-label class="section-label">{{'columns' | translate}} *</app-label>
             <div class="grouped-columns-container">
-                @for (group of Object.keys(groupColumns); track group) {
+                @for (group of groupColumnKeys(); track group) {
                 <div class="group-section">
                     <app-label class="group-label">{{ group }}</app-label>
                     <div class="columns-container" cdkDropListGroup>
@@ -107,10 +143,10 @@
                                 <div class="column-list"
                                      cdkDropList
                                      [id]="'available-' + group"
-                                     [cdkDropListData]="groupColumns[group]"
+                                     [cdkDropListData]="gc[group]"
                                      [cdkDropListConnectedTo]="['selected-' + group]"
                                      (cdkDropListDropped)="onGroupColumnDrop($event, group)">
-                                    @for (column of groupColumns[group]; track column.id) {
+                                    @for (column of gc[group]; track column.id) {
                                     <div class="column-item"
                                          cdkDrag
                                          [appTooltip]="column.description ? (column.description | autoLanguage) : ''">
@@ -153,10 +189,10 @@
                                 <div class="column-list"
                                      cdkDropList
                                      [id]="'selected-' + group"
-                                     [cdkDropListData]="selectedGroupColumns[group]"
+                                     [cdkDropListData]="selectedGroupColumns()[group]"
                                      [cdkDropListConnectedTo]="['available-' + group]"
                                      (cdkDropListDropped)="onGroupColumnDrop($event, group)">
-                                    @for (column of selectedGroupColumns[group]; track column.id) {
+                                    @for (column of selectedGroupColumns()[group]; track column.id) {
                                     <div class="column-item"
                                          cdkDrag
                                          [appTooltip]="column.description ? (column.description | autoLanguage) : ''">
@@ -191,7 +227,7 @@
                             formControlName="prop"
                             (change)="onSortField($any($event.target).value)">
                         <option [ngValue]="null">{{'clear_selection' | translate}}</option>
-                        @for (column of sortable; track column.id) {
+                        @for (column of sortable(); track column.id) {
                             <option [value]="column.id">{{column.label | autoLanguage}}</option>
                         }
                     </select>
@@ -210,9 +246,9 @@
         <div class="filters-section">
             <app-label class="section-label">{{'filters' | translate}}</app-label>
             <app-export-filters (filtersValueChange)="onFiltersValueChange($event)"
-                                [selectedDataSourceKey]="selectedDataSource"
-                                [disabled]="!selectedColumns.length"
-                                [filters]="filters">
+                                [selectedDataSourceKey]="selectedDataSource()"
+                                [disabled]="!selectedColumns().length"
+                                [filters]="filters()">
             </app-export-filters>
         </div>
 
@@ -221,8 +257,8 @@
                     appearance="raised"
                     color="primary"
                     (click)="create()"
-                    [disabled]="!juicebox.hasPermission('data-export:role#create') || templateForm.invalid || !filtersValid"
-                    [promiseBtn]="promiseBtn">
+                    [disabled]="!juicebox.hasPermission('data-export:role#create') || form.invalid || !filtersValid()"
+                    [promiseBtn]="promiseBtn()">
                 {{'create' | translate}}
             </button>
         </div>
