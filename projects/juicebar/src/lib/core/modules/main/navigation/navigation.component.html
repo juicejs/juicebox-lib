@@ -51,10 +51,10 @@
       }
 
     <ng-template #languageMenu>
-      <div class="lang-panel" cdkMenu>
-        <div class="lang-panel-options">
+      <div class="dropdown-panel dropdown-panel--compact" cdkMenu>
+        <div class="dropdown-panel-options">
           @for (language of languages(); track language.code) {
-            <button class="lang-option" cdkMenuItem (click)="changeLanguage(language)">
+            <button class="dropdown-option" cdkMenuItem (click)="changeLanguage(language)">
               {{ language.name | translate }}
             </button>
           }
@@ -77,31 +77,31 @@
 
     <!-- Organization Switcher -->
     @if (userOrganisations().length > 1) {
-      <button class="org-switcher-btn" [cdkMenuTriggerFor]="orgMenu">
-        <span class="org-label">{{ organisationName() }}</span>
-        <app-icon [icon]="'keyboard_arrow_down'" class="org-arrow"></app-icon>
+      <button class="dropdown-trigger dropdown-trigger--compact org-switcher-btn" [cdkMenuTriggerFor]="orgMenu">
+        <span class="dropdown-trigger-label">{{ organisationName() }}</span>
+        <app-icon [icon]="'keyboard_arrow_down'" class="dropdown-trigger-arrow"></app-icon>
       </button>
     }
 
     <ng-template #orgMenu>
-      <div class="org-panel" cdkMenu>
-        <div class="org-panel-search" (click)="$event.stopPropagation()">
-          <app-icon [icon]="'search'" class="org-panel-search-icon"></app-icon>
+      <div class="dropdown-panel" cdkMenu>
+        <div class="dropdown-panel-search" (click)="$event.stopPropagation()">
+          <app-icon [icon]="'search'" class="dropdown-panel-search-icon"></app-icon>
           <input type="text"
-                 class="org-panel-search-input"
+                 class="dropdown-panel-search-input"
                  [value]="orgSearch()"
                  (input)="onOrgSearch($event)"
                  (keydown)="$event.stopPropagation()"
                  placeholder="Search…" />
         </div>
-        <div class="org-panel-options">
+        <div class="dropdown-panel-options">
           @for (org of filteredOrganisations(); track org._id) {
-            <button class="org-option" cdkMenuItem (click)="onOrganisationSwitch(org._id)">
+            <button class="dropdown-option" cdkMenuItem (click)="onOrganisationSwitch(org._id)">
               {{ org.name }}
             </button>
           }
           @if (filteredOrganisations().length === 0) {
-            <div class="org-panel-empty">No matches</div>
+            <div class="dropdown-panel-empty">No matches</div>
           }
         </div>
       </div>

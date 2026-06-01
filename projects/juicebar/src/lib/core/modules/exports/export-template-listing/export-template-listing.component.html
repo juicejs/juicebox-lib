@@ -52,14 +52,16 @@
                     <app-icon [icon]="'file_download'"></app-icon>
                 </button>
                 <ng-template #exportMenu>
-                    <div class="menu-panel" cdkMenu>
-                        @for (exportStrategy of row._available_export_strategies; track exportStrategy.key) {
-                            <button class="menu-item"
-                                    cdkMenuItem
-                                    (click)="openExportConfirmationModal(row, exportStrategy.key)">
-                                {{exportStrategy.name}}
-                            </button>
-                        }
+                    <div class="dropdown-panel dropdown-panel--compact" cdkMenu>
+                        <div class="dropdown-panel-options">
+                            @for (exportStrategy of row._available_export_strategies; track exportStrategy.key) {
+                                <button class="dropdown-option"
+                                        cdkMenuItem
+                                        (click)="openExportConfirmationModal(row, exportStrategy.key)">
+                                    {{exportStrategy.name}}
+                                </button>
+                            }
+                        </div>
                     </div>
                 </ng-template>
                 <button app-button

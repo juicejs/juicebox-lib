@@ -60,29 +60,29 @@
                 </div>
 
                 <ng-template #multiselectMenu>
-                    <div class="dd-panel" cdkMenu>
-                        <div class="dd-panel-search" (click)="$event.stopPropagation()">
-                            <app-icon icon="search" class="dd-panel-search-icon"></app-icon>
+                    <div class="dropdown-panel" cdkMenu>
+                        <div class="dropdown-panel-search" (click)="$event.stopPropagation()">
+                            <app-icon icon="search" class="dropdown-panel-search-icon"></app-icon>
                             <input type="text"
-                                   class="dd-panel-search-input"
+                                   class="dropdown-panel-search-input"
                                    [value]="getSearch(filter.id)"
                                    (input)="onFilterSearch(filter.id, $event)"
                                    (keydown)="$event.stopPropagation()"
                                    placeholder="Search…" />
                         </div>
-                        <div class="dd-panel-options">
+                        <div class="dropdown-panel-options">
                             @for (item of getFilteredItems(filter); track item.id) {
                                 <button type="button"
-                                        class="dd-option dd-option--multi"
-                                        [class.dd-option--selected]="isMultiSelected(filter.id, item.id)"
+                                        class="dropdown-option dropdown-option--multi"
+                                        [class.dropdown-option--selected]="isMultiSelected(filter.id, item.id)"
                                         (click)="toggleMultiSelect(filter.id, item.id); $event.stopPropagation()">
                                     <app-icon [icon]="isMultiSelected(filter.id, item.id) ? 'check_box' : 'check_box_outline_blank'"
-                                              class="dd-option-checkbox"></app-icon>
-                                    <span class="dd-option-label">{{ item.label | autoLanguage }}</span>
+                                              class="dropdown-option-checkbox"></app-icon>
+                                    <span class="dropdown-option-label">{{ item.label | autoLanguage }}</span>
                                 </button>
                             }
                             @if (getFilteredItems(filter).length === 0) {
-                                <div class="dd-panel-empty">No matches</div>
+                                <div class="dropdown-panel-empty">No matches</div>
                             }
                         </div>
                     </div>
@@ -119,36 +119,36 @@
                 </div>
 
                 <ng-template #selectMenu>
-                    <div class="dd-panel" cdkMenu>
-                        <div class="dd-panel-search" (click)="$event.stopPropagation()">
-                            <app-icon icon="search" class="dd-panel-search-icon"></app-icon>
+                    <div class="dropdown-panel" cdkMenu>
+                        <div class="dropdown-panel-search" (click)="$event.stopPropagation()">
+                            <app-icon icon="search" class="dropdown-panel-search-icon"></app-icon>
                             <input type="text"
-                                   class="dd-panel-search-input"
+                                   class="dropdown-panel-search-input"
                                    [value]="getSearch(filter.id)"
                                    (input)="onFilterSearch(filter.id, $event)"
                                    (keydown)="$event.stopPropagation()"
                                    placeholder="Search…" />
                         </div>
-                        <div class="dd-panel-options">
+                        <div class="dropdown-panel-options">
                             <button type="button"
-                                    class="dd-option dd-option--clear"
+                                    class="dropdown-option dropdown-option--clear"
                                     cdkMenuItem
                                     (click)="selectSingle(filter.id, null)">
                                 {{ 'clear_selection' | translate }}
                             </button>
                             @for (item of getFilteredItems(filter); track item.id) {
                                 <button type="button"
-                                        class="dd-option"
+                                        class="dropdown-option"
                                         cdkMenuItem
                                         (click)="selectSingle(filter.id, item.id)">
-                                    <span class="dd-option-label">{{ item.label | autoLanguage }}</span>
+                                    <span class="dropdown-option-label">{{ item.label | autoLanguage }}</span>
                                     @if (getSelectLabel(filter) && filterForm.get(filter.id)?.value === item.id) {
-                                        <app-icon icon="check" class="dd-option-check"></app-icon>
+                                        <app-icon icon="check" class="dropdown-option-check"></app-icon>
                                     }
                                 </button>
                             }
                             @if (getFilteredItems(filter).length === 0) {
-                                <div class="dd-panel-empty">No matches</div>
+                                <div class="dropdown-panel-empty">No matches</div>
                             }
                         </div>
                     </div>

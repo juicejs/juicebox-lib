@@ -1336,6 +1336,256 @@ html, body {
 }
 
 // =============================================================================
+// SHARED DROPDOWN (cdkMenu) — trigger button + searchable panel
+// =============================================================================
+// Used by: navbar org/lang switcher, export template editor (data source &
+// filter selects), export template listing (row action menu). Pair the trigger
+// with a `<ng-template>` containing the panel and `cdkMenu` directive. The
+// `--compact` modifiers keep the navbar/action menu small (32px / 140px).
+
+.dropdown-field {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  .dropdown-label-tag {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    margin-bottom: 4px;
+    display: block;
+  }
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 10px;
+  width: 100%;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-border-dark);
+  }
+
+  &:focus-visible,
+  &[aria-expanded="true"] {
+    outline: none;
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.15);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &--compact {
+    height: 32px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    min-width: 180px;
+  }
+
+  &--invalid {
+    border-color: var(--color-error);
+
+    &:focus-visible,
+    &[aria-expanded="true"] {
+      border-color: var(--color-error);
+      box-shadow: 0 0 0 3px rgba(255, 80, 80, 0.15);
+    }
+  }
+}
+
+.dropdown-trigger-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.dropdown-trigger-placeholder {
+  color: var(--color-text-disabled);
+}
+
+.dropdown-trigger-arrow {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.dropdown-trigger-clear {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  padding: 2px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background-color: var(--color-grey-200);
+    color: var(--color-text-primary);
+  }
+}
+
+.dropdown-panel {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 260px;
+  max-width: 400px;
+
+  &--compact {
+    min-width: 140px;
+    max-width: 320px;
+  }
+}
+
+.dropdown-panel-search {
+  height: 38px;
+  padding: 0 8px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--color-border-light);
+  background: var(--color-background);
+  flex-shrink: 0;
+
+  .dropdown-panel-search-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+  }
+
+  // Higher specificity than the global `input[type="text"]` rule so the
+  // form-style padding/height/border don't bleed into the panel input.
+  .dropdown-panel-search-input,
+  input.dropdown-panel-search-input {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    height: 28px;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    outline: none;
+    color: var(--color-text-primary);
+    font-size: 12.5px;
+    line-height: 1;
+    font-family: inherit;
+
+    &:hover,
+    &:focus {
+      border: none;
+      box-shadow: none;
+      outline: none;
+    }
+
+    &::placeholder {
+      color: var(--color-text-secondary);
+    }
+  }
+}
+
+.dropdown-panel-options {
+  padding: 4px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.dropdown-option {
+  width: 100%;
+  min-height: 32px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-size: 12.5px;
+  font-family: inherit;
+  text-align: left;
+  transition: background-color 0.1s ease;
+
+  &:hover {
+    background: var(--color-grey-200);
+  }
+
+  &--selected {
+    .dropdown-option-checkbox {
+      color: var(--color-secondary);
+    }
+  }
+
+  &--clear {
+    color: var(--color-text-secondary);
+    font-style: italic;
+    border-bottom: 1px solid var(--color-border-light);
+    border-radius: 0;
+    margin-bottom: 4px;
+  }
+}
+
+.dropdown-option-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown-option-check {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: var(--color-secondary);
+  flex-shrink: 0;
+}
+
+.dropdown-option-checkbox {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.dropdown-panel-empty {
+  padding: 20px 12px;
+  font-size: 12px;
+  color: var(--color-text-disabled);
+  text-align: center;
+  font-style: italic;
+}
+
+
+// =============================================================================
 // REUSABLE TABLE COMPONENT STYLES (for any table module)
 // =============================================================================
 

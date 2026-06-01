@@ -34,30 +34,30 @@
         </div>
 
         <ng-template #dataSourceMenu>
-            <div class="dd-panel" cdkMenu>
-                <div class="dd-panel-search" (click)="$event.stopPropagation()">
-                    <app-icon icon="search" class="dd-panel-search-icon"></app-icon>
+            <div class="dropdown-panel" cdkMenu>
+                <div class="dropdown-panel-search" (click)="$event.stopPropagation()">
+                    <app-icon icon="search" class="dropdown-panel-search-icon"></app-icon>
                     <input type="text"
-                           class="dd-panel-search-input"
+                           class="dropdown-panel-search-input"
                            [value]="dataSourceSearch()"
                            (input)="onDataSourceSearch($event)"
                            (keydown)="$event.stopPropagation()"
                            placeholder="Search…" />
                 </div>
-                <div class="dd-panel-options">
+                <div class="dropdown-panel-options">
                     @for (ds of filteredDataSources(); track ds.key) {
                         <button type="button"
-                                class="dd-option"
+                                class="dropdown-option"
                                 cdkMenuItem
                                 (click)="selectDataSource(ds.key)">
-                            <span class="dd-option-label">{{ ds.name | autoLanguage }}</span>
+                            <span class="dropdown-option-label">{{ ds.name | autoLanguage }}</span>
                             @if (selectedDataSource()?.key === ds.key) {
-                                <app-icon icon="check" class="dd-option-check"></app-icon>
+                                <app-icon icon="check" class="dropdown-option-check"></app-icon>
                             }
                         </button>
                     }
                     @if (filteredDataSources().length === 0) {
-                        <div class="dd-panel-empty">No matches</div>
+                        <div class="dropdown-panel-empty">No matches</div>
                     }
                 </div>
             </div>
