@@ -66,14 +66,14 @@
         </div>
 
         <div class="navigation-container next searchResults" [style.display]="juicebox.searchActive() ? 'block' : 'none'">
-            <div class="search-container">
-                <div class="location ellipsis">
-                    <div class="title">
-                        <div class="d-flex align-center">
-                            <button app-button appearance="icon" class="back-nav-btn">
-                                <app-icon [icon]="'keyboard_arrow_left'"></app-icon>
-                            </button>
-                            <div class="label">{{ "search_results" | translate }}</div>
+            <div class="location-container">
+                <button app-button appearance="icon" class="back-nav-btn" (click)="juicebox.searchActive.set(false)">
+                    <app-icon [icon]="'keyboard_arrow_left'"></app-icon>
+                </button>
+                <div class="page-header">
+                    <div class="page-header-text">
+                        <div class="page-header-title">
+                            <span class="page-header-name">{{ "search_results" | translate }}</span>
                         </div>
                     </div>
                 </div>

@@ -224,5 +224,9 @@ export const globalDictionary = {
   "LEGAL_AGREEMENT_NOT_ACCEPTED": {
     "en_GB": "Please accept the privacy policy and terms of use",
     "de_DE": "Bitte akzeptieren Sie die Datenschutzerklärung und die Nutzungsbedingungen"
+  },
+  "search_results": {
+    "en_GB": "Search results",
+    "de_DE": "Suchergebnisse"
   }
 };
