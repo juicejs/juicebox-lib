@@ -9,12 +9,7 @@ export class GlobalTranslationPipe extends TranslationPipe {
     constructor(protected override juicebox: JuiceboxService) {
         super(juicebox);
 
-        const loginLanguage = 'de_DE';
-        if (!juicebox.language && !localStorage.getItem('language')) {
-            juicebox.setLanguage(loginLanguage);
-        }
-
-        this.setDefault(loginLanguage);
+        this.setDefault('de_DE');
         this.addDictionary(globalDictionary);
     }
 }

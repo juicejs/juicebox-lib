@@ -126,19 +126,8 @@ export class NavigationComponent implements OnInit {
   }
 
   private getPreselectedLanguage(): Language {
-    let userLanguageCode = this.juicebox.getUserLanguage();
-    if (!userLanguageCode) {
-      userLanguageCode = this.i18n.defaultLanguage;
-    }
-
-    const supported = this.languages().find(lang => lang.code === userLanguageCode);
-    if (supported) {
-      this.juicebox.setLanguage(supported.code);
-      return supported;
-    }
-    const fallback = this.languages()[0];
-    this.juicebox.setLanguage(fallback.code);
-    return fallback;
+    const current = this.juicebox.getLanguage();
+    return this.languages().find(lang => lang.code === current) ?? this.languages()[0];
   }
 
   private async loadFileInfo() {

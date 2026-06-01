@@ -72,7 +72,6 @@ export class MainComponent implements OnInit {
         })
 
         this.setTitle()
-        this.setLanguage();
         this.verifyConnection();
         this.socketService.connect();
 
@@ -111,29 +110,6 @@ export class MainComponent implements OnInit {
         const options = this.juicebox.getOptions();
         if (options && options.title) {
             this.titleService.setTitle(options.title);
-        }
-    }
-
-    private setLanguage(): void {
-        const options = this.juicebox.getOptions()
-        const languages = this.juicebox.getAllSystemLanguages();
-        const userLanguageCode = this.juicebox.getUserLanguage();
-        const browserLanguage = navigator.language.split('-')[0];
-        const supportedBrowserLanguage = languages.find(l => l.includes(browserLanguage));
-
-        if (userLanguageCode) {
-            this.juicebox.setLanguage(userLanguageCode);
-            return;
-        }
-
-        if (options && options.default_language) {
-            this.juicebox.setLanguage(options.default_language);
-            return;
-        }
-
-        if (supportedBrowserLanguage) {
-            this.juicebox.setLanguage(supportedBrowserLanguage);
-            return;
         }
     }
 

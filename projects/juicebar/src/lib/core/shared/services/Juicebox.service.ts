@@ -168,11 +168,40 @@ export class JuiceboxService {
 
             const options = await this.juice.request('juicebox', 'getOptions', []);
             this.setOptions(options);
-
-            return true;
         }
 
-        return false;
+        this.resolveLanguage();
+
+        return !!user;
+    }
+
+    private resolveLanguage(): void {
+        const userLanguage = this.getUserLanguage();
+        if (userLanguage) {
+            this.setLanguage(userLanguage);
+            return;
+        }
+
+        const options = this.getOptions();
+        if (options?.default_language) {
+            this.setLanguage(options.default_language);
+            return;
+        }
+
+        const stored = localStorage.getItem('language');
+        if (stored) {
+            this.setLanguage(stored);
+            return;
+        }
+
+        const browserLanguage = navigator.language.split('-')[0];
+        const supported = this.getAllSystemLanguages().find(l => l.includes(browserLanguage));
+        if (supported) {
+            this.setLanguage(supported);
+            return;
+        }
+
+        this.setLanguage('en_GB');
     }
 
     public pleaseExtendYourServiceDontDoThis(): Juice {
