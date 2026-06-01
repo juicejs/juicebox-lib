@@ -1,6 +1,6 @@
-@if (filters.length) {
+@if (filters().length) {
 <div [formGroup]="filterForm">
-    @for (filter of filters; track filter.id) {
+    @for (filter of filters(); track filter.id) {
     <div class="filter-item">
 
         @switch (filter.type) {
@@ -33,39 +33,126 @@
                 </app-form-field>
             }
             @case ('multiselect') {
-                <app-form-field appearance="outline" class="full-width">
-                    <app-label>{{ getFilterLabel(filter) }}</app-label>
-                    <select appInput [formControlName]="filter.id" multiple>
-                        @for (item of filter.items; track item.id) {
-                            <option [value]="item.id">{{ item.label | autoLanguage }}</option>
+                <div class="dropdown-field">
+                    <app-label class="dropdown-label-tag">{{ getFilterLabel(filter) }}</app-label>
+                    <button type="button"
+                            class="dropdown-trigger"
+                            [disabled]="disabled()"
+                            [class.dropdown-trigger--invalid]="getFilterError(filter)"
+                            [cdkMenuTriggerFor]="multiselectMenu">
+                        <span class="dropdown-trigger-label">
+                            @if (getMultiSelectLabel(filter); as label) {
+                                {{ label }}
+                            } @else {
+                                <span class="dropdown-trigger-placeholder">{{ getFilterLabel(filter) }}</span>
+                            }
+                        </span>
+                        @if (getMultiSelectLabel(filter)) {
+                            <app-icon icon="close"
+                                      class="dropdown-trigger-clear"
+                                      (click)="clearMultiSelect(filter, $event)"></app-icon>
                         }
-                    </select>
+                        <app-icon icon="keyboard_arrow_down" class="dropdown-trigger-arrow"></app-icon>
+                    </button>
                     @if (getFilterError(filter); as error) {
                         <app-error>{{ error }}</app-error>
                     }
-                </app-form-field>
+                </div>
+
+                <ng-template #multiselectMenu>
+                    <div class="dd-panel" cdkMenu>
+                        <div class="dd-panel-search" (click)="$event.stopPropagation()">
+                            <app-icon icon="search" class="dd-panel-search-icon"></app-icon>
+                            <input type="text"
+                                   class="dd-panel-search-input"
+                                   [value]="getSearch(filter.id)"
+                                   (input)="onFilterSearch(filter.id, $event)"
+                                   (keydown)="$event.stopPropagation()"
+                                   placeholder="Search…" />
+                        </div>
+                        <div class="dd-panel-options">
+                            @for (item of getFilteredItems(filter); track item.id) {
+                                <button type="button"
+                                        class="dd-option dd-option--multi"
+                                        [class.dd-option--selected]="isMultiSelected(filter.id, item.id)"
+                                        (click)="toggleMultiSelect(filter.id, item.id); $event.stopPropagation()">
+                                    <app-icon [icon]="isMultiSelected(filter.id, item.id) ? 'check_box' : 'check_box_outline_blank'"
+                                              class="dd-option-checkbox"></app-icon>
+                                    <span class="dd-option-label">{{ item.label | autoLanguage }}</span>
+                                </button>
+                            }
+                            @if (getFilteredItems(filter).length === 0) {
+                                <div class="dd-panel-empty">No matches</div>
+                            }
+                        </div>
+                    </div>
+                </ng-template>
             }
             @case ('multiselect-async') {
                 <app-export-multiselect-async [formGroup]="filterForm"
-                                              [selectedDataSourceKey]="selectedDataSourceKey"
+                                              [selectedDataSourceKey]="selectedDataSourceKey()"
                                               [filter]="filter"></app-export-multiselect-async>
                 @if (getFilterError(filter); as error) {
                     <app-error class="mat-error-standalone">{{ error }}</app-error>
                 }
             }
             @case ('select') {
-                <app-form-field appearance="outline" class="full-width">
-                    <app-label>{{ getFilterLabel(filter) }}</app-label>
-                    <select appInput [formControlName]="filter.id">
-                        <option [ngValue]="null">{{ 'clear_selection' | translate }}</option>
-                        @for (item of filter.items; track item.id) {
-                            <option [value]="item.id">{{ item.label | autoLanguage }}</option>
-                        }
-                    </select>
+                <div class="dropdown-field">
+                    <app-label class="dropdown-label-tag">{{ getFilterLabel(filter) }}</app-label>
+                    <button type="button"
+                            class="dropdown-trigger"
+                            [disabled]="disabled()"
+                            [class.dropdown-trigger--invalid]="getFilterError(filter)"
+                            [cdkMenuTriggerFor]="selectMenu">
+                        <span class="dropdown-trigger-label">
+                            @if (getSelectLabel(filter); as label) {
+                                {{ label }}
+                            } @else {
+                                <span class="dropdown-trigger-placeholder">{{ getFilterLabel(filter) }}</span>
+                            }
+                        </span>
+                        <app-icon icon="keyboard_arrow_down" class="dropdown-trigger-arrow"></app-icon>
+                    </button>
                     @if (getFilterError(filter); as error) {
                         <app-error>{{ error }}</app-error>
                     }
-                </app-form-field>
+                </div>
+
+                <ng-template #selectMenu>
+                    <div class="dd-panel" cdkMenu>
+                        <div class="dd-panel-search" (click)="$event.stopPropagation()">
+                            <app-icon icon="search" class="dd-panel-search-icon"></app-icon>
+                            <input type="text"
+                                   class="dd-panel-search-input"
+                                   [value]="getSearch(filter.id)"
+                                   (input)="onFilterSearch(filter.id, $event)"
+                                   (keydown)="$event.stopPropagation()"
+                                   placeholder="Search…" />
+                        </div>
+                        <div class="dd-panel-options">
+                            <button type="button"
+                                    class="dd-option dd-option--clear"
+                                    cdkMenuItem
+                                    (click)="selectSingle(filter.id, null)">
+                                {{ 'clear_selection' | translate }}
+                            </button>
+                            @for (item of getFilteredItems(filter); track item.id) {
+                                <button type="button"
+                                        class="dd-option"
+                                        cdkMenuItem
+                                        (click)="selectSingle(filter.id, item.id)">
+                                    <span class="dd-option-label">{{ item.label | autoLanguage }}</span>
+                                    @if (getSelectLabel(filter) && filterForm.get(filter.id)?.value === item.id) {
+                                        <app-icon icon="check" class="dd-option-check"></app-icon>
+                                    }
+                                </button>
+                            }
+                            @if (getFilteredItems(filter).length === 0) {
+                                <div class="dd-panel-empty">No matches</div>
+                            }
+                        </div>
+                    </div>
+                </ng-template>
             }
         }
 

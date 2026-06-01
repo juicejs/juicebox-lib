@@ -9,12 +9,14 @@
     </div>
 
     <app-data-table
-        [rows]="rows"
+        [rows]="rows()"
         [columns]="columns"
-        [totalCount]="count"
-        [pageSize]="pageSize"
-        [pageIndex]="page - 1"
+        [totalCount]="count()"
+        [pageSize]="pageSize()"
+        [pageIndex]="page() - 1"
         [sort]="sort"
+        [selectable]="true"
+        [clearAriaLabel]="'clear' | translate"
         (pageChange)="onPageChange($event)"
         (sortChange)="onSort($event)"
         (rowClick)="onSelect($event._id)">
@@ -35,15 +37,19 @@
             </span>
         </ng-template>
 
-        <ng-template [cellDef]="'actions'" let-row>
-            <div class="actions-cell" (click)="$event.stopPropagation()">
+        <ng-template selectionDetailDef let-row>
+            <span class="dt-selection-label">
+                {{ 'selected' | translate }}: {{ row.name }}
+            </span>
+            <div class="dt-selection-actions">
                 <button app-button
+                        appearance="icon"
                         [disabled]="!row._available_export_strategies.length"
                         [cdkMenuTriggerFor]="exportMenu"
                         [NoPermissionDisable]="row.data_source_key == 'sap-data:strategy' ? 'data-export:role#admin' : 'data-export:role#export'"
-                        class="compact-table-button">
-                    Export
-                    <app-icon [icon]="'arrow_drop_down'"></app-icon>
+                        [appTooltip]="'export' | translate"
+                        class="primary">
+                    <app-icon [icon]="'file_download'"></app-icon>
                 </button>
                 <ng-template #exportMenu>
                     <div class="menu-panel" cdkMenu>
@@ -56,12 +62,12 @@
                         }
                     </div>
                 </ng-template>
-
                 <button app-button
                         appearance="icon"
                         (click)="delete(row)"
                         [NoPermissionDisable]="'data-export:role#delete'"
-                        [title]="'delete' | translate">
+                        [appTooltip]="'delete' | translate"
+                        class="danger">
                     <app-icon [icon]="'delete'"></app-icon>
                 </button>
             </div>

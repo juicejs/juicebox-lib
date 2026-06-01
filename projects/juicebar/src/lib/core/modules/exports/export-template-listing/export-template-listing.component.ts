@@ -1,8 +1,8 @@
-import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy, signal} from '@angular/core';
 import {ExportsTranslationPipe} from "../i18n/exports.translation";
 import {Router, RouterLink} from "@angular/router";
 import {ExportsService} from '../exports.service';
-import {DialogService, DataTableComponent, CellDefDirective, ColumnConfig, SortState} from '../../../../ui-components';
+import {DialogService, DataTableComponent, CellDefDirective, SelectionDetailDefDirective, ColumnConfig, SortState} from '../../../../ui-components';
 import {ConfirmationDialogComponent} from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 import {HelperService, TableFilter, TableSort} from '../../../shared/services/helper.service';
@@ -30,15 +30,16 @@ export interface PageEvent {
         ExportsTranslationPipe,
         AutoLanguagePipe,
         DataTableComponent,
-        CellDefDirective
+        CellDefDirective,
+        SelectionDetailDefDirective
     ]
 })
 export class ExportTemplateListingComponent implements OnInit {
 
-    page = 1;
-    pageSize = 10;
-    rows: Array<any> = [];
-    count: number = 0;
+    readonly page = signal(1);
+    readonly pageSize = signal(10);
+    readonly rows = signal<Array<any>>([]);
+    readonly count = signal(0);
     filter: TableFilter[] = [];
     sort: TableSort = {dir: 'desc', prop: 'updated'};
 
@@ -74,8 +75,7 @@ export class ExportTemplateListingComponent implements OnInit {
             { key: 'name', label: this.i18n.transform('name'), width: '200px', sortable: true },
             { key: '_data_source.name', label: this.i18n.transform('datasource'), width: '200px', sortable: true },
             { key: 'columns', label: this.i18n.transform('columns') },
-            { key: 'filters', label: this.i18n.transform('filters') },
-            { key: 'actions', label: this.i18n.transform('actions'), width: '150px', align: 'center' }
+            { key: 'filters', label: this.i18n.transform('filters') }
         ];
     }
 
@@ -90,7 +90,7 @@ export class ExportTemplateListingComponent implements OnInit {
     }
 
     fetchExportTemplates() {
-        this.exports.getExportTemplates(this.page -1, this.pageSize, {
+        this.exports.getExportTemplates(this.page() - 1, this.pageSize(), {
             sort: this.sort,
             populateColumns: true,
             populateFilters: true,
@@ -99,8 +99,8 @@ export class ExportTemplateListingComponent implements OnInit {
         }).then((result): any => {
             if (!result) return;
             if (!result.success) return this.juicebox.showToast("error", result.error);
-            this.rows = result.payload.items;
-            this.count = result.payload.count;
+            this.rows.set(result.payload.items);
+            this.count.set(result.payload.count);
         })
     }
 
@@ -130,19 +130,19 @@ export class ExportTemplateListingComponent implements OnInit {
     }
 
     changePage(event: number) {
-        this.page = event;
+        this.page.set(event);
         this.fetchExportTemplates();
     }
 
     onPageChange(event: PageEvent) {
-        this.page = event.pageIndex + 1;
-        this.pageSize = event.pageSize;
+        this.page.set(event.pageIndex + 1);
+        this.pageSize.set(event.pageSize);
         this.fetchExportTemplates();
     }
 
     onSort(event: SortState) {
         this.sort = { prop: event.prop, dir: event.dir };
-        this.page = 1;
+        this.page.set(1);
         this.fetchExportTemplates();
     }
 

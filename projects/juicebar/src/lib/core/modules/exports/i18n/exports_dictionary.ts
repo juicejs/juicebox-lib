@@ -34,6 +34,16 @@ export const exportsDictionary = {
     "de_DE": "Externer Link",
     "hr_HR": "Vanjska poveznica"
   },
+  "export": {
+    "en_GB": "Export",
+    "de_DE": "Export",
+    "hr_HR": "Export"
+  },
+  "selected": {
+    "en_GB": "Selected",
+    "de_DE": "Ausgewählt",
+    "hr_HR": "Odabrano"
+  },
   "exports": {
     "en_GB": "Exports",
     "de_DE": "Exporte",

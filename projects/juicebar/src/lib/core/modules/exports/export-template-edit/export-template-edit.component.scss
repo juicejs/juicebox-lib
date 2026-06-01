@@ -1,4 +1,3 @@
-// Match original layout styles
 .template-form-container {
   display: flex;
   flex-direction: column;
@@ -11,26 +10,23 @@
   width: 400px;
 }
 
-// Section styling to match original
 .section-label {
   font-weight: 600;
   font-size: 14px;
-  color: #333;
+  color: var(--color-text-primary);
   margin-bottom: 8px;
   display: block;
 }
 
-// Columns section - recreate dragula look  
 .columns-section {
   width: 400px;
 }
 
 .columns-container {
   display: flex;
-  justify-content: space-around;
-  align-items: stretch; // This ensures equal height
-  gap: 16px;
-  min-height: 200px; // Minimum height for the container
+  align-items: stretch;
+  gap: 12px;
+  min-height: 200px;
 }
 
 .grouped-columns-container {
@@ -41,49 +37,52 @@
 
 .group-section {
   .group-label {
-    font-weight: bold;
+    font-weight: 600;
     font-size: 14px;
     margin-bottom: 8px;
     display: block;
   }
 }
 
-// Use exact original dragula styling
-::ng-deep .dragula-container {
-  border: 1px solid #ced4da;
-  border-radius: 0.25rem;
+.dragula-container {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   width: 46%;
   user-select: none;
   min-height: 200px;
-  flex: 1; // This makes both containers equal height
+  flex: 1;
   display: flex;
   flex-direction: column;
+  background-color: var(--color-background);
 }
 
-::ng-deep .dragula-label {
+.dragula-label,
+.column-item {
   display: flex;
-  font-size: 0.9rem;
-  padding: 0.05rem 0.25rem;
-  margin: 0.25rem;
-  border: 1px solid rgba(206, 212, 218, 0.53);
-  border-radius: 0.25rem;
-  color: #495057;
-  background-color: white;
-  cursor: grab;
   align-items: center;
-  
+  gap: var(--spacing-xs);
+  font-size: 0.875rem;
+  padding: 0.2rem var(--spacing-sm);
+  margin: 0.2rem var(--spacing-xs);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  background-color: var(--color-background-secondary);
+  cursor: grab;
+
   &:hover {
-    border-color: #ced4da;
+    border-color: var(--color-border-dark);
+    background-color: var(--color-grey-100);
   }
-  
+
   &:active {
     cursor: grabbing;
   }
-  
+
   &.cdk-drag-animating {
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
   }
-  
+
   .column-label {
     flex-grow: 1;
     overflow: hidden;
@@ -92,44 +91,37 @@
   }
 }
 
-// Original color styling for badges
-:ng-deep .column-sortable,
 .column-sortable {
-  color: blue !important;
-  font-size: smaller !important;
+  color: var(--color-tertiary);
+  font-size: 0.75rem;
 }
 
-:ng-deep .column-filterable,
 .column-filterable {
-  color: purple !important;  
-  font-size: smaller !important;
+  color: var(--color-secondary);
+  font-size: 0.75rem;
 }
 
-// Column controls - match original button style
+.column-badges {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.column-badge {
+  font-size: 0.7rem;
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-grey-200);
+  color: var(--color-text-secondary);
+}
+
 .column-controls {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 8px;
-
-  button {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    border: 1px solid #6c757d;
-    background: #f8f9fa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-
-    &:hover {
-      background: #e9ecef;
-    }
-  }
+  align-items: center;
+  gap: var(--spacing-sm);
 }
 
-// Sort section styling
 .sort-section {
   width: 400px;
 }
@@ -137,47 +129,220 @@
 .sort-controls {
   display: flex;
   flex-direction: column;
-  gap: 1rem; // Add vertical spacing between sort dropdowns
-  
+  gap: 1rem;
+
   .sort-field,
   .sort-direction {
-    width: 400px; // Full width for each dropdown
+    width: 400px;
   }
 }
 
-// Filters section
 .filters-section {
   width: 400px;
 }
 
-// Actions section
 .actions-section {
   display: flex;
   justify-content: flex-end;
   width: 400px;
-  
-  button {
-    min-width: 100px;
-  }
 }
 
-// CDK Drag drop styling
 .cdk-drop-list {
   min-height: 60px;
 }
 
 .cdk-drag-preview {
   box-sizing: border-box;
-  border-radius: 4px;
-  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
-              0 8px 10px 1px rgba(0, 0, 0, 0.14),
-              0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-dark);
+  background-color: var(--color-background-secondary);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-lg);
+  padding: 0.2rem var(--spacing-sm);
+  font-size: 0.875rem;
 }
 
 .cdk-drag-placeholder {
-  opacity: 0.4;
+  opacity: 0.3;
+  border: 1px dashed var(--color-border-dark);
+  border-radius: var(--radius-sm);
+  background: transparent;
 }
 
 .cdk-drag-animating {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+// ---------- Dropdown trigger + panel (org-switcher style) ----------
+
+.dropdown-field {
+  display: flex;
+  flex-direction: column;
+
+  .dropdown-label-tag {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    margin-bottom: 4px;
+    display: block;
+  }
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 10px;
+  width: 100%;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    border-color: var(--color-border-dark);
+  }
+
+  &:focus-visible,
+  &[aria-expanded="true"] {
+    outline: none;
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.15);
+  }
+
+  &--invalid {
+    border-color: var(--color-error);
+
+    &:focus-visible,
+    &[aria-expanded="true"] {
+      border-color: var(--color-error);
+      box-shadow: 0 0 0 3px rgba(255, 80, 80, 0.15);
+    }
+  }
+
+  .dropdown-trigger-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  .dropdown-trigger-placeholder {
+    color: var(--color-text-disabled);
+  }
+
+  .dropdown-trigger-arrow {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+  }
+}
+
+.dd-panel {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 260px;
+  max-width: 400px;
+
+  .dd-panel-search {
+    height: 38px;
+    padding: 0 8px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--color-border-light);
+    background: var(--color-background);
+    flex-shrink: 0;
+
+    .dd-panel-search-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      color: var(--color-text-secondary);
+      flex-shrink: 0;
+    }
+
+    .dd-panel-search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--color-text-primary);
+      font-size: 12.5px;
+      font-family: inherit;
+
+      &:focus {
+        border: none;
+        box-shadow: none;
+      }
+
+      &::placeholder {
+        color: var(--color-text-secondary);
+      }
+    }
+  }
+
+  .dd-panel-options {
+    padding: 4px;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+
+  .dd-option {
+    width: 100%;
+    min-height: 32px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    border-radius: 5px;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    font-size: 12.5px;
+    font-family: inherit;
+    text-align: left;
+    transition: background-color 0.1s ease;
+
+    &:hover {
+      background: var(--color-grey-200);
+    }
+
+    .dd-option-label {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dd-option-check {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: var(--color-secondary);
+      flex-shrink: 0;
+    }
+  }
+
+  .dd-panel-empty {
+    padding: 20px 12px;
+    font-size: 12px;
+    color: var(--color-text-disabled);
+    text-align: center;
+    font-style: italic;
+  }
 }
