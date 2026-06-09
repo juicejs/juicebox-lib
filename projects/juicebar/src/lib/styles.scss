@@ -7,6 +7,32 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 // =============================================================================
+// GLOBAL SCROLLBAR
+// =============================================================================
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-grey-600) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-grey-600);
+  border-radius: 999px;
+
+  &:hover {
+    background: var(--color-grey-500);
+  }
+}
+
+// =============================================================================
 // GLOBAL DIALOG STYLES (mirrors ui-components/dialog/dialog.scss)
 // Inlined here because lib/styles.scss is the only SCSS shipped to consumers.
 // =============================================================================

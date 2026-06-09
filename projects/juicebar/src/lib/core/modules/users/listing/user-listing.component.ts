@@ -58,10 +58,8 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     projectTitle: string;
 
     protected readonly organisations = signal<Array<any>>([]);
-    protected readonly organisationsCount = signal<number>(0);
     sortOrganisations: ISort = { dir: 'asc', prop: 'name' };
     filterOrganisations: Array<ISearchTerm> = [];
-    pageOrganisations: number = 0;
 
     protected readonly groups = signal<Array<any>>([]);
     protected readonly filteredGroups = signal<Array<any>>([]);
@@ -275,15 +273,14 @@ export class UserListingComponent extends ListingComponent implements OnInit {
 
     //------ORGANISATIONS FILTER
     private async getOrganisations(): Promise<any> {
-        const organisationResult = await this.juicebox.getAvailableOrganisations(this.pageOrganisations, 10, {
+        const organisationResult = await this.juicebox.getAvailableOrganisations(0, 1000, {
             sort: this.sortOrganisations,
             filter: this.filterOrganisations
         });
         if (!organisationResult || !organisationResult.success)
             return false;
 
-        this.organisations.update(orgs => [...orgs, ...organisationResult.payload.items]);
-        this.organisationsCount.set(organisationResult.payload.count);
+        this.organisations.set(organisationResult.payload.items);
     }
 
     async organisationChanged(organisation: any) {
@@ -302,11 +299,10 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     }
 
     async searchOrganisations(event: any) {
-        this.pageOrganisations = 0;
         const result = this.helper.prepareSearchTerm(this.filterOrganisations, 'name', event.term);
         this.filterOrganisations = result.filter;
 
-        if (!result.resolved) {
+        if (!result.resolved || this.organisations().length === 0) {
             this.organisations.set([]);
             await this.getOrganisations();
         }
@@ -315,13 +311,6 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     customSearchOrganisations = (term: string, items: any) => {
         return true;
     };
-
-    async onScrollOrganisations() {
-        if (this.organisations().length < this.organisationsCount()) {
-            this.pageOrganisations = this.organisations().length / 10;
-            await this.getOrganisations();
-        }
-    }
 
     async resetOrganisation() {
         this.selectedOrganisation.set(null);
