@@ -49,21 +49,7 @@ export class ExportTemplateCreateComponent implements OnInit {
         return gc ? Object.keys(gc) : [];
     });
 
-    readonly dataSourceSearch = signal<string>('');
-    readonly filteredDataSources = computed(() => {
-        const q = this.dataSourceSearch().trim().toLowerCase();
-        const all = this.dataSources();
-        if (!q) return all;
-        const lang = this.juicebox.getLanguage();
-        return all.filter(ds => {
-            const name = typeof ds.name === 'string'
-                ? ds.name
-                : (ds.name as any)?.[lang] ?? '';
-            return name.toLowerCase().includes(q);
-        });
-    });
-
-    public juicebox = inject(JuiceboxService);
+public juicebox = inject(JuiceboxService);
     private exports = inject(ExportsService);
     private router = inject(Router);
     private configurationService = inject(ConfigurationService);
@@ -191,14 +177,9 @@ export class ExportTemplateCreateComponent implements OnInit {
         await this.getFilters(key);
     }
 
-    onDataSourceSearch(event: Event) {
-        this.dataSourceSearch.set((event.target as HTMLInputElement).value);
-    }
-
     selectDataSource(key: string) {
         const form = this.templateForm();
         form.get('data_source_key')?.setValue(key);
-        this.dataSourceSearch.set('');
         this.onDataSourceChange(key);
     }
 

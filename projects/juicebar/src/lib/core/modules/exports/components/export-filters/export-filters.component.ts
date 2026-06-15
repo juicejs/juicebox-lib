@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, effect, inject, input, OnDestroy, output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, input, OnDestroy, output} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, ValidatorFn} from '@angular/forms';
 import {Subscription} from 'rxjs';
@@ -38,10 +38,7 @@ export class ExportFiltersComponent implements OnDestroy {
     filterForm = new FormGroup({});
     sub = new Subscription();
 
-    readonly filterSearches = signal<Record<string, string>>({});
-    readonly formTick = signal(0);
-
-    private autoLanguage = new AutoLanguagePipe(this.juicebox);
+private autoLanguage = new AutoLanguagePipe(this.juicebox);
 
     constructor() {
         effect(() => {
@@ -72,16 +69,13 @@ export class ExportFiltersComponent implements OnDestroy {
         const controls = {};
         filters.forEach(filter => controls[filter.id] = this.createFilterControl(filter));
         this.filterForm = new FormGroup(controls);
-        this.filterSearches.set({});
-        this.formTick.update(v => v + 1);
         if (this.disabled()) {
             this.filterForm.disable();
         }
 
         this.sub.unsubscribe();
         this.sub = this.filterForm.valueChanges.subscribe(() => {
-            this.formTick.update(v => v + 1);
-            const formValue = this.filterForm.value;
+                const formValue = this.filterForm.value;
             const convertedForm = new FormGroup({});
 
             Object.keys(formValue).forEach(key => {
@@ -123,77 +117,6 @@ export class ExportFiltersComponent implements OnDestroy {
             }
         }
         return errorMessage.join(' ');
-    }
-
-    onFilterSearch(filterId: string, event: Event) {
-        const value = (event.target as HTMLInputElement).value;
-        this.filterSearches.update(prev => ({...prev, [filterId]: value}));
-    }
-
-    getSearch(filterId: string): string {
-        return this.filterSearches()[filterId] ?? '';
-    }
-
-    getFilteredItems(filter: ExportFilter): { id: string, label: any }[] {
-        const search = this.getSearch(filter.id).trim().toLowerCase();
-        const items = filter.items ?? [];
-        if (!search) return items;
-        return items.filter(item => {
-            const label = (this.autoLanguage.transform(item.label) ?? '').toString().toLowerCase();
-            return label.includes(search);
-        });
-    }
-
-    isMultiSelected(filterId: string, itemId: string): boolean {
-        this.formTick();
-        const value = this.filterForm.get(filterId)?.value;
-        return Array.isArray(value) && value.includes(itemId);
-    }
-
-    toggleMultiSelect(filterId: string, itemId: string) {
-        const control = this.filterForm.get(filterId);
-        if (!control) return;
-        const current: string[] = Array.isArray(control.value) ? [...control.value] : [];
-        const idx = current.indexOf(itemId);
-        if (idx === -1) current.push(itemId);
-        else current.splice(idx, 1);
-        control.markAsTouched();
-        control.setValue(current.length ? current : null);
-    }
-
-    clearMultiSelect(filter: ExportFilter, event: Event) {
-        event.stopPropagation();
-        const control = this.filterForm.get(filter.id);
-        if (!control) return;
-        control.markAsTouched();
-        control.setValue(null);
-    }
-
-    getMultiSelectLabel(filter: ExportFilter): string {
-        this.formTick();
-        const value = this.filterForm.get(filter.id)?.value;
-        if (!Array.isArray(value) || !value.length) return '';
-        const items = filter.items ?? [];
-        if (value.length === 1) {
-            const item = items.find(i => i.id === value[0]);
-            return item ? this.autoLanguage.transform(item.label) : `${value.length} selected`;
-        }
-        return `${value.length} selected`;
-    }
-
-    getSelectLabel(filter: ExportFilter): string {
-        this.formTick();
-        const value = this.filterForm.get(filter.id)?.value;
-        if (value == null || value === '') return '';
-        const item = (filter.items ?? []).find(i => i.id === value);
-        return item ? this.autoLanguage.transform(item.label) : '';
-    }
-
-    selectSingle(filterId: string, itemId: string | null) {
-        const control = this.filterForm.get(filterId);
-        if (!control) return;
-        control.markAsTouched();
-        control.setValue(itemId);
     }
 
     private createFilterControl(filter: ExportFilter) {

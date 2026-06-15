@@ -13,55 +13,21 @@
             }
         </app-form-field>
 
-        <div class="dropdown-field template-form-field">
-            <app-label class="dropdown-label-tag">{{'datasource' | translate}} *</app-label>
-            <button type="button"
-                    class="dropdown-trigger"
-                    [class.dropdown-trigger--invalid]="form.get('data_source_key')?.touched && form.get('data_source_key')?.errors?.['required']"
-                    [cdkMenuTriggerFor]="dataSourceMenu">
-                <span class="dropdown-trigger-label">
-                    @if (selectedDataSource(); as ds) {
-                        {{ ds.name | autoLanguage }}
-                    } @else {
-                        <span class="dropdown-trigger-placeholder">{{'datasource' | translate}}</span>
-                    }
-                </span>
-                <app-icon icon="keyboard_arrow_down" class="dropdown-trigger-arrow"></app-icon>
-            </button>
+        <app-form-field appearance="outline" class="template-form-field">
+            <app-label>{{'datasource' | translate}} *</app-label>
+            <app-select [value]="selectedDataSource()"
+                        (selectionChange)="selectDataSource($event.value.key)"
+                        [searchable]="true"
+                        placeholder="{{ 'datasource' | translate }}"
+                        searchPlaceholder="{{ 'search' | translate }}">
+                @for (ds of dataSources(); track ds.key) {
+                    <app-option [value]="ds">{{ ds.name | autoLanguage }}</app-option>
+                }
+            </app-select>
             @if (form.get('data_source_key')?.touched && form.get('data_source_key')?.errors?.['required']) {
                 <app-error>{{'field_required' | translate}}</app-error>
             }
-        </div>
-
-        <ng-template #dataSourceMenu>
-            <div class="dropdown-panel" cdkMenu>
-                <div class="dropdown-panel-search" (click)="$event.stopPropagation()">
-                    <app-icon icon="search" class="dropdown-panel-search-icon"></app-icon>
-                    <input type="text"
-                           class="dropdown-panel-search-input"
-                           [value]="dataSourceSearch()"
-                           (input)="onDataSourceSearch($event)"
-                           (keydown)="$event.stopPropagation()"
-                           placeholder="Search…" />
-                </div>
-                <div class="dropdown-panel-options">
-                    @for (ds of filteredDataSources(); track ds.key) {
-                        <button type="button"
-                                class="dropdown-option"
-                                cdkMenuItem
-                                (click)="selectDataSource(ds.key)">
-                            <span class="dropdown-option-label">{{ ds.name | autoLanguage }}</span>
-                            @if (selectedDataSource()?.key === ds.key) {
-                                <app-icon icon="check" class="dropdown-option-check"></app-icon>
-                            }
-                        </button>
-                    }
-                    @if (filteredDataSources().length === 0) {
-                        <div class="dropdown-panel-empty">No matches</div>
-                    }
-                </div>
-            </div>
-        </ng-template>
+        </app-form-field>
 
         @if (!groupColumns()) {
         <div class="columns-section">
@@ -223,22 +189,23 @@
             <div class="sort-controls">
                 <app-form-field appearance="outline" class="sort-field">
                     <app-label>{{'sort_column' | translate}}</app-label>
-                    <select appInput
-                            formControlName="prop"
-                            (change)="onSortField($any($event.target).value)">
-                        <option [ngValue]="null">{{'clear_selection' | translate}}</option>
+                    <app-select formControlName="prop"
+                                (selectionChange)="onSortField($event.value)"
+                                placeholder="{{ 'sort_column' | translate }}">
+                        <app-option [value]="null">{{'clear_selection' | translate}}</app-option>
                         @for (column of sortable(); track column.id) {
-                            <option [value]="column.id">{{column.label | autoLanguage}}</option>
+                            <app-option [value]="column.id">{{column.label | autoLanguage}}</app-option>
                         }
-                    </select>
+                    </app-select>
                 </app-form-field>
 
                 <app-form-field appearance="outline" class="sort-direction">
                     <app-label>{{'sort_direction' | translate}}</app-label>
-                    <select appInput formControlName="dir">
-                        <option value="asc">{{'ascending' | translate}}</option>
-                        <option value="desc">{{'descending' | translate}}</option>
-                    </select>
+                    <app-select formControlName="dir"
+                                placeholder="{{ 'sort_direction' | translate }}">
+                        <app-option value="asc">{{'ascending' | translate}}</app-option>
+                        <app-option value="desc">{{'descending' | translate}}</app-option>
+                    </app-select>
                 </app-form-field>
             </div>
         </div>

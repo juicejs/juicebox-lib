@@ -7,7 +7,6 @@ import {Subscription} from "rxjs";
 import {ExportsService} from '../exports.service';
 import {ExportsTranslationPipe} from '../i18n/exports.translation';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
-import {HelperService} from '../../../shared/services/helper.service';
 import {ConfigurationService} from '../../../shared/services/configuration.service';
 import {ExportTemplate} from '../types/ExportTemplate';
 import {ExportStrategy} from '../types/ExportStrategy';
@@ -55,23 +54,9 @@ export class ExportTemplateEditComponent implements OnInit, OnDestroy {
         return gc ? Object.keys(gc) : [];
     });
 
-    readonly dataSourceSearch = signal<string>('');
-    readonly filteredDataSources = computed(() => {
-        const q = this.dataSourceSearch().trim().toLowerCase();
-        const all = this.dataSources();
-        if (!q) return all;
-        const lang = this.juicebox.getLanguage();
-        return all.filter(ds => {
-            const name = typeof ds.name === 'string'
-                ? ds.name
-                : (ds.name as any)?.[lang] ?? '';
-            return name.toLowerCase().includes(q);
-        });
-    });
 
     public juicebox = inject(JuiceboxService);
     private exports = inject(ExportsService);
-    private helper = inject(HelperService);
     private route = inject(ActivatedRoute);
     private configurationService = inject(ConfigurationService);
     private i18n = inject(ExportsTranslationPipe);
@@ -256,14 +241,9 @@ export class ExportTemplateEditComponent implements OnInit, OnDestroy {
         await this.getFilters(key);
     }
 
-    onDataSourceSearch(event: Event) {
-        this.dataSourceSearch.set((event.target as HTMLInputElement).value);
-    }
-
     selectDataSource(key: string) {
         const form = this.templateForm();
         form.get('data_source_key')?.setValue(key);
-        this.dataSourceSearch.set('');
         this.onDataSourceChange(key);
     }
 
@@ -344,10 +324,6 @@ export class ExportTemplateEditComponent implements OnInit, OnDestroy {
     onFiltersValueChange(filterForm: FormGroup) {
         this.filtersValid.set(filterForm.valid);
         this.templateForm().get('filters').patchValue(filterForm.value);
-    }
-
-    customDropdownSearchForLocalisedObject = (term: string, item: any) => {
-        return this.helper.customDropdownSearchForLocalisedObject(term, item.label);
     }
 
     onColumnDrop(event: CdkDragDrop<ExportColumn[]>) {
