@@ -8,7 +8,7 @@
                    type="text"
                    formControlName="name"
                    [placeholder]="'name' | translate">
-            @if (form.get('name')?.errors?.['required']) {
+            @if (form.get('name')?.touched && form.get('name')?.errors?.['required']) {
                 <app-error>{{'field_required' | translate}}</app-error>
             }
         </app-form-field>

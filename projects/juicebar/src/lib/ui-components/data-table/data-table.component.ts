@@ -60,7 +60,7 @@ export class DataTableComponent implements AfterContentInit {
     effect(() => {
       this.rows();
       this.selectedId.set(null);
-    }, { allowSignalWrites: true });
+    });
 
     effect(() => {
       const sid = this.selectedId();

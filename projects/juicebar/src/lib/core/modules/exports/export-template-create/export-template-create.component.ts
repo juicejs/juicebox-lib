@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
@@ -29,10 +29,9 @@ import {ExportFiltersComponent} from '../components/export-filters/export-filter
         ExportFiltersComponent,
     ]
 })
-export class ExportTemplateCreateComponent implements OnInit {
+export class ExportTemplateCreateComponent {
 
-    amgExport = false;
-
+    readonly amgExport = signal(false);
     readonly templateForm = signal<FormGroup | null>(null);
     readonly dataSources = signal<Array<ExportStrategy>>([]);
     readonly columns = signal<Array<ExportColumn>>([]);
@@ -49,22 +48,24 @@ export class ExportTemplateCreateComponent implements OnInit {
         return gc ? Object.keys(gc) : [];
     });
 
-public juicebox = inject(JuiceboxService);
+    public juicebox = inject(JuiceboxService);
     private exports = inject(ExportsService);
     private router = inject(Router);
     private configurationService = inject(ConfigurationService);
     private i18n = inject(ExportsTranslationPipe);
 
-    async ngOnInit() {
+    constructor() {
         this.juicebox.navigationEvent({
             location: this.i18n.transform('exports'),
             subject: this.i18n.transform('create_export_template'),
             link: '/main/exports'
         });
+    }
 
+    async ngOnInit() {
         const amg_conf = await this.configurationService.getByKey('amgshop');
         if (amg_conf && amg_conf.success) {
-            this.amgExport = true;
+            this.amgExport.set(true);
         }
 
         await this.getDataSources();
@@ -112,7 +113,7 @@ public juicebox = inject(JuiceboxService);
 
         const cols: ExportColumn[] = result.payload || [];
 
-        if (this.amgExport) {
+        if (this.amgExport()) {
             this.groupColumns.set(null);
             if (cols.some(column => column.group)) {
                 const grouped: Record<string, ExportColumn[]> = {};

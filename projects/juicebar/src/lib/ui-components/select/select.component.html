@@ -10,7 +10,11 @@
     [attr.aria-disabled]="disabled()">
     @if (multiple()) {
       @if (selectedCount() > 0) {
-        <span class="app-select-multi-count">{{ selectedCount() }}/{{ totalCount() }}</span>
+        <span class="app-select-chips">
+          @for (label of selectedLabels(); track label) {
+            <span class="app-select-chip">{{ label }}</span>
+          }
+        </span>
       } @else {
         <span class="app-select-placeholder">{{ placeholder() }}</span>
       }
@@ -36,7 +40,6 @@
   [cdkConnectedOverlayOrigin]="trigger"
   [cdkConnectedOverlayOpen]="isOpen()"
   [cdkConnectedOverlayHasBackdrop]="false"
-  [cdkConnectedOverlayMinWidth]="trigger.elementRef.nativeElement.offsetWidth"
   (overlayOutsideClick)="close()"
   (detach)="close()">
   <div class="app-select-panel" role="listbox" [class.app-select-panel-multi]="multiple()">

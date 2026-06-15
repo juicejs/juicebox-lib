@@ -1,9 +1,9 @@
-import {ChangeDetectionStrategy, Component, effect, inject, input, OnDestroy, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, output, signal} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, ValidatorFn} from '@angular/forms';
-import {Subscription} from 'rxjs';
 import {ExportValidators} from '../../shared/ExportValidators';
-import {AutoLanguagePipe, MultiLanguageObject} from '../../../../shared/pipes/auto-language.pipe';
+import {AutoLanguagePipe} from '../../../../shared/pipes/auto-language.pipe';
 import {ExportFilter} from '../../types/ExportFilter';
 import {ExportStrategy} from '../../types/ExportStrategy';
 import {CustomMaterialDateAdapter} from '../../../../shared/services/CustomDatepickerI18n';
@@ -11,6 +11,7 @@ import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {SharedModule} from '../../../../shared/shared.module';
 import {ExportsTranslationPipe} from '../../i18n/exports.translation';
 import {AsyncMultiselectComponent} from '../async-multiselect/async-multiselect.component';
+import {FilterLabelPipe} from '../../pipes/filter-label.pipe';
 
 @Component({
     selector: 'app-export-filters',
@@ -24,11 +25,13 @@ import {AsyncMultiselectComponent} from '../async-multiselect/async-multiselect.
         AutoLanguagePipe,
         ExportsTranslationPipe,
         AsyncMultiselectComponent,
+        FilterLabelPipe,
     ]
 })
-export class ExportFiltersComponent implements OnDestroy {
+export class ExportFiltersComponent {
 
     private juicebox = inject(JuiceboxService);
+    private destroyRef = inject(DestroyRef);
 
     filters = input<Array<ExportFilter>>([]);
     disabled = input<boolean>(false);
@@ -36,9 +39,9 @@ export class ExportFiltersComponent implements OnDestroy {
     filtersValueChange = output<FormGroup>();
 
     filterForm = new FormGroup({});
-    sub = new Subscription();
+    readonly filterFormTick = signal(0);
 
-private autoLanguage = new AutoLanguagePipe(this.juicebox);
+    private autoLanguage = new AutoLanguagePipe(this.juicebox);
 
     constructor() {
         effect(() => {
@@ -48,8 +51,7 @@ private autoLanguage = new AutoLanguagePipe(this.juicebox);
         });
 
         effect(() => {
-            const disabled = this.disabled();
-            if (disabled) {
+            if (this.disabled()) {
                 this.filterForm.disable();
             } else {
                 this.filterForm.enable();
@@ -57,25 +59,17 @@ private autoLanguage = new AutoLanguagePipe(this.juicebox);
         });
     }
 
-    ngOnDestroy() {
-        this.sub.unsubscribe();
-    }
-
     private generateForm() {
         const filters = this.filters();
-        if (!filters.length) {
-            return;
-        }
+        if (!filters.length) return;
+
         const controls = {};
         filters.forEach(filter => controls[filter.id] = this.createFilterControl(filter));
         this.filterForm = new FormGroup(controls);
-        if (this.disabled()) {
-            this.filterForm.disable();
-        }
+        if (this.disabled()) this.filterForm.disable();
 
-        this.sub.unsubscribe();
-        this.sub = this.filterForm.valueChanges.subscribe(() => {
-                const formValue = this.filterForm.value;
+        this.filterForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+            const formValue = this.filterForm.value;
             const convertedForm = new FormGroup({});
 
             Object.keys(formValue).forEach(key => {
@@ -90,33 +84,22 @@ private autoLanguage = new AutoLanguagePipe(this.juicebox);
                 }
             });
 
+            this.filterFormTick.update(v => v + 1);
             this.filtersValueChange.emit(convertedForm);
         });
     }
 
-    getFilterLabel(filter: ExportFilter) {
-        const isRequired = !!filter.validators?.some(validator => validator.key === 'required');
-        const suffix = isRequired ? '*' : '';
-        return `${this.autoLanguage.transform(filter.label)}${suffix}`;
-    }
-
-    getFilterError(filter: ExportFilter) {
+    getFilterError(filter: ExportFilter): string | null {
+        this.filterFormTick();
         const control = this.filterForm.get(filter.id);
-        if (!control || !control.touched) {
-            return null;
+        if (!control?.touched || !control.errors) return null;
+
+        const errorMessage: string[] = [];
+        for (const key in control.errors) {
+            const validator = filter.validators?.find(v => v.key.toLowerCase() === key.toLowerCase());
+            if (validator) errorMessage.push(this.autoLanguage.transform(validator.errorMessage));
         }
-        const errors = control.errors;
-        if (!errors) {
-            return null;
-        }
-        const errorMessage = [] as Array<string>;
-        for (const key in errors) {
-            const validator = filter.validators.find(validator => validator.key.toLowerCase() === key.toLowerCase());
-            if (validator) {
-                errorMessage.push(this.autoLanguage.transform(validator.errorMessage));
-            }
-        }
-        return errorMessage.join(' ');
+        return errorMessage.join(' ') || null;
     }
 
     private createFilterControl(filter: ExportFilter) {
@@ -136,14 +119,9 @@ private autoLanguage = new AutoLanguagePipe(this.juicebox);
         let initialValue = filter.value;
         if (filter.type === 'date' && filter.value) {
             const dateValue = CustomMaterialDateAdapter.parseAppDateValue(filter.value);
-            if (dateValue) {
-                initialValue = dateValue;
-            }
+            if (dateValue) initialValue = dateValue;
         }
 
-        return new FormControl(initialValue, {
-            validators,
-        });
+        return new FormControl(initialValue, { validators });
     }
-
 }

@@ -2,9 +2,8 @@
     <app-form-field appearance="outline" class="full-width">
         <app-label>{{ filter().label | translate }}</app-label>
 
-        <!-- Selected items chips -->
         <div class="chip-list">
-            @for (item of selectedItems; track trackByFn($index, item)) {
+            @for (item of selectedItems(); track item.id) {
                 <div class="chip">
                     <span class="chip-text">{{ item.label }}</span>
                     <button type="button" class="chip-remove" (click)="removeItem(item)">
@@ -14,36 +13,34 @@
             }
         </div>
 
-        <!-- Search input -->
         <div class="autocomplete-wrapper">
             <input appInput
                    #searchInput
                    type="text"
                    (input)="onSearchInput($event)"
                    (blur)="clearOptions()"
-                   [placeholder]="selectedItems.length === 0 ? ('select_options' | translate) : ''"
+                   [placeholder]="hasSelected() ? '' : ('select_options' | translate)"
                    autocomplete="off">
 
-            @if (loading) {
+            @if (loading()) {
                 <div class="input-suffix">
                     <div class="spinner"></div>
                 </div>
             }
-            @if (!loading && selectedItems.length > 0) {
+            @if (!loading() && hasSelected()) {
                 <button type="button" class="input-suffix clear-button" (click)="clearAll()">
                     <app-icon [icon]="'close'"></app-icon>
                 </button>
             }
 
-            <!-- Dropdown options -->
             @if (searchInput.value) {
                 <div class="autocomplete-panel">
-                    @if ((items$ | async)?.length === 0 && !loading) {
+                    @if ((filteredItems$ | async)?.length === 0 && !loading()) {
                         <div class="autocomplete-option disabled">
                             {{ 'no_data_to_display' | translate }}
                         </div>
                     }
-                    @for (item of filteredItems$ | async; track trackByFn($index, item)) {
+                    @for (item of filteredItems$ | async; track item.id) {
                         <div class="autocomplete-option"
                              [class.selected]="isSelected(item)"
                              [class.disabled]="isSelected(item)"

@@ -1,4 +1,4 @@
-@if (!isLoading) {
+@if (!isLoading()) {
     <div class="dialog-header">
         <h2>{{"confirm_export" | translate}}</h2>
     </div>
@@ -12,11 +12,10 @@
                    [placeholder]="'file_name' | translate">
         </app-form-field>
 
-        <!-- Future filters implementation -->
-        @if (allowFiltersEditOnConfirm && filters) {
+        @if (allowFiltersEditOnConfirm() && filters()) {
             <div class="form-group mt-3">
                 <app-export-filters (filtersValueChange)="onFiltersValueChange($event)"
-                                    [filters]="filters">
+                                    [filters]="filters()">
                 </app-export-filters>
             </div>
         }
@@ -29,14 +28,14 @@
         <button app-button
                 appearance="raised"
                 color="primary"
-                [promiseBtn]="promiseBtn"
+                [promiseBtn]="promiseBtn()"
                 (click)="export()">
             {{"download" | translate}}
         </button>
     </div>
 }
 
-@if (isLoading) {
+@if (isLoading()) {
     <div class="loading-container">
         <div class="dialog-content text-center p-4">
             <div class="spinner"></div>

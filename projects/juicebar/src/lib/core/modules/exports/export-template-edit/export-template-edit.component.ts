@@ -1,9 +1,9 @@
-import {ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {ActivatedRoute} from "@angular/router";
 import {CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
-import {Subscription} from "rxjs";
 import {ExportsService} from '../exports.service';
 import {ExportsTranslationPipe} from '../i18n/exports.translation';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
@@ -31,12 +31,7 @@ import {ExportFiltersComponent} from '../components/export-filters/export-filter
         ExportFiltersComponent,
     ]
 })
-export class ExportTemplateEditComponent implements OnInit, OnDestroy {
-
-    exportTemplateId: string;
-    exportTemplate: ExportTemplate;
-    amgExport = false;
-    sub = new Subscription();
+export class ExportTemplateEditComponent {
 
     readonly templateForm = signal<FormGroup | null>(null);
     readonly dataSources = signal<Array<ExportStrategy>>([]);
@@ -54,64 +49,66 @@ export class ExportTemplateEditComponent implements OnInit, OnDestroy {
         return gc ? Object.keys(gc) : [];
     });
 
+    private readonly exportTemplateId = signal<string | null>(null);
+    private exportTemplate: ExportTemplate;
+    private readonly amgExport = signal(false);
 
     public juicebox = inject(JuiceboxService);
     private exports = inject(ExportsService);
     private route = inject(ActivatedRoute);
     private configurationService = inject(ConfigurationService);
     private i18n = inject(ExportsTranslationPipe);
+    private destroyRef = inject(DestroyRef);
 
-    async ngOnInit() {
-        const amg_conf = await this.configurationService.getByKey('amgshop');
-        if (amg_conf && amg_conf.success) {
-            this.amgExport = true;
-        }
-
-        this.sub.add(this.route.params.subscribe(async value => {
-            this.exportTemplateId = value['id'];
-            const ready = await this.getData();
-            if (!ready) return;
-
-            this.juicebox.navigationEvent({
-                location: this.i18n.transform('exports'),
-                subject: this.exportTemplate.name,
-                link: '/main/exports'
-            });
-
-            this.selectedColumns.set(this.columns().filter(column => this.exportTemplate.columns.includes(column.id)));
-            this.sortable.set(this.selectedColumns().filter(column => column.sortable));
-            this.columns.set(this.columns().filter(column => !this.selectedColumns().map(c => c.id).includes(column.id)));
-
-            if (this.amgExport && this.groupColumns()) {
-                const newGroupColumns = {...this.groupColumns()};
-                const newSelectedGroupColumns: Record<string, ExportColumn[]> = {};
-                Object.keys(newGroupColumns).forEach(group => {
-                    newSelectedGroupColumns[group] = newGroupColumns[group].filter(column => this.exportTemplate.columns.includes(column.id));
-                    newGroupColumns[group] = newGroupColumns[group].filter(column => !newSelectedGroupColumns[group].map(c => c.id).includes(column.id));
-                });
-                this.groupColumns.set(newGroupColumns);
-                this.selectedGroupColumns.set(newSelectedGroupColumns);
-            }
-
-            this.templateForm.set(new FormGroup({
-                name: new FormControl(this.exportTemplate.name, Validators.required),
-                data_source_key: new FormControl(this.exportTemplate.data_source_key, Validators.required),
-                columns: new FormControl(this.exportTemplate.columns, Validators.required),
-                filters: new FormControl(null),
-                sort: new FormGroup({
-                    prop: new FormControl(this.exportTemplate.sort ? this.exportTemplate.sort.prop : null),
-                    dir: new FormControl(this.exportTemplate.sort ? this.exportTemplate.sort.dir : null),
-                }),
-                meta: new FormControl({
-                    user_id: this.juicebox.getUserId(),
-                    organisation_id: this.juicebox.getUserOrganisationId()
-                })
-            }));
-        }));
+    constructor() {
+        this.route.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(async value => {
+            this.exportTemplateId.set(value['id']);
+            await this.init();
+        });
     }
 
-    ngOnDestroy() {
-        this.sub.unsubscribe();
+    private async init() {
+        const amg_conf = await this.configurationService.getByKey('amgshop');
+        this.amgExport.set(!!(amg_conf && amg_conf.success));
+
+        const ready = await this.getData();
+        if (!ready) return;
+
+        this.juicebox.navigationEvent({
+            location: this.i18n.transform('exports'),
+            subject: this.exportTemplate.name,
+            link: '/main/exports'
+        });
+
+        this.selectedColumns.set(this.columns().filter(column => this.exportTemplate.columns.includes(column.id)));
+        this.sortable.set(this.selectedColumns().filter(column => column.sortable));
+        this.columns.set(this.columns().filter(column => !this.selectedColumns().map(c => c.id).includes(column.id)));
+
+        if (this.amgExport() && this.groupColumns()) {
+            const newGroupColumns = {...this.groupColumns()};
+            const newSelectedGroupColumns: Record<string, ExportColumn[]> = {};
+            Object.keys(newGroupColumns).forEach(group => {
+                newSelectedGroupColumns[group] = newGroupColumns[group].filter(column => this.exportTemplate.columns.includes(column.id));
+                newGroupColumns[group] = newGroupColumns[group].filter(column => !newSelectedGroupColumns[group].map(c => c.id).includes(column.id));
+            });
+            this.groupColumns.set(newGroupColumns);
+            this.selectedGroupColumns.set(newSelectedGroupColumns);
+        }
+
+        this.templateForm.set(new FormGroup({
+            name: new FormControl(this.exportTemplate.name, Validators.required),
+            data_source_key: new FormControl(this.exportTemplate.data_source_key, Validators.required),
+            columns: new FormControl(this.exportTemplate.columns, Validators.required),
+            filters: new FormControl(null),
+            sort: new FormGroup({
+                prop: new FormControl(this.exportTemplate.sort ? this.exportTemplate.sort.prop : null),
+                dir: new FormControl(this.exportTemplate.sort ? this.exportTemplate.sort.dir : null),
+            }),
+            meta: new FormControl({
+                user_id: this.juicebox.getUserId(),
+                organisation_id: this.juicebox.getUserOrganisationId()
+            })
+        }));
     }
 
     private async getData() {
@@ -130,9 +127,10 @@ export class ExportTemplateEditComponent implements OnInit, OnDestroy {
     }
 
     private async getExportTemplate() {
-        if (!this.exportTemplateId) return;
+        const id = this.exportTemplateId();
+        if (!id) return;
 
-        const result = await this.exports.getExportTemplate(this.exportTemplateId);
+        const result = await this.exports.getExportTemplate(id);
         if (!result) return;
 
         if (!result.success) {
@@ -171,7 +169,7 @@ export class ExportTemplateEditComponent implements OnInit, OnDestroy {
             });
         }
 
-        if (this.amgExport) {
+        if (this.amgExport()) {
             this.groupColumns.set(null);
             if (columns.some(column => column.group)) {
                 const groupCols: Record<string, any[]> = {};
@@ -221,7 +219,7 @@ export class ExportTemplateEditComponent implements OnInit, OnDestroy {
         if (form.invalid) return;
 
         this.promiseBtn.set((async () => {
-            const result = await this.exports.editExportTemplate(this.exportTemplateId, form.value);
+            const result = await this.exports.editExportTemplate(this.exportTemplateId(), form.value);
             if (!result) return;
             if (result.success) {
                 this.juicebox.showToast("success", this.i18n.transform('template_saved'));

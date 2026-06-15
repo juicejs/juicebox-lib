@@ -10,11 +10,11 @@
 
     <app-data-table
         [rows]="rows()"
-        [columns]="columns"
+        [columns]="columns()"
         [totalCount]="count()"
         [pageSize]="pageSize()"
         [pageIndex]="page() - 1"
-        [sort]="sort"
+        [sort]="sort()"
         [selectable]="true"
         [clearAriaLabel]="'clear' | translate"
         (pageChange)="onPageChange($event)"
@@ -22,18 +22,18 @@
         (rowClick)="onSelect($event._id)">
 
         <ng-template [cellDef]="'columns'" let-row>
-            <span [title]="row._columns.length ? getLabels(row._columns, true) : null"
+            <span [title]="row._columns.length ? (row._columns | columnLabels:true) : null"
                   [class.has-popover]="row._columns.length"
                   class="ellipsis-inner">
-                {{ getLabels(row._columns) || '-' }}
+                {{ (row._columns | columnLabels) || '-' }}
             </span>
         </ng-template>
 
         <ng-template [cellDef]="'filters'" let-row>
-            <span [title]="row._filters.length ? getLabels(row._filters, true) : null"
+            <span [title]="row._filters.length ? (row._filters | columnLabels:true) : null"
                   [class.has-popover]="row._filters.length"
                   class="ellipsis-inner">
-                {{ getLabels(row._filters) || '-' }}
+                {{ (row._filters | columnLabels) || '-' }}
             </span>
         </ng-template>
 

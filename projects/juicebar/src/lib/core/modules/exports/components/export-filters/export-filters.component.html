@@ -6,7 +6,7 @@
         @switch (filter.type) {
             @case ('string') {
                 <app-form-field appearance="outline" class="full-width">
-                    <app-label>{{ getFilterLabel(filter) }}</app-label>
+                    <app-label>{{ filter | filterLabel }}</app-label>
                     <input appInput type="text" [formControlName]="filter.id">
                     @if (getFilterError(filter); as error) {
                         <app-error>{{ error }}</app-error>
@@ -15,7 +15,7 @@
             }
             @case ('number') {
                 <app-form-field appearance="outline" class="full-width">
-                    <app-label>{{ getFilterLabel(filter) }}</app-label>
+                    <app-label>{{ filter | filterLabel }}</app-label>
                     <input appInput type="number" [formControlName]="filter.id">
                     @if (getFilterError(filter); as error) {
                         <app-error>{{ error }}</app-error>
@@ -24,7 +24,7 @@
             }
             @case ('date') {
                 <app-form-field appearance="outline" class="full-width">
-                    <app-label>{{ getFilterLabel(filter) }}</app-label>
+                    <app-label>{{ filter | filterLabel }}</app-label>
                     <app-datepicker [formControlName]="filter.id"
                                     placeholder="DD.MM.YYYY"></app-datepicker>
                     @if (getFilterError(filter); as error) {
@@ -34,11 +34,11 @@
             }
             @case ('multiselect') {
                 <app-form-field appearance="outline" class="full-width">
-                    <app-label>{{ getFilterLabel(filter) }}</app-label>
+                    <app-label>{{ filter | filterLabel }}</app-label>
                     <app-select [formControlName]="filter.id"
                                 [multiple]="true"
                                 [searchable]="true"
-                                [placeholder]="getFilterLabel(filter)"
+                                [placeholder]="filter | filterLabel"
                                 searchPlaceholder="{{ 'search' | translate }}">
                         @for (item of filter.items ?? []; track item.id) {
                             <app-option [value]="item.id">{{ item.label | autoLanguage }}</app-option>
@@ -59,10 +59,10 @@
             }
             @case ('select') {
                 <app-form-field appearance="outline" class="full-width">
-                    <app-label>{{ getFilterLabel(filter) }}</app-label>
+                    <app-label>{{ filter | filterLabel }}</app-label>
                     <app-select [formControlName]="filter.id"
                                 [searchable]="true"
-                                [placeholder]="getFilterLabel(filter)"
+                                [placeholder]="filter | filterLabel"
                                 searchPlaceholder="{{ 'search' | translate }}">
                         <app-option [value]="null">{{ 'clear_selection' | translate }}</app-option>
                         @for (item of filter.items ?? []; track item.id) {

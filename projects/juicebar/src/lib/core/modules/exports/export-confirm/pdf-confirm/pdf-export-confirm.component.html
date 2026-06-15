@@ -16,12 +16,11 @@
     <div class="form-group mb-3">
         <app-form-field appearance="outline" class="w-100">
             <app-label>{{"file_name" | translate}}</app-label>
-            <app-select [(value)]="selectedFileNameProperty"
-                       [placeholder]="'file_name' | translate">
-                @for (item of fileNameProperties; track item.id) {
-                    <app-option [value]="item.id">
-                        <span>{{item.label | autoLanguage}}</span>
-                    </app-option>
+            <app-select [value]="selectedFileNameProperty()"
+                        (selectionChange)="selectedFileNameProperty.set($event.value)"
+                        [placeholder]="'file_name' | translate">
+                @for (item of fileNameProperties(); track item.id) {
+                    <app-option [value]="item.id">{{ item.label | autoLanguage }}</app-option>
                 }
             </app-select>
         </app-form-field>
@@ -35,7 +34,7 @@
     <button app-button
             appearance="raised"
             color="primary"
-            [promiseBtn]="promiseBtn"
+            [promiseBtn]="promiseBtn()"
             (click)="export()">
         {{"download" | translate}}
     </button>

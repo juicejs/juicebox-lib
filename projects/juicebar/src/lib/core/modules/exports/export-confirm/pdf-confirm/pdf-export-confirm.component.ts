@@ -1,11 +1,11 @@
-import {Component, OnInit, inject, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject, ChangeDetectionStrategy, signal} from '@angular/core';
 import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
 import moment from 'moment';
 import {ExportsService} from '../../exports.service';
 import {HelperService} from '../../../../shared/services/helper.service';
-import {MultiLanguageObject} from '../../../../shared/pipes/auto-language.pipe';
+import {AutoLanguagePipe, MultiLanguageObject} from '../../../../shared/pipes/auto-language.pipe';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
-import {ExportsTranslationPipe} from "../../i18n/exports.translation";
+import {ExportsTranslationPipe} from '../../i18n/exports.translation';
 import {CommonModule} from '@angular/common';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {SharedModule} from '../../../../shared/shared.module';
@@ -19,99 +19,87 @@ export interface PdfExportConfirmDialogData {
 
 @Component({
     selector: 'export-confirm',
-    styleUrls: [],
     templateUrl: './pdf-export-confirm.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
         ReactiveFormsModule,
         SharedModule,
-        ExportsTranslationPipe
+        ExportsTranslationPipe,
+        AutoLanguagePipe,
     ]
 })
-export class PdfExportConfirmComponent implements OnInit {
-    promiseBtn;
-    fileNameCtrl = new FormControl<string>('');
-    get fileName(): string { return this.fileNameCtrl.value || ''; }
-    set fileName(v: string) { this.fileNameCtrl.setValue(v ?? ''); }
-    exportStrategyKey: string;
-    dataSourceKey: string;
-    exportTemplate: any;
-    fileNameProperties: Array<{id, label, description?: MultiLanguageObject, sortable}> = [];
-    selectedFileNameProperty: string;
-    i18n: ExportsTranslationPipe;
+export class PdfExportConfirmComponent {
+    readonly promiseBtn = signal<Promise<any> | null>(null);
+    readonly fileNameProperties = signal<Array<{id, label, description?: MultiLanguageObject, sortable}>>([]);
+    readonly selectedFileNameProperty = signal<string | null>(null);
+
+    readonly fileNameCtrl = new FormControl<string>('');
+
+    private readonly exportStrategyKey: string;
+    private readonly dataSourceKey: string;
+    private readonly exportTemplate: any;
+    private readonly i18n: ExportsTranslationPipe;
 
     private exportsService = inject(ExportsService);
     private helper = inject(HelperService);
-    private exports = inject(ExportsService);
     private juicebox = inject(JuiceboxService);
     public dialogRef = inject<DialogRef<boolean>>(DialogRef);
     public data = inject<PdfExportConfirmDialogData>(DIALOG_DATA);
 
     constructor() {
         this.i18n = new ExportsTranslationPipe(this.juicebox);
-
-        const data = this.data;
-        this.fileName = data.fileName;
-        this.exportStrategyKey = data.exportStrategyKey;
-        this.dataSourceKey = data.dataSourceKey;
-        this.exportTemplate = data.exportTemplate;
+        this.exportStrategyKey = this.data.exportStrategyKey;
+        this.dataSourceKey = this.data.dataSourceKey;
+        this.exportTemplate = this.data.exportTemplate;
+        if (this.data.fileName) this.fileNameCtrl.setValue(this.data.fileName);
     }
 
     ngOnInit(): void {
-        this.getDataSourceFileNameColumns(this.dataSourceKey, this.exportTemplate._id)
+        this.getDataSourceFileNameColumns(this.dataSourceKey, this.exportTemplate._id);
     }
 
     cancel() {
         this.dialogRef.close(false);
     }
 
-  async export() {
-    this.promiseBtn = (async () => {
-      const result = await this.exportsService.exportData(this.exportTemplate._id, this.exportStrategyKey, {
-        language: this.juicebox.getLanguage(),
-        exportStrategyOptions: { fileNameProperty: this.selectedFileNameProperty }
-      });
+    async export() {
+        this.promiseBtn.set((async () => {
+            const result = await this.exportsService.exportData(this.exportTemplate._id, this.exportStrategyKey, {
+                language: this.juicebox.getLanguage(),
+                exportStrategyOptions: {fileNameProperty: this.selectedFileNameProperty()}
+            });
 
-      if (!this.fileName) {
-        this.fileName = this.exportTemplate.name + '_' + moment().format('DD.MM.YYYY');
-      }
+            let fileName = this.fileNameCtrl.value || this.exportTemplate.name + '_' + moment().format('DD.MM.YYYY');
 
-      // Error checking for small files
-      if (result.size <= 1024 * 4) {
-        const string = await result.text();
-        if (string.indexOf('Error') > -1 || string.indexOf(",") === -1) {
-          this.juicebox.showToast('error', this.i18n.transform('download_failed'));
-          return;
-        }
-        const res = JSON.parse(string);
-        if (res.error) {
-          this.juicebox.showToast('error', this.i18n.transform('download_failed'));
-          return;
-        }
-      }
+            if (result.size <= 1024 * 4) {
+                const string = await result.text();
+                if (string.indexOf('Error') > -1 || string.indexOf(',') === -1) {
+                    this.juicebox.showToast('error', this.i18n.transform('download_failed'));
+                    return;
+                }
+                const res = JSON.parse(string);
+                if (res.error) {
+                    this.juicebox.showToast('error', this.i18n.transform('download_failed'));
+                    return;
+                }
+            }
 
-      // Native download using browser APIs
-      this.fileName = `${this.fileName}.zip`;
-      this.juicebox.downloadBlob(result, this.fileName)
+            fileName = `${fileName}.zip`;
+            this.juicebox.downloadBlob(result, fileName);
 
-      await this.helper.pause();
-      this.dialogRef.close(true);
-    })();
-  }
+            await this.helper.pause();
+            this.dialogRef.close(true);
+        })());
+    }
 
-    async getDataSourceFileNameColumns(exportTemplateId: string, dataSourceKey: string) {
-        const result = await this.exports.getDataSourceFileNameColumns(dataSourceKey, exportTemplateId);
+    private async getDataSourceFileNameColumns(dataSourceKey: string, exportTemplateId: string) {
+        const result = await this.exportsService.getDataSourceFileNameColumns(dataSourceKey, exportTemplateId);
         if (!result) return;
         if (result.success) {
-            this.fileNameProperties = result.payload;
+            this.fileNameProperties.set(result.payload);
         } else {
-            this.juicebox.showToast("error", result.error)
+            this.juicebox.showToast('error', result.error);
         }
     }
-
-    customDropdownSearchForLocalisedObject = (term: string, item: any) => {
-        return this.helper.customDropdownSearchForLocalisedObject(term, item.label);
-    }
-
 }

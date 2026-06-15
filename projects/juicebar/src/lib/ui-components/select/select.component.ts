@@ -90,6 +90,15 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
 
   protected readonly selectedCount = computed(() => this.selectedArray().length);
 
+  protected readonly selectedLabels = computed(() => {
+    const sel = this.selectedArray();
+    const opts = this.options();
+    return sel.map(v => {
+      const match = opts.find(o => this.equals(o.value(), v));
+      return match ? match.getLabel() : '';
+    }).filter(Boolean);
+  });
+
   protected readonly totalCount = computed(() => this.options().length);
 
   protected readonly filteredOptions = computed(() => {
