@@ -86,8 +86,17 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], fe
     },
   ];
 
+  const searchRoute: Routes = [
+    {
+      path: 'search',
+      loadComponent: () =>
+        import('./core/modules/main/search/search.component').then(m => m.SearchComponent),
+    },
+  ];
+
   const mainChildren = [
     ...userProfileRoute,
+    ...searchRoute,
     ...featureRoutes,
     ...(mainRoutes?.map(m => ({
       path: m.path,

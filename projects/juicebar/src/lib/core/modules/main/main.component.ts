@@ -29,7 +29,6 @@ import {ButtonComponent, IconComponent} from '../../../ui-components';
     NavigationComponent,
     SidebarComponent,
     SharedModule,
-    GlobalTranslationPipe,
     ButtonComponent,
     IconComponent,
   ]
@@ -131,11 +130,6 @@ export class MainComponent implements OnInit {
             ? translated
             : segment.charAt(0).toUpperCase() + segment.slice(1);
         this.juicebox.setPageHeader({ title });
-    }
-
-    public async openResult(result){
-        this.juicebox.searchActive.set(false);
-        await this.router.navigateByUrl(result.link);
     }
 
     private verifyConnection(): void {

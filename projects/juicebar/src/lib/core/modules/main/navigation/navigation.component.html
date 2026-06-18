@@ -17,12 +17,11 @@
     <!-- Search -->
     <div class="search-cmd">
       <app-icon [icon]="'search'" class="search-cmd-icon"></app-icon>
-      <input type="text"
+      <input #searchInput
+             type="text"
              class="search-cmd-input"
              placeholder="Search or jump to…"
-             debounceKeyUp
-             [debounceTime]="500"
-             (onEvent)="doSearch($event)">
+             (input)="doSearch($event)">
       <span class="search-kbd">⌘K</span>
     </div>
 

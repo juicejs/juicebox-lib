@@ -13,7 +13,7 @@
             </app-navigation>
         }
         <div class="content-container">
-        <div class="flex-column navigation-container next" [style.display]="juicebox.searchActive() ? 'none' : 'flex'">
+        <div class="flex-column navigation-container next">
             @if (navigationVisible() && (locationLink() || juicebox.actionButtons().length || juicebox.pageHeader())) {
                 <div class="location-container">
                     @if (locationLink()) {
@@ -63,44 +63,6 @@
             <div class="router-container">
                 <router-outlet></router-outlet>
             </div>
-        </div>
-
-        <div class="navigation-container next searchResults" [style.display]="juicebox.searchActive() ? 'block' : 'none'">
-            <div class="location-container">
-                <button app-button appearance="icon" class="back-nav-btn" (click)="juicebox.searchActive.set(false)">
-                    <app-icon [icon]="'keyboard_arrow_left'"></app-icon>
-                </button>
-                <div class="page-header">
-                    <div class="page-header-text">
-                        <div class="page-header-title">
-                            <span class="page-header-name">{{ "search_results" | translate }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            @if (juicebox.searchResults().length) {
-                <div class="parent">
-                    @for (module of juicebox.searchResults(); track module) {
-                        <div class="jc-module">
-                            <div class="title">
-                                <i class="fas" [class]="module.icon"></i> {{module.name}}
-                                <small>
-                                    (found {{module.results && module.results.length ? module.results.length : '0'}} matching items)
-                                </small>
-                            </div>
-                            <div class="results">
-                                @for (result of module.results; track result) {
-                                    <div class="result" (click)="openResult(result)">
-                                        <div class="name">{{ result.title }}</div>
-                                        <div class="details">{{ result.details }}</div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-                </div>
-            }
         </div>
         </div>
 

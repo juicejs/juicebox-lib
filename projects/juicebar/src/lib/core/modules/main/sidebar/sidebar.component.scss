@@ -94,18 +94,19 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.1);
+      background: rgba(var(--color-secondary-rgb), 0.15);
       border-radius: 2px;
     }
 
     &::-webkit-scrollbar-thumb:hover {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(var(--color-secondary-rgb), 0.25);
     }
 
     .menu-section {
       display: flex;
       flex-direction: column;
       gap: 2px;
+      padding: 8px 0;
     }
 
     .menu-item-container {
@@ -124,7 +125,7 @@
           display: flex;
           align-items: center;
           padding: 0 10px;
-          height: 30px;
+          height: 36px;
           gap: 10px;
 
           .menu-icon-container {
@@ -174,15 +175,16 @@
 
         // Active state
         &.active {
-          background-color: var(--color-secondary-active-bg);
-          color: var(--color-warning);
+          background: linear-gradient(90deg, rgba(var(--color-secondary-rgb), 0.18) 0%, rgba(var(--color-secondary-rgb), 0.06) 100%);
+          color: var(--color-secondary);
+          box-shadow: inset 3px 0 0 var(--color-secondary);
 
           &:hover {
-            background-color: #2a1a0a;
+            background: linear-gradient(90deg, rgba(var(--color-secondary-rgb), 0.22) 0%, rgba(var(--color-secondary-rgb), 0.1) 100%);
           }
 
           .menu-label {
-            font-weight: 500;
+            font-weight: 600;
           }
         }
 

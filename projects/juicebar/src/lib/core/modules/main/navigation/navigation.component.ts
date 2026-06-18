@@ -1,6 +1,8 @@
-import {Component, inject, OnInit, output, input, ChangeDetectionStrategy, signal, computed} from '@angular/core';
+import {Component, inject, OnInit, output, input, ChangeDetectionStrategy, signal, computed, viewChild, ElementRef} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
-import {Router} from '@angular/router';
+import {NavigationEnd, Router} from '@angular/router';
+import {filter} from 'rxjs/operators';
 import {CommonModule} from '@angular/common';
 import {DialogService} from '../../../../ui-components/dialog/dialog.service';
 import {HelpComponent} from './help/help.component';
@@ -47,9 +49,11 @@ export class NavigationComponent implements OnInit {
   readonly locationSubject = input<string>(null);
   readonly locationLink = input<any>(null);
 
+  private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+  private searchReturnUrl: string | null = null;
+
   public languages = signal<Array<Language>>([]);
   public fileInfo = signal<FileInfo | null>(null);
-  public searching = signal<boolean>(false);
 
   public userOrganisations = signal<Array<any>>([]);
   public selectedUserOrganisation: string;
@@ -72,6 +76,19 @@ export class NavigationComponent implements OnInit {
   public dialog = inject(DialogService);
   private themeService = inject(ThemeService);
   public theme = this.themeService.theme;
+
+  constructor() {
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      takeUntilDestroyed(),
+    ).subscribe(e => {
+      const url = e.urlAfterRedirects ?? e.url;
+      if (!url.startsWith('/main/search')) {
+        const input = this.searchInput()?.nativeElement;
+        if (input?.value) input.value = '';
+      }
+    });
+  }
 
   async ngOnInit() {
     this.i18n = new MainTranslationPipe(this.juicebox);
@@ -155,18 +172,25 @@ export class NavigationComponent implements OnInit {
   }
 
   doSearch($event: Event) {
-    const value = ($event.target as HTMLInputElement).value;
+    const value = ($event.target as HTMLInputElement).value.trim();
+    const onSearch = this.router.url.startsWith('/main/search');
+
     if (value === '') {
-      this.juicebox.searchActive.set(false);
-      this.searching.set(false);
+      if (onSearch) {
+        this.router.navigateByUrl(this.searchReturnUrl ?? '/main');
+        this.searchReturnUrl = null;
+      }
       return;
     }
 
-    this.juicebox.searchActive.set(true);
-    this.searching.set(true);
-    this.juicebox.doSearch(value).then(() => {
-      this.searching.set(false);
-    });
+    if (onSearch) {
+      // Replace so each keystroke doesn't pile up history entries.
+      this.router.navigate(['/main/search'], { queryParams: { q: value }, replaceUrl: true });
+    } else {
+      // Remember the page we came from so clearing the search returns to it.
+      this.searchReturnUrl = this.router.url;
+      this.router.navigate(['/main/search'], { queryParams: { q: value } });
+    }
   }
 
   toggleTheme() {

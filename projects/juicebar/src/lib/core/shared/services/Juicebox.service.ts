@@ -116,21 +116,15 @@ export class JuiceboxService {
         });
     }
 
-    async doSearch(token: string) {
+    async doSearch(token: string): Promise<Array<any>> {
         this.searchActive.set(true);
-        this.searchResults.set([]);
-        const searchRequests = [];
-        for (let provider of this.searchProvider) {
-            if (this.hasRole(provider.role)) {
-                searchRequests.push(provider.provider.search(token).then(results => {
-                    this.searchResults.update(arr => [...arr, {
-                        name: provider.name,
-                        icon: provider.icon,
-                        results: results
-                    }]);
-                }));
-            }
-        }
+        const searchRequests = this.searchProvider
+            .filter(provider => this.hasRole(provider.role))
+            .map(provider => provider.provider.search(token).then(results => ({
+                name: provider.name,
+                icon: provider.icon,
+                results: results ?? []
+            })));
         return Promise.all(searchRequests);
     }
 

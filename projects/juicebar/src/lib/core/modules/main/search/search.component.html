@@ -1,0 +1,24 @@
+<div class="navigation-container next searchResults">
+    @if (juicebox.searchResults().length) {
+        <div class="parent">
+            @for (module of juicebox.searchResults(); track module) {
+                <div class="jc-module">
+                    <div class="title">
+                        <i class="fas" [class]="module.icon"></i> {{ module.name }}
+                        <small>
+                            (found {{ module.results && module.results.length ? module.results.length : '0' }} matching items)
+                        </small>
+                    </div>
+                    <div class="results">
+                        @for (result of module.results; track result) {
+                            <div class="result" (click)="openResult(result)">
+                                <div class="name">{{ result.title }}</div>
+                                <div class="details">{{ result.details }}</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
