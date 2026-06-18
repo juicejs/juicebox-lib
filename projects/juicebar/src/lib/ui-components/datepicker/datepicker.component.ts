@@ -16,17 +16,44 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
   `,
   styles: [`
     :host { display: inline-block; width: 100%; }
+    /* Match the outlined look of the standard form-field inputs, since the
+       form-field's own input styles can't reach this encapsulated input. */
     .app-datepicker-input {
       width: 100%;
-      border: none;
+      height: 32px;
+      padding: 0 10px;
+      font-family: inherit;
+      font-size: 12.5px;
+      color: var(--color-text-primary);
+      background: var(--color-background);
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
       outline: none;
-      background: transparent;
-      font: inherit;
-      color: inherit;
-      padding: 0.5rem 0.75rem;
+      box-sizing: border-box;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .app-datepicker-input:hover:not(:disabled):not([readonly]) {
+      border-color: var(--color-border-dark);
+    }
+    .app-datepicker-input:focus {
+      border-color: var(--color-secondary);
+      box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.15);
+    }
+    /* Native calendar icon: dark theme is the default, so lighten it.
+       Under the light theme keep it dark so it stays visible. */
+    .app-datepicker-input::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      opacity: 0.9;
+      filter: invert(1);
+    }
+    :host-context(html.light-theme) .app-datepicker-input::-webkit-calendar-picker-indicator {
+      filter: invert(0);
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.has-value]': '!!dateValue()',
+  },
   imports: [CommonModule],
   providers: [{
     provide: NG_VALUE_ACCESSOR,

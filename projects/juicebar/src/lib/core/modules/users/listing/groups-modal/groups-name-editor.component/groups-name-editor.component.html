@@ -1,14 +1,14 @@
 <app-dialog-content>
     <div class="groups-editor-content">
+        <button app-button appearance="icon" class="close-button" (click)="close()">
+            <app-icon [icon]="'close'"></app-icon>
+        </button>
         <h2>
             {{'groups_name_editor' | translate}}
-            <button app-button appearance="icon" class="close-button" (click)="close()">
-                <app-icon [icon]="'close'"></app-icon>
-            </button>
         </h2>
         @if (groupForm) {
         <form class="m-0" [formGroup]="groupForm">
-    
+
             <app-form-field appearance="outline" class="full-width">
                 <app-label>{{'name' | translate}}*</app-label>
                 <input appInput type="text" formControlName="name">
@@ -16,10 +16,9 @@
                     <app-error>{{'name' | translate}} is required</app-error>
                 }
             </app-form-field>
-    
+
             <app-form-field appearance="outline" class="full-width">
                 <app-label>{{'key' | translate}}*</app-label>
-                <span class="input-prefix">group:</span>
                 <input appInput type="text" formControlName="key"
                        (keydown.space)="$event.preventDefault()"
                        placeholder="{{'group key' | translate}}" [readonly]="!!group">
@@ -27,13 +26,13 @@
                     <app-error>{{'key' | translate}} is required</app-error>
                 }
             </app-form-field>
-    
+
             <div [hasPermissionsHide]="'superAdmin:role#read'" class="full-width d-flex align-center">
                 <app-slide-toggle formControlName="superAdmin">
                     {{'superAdminEdit' | translate}}
                 </app-slide-toggle>
             </div>
-    
+
         </form>
         }
         <app-dialog-actions align="end">

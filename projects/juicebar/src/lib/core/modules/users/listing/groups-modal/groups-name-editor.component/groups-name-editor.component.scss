@@ -1,4 +1,14 @@
+:host ::ng-deep app-dialog-actions{
+  margin-top: 0;
+  padding-top: 0;
+}
+
 .groups-editor-content {
-  background: var(--color-background);
-  padding: 2rem;
+  position: relative;
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
 }

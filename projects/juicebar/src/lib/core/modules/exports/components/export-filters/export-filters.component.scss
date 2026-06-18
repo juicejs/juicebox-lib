@@ -16,6 +16,14 @@
   }
 }
 
+// Highlight a date filter container once it holds a value so it stands out
+// from the surrounding fields (especially on the dark theme).
+.date-filter-field:has(app-datepicker.has-value) {
+  border-radius: 6px;
+  outline: 1px solid var(--color-secondary);
+  background: rgba(var(--color-secondary-rgb), 0.08);
+}
+
 // Standalone error styling for async multiselect
 .error-message {
   font-size: 12px;

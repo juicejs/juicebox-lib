@@ -23,7 +23,7 @@
                 </app-form-field>
             }
             @case ('date') {
-                <app-form-field appearance="outline" class="full-width">
+                <app-form-field appearance="outline" class="full-width date-filter-field">
                     <app-label>{{ filter | filterLabel }}</app-label>
                     <app-datepicker [formControlName]="filter.id"
                                     placeholder="DD.MM.YYYY"></app-datepicker>
