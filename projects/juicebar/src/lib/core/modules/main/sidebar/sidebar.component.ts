@@ -325,7 +325,14 @@ export class SidebarComponent implements OnInit, OnDestroy{
       'fa-bug': 'bug_report',
       'fa-rocket': 'rocket_launch',
       'fa-school': 'school',
-      'fa-table': 'file_download'
+      'fa-table': 'file_download',
+      'fa-location-dot': 'location_on',
+      'fa-map-location-dot': 'location_on',
+      'fa-map-marker': 'location_on',
+      'fa-map-marker-alt': 'location_on',
+      'fa-map-pin': 'location_on',
+      'fa-location': 'location_on',
+      'fa-map': 'map'
     };
 
     // Remove 'fa-' prefix if present and look up the icon
