@@ -325,6 +325,7 @@ export class SidebarComponent implements OnInit, OnDestroy{
       'fa-bug': 'bug_report',
       'fa-rocket': 'rocket_launch',
       'fa-school': 'school',
+      'fa-address-book': 'contacts',
       'fa-table': 'file_download',
       'fa-location-dot': 'location_on',
       'fa-map-location-dot': 'location_on',
