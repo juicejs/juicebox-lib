@@ -1,7 +1,7 @@
 import {inject, Injectable, Injector, isDevMode, signal, Type} from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {SnackbarService} from "../../../ui-components";
-import { interval, Observable, Subject, Subscription } from 'rxjs';
+import { interval, Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
 import { Juice } from './juice.service';
 import { DOCUMENT } from '@angular/common';
@@ -48,7 +48,7 @@ export class JuiceboxService {
     private authenticator: string;
     private dataStore: any = {};
     private _unsavedChangesGuard: boolean;
-    private _navigationEvent = new Subject();
+    private _navigationEvent = new ReplaySubject(1);
     navigationEvent$ = this._navigationEvent.asObservable();
 
     public collapsed: boolean = false;

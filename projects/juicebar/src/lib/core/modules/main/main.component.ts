@@ -80,11 +80,12 @@ export class MainComponent implements OnInit {
             this.juicebox.actionButtons.set([]);
         });
 
-        this.subscription$ = this.juicebox.navigationEvent$.subscribe(async event => {
-            this.locationTitle.set(await (<any>event).location);
-            this.breadcrumps.set(await (<any>event).breadcrumps);
-            this.locationSubject.set(await (<any>event).subject);
-            this.locationLink.set(await (<any>event).link);
+        this.subscription$ = this.juicebox.navigationEvent$.subscribe(event => {
+            const e = (event ?? {}) as any;
+            this.locationTitle.set(e.location);
+            this.breadcrumps.set(e.breadcrumps);
+            this.locationSubject.set(e.subject);
+            this.locationLink.set(e.link);
         });
 
         if (localStorage.getItem("2fawarning")){
