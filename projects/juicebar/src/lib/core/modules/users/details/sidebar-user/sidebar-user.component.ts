@@ -1,35 +1,33 @@
-import {Component, input, OnInit, OnDestroy, ChangeDetectionStrategy, inject, signal} from '@angular/core';
+import {Component, input, OnInit, ChangeDetectionStrategy, inject, signal} from '@angular/core';
 import {SidebarItem, SidebarService} from '../../../../shared/services/sidebar.service';
 import {UsersService} from '../../users.service';
 import {UserTranslationPipe} from '../../i18n/user.translation';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
-import {Subscription} from 'rxjs';
-import {DragulaService, DragulaModule} from 'ng2-dragula';
+import {CdkDrag, CdkDragDrop, CdkDropList, CdkDropListGroup, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import {MainTranslationPipe} from '../../../main/i18n/main.translation';
 import {ActivatedRoute, Router} from '@angular/router';
 import {User} from '../../models/user.model';
 import {Result} from '../../../../shared/types/Result';
 import {CommonModule} from '@angular/common';
 import {SharedModule} from '../../../../shared/shared.module';
+import {ProgressSpinnerComponent} from '../../../../../ui-components';
 
 @Component({
     selector: 'app-sidebar-user',
     templateUrl: './sidebar-user.component.html',
     styleUrls: ['./sidebar-user.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, SharedModule, DragulaModule]
+    imports: [CommonModule, SharedModule, CdkDropListGroup, CdkDropList, CdkDrag, ProgressSpinnerComponent]
 })
-export class SidebarUserComponent implements OnInit, OnDestroy {
+export class SidebarUserComponent implements OnInit {
     private sidebarService = inject(SidebarService);
     private usersService = inject(UsersService);
     private juicebox = inject(JuiceboxService);
-    private dragulaService = inject(DragulaService);
     private router = inject(Router);
     private route = inject(ActivatedRoute);
 
     i18n: UserTranslationPipe;
     i18nMain: MainTranslationPipe;
-    readonly DRAGULA_SIDEBAR = 'DRAGULA_SIDEBAR';
 
     protected readonly sidebar = signal<SidebarItem[]>([]);
     protected readonly sidebarHidden = signal<SidebarItem[]>([]);
@@ -41,7 +39,6 @@ export class SidebarUserComponent implements OnInit, OnDestroy {
     context = input<'user-profile' | null>();
     allowHidden = input<boolean>(true);
 
-    private subs = new Subscription();
     private userId: string;
 
     constructor() {
@@ -60,29 +57,6 @@ export class SidebarUserComponent implements OnInit, OnDestroy {
 
         await this.getOrganisations();
 
-        this.subs.add(this.dragulaService.dropModel(this.DRAGULA_SIDEBAR)
-            .subscribe(async ({ target, item, targetIndex }) => {
-                this.disabledDragAndDrop.set(true);
-                const registeredSidebarModules = this.sidebarService.getAllRegisteredSidebarItems();
-                if (target.id === 'sidebarHidden') {
-                    const result = await this.sidebarService.hideUserSidebarItem(this.userId, this.selectedOrganisation(), registeredSidebarModules, item.id);
-                    if (!result.success) {
-                        this.juicebox.showToast("error", "Error", this.i18n.transform(result.error));
-                        return;
-                    }
-                }
-                else {
-                    const result = await this.sidebarService.changeUserSidebarItemIndex(this.userId, this.selectedOrganisation(), registeredSidebarModules, item.id, targetIndex);
-                    if (!result.success) {
-                        this.juicebox.showToast("error", "Error", this.i18n.transform(result.error));
-                        return;
-                    }
-                }
-                await this.getSidebarItems();
-                this.disabledDragAndDrop.set(false);
-            })
-        );
-
         if (isUserProfile) {
             const getUser = await this.usersService.getUser(this.userId);
             this.juicebox.navigationEvent({
@@ -95,8 +69,38 @@ export class SidebarUserComponent implements OnInit, OnDestroy {
         this.getSidebarItems();
     }
 
-    ngOnDestroy() {
-        this.subs.unsubscribe();
+    /** Saves a move right away: into "hidden" hides the item, anywhere else sets its position. */
+    async onDrop(event: CdkDragDrop<SidebarItem[]>) {
+        const sameList = event.previousContainer === event.container;
+        if (sameList && event.previousIndex === event.currentIndex) return;
+
+        const lists: Record<string, SidebarItem[]> = {
+            sidebar: [...this.sidebar()],
+            sidebarHidden: [...this.sidebarHidden()]
+        };
+        if (sameList) {
+            moveItemInArray(lists[event.container.id], event.previousIndex, event.currentIndex);
+        } else {
+            transferArrayItem(lists[event.previousContainer.id], lists[event.container.id], event.previousIndex, event.currentIndex);
+        }
+        this.sidebar.set(lists['sidebar']);
+        this.sidebarHidden.set(lists['sidebarHidden']);
+
+        const item: SidebarItem = event.item.data;
+        const registeredSidebarModules = this.sidebarService.getAllRegisteredSidebarItems();
+        this.disabledDragAndDrop.set(true);
+        try {
+            const result = event.container.id === 'sidebarHidden'
+                ? await this.sidebarService.hideUserSidebarItem(this.userId, this.selectedOrganisation(), registeredSidebarModules, item.id)
+                : await this.sidebarService.changeUserSidebarItemIndex(this.userId, this.selectedOrganisation(), registeredSidebarModules, item.id, event.currentIndex);
+            if (!result.success) {
+                this.juicebox.showToast("error", "Error", this.i18n.transform(result.error));
+            }
+            // Reload either way: shows the saved order, or undoes the move after an error
+            await this.getSidebarItems();
+        } finally {
+            this.disabledDragAndDrop.set(false);
+        }
     }
 
     async getSidebarItems() {

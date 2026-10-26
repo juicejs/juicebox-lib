@@ -9,7 +9,7 @@ import { TabsComponent, TabComponent } from '../../../../ui-components';
 import {SharedModule} from '../../../shared/shared.module';
 import {UserTranslationPipe} from '../i18n/user.translation';
 import {UsersService} from '../users.service';
-import {injectCustomUserTabs, translateTabLabel} from '../custom-tabs';
+import {injectCustomUserTabs, injectUsersOptions, translateTabLabel} from '../users-customization';
 
 interface TabDef {
     label: string;
@@ -38,7 +38,6 @@ export class DetailsUsersComponent implements OnInit, OnDestroy {
     private id: any;
     private user: any;
     public name: any;
-    projectTitle: string;
     protected readonly channels = signal<Array<string>>([]);
     protected readonly selectedTabIndex = signal<number>(0);
     public actionButtons: any;
@@ -52,16 +51,12 @@ export class DetailsUsersComponent implements OnInit, OnDestroy {
     private userPipe = inject(UserTranslationPipe);
     /** Tabs added by the project via componentOverrides (e.g. customers, allowed types, clients) */
     private readonly customTabs = injectCustomUserTabs(['details/:id']);
+    private readonly options = injectUsersOptions();
 
     protected readonly visibleTabs = computed<TabDef[]>(() => {
         const tabs: TabDef[] = [{ label: 'details', route: 'details-user' }];
 
-        if (
-            this.projectTitle !== 'Equipments' &&
-            this.projectTitle !== 'CSJuicEcommerce' &&
-            this.projectTitle !== 'CSWP' &&
-            this.projectTitle !== 'Carl Stahl Configurator'
-        ) {
+        if (!this.options.hideOrganisationsTab) {
             tabs.push({ label: 'organisations', route: 'organisations-user' });
         }
         if (this.juicebox.hasPermission('users:role#roles')) {
@@ -81,10 +76,6 @@ export class DetailsUsersComponent implements OnInit, OnDestroy {
         const builtInRoutes = new Set(builtIn.map(tab => tab.route));
         return [...builtIn, ...this.customTabs.filter(tab => !builtInRoutes.has(tab.route))];
     });
-
-    constructor() {
-        this.projectTitle = this.juicebox.getProjectTitle();
-    }
 
     async ngOnInit() {
         this.sub = this.route.paramMap.subscribe(async paramMap => {

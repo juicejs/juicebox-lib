@@ -64,7 +64,7 @@
                     </div>
                 </div>
 
-                @if (juicebox.getProjectTitle() !== 'QualityCircle') {
+                @if (showNickname) {
                     <div class="field">
                         <app-label class="field-label">{{ 'nickname' | translate }}</app-label>
                         <app-form-field appearance="outline" class="field-control">
@@ -73,7 +73,7 @@
                     </div>
                 }
 
-                @if (projectTitle === 'QualityCircle' || projectTitle === 'FireCircle') {
+                @if (createFromTrainees) {
                     <div class="field">
                         <app-label class="field-label">
                             {{ 'choose_email' | translate }}<span class="field-req">*</span>

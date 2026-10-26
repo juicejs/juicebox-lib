@@ -9,6 +9,8 @@ import { AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 import { ConfigurationService} from '../../../shared/services/configuration.service';
 import { Title } from '@angular/platform-browser';
 import { MainTranslationPipe } from '../i18n/main.translation';
+import { GlobalTranslationPipe } from '../../../i18n/global.translation';
+import { BASE_APP_CONFIG } from '../../../../config/base-app.config';
 import {CommonModule, Location, NgOptimizedImage} from '@angular/common';
 import {SharedModule} from '../../../shared/shared.module';
 
@@ -33,7 +35,8 @@ export class LoginComponent implements OnInit {
     organisations = signal<Array<{ _id: string, name: string }>>([]);
     version: { frontend: string, backend: string };
     twoFactorAuthTimestamp = signal(0);
-    privacyPolicyLink: string = 'cse_privacy_policy_link';
+    /** Resolved from BaseAppConfig.privacyPolicyLink (translation key or URL) */
+    protected privacyPolicyUrl = '';
 
     errorMessage = signal<string | null>(null);
     org = signal(false);
@@ -52,6 +55,7 @@ export class LoginComponent implements OnInit {
     public dialog = inject(DialogService);
     private route = inject(ActivatedRoute);
     private configuration = inject(ConfigurationService);
+    private baseConfig = inject(BASE_APP_CONFIG, { optional: true });
     public juicebox = inject(JuiceboxService);
 
     constructor() {
@@ -84,15 +88,13 @@ export class LoginComponent implements OnInit {
             window.location.href = redirectUrl;
         }
 
+        const privacyPolicyLink = this.baseConfig?.privacyPolicyLink ?? 'cse_privacy_policy_link';
+        const translatedLink = new GlobalTranslationPipe(this.juicebox).transform(privacyPolicyLink);
+        this.privacyPolicyUrl = translatedLink?.startsWith('@') ? privacyPolicyLink : translatedLink;
+
         this.fetchVersionData();
         this.setTitle();
 
-        // TODO ADD PRODUCTION URL
-        if (this.juicebox.getEndPoint() === 'https://assets-staging.quality-circle.com') {
-            let favicon = document.querySelector('link[rel="icon"]');
-            favicon?.setAttribute('href', 'assets/favicon-qc.ico');
-            this.privacyPolicyLink = 'mbt_privacy_policy_link';
-        }
     }
 
     private setTitle() {

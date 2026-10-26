@@ -2,10 +2,10 @@ import { inject, provideEnvironmentInitializer, makeEnvironmentProviders } from 
 import { UserTranslationPipe } from './i18n/user.translation';
 import { UsersService } from './users.service';
 import { JuiceboxService } from '../../shared/services/Juicebox.service';
-import { ModuleCustomization, USERS_CUSTOMIZATION, JuicebarFeature } from '../../../config/base-app.config';
+import { UsersCustomization, USERS_CUSTOMIZATION, JuicebarFeature } from '../../../config/base-app.config';
 import { buildUsersRoute } from './users.route';
 
-export function provideUsers(customization?: ModuleCustomization): JuicebarFeature {
+export function provideUsers(customization?: UsersCustomization): JuicebarFeature {
   return {
     routes: buildUsersRoute(customization?.componentOverrides),
     providers: makeEnvironmentProviders([

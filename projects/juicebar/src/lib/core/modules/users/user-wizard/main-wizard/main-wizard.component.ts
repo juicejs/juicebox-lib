@@ -8,7 +8,7 @@ import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import { TraineesService } from '../../../../shared/services/trainees.service';
 import { Trainee } from '../../../../shared/models/trainee.model';
 import { PromiseButtonDirective } from '../../../../shared/directives/PromiseButton';
-import { injectCustomUserTabs } from '../../custom-tabs';
+import { injectCustomUserTabs, injectUsersOptions } from '../../users-customization';
 import {
     FormFieldComponent, LabelComponent, ErrorComponent, InputDirective,
     AutocompleteComponent, ButtonComponent, CardComponent,
@@ -39,13 +39,15 @@ export class MainWizardComponent implements OnInit {
     filteredTrainees: Trainee[] = [];
     emailAutocompleteOptions: Array<{ value: any, label: string }> = [];
     configuration: any;
-    projectTitle: string;
 
     public promiseBtn: any;
     public i18n: UserTranslationPipe;
 
     /** Steps after 'main' that the project added via componentOverrides */
     private readonly extraSteps = injectCustomUserTabs(['user-wizard']);
+    private readonly options = injectUsersOptions();
+    protected readonly showNickname = !this.options.hiddenFields?.includes('nickname');
+    protected readonly createFromTrainees = !!this.options.createFromTrainees;
     readonly multipleTabs = this.extraSteps.length > 0;
     private readonly tabPaths = ['main', ...this.extraSteps.map(step => step.route)];
 
@@ -89,8 +91,7 @@ export class MainWizardComponent implements OnInit {
             language: new FormControl(this.languages ? this.languages[0].code : '')
         });
 
-        this.projectTitle = this.juicebox.getProjectTitle();
-        if (this.projectTitle === 'QualityCircle' || this.projectTitle === 'FireCircle') {
+        if (this.createFromTrainees) {
             await this.typed();
             // this.filteredTrainees = this.trainees;
         }

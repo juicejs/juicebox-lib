@@ -2,8 +2,10 @@
   "name": "juicebar",
   "version": "0.0.0",
   "scripts": {
-    "build": "ng build juicebar --configuration production",
-    "copy": "npm run build && cp -r dist/juicebar/* ../juicebox-app/node_modules/juicebar/"
+    "start": "ng serve playground",
+    "build": "ng build juicebar --configuration production && npm run build:schematics",
+    "build:schematics": "tsc -p projects/juicebar/tsconfig.schematics.json && node projects/juicebar/scripts/copy-schematic-files.mjs",
+    "publish:lib": "npm run build && npm publish dist/juicebar"
   },
   "schematics": "./schematics/collection.json",
   "private": true,

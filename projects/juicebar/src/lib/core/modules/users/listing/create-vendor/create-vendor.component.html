@@ -25,7 +25,7 @@
                     <app-error>{{"include_lastname" | translate}}</app-error>
                 }
             </app-form-field>
-            @if (juicebox.getProjectTitle() !== 'QualityCircle') {
+            @if (showNickname) {
                 <app-form-field appearance="outline" class="full-width">
                     <app-label>{{"nickname" | translate}}</app-label>
                     <input type="text" placeholder='{{"nickname" | translate}}' formControlName="nickname">

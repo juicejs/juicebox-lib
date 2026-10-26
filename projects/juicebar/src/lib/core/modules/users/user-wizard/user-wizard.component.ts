@@ -4,7 +4,7 @@ import {RouterOutlet} from '@angular/router';
 import {SharedModule} from '../../../shared/shared.module';
 import {UserTranslationPipe} from '../i18n/user.translation';
 import {TabsComponent, TabComponent} from "../../../../ui-components";
-import {injectCustomUserTabs} from '../custom-tabs';
+import {injectCustomUserTabs} from '../users-customization';
 
 @Component({
     selector: 'app-user-wizard',

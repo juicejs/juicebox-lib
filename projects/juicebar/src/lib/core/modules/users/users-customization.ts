@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { USERS_CUSTOMIZATION } from '../../../config/base-app.config';
+import { USERS_CUSTOMIZATION, UsersOptions } from '../../../config/base-app.config';
 import { CustomTab, getCustomTabs } from '../../../config/route-customization';
 import { JuiceboxService } from '../../shared/services/Juicebox.service';
 import { UserTranslationPipe } from './i18n/user.translation';
@@ -20,4 +20,9 @@ export function injectCustomUserTabs(parentPath: string[]): CustomTab[] {
 export function translateTabLabel(pipe: UserTranslationPipe, label: string): string {
   const translated = pipe.transform(label);
   return typeof translated === 'string' && !translated.startsWith('@') ? translated : label;
+}
+
+/** The project's users options (provideUsers({ options })). Call in an injection context. */
+export function injectUsersOptions(): UsersOptions {
+  return inject(USERS_CUSTOMIZATION, { optional: true })?.options ?? {};
 }

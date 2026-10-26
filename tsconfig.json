@@ -9,8 +9,8 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "paths": {
-      "juicebar": [
-        "./dist/juicebar"
+      "@juicejs/juicebar": [
+        "./projects/juicebar/src/public-api.ts"
       ]
     },
     "noFallthroughCasesInSwitch": true,

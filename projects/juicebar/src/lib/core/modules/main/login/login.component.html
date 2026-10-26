@@ -76,7 +76,7 @@
               (change)="legalAgreementValue.set(!legalAgreementValue())">
               <span class="legal-text">
                 {{ 'legal_agreement_explanation' | translate }}
-                (<a [href]="privacyPolicyLink | translate" target="_blank" rel="noopener">
+                (<a [href]="privacyPolicyUrl" target="_blank" rel="noopener">
                   {{ 'legal_link_text_privacy_policy_part' | translate }}
                 </a>
                 <span> {{ 'legal_link_text_middle_part' | translate }} </span>

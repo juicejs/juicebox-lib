@@ -65,7 +65,7 @@
                     </div>
                 </div>
 
-                @if (juicebox.getProjectTitle() !== 'QualityCircle') {
+                @if (showNickname) {
                     <div class="field">
                         <label class="field-label">{{ 'nickname' | translate }}</label>
                         <app-form-field appearance="outline" class="field-control">
@@ -79,7 +79,7 @@
                         {{ 'email' | translate }}<span class="field-req">*</span>
                     </label>
                     <app-form-field appearance="outline" class="field-control">
-                        <input appInput formControlName="email" [readonly]="projectTitle() === 'Equipments'">
+                        <input appInput formControlName="email" [readonly]="readonlyEmail">
                         @if (form.controls['email'].hasError('required')) {
                             <app-error>{{ 'include_email' | translate }}</app-error>
                         }
@@ -90,7 +90,7 @@
                     <div class="field-hint">{{ 'used_for_signin_and_notifications' | translate }}</div>
                 </div>
 
-                @if (juicebox.getProjectTitle() !== 'QualityCircle') {
+                @if (showDepartment) {
                     <div class="field">
                         <label class="field-label">{{ 'department' | translate }}</label>
                         <app-form-field appearance="outline" class="field-control">
@@ -136,7 +136,7 @@
     <!-- Right column: Password + Security + Wallet -->
     <div class="details-stack">
         @if (passwordForm(); as pwForm) {
-            @if (projectTitle() !== 'Equipments') {
+            @if (showPassword) {
                 <app-card class="details-card">
                     <header class="card-head">
                         <div>

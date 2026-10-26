@@ -1,26 +1,34 @@
-
 {
-  "name": "juicebar",
-  "version": "0.0.1",
+  "name": "@juicejs/juicebar",
+  "version": "1.0.0-alpha.0",
+  "description": "Juicebox admin for Angular: app shell, login, users and exports modules, CDK-based UI components",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juicejs/juicebox-lib.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "peerDependencies": {
-    "@angular/common": "^18.2.0",
-    "@angular/core": "^18.2.0",
-    "@angular/material": "^18.0.0",
-    "@angular/router": "^18.0.0",
-    "@angular/forms": "^18.2.0",
-    "@angular/cdk": "^18.0.0",
-    "@angular/animations": "^18.2.0"
+    "@angular/animations": "^20.0.0",
+    "@angular/cdk": "^20.0.0",
+    "@angular/common": "^20.0.0",
+    "@angular/core": "^20.0.0",
+    "@angular/forms": "^20.0.0",
+    "@angular/platform-browser": "^20.0.0",
+    "@angular/router": "^20.0.0",
+    "rxjs": "^7.8.0"
   },
   "dependencies": {
+    "moment": "^2.30.1",
+    "ngx-image-cropper": "^9.1.5",
+    "randexp": "^0.5.3",
+    "socket.io-client": "^4.4.0",
     "tslib": "^2.3.0"
   },
-  "overrides": {
-    "ng2-dragula": {
-      "@angular/common": "$@angular/common",
-      "@angular/core": "$@angular/core",
-      "@angular/animations": "$@angular/animations"
-    }
+  "schematics": "./schematics/collection.json",
+  "ng-add": {
+    "save": "dependencies"
   },
-
   "sideEffects": false
 }

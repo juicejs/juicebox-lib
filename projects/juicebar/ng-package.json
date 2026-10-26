@@ -5,8 +5,9 @@
     "entryFile": "src/public-api.ts",
     "styleIncludePaths": ["src/lib"]
   },
+  "allowedNonPeerDependencies": ["moment", "ngx-image-cropper", "randexp", "socket.io-client"],
   "assets": [
     { "input": "src/lib/assets", "glob": "**/*", "output": "assets" },
-    "src/lib/styles.scss"
+    { "input": "src/lib", "glob": "styles.scss", "output": "." }
   ]
 }

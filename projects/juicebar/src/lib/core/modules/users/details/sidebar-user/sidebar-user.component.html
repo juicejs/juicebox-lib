@@ -12,49 +12,34 @@
                 }
             </app-select>
         </app-form-field>
+        @if (disabledDragAndDrop()) {
+            <app-progress-spinner [diameter]="24" />
+        }
     </div>
-    <div class="wrapper">
-        <div class="container" style="text-align: center;">
+    <div class="wrapper" cdkDropListGroup>
+        <div class="column">
             <span class="group-handle">{{i18nMain.transform('visible')}}</span>
-            @if (!disabledDragAndDrop()) {
-                <div class="container" id="sidebar" dragula="DRAGULA_SIDEBAR"
-                     [dragulaModel]="sidebar()" (dragulaModelChange)="sidebar.set($event)">
-                    @for (item of sidebar(); track item) {
-                        <div class="SidebarItem" [innerHtml]="item.label"></div>
-                    }
-                </div>
-            } @else {
-                <div class="container">
-                    <div class="text-center">
-                        <i class="fas fa-spin fa-spinner fa-2x"></i>
-                    </div>
-                    @for (item of sidebar(); track item) {
-                        <div class="SidebarItem" [innerHtml]="item.label"></div>
-                    }
-                </div>
-            }
+            <div class="container" id="sidebar" cdkDropList
+                 [cdkDropListData]="sidebar()"
+                 [cdkDropListDisabled]="disabledDragAndDrop()"
+                 (cdkDropListDropped)="onDrop($event)">
+                @for (item of sidebar(); track item.id) {
+                    <div class="sidebar-item" cdkDrag [cdkDragData]="item" [innerHtml]="item.label"></div>
+                }
+            </div>
         </div>
 
         @if (allowHidden()) {
-            <div class="container" style="text-align: center;">
+            <div class="column">
                 <span class="group-handle">{{i18nMain.transform('hidden')}}</span>
-                @if (!disabledDragAndDrop()) {
-                    <div class="container" id="sidebarHidden" dragula="DRAGULA_SIDEBAR"
-                         [dragulaModel]="sidebarHidden()" (dragulaModelChange)="sidebarHidden.set($event)">
-                        @for (item of sidebarHidden(); track item) {
-                            <div class="SidebarItem" [innerHtml]="item.label"></div>
-                        }
-                    </div>
-                } @else {
-                    <div class="container">
-                        <div class="text-center">
-                            <i class="fas fa-spin fa-spinner fa-2x"></i>
-                        </div>
-                        @for (item of sidebarHidden(); track item) {
-                            <div class="SidebarItem" [innerHtml]="item.label"></div>
-                        }
-                    </div>
-                }
+                <div class="container" id="sidebarHidden" cdkDropList
+                     [cdkDropListData]="sidebarHidden()"
+                     [cdkDropListDisabled]="disabledDragAndDrop()"
+                     (cdkDropListDropped)="onDrop($event)">
+                    @for (item of sidebarHidden(); track item.id) {
+                        <div class="sidebar-item" cdkDrag [cdkDragData]="item" [innerHtml]="item.label"></div>
+                    }
+                </div>
             </div>
         }
     </div>

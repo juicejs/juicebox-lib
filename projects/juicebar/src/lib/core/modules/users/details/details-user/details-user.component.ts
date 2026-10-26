@@ -10,6 +10,7 @@ import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import { ConfirmationDialogComponent} from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../../../../ui-components';
 import { SharedModule } from '../../../../shared/shared.module';
+import { injectUsersOptions } from '../../users-customization';
 
 @Component({
     selector: 'app-details-user',
@@ -33,7 +34,11 @@ export class DetailsUserComponent implements OnInit {
     protected readonly passwordPromise = signal<Promise<any> | null>(null);
     protected readonly walletPromise = signal<Promise<any> | null>(null);
     protected readonly randomPassword = signal('');
-    protected readonly projectTitle = signal('');
+    private readonly options = injectUsersOptions();
+    protected readonly showNickname = !this.options.hiddenFields?.includes('nickname');
+    protected readonly showDepartment = !this.options.hiddenFields?.includes('department');
+    protected readonly readonlyEmail = !!this.options.readonlyFields?.includes('email');
+    protected readonly showPassword = !this.options.hidePassword;
     protected readonly languages = signal<any[]>([]);
 
     private static passwordValidatorRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*#?&:{}<>+-_()|~]{8,64}$/;
@@ -76,7 +81,6 @@ export class DetailsUserComponent implements OnInit {
             repeatPassword: new FormControl('', [Validators.required, DetailsUserComponent.customPassword])
         }, CustomValidators.passwordMatch));
 
-        this.projectTitle.set(this.juicebox.getProjectTitle());
         this.languages.set(this.juicebox.getOptions()?.languages.map(l => ({
             code: l.code,
             name: this.userPipe.transform(l.name)

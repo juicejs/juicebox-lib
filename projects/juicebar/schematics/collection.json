@@ -1,10 +1,10 @@
 {
   "$schema": "../../../node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
-  "module": {
-    "description": "Generate a new module",
-      "factory": "./module/index#module",
-      "schema": "./module/schema.json"
+    "ng-add": {
+      "description": "Turns a new Angular app into a Juicebox admin: provideJuicebar with users and exports, lib styles and assets, config.json",
+      "factory": "./ng-add/index#ngAdd",
+      "schema": "./ng-add/schema.json"
+    }
   }
-}
 }

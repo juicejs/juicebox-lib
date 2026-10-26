@@ -79,7 +79,6 @@ import { HasPermissionHideDirective} from './directives/HasPermissionHideDirecti
 // import { AngularEditorModule } from '@kolkov/angular-editor';
 // import { DigitOnlyDirective } from '../directives/digit-only.directive';
 // import { TimeInputComponent } from './shared/time-input/time-input.component';
-import { DragulaModule } from 'ng2-dragula';
 import { SharedTranslationPipe} from './i18n/shared-translation.pipe';
 import {NgSelectDebounceDirective} from './directives/debounce/ng-select-debounce.directive';
 import {DebounceKeyupDirective} from './directives/debounce/debounce-keyup.directive';
@@ -182,7 +181,6 @@ import { CdkListboxModule } from '@angular/cdk/listbox';
     FormsModule,
     CommonModule,
     AutoLanguageModule,
-    DragulaModule.forRoot(),
     // New UI Components
     ButtonComponent,
     CardComponent, CardHeaderComponent, CardTitleComponent, CardContentComponent, CardActionsComponent, CardFooterComponent,

@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "lib": ["es2022", "dom"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2022",
+    "declaration": true,
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "rootDir": "schematics",
+    "outDir": "../../dist/juicebar/schematics",
+    "types": []
+  },
+  "include": ["schematics/**/*.ts"]
+}

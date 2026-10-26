@@ -43,16 +43,39 @@ export interface ModuleCustomization {
   providers?: Provider[];
 }
 
+/** Project-specific behaviour of the users module */
+export interface UsersOptions {
+  /** Fields this project does not use; hidden in the create wizard, user details and the vendor dialog */
+  hiddenFields?: Array<'nickname' | 'department'>;
+  /** Fields that cannot be edited on user details */
+  readonlyFields?: Array<'email'>;
+  /** Hide the password section on user details */
+  hidePassword?: boolean;
+  /** Hide the organisations tab on user details */
+  hideOrganisationsTab?: boolean;
+  /** The create wizard picks the email from trainees without a user profile and links the trainee */
+  createFromTrainees?: boolean;
+}
+
+export interface UsersCustomization extends ModuleCustomization {
+  options?: UsersOptions;
+}
+
 export interface BaseAppConfig {
+  /** API used in development (`ng serve`). Production reads `url` from config.json instead. */
   apiUrl: string;
   appName: string;
+  /** Login authenticator, e.g. 'juicebox:cse:user'. A config.json `authenticator` overrides it in production. */
+  authenticator?: string;
+  /** Privacy policy link on the login legal agreement: a global translation key or a URL (default 'cse_privacy_policy_link') */
+  privacyPolicyLink?: string;
   modules: ModuleConfig[];
   mainRoutes?: ModuleConfig[];
   providers?: (Provider | EnvironmentProviders)[];
 }
 
 export const BASE_APP_CONFIG = new InjectionToken<BaseAppConfig>('BASE_APP_CONFIG');
-export const USERS_CUSTOMIZATION = new InjectionToken<ModuleCustomization>('USERS_CUSTOMIZATION');
+export const USERS_CUSTOMIZATION = new InjectionToken<UsersCustomization>('USERS_CUSTOMIZATION');
 export const EXPORTS_CUSTOMIZATION = new InjectionToken<ModuleCustomization>('EXPORTS_CUSTOMIZATION');
 
 export interface JuicebarFeature {

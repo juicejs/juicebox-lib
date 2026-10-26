@@ -17,7 +17,6 @@ import { Juice } from './core/shared/services/juice.service';
 import { JuiceboxService } from './core/shared/services/Juicebox.service';
 import { AuthGuard } from './core/shared/guards/auth.guard';
 import { UnsavedChangesGuard } from './core/shared/guards/unsaved-changes.guard';
-import { environment } from './environments/environment.development';
 
 export function provideJuicebar(config: BaseAppConfig, ...features: JuicebarFeature[]): EnvironmentProviders {
   const featureRoutes = features.flatMap(f => f.routes);
@@ -46,7 +45,7 @@ export function provideJuicebar(config: BaseAppConfig, ...features: JuicebarFeat
     {
       provide: APP_INITIALIZER,
       useFactory: JuiceboxProviderFactory,
-      deps: [Juice, JuiceboxService],
+      deps: [Juice, JuiceboxService, BASE_APP_CONFIG],
       multi: true,
     },
     AuthGuard,
@@ -142,34 +141,27 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], fe
   ];
 }
 
-export function JuiceboxProviderFactory(juice: Juice, juiceboxService: JuiceboxService) {
-  if (isDevMode()) juice.setEndPoint(environment.apiUrl);
-
-  switch (juice.getEndPoint()) {
-    case 'http://localhost:3022':
-      juiceboxService.setAuthenticator('juicebox:css:user');
-      break;
-    case 'http://localhost:4001':
-      juiceboxService.setAuthenticator('juicebox:cse:user');
-      break;
-    case 'http://localhost:3024':
-      juiceboxService.setAuthenticator('juicebox:csc:user');
-      break;
-  }
-
+/**
+ * Sets the API endpoint, then initialises the session.
+ * - Development: `config.apiUrl` from provideJuicebar (default http://localhost:3000).
+ * - Production: `config.json` next to index.html, written at deploy time:
+ *   `{ "url": "https://api.example.com" | "auto", "authenticator"?: "..." }` ("auto" = same origin).
+ */
+export function JuiceboxProviderFactory(juice: Juice, juiceboxService: JuiceboxService, config: BaseAppConfig) {
   return async () => {
-    if (!isDevMode()) {
-      const config: any = await juice.loadConfiguration('config.json');
+    if (config.authenticator) {
+      juiceboxService.setAuthenticator(config.authenticator);
+    }
 
-      if (config.authenticator) {
-        juiceboxService.setAuthenticator(config.authenticator);
+    if (isDevMode()) {
+      juice.setEndPoint(config.apiUrl || 'http://localhost:3000');
+    } else {
+      const runtimeConfig: any = await juice.loadConfiguration('config.json');
+      if (runtimeConfig?.authenticator) {
+        juiceboxService.setAuthenticator(runtimeConfig.authenticator);
       }
-
-      if (config.url === 'auto') {
-        juice.setEndPoint(window.location.protocol + '//' + window.location.host);
-      } else {
-        juice.setEndPoint(config.url);
-      }
+      const url = runtimeConfig?.url ?? 'auto';
+      juice.setEndPoint(url === 'auto' ? window.location.protocol + '//' + window.location.host : url);
     }
 
     return juiceboxService.init();

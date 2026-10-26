@@ -2,7 +2,7 @@
 // JUICEBOX LIBRARY GLOBAL STYLES
 // =============================================================================
 // This file contains shared styles, variables, and utilities for the Juicebox library
-// To use in consuming applications, import: @import '~juicebar/styles';
+// Shipped as styles.scss at the package root; apps add node_modules/@juicejs/juicebar/styles.scss to angular.json styles (ng add does this)
 
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 

@@ -55,7 +55,6 @@ export class UserListingComponent extends ListingComponent implements OnInit {
         this.juicebox.getUser().attributes?.settings?.twoFactor === 'totp'
     );
     loggedInOrganisationId: string;
-    projectTitle: string;
 
     protected readonly organisations = signal<Array<any>>([]);
     sortOrganisations: ISort = { dir: 'asc', prop: 'name' };
@@ -96,7 +95,6 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     private configurationService = inject(ConfigurationService);
 
     public override async ngOnInit(): Promise<void> {
-        this.projectTitle = this.juicebox.getProjectTitle();
         this.i18n = new UserTranslationPipe(this.juicebox);
 
         const labels: Record<string, string> = {
@@ -134,21 +132,8 @@ export class UserListingComponent extends ListingComponent implements OnInit {
             callback: () => { this.openGroupsModal() }
         }];
 
-        const excludeCreateVendorButton = ['CSJuicEcommerce', 'CSWP', 'Kromer', 'Carl Stahl Configurator', 'FireCircle', 'QualityCircle'];
-        const excludeCreateUserFromTraineeButton = ['QualityCircle'];
-        for (const button of this.usersService.customActionButtons) {
-            if (excludeCreateVendorButton.includes(this.projectTitle) && (button.title === 'Create vendor' || button.title == 'Verkäufer anlegen'))
-                continue;
-
-            if (excludeCreateUserFromTraineeButton.includes(this.projectTitle)
-                && (button.title === 'Create user from Trainee' || button.title === 'Person als Benutzer anlegen')) continue;
-
-            if (button.title === 'Create vendor' || button.title === 'Verkäufer anlegen') {
-                button.type = 'btn-primary';
-            }
-
-            actionButtons.push(button);
-        }
+        // Buttons the project registered via UsersService.addCustomActionButton
+        actionButtons.push(...this.usersService.customActionButtons);
         this.juicebox.setActionButtons(actionButtons);
 
         this.loggedInOrganisationId = this.juicebox.getUser().organisation_id;

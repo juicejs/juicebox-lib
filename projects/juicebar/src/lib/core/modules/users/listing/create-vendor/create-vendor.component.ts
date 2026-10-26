@@ -8,6 +8,7 @@ import {UsersService} from '../../users.service';
 import {UserTranslationPipe} from '../../i18n/user.translation';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {SharedModule} from '../../../../shared/shared.module';
+import {injectUsersOptions} from '../../users-customization';
 
 
 @Component({
@@ -36,6 +37,7 @@ export class CreateVendorComponent implements OnInit {
     public dialogRef = inject<DialogRef<any>>(DialogRef);
     public configurationService = inject(ConfigurationService);
     public juicebox = inject(JuiceboxService);
+    protected readonly showNickname = !injectUsersOptions().hiddenFields?.includes('nickname');
 
     constructor() {
 
