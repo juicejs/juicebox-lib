@@ -32,6 +32,7 @@ export class MenuComponent {}
 @Component({
   selector: 'button[app-menu-item]',
   template: '<ng-content></ng-content>',
+  styleUrls: ['./menu.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, CdkMenuModule],
   host: {

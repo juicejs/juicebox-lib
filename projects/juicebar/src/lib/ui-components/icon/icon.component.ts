@@ -8,7 +8,9 @@ import { CommonModule } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   host: {
-    'class': 'app-icon'
+    'class': 'app-icon',
+    // Decorative: the ligature text ("delete", "chevron_left") must not be read out; label the button instead
+    'aria-hidden': 'true'
   }
 })
 export class IconComponent {

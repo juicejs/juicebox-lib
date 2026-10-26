@@ -51,6 +51,7 @@ export class MainComponent implements OnInit {
     public socketService = inject(SocketService);
     public sidebarService = inject(SidebarService);
     private globalPipe = inject(GlobalTranslationPipe);
+    protected readonly backLabel = this.globalPipe.transform('back');
 
     constructor() {
         this.navigationVisible = toSignal(this.sidebarService.navigationVisible$, { initialValue: true });

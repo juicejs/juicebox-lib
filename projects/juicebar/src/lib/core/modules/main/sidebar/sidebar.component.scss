@@ -1,5 +1,3 @@
-@import "../../../../ui-components/styles/variables";
-
 // Modern Sidebar Container
 .modern-sidebar-container {
   display: flex;
@@ -114,10 +112,17 @@
 
       .menu-item {
         position: relative;
+        display: block;
         border-radius: 6px;
         cursor: pointer;
         user-select: none;
         color: var(--color-sidebar-item);
+        text-decoration: none;
+
+        &:focus-visible {
+          outline: 2px solid var(--color-secondary);
+          outline-offset: -2px;
+        }
         transition: background-color 150ms ease, color 150ms ease;
 
         .menu-item-content {

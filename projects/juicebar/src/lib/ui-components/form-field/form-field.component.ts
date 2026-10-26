@@ -1,5 +1,7 @@
-import { Component, ChangeDetectionStrategy, ViewEncapsulation, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ViewEncapsulation, computed, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
+let nextFieldId = 0;
 
 @Component({
   selector: 'app-form-field',
@@ -11,11 +13,28 @@ import { CommonModule } from '@angular/common';
 })
 export class FormFieldComponent {
   appearance = input<'outline' | 'fill'>('outline');
+
+  /**
+   * Fixed id for the control, for a label outside the field:
+   * `<label for="user-email">` + `<app-form-field controlId="user-email">`.
+   */
+  readonly controlIdInput = input<string | undefined>(undefined, { alias: 'controlId' });
+
+  private readonly ownControlId = signal<string | null>(null);
+  private readonly generatedId = `app-field-${nextFieldId++}`;
+
+  /** id of the field's control (appInput or app-select); app-label points at it. An id set on the control wins. */
+  readonly controlId = computed(() => this.ownControlId() ?? this.controlIdInput() ?? this.generatedId);
+
+  /** Called by a control that has its own id attribute */
+  useControlId(id: string) {
+    this.ownControlId.set(id);
+  }
 }
 
 @Component({
   selector: 'app-label',
-  template: '<ng-content></ng-content>',
+  template: '<label class="app-label-text" [attr.for]="target()"><ng-content></ng-content></label>',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   host: {
@@ -28,9 +47,18 @@ export class FormFieldComponent {
       font-size: 11.5px;
       font-weight: 500;
     }
+
+    .app-label-text {
+      display: block;
+    }
   `]
 })
-export class LabelComponent {}
+export class LabelComponent {
+  private readonly field = inject(FormFieldComponent, { optional: true });
+  /** id of the labelled control, for a label placed outside app-form-field */
+  readonly forId = input<string | undefined>(undefined, { alias: 'for' });
+  protected readonly target = computed(() => this.forId() ?? this.field?.controlId());
+}
 
 
 @Component({

@@ -1,15 +1,22 @@
-import { Directive, input, ElementRef, OnDestroy, inject } from '@angular/core';
+import { Directive, input, ElementRef, OnDestroy, inject, signal } from '@angular/core';
 import { Overlay, OverlayRef, OverlayPositionBuilder, ConnectedPosition } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { TooltipComponent } from './tooltip.component';
 
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 
+let nextTooltipId = 0;
+
 @Directive({
   selector: '[appTooltip]',
   host: {
     '(mouseenter)': 'show()',
-    '(mouseleave)': 'hide()'
+    '(mouseleave)': 'hide()',
+    // Keyboard users get the tooltip too, and Escape closes it
+    '(focusin)': 'show()',
+    '(focusout)': 'hide()',
+    '(keydown.escape)': 'hide()',
+    '[attr.aria-describedby]': 'describedBy()'
   }
 })
 export class TooltipDirective implements OnDestroy {
@@ -21,6 +28,8 @@ export class TooltipDirective implements OnDestroy {
   private overlayPositionBuilder = inject(OverlayPositionBuilder);
   private elementRef = inject(ElementRef);
   private overlayRef?: OverlayRef;
+  private readonly tooltipId = `app-tooltip-${nextTooltipId++}`;
+  protected readonly describedBy = signal<string | null>(null);
 
   private getPositions(): ConnectedPosition[] {
     switch (this.appTooltipPosition()) {
@@ -65,12 +74,15 @@ export class TooltipDirective implements OnDestroy {
     const tooltipRef = this.overlayRef.attach(tooltipPortal);
     tooltipRef.instance.text = this.appTooltip();
     tooltipRef.instance.title = this.appTooltipTitle();
+    tooltipRef.instance.id = this.tooltipId;
+    this.describedBy.set(this.tooltipId);
   }
 
   hide() {
     if (this.overlayRef) {
       this.overlayRef.detach();
     }
+    this.describedBy.set(null);
   }
 
   ngOnDestroy() {

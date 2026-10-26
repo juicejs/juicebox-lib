@@ -1,5 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideExports, provideJuicebar, provideUsers } from '@juicejs/juicebar';
+import { environment } from '../environments/environment';
 
 /**
  * Dev host for the lib (`npm start`). Imports the lib from source (tsconfig paths),
@@ -11,7 +12,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideJuicebar(
       {
-        apiUrl: 'https://staging.quality-circle.com',
+        apiUrl: environment.apiUrl,
         appName: 'Juicebox playground',
         mainRoutes: [],
         modules: [],

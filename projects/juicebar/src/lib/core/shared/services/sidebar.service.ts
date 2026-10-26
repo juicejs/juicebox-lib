@@ -26,6 +26,9 @@ export class SidebarService implements OnDestroy {
     private sidebarCollapsedSignal = signal<boolean>(false);
     private toggleSidebarSubject = new Subject<void>();
 
+    /** Small screens: the sidebar is a drawer over the page, opened from the top bar */
+    readonly mobileOpen = signal(false);
+
     // Expose signals as readonly
     navigationVisible = this.navigationVisibleSignal.asReadonly();
     sidebarCollapsed = this.sidebarCollapsedSignal.asReadonly();
@@ -181,6 +184,14 @@ export class SidebarService implements OnDestroy {
             'mergeUserSidebarData',
             [userId, {items: registeredSidebarItems}]
         );
+    }
+
+    openMobile() {
+        this.mobileOpen.set(true);
+    }
+
+    closeMobile() {
+        this.mobileOpen.set(false);
     }
 
     toggleSidebar() {

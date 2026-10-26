@@ -55,7 +55,7 @@
                     <th cdk-header-cell *cdkHeaderCellDef class="text-right">{{ 'actions' | translate }}</th>
                     <td cdk-cell *cdkCellDef="let row" class="text-right">
                         @if (row._id !== loggedInOrganisationId || loggedInUserId !== userId) {
-                            <button app-button appearance="icon"
+                            <button [attr.aria-label]="'delete' | translate" app-button appearance="icon"
                                     [hasPermissions]="'users:role#update'"
                                     [title]="'delete' | translate"
                                     (click)="delete(row)">

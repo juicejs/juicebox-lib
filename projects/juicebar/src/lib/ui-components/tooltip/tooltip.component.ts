@@ -13,10 +13,13 @@ import { CommonModule } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   host: {
-    'class': 'app-tooltip'
+    'class': 'app-tooltip',
+    'role': 'tooltip',
+    '[id]': 'id'
   }
 })
 export class TooltipComponent {
   text = '';
   title = '';
+  id = '';
 }

@@ -8,7 +8,7 @@ import {moveItemInArray} from '@angular/cdk/drag-drop';
 import {ImageCroppedEvent, ImageCropperComponent} from 'ngx-image-cropper';
 import {MainTranslationPipe} from '../i18n/main.translation';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
-import {filter} from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import {Subscription} from 'rxjs/internal/Subscription';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {SharedModule} from '../../../shared/shared.module';
@@ -26,7 +26,10 @@ import {SharedModule} from '../../../shared/shared.module';
         SharedModule,
         MainTranslationPipe,
         NgOptimizedImage
-    ]
+    ],
+    host: {
+        '(document:keydown.escape)': 'closeMobile()'
+    }
 })
 export class SidebarComponent implements OnInit, OnDestroy{
 
@@ -64,7 +67,6 @@ export class SidebarComponent implements OnInit, OnDestroy{
     public i18n: MainTranslationPipe;
     public hasAvatars: boolean = false;
 
-    protected readonly currentUrl = signal<string>('');
 
     // -- Dragging & Ordering of sidebar
     protected readonly isDragging = signal<boolean>(false);
@@ -129,10 +131,10 @@ export class SidebarComponent implements OnInit, OnDestroy{
     }
 
     ngOnInit() {
-        this.currentUrl.set(this.router.url);
+        // Small screens: close the drawer after navigating
         this.subscription.add(
             this.router.events.pipe(filter(e => e instanceof NavigationEnd))
-                .subscribe((e: NavigationEnd) => this.currentUrl.set(e.urlAfterRedirects))
+                .subscribe(() => this.sidebarService.closeMobile())
         );
         this.subscription.add(
             this.sidebarService.toggleSidebar$.subscribe(() => {
@@ -191,6 +193,10 @@ export class SidebarComponent implements OnInit, OnDestroy{
         })();
     }
 
+    protected closeMobile() {
+        this.sidebarService.closeMobile();
+    }
+
     public collapse(){
         this.juicebox.collapsed = !this.juicebox.collapsed;
         this.sidebarService.setSidebarCollapsed(this.juicebox.collapsed);
@@ -204,27 +210,6 @@ export class SidebarComponent implements OnInit, OnDestroy{
         this.juicebox.logout();
     }
 
-    menuItemClicked(event, router) {
-        if (event.type !== 'click') return false;
-
-        let url = "/main/" + router;
-
-        let curl = window.location.pathname;
-        let i = curl.indexOf('/main');
-        let prefix = curl.substring(0, i);
-
-        if (event.metaKey || event.ctrlKey || event.altKey) {
-            const _window = window
-            window.open(prefix + url, "_blank");
-            return _window.focus();
-        }
-
-        this.router.navigateByUrl("/main/" + router);
-    }
-
-    isActiveRoute(route) {
-        return this.currentUrl().indexOf("main/" + route) != -1;
-    }
 
   // Add this method to your existing sidebar.component.ts
 

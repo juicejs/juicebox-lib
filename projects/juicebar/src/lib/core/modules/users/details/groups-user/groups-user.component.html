@@ -71,12 +71,12 @@
                             <th class="org-col">
                                 <div class="org-search">
                                     <app-icon [icon]="'search'"></app-icon>
-                                    <input type="text"
+                                    <input [attr.aria-label]="'organisation' | translate" type="text"
                                            [placeholder]="'organisation' | translate"
                                            [ngModel]="searchTerm()"
                                            (ngModelChange)="searchTerm.set($event)">
                                     @if (isSearching()) {
-                                        <button class="org-search-clear" (click)="clearSearch()">
+                                        <button [attr.aria-label]="'clear' | translate" class="org-search-clear" (click)="clearSearch()">
                                             <app-icon [icon]="'close'"></app-icon>
                                         </button>
                                     }

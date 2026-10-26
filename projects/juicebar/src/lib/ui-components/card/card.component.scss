@@ -1,43 +1,47 @@
-@import '../styles/variables.scss';
+// Shared by app-card and its parts; each host has its own class, so :host(:where(.class)) targets one part
+// with the specificity of one attribute (screen styles win).
+// The card has no padding itself: header, content, actions and footer pad their own area.
 
-app-card {
+:host(:where(.app-card)) {
   display: block;
-  padding: var(--spacing-md);
+  overflow: hidden;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-background);
-  box-shadow: var(--shadow-md);
+  border-radius: 10px;
+  background: var(--color-background-secondary);
 }
 
-.app-card-header {
+:host(:where(.app-card-header)) {
   display: block;
-  margin-bottom: var(--spacing-md);
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.app-card-title {
+:host(:where(.app-card-title)) {
   display: block;
-  font-size: 1.25rem;
-  font-weight: 500;
   margin: 0;
   color: var(--color-text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
 }
 
-.app-card-content {
+:host(:where(.app-card-content)) {
   display: block;
+  padding: 16px;
   color: var(--color-text-primary);
 }
 
-.app-card-actions {
+:host(:where(.app-card-actions)) {
   display: flex;
+  justify-content: flex-end;
   gap: var(--spacing-sm);
-  padding: var(--spacing-sm) 0;
-  margin-top: var(--spacing-md);
+  padding: 12px 16px;
+  border-top: 1px solid var(--color-border);
 }
 
-.app-card-footer {
+:host(:where(.app-card-footer)) {
   display: block;
-  margin-top: var(--spacing-md);
-  padding-top: var(--spacing-sm);
+  padding: 12px 16px;
   border-top: 1px solid var(--color-border);
   color: var(--color-text-secondary);
 }

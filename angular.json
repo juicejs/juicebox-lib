@@ -96,6 +96,14 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "stoked": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/playground/src/environments/environment.ts",
+                  "with": "projects/playground/src/environments/environment.stoked.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "development"
@@ -108,6 +116,9 @@
             },
             "development": {
               "buildTarget": "playground:build:development"
+            },
+            "stoked": {
+              "buildTarget": "playground:build:development,stoked"
             }
           },
           "defaultConfiguration": "development"

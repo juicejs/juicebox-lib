@@ -7,6 +7,7 @@ import {CommonModule} from '@angular/common';
 import {DialogService} from '../../../../ui-components/dialog/dialog.service';
 import {HelpComponent} from './help/help.component';
 import {MainTranslationPipe} from '../i18n/main.translation';
+import {SidebarService} from '../../../shared/services/sidebar.service';
 import {CdkMenuModule} from '@angular/cdk/menu';
 import {SharedModule} from '../../../shared/shared.module';
 import {ThemeService, Theme} from '../../../shared/services/theme.service';
@@ -75,6 +76,7 @@ export class NavigationComponent implements OnInit {
   public router = inject(Router);
   public dialog = inject(DialogService);
   private themeService = inject(ThemeService);
+  protected sidebarService = inject(SidebarService);
   public theme = this.themeService.theme;
 
   constructor() {

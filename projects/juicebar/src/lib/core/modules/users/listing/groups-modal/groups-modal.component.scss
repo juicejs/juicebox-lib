@@ -200,8 +200,8 @@
 
 .status-active {
     color: var(--color-success);
-    background: rgba(var(--color-success-rgb, 34, 197, 94), 0.08);
-    border-color: rgba(var(--color-success-rgb, 34, 197, 94), 0.25);
+    background: rgba(var(--color-success-rgb), 0.08);
+    border-color: rgba(var(--color-success-rgb), 0.25);
 }
 
 .status-active .status-dot {

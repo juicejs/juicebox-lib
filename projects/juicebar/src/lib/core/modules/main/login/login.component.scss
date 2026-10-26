@@ -61,6 +61,17 @@
   overflow: hidden;
   position: relative;
 
+  // The header and form wrappers pad themselves; no extra card-part padding or dividers
+  app-card-header,
+  app-card-content {
+    padding: 0;
+    border: none;
+  }
+
+  app-card-actions {
+    border: none;
+  }
+
   .login-header {
     text-align: center;
     padding: 2rem 2rem 0.5rem;

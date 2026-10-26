@@ -6,7 +6,10 @@ import { CommonModule } from '@angular/common';
   template: '<ng-content></ng-content>',
   styleUrls: ['./card.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule]
+  imports: [CommonModule],
+  host: {
+    'class': 'app-card'
+  }
 })
 export class CardComponent {}
 

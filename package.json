@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "start": "ng serve playground",
+    "start:stoked": "ng serve playground --configuration stoked",
     "build": "ng build juicebar --configuration production && npm run build:schematics",
     "build:schematics": "tsc -p projects/juicebar/tsconfig.schematics.json && node projects/juicebar/scripts/copy-schematic-files.mjs",
     "publish:lib": "npm run build && npm publish dist/juicebar"

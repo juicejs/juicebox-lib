@@ -11,23 +11,23 @@
     <form class="card-body" [formGroup]="detailsForm">
       <div class="field-row">
         <div class="field">
-          <app-label class="field-label">{{ 'firstname' | translate }}</app-label>
-          <app-form-field appearance="outline" class="field-control">
+          <app-label class="field-label" for="profile-firstname">{{ 'firstname' | translate }}</app-label>
+          <app-form-field controlId="profile-firstname" appearance="outline" class="field-control">
             <input appInput type="text" formControlName="firstname">
           </app-form-field>
         </div>
 
         <div class="field">
-          <app-label class="field-label">{{ 'lastname' | translate }}</app-label>
-          <app-form-field appearance="outline" class="field-control">
+          <app-label class="field-label" for="profile-lastname">{{ 'lastname' | translate }}</app-label>
+          <app-form-field controlId="profile-lastname" appearance="outline" class="field-control">
             <input appInput type="text" formControlName="lastname">
           </app-form-field>
         </div>
       </div>
 
       <div class="field">
-        <app-label class="field-label">{{ 'email' | translate }}</app-label>
-        <app-form-field appearance="outline" class="field-control">
+        <app-label class="field-label" for="profile-email">{{ 'email' | translate }}</app-label>
+        <app-form-field controlId="profile-email" appearance="outline" class="field-control">
           <input appInput type="email" formControlName="email">
         </app-form-field>
       </div>
@@ -51,8 +51,8 @@
       </header>
       <form class="card-body" [formGroup]="passwordForm">
         <div class="field">
-          <app-label class="field-label">{{ 'current_password' | translate }}</app-label>
-          <app-form-field appearance="outline" class="field-control">
+          <app-label class="field-label" for="profile-currentPassword">{{ 'current_password' | translate }}</app-label>
+          <app-form-field controlId="profile-currentPassword" appearance="outline" class="field-control">
             <input appInput type="password" formControlName="currentPassword" autocomplete="current-password">
             @if (passwordForm.get('currentPassword')?.touched && passwordForm.get('currentPassword')?.errors?.['required']) {
               <app-error>{{ 'pass_required' | translate }}</app-error>
@@ -61,8 +61,8 @@
         </div>
 
         <div class="field">
-          <app-label class="field-label">{{ 'new_password' | translate }}</app-label>
-          <app-form-field appearance="outline" class="field-control">
+          <app-label class="field-label" for="profile-password">{{ 'new_password' | translate }}</app-label>
+          <app-form-field controlId="profile-password" appearance="outline" class="field-control">
             <input appInput type="password" formControlName="password" autocomplete="new-password">
             @if (passwordForm.get('password')?.touched && passwordForm.get('password')?.errors?.['required']) {
               <app-error>{{ 'pass_required' | translate }}</app-error>
@@ -74,8 +74,8 @@
         </div>
 
         <div class="field">
-          <app-label class="field-label">{{ 'pass_repeat' | translate }}</app-label>
-          <app-form-field appearance="outline" class="field-control">
+          <app-label class="field-label" for="profile-repeatPassword">{{ 'pass_repeat' | translate }}</app-label>
+          <app-form-field controlId="profile-repeatPassword" appearance="outline" class="field-control">
             <input appInput type="password" formControlName="repeatPassword" autocomplete="new-password">
             @if (passwordForm.errors?.['mismatch'] && passwordForm.get('repeatPassword')?.touched) {
               <app-error>{{ 'pass_not_same' | translate }}</app-error>
@@ -110,9 +110,9 @@
         </header>
         <div class="card-body">
           <div class="field">
-            <app-label class="field-label">{{ 'wallet_address' | translate }}</app-label>
+            <app-label class="field-label" for="profile-wallet">{{ 'wallet_address' | translate }}</app-label>
             <div class="inline-input-row">
-              <app-form-field appearance="outline" class="field-control inline-grow">
+              <app-form-field controlId="profile-wallet" appearance="outline" class="field-control inline-grow">
                 <input appInput type="text"
                        [value]="user()?.wallet ?? ''"
                        (input)="updateWallet($any($event.target).value)"
@@ -141,8 +141,8 @@
 
         @if (languages().length > 0) {
           <div class="field">
-            <app-label class="field-label">{{ 'default_language' | translate }}</app-label>
-            <app-form-field appearance="outline" class="field-control">
+            <app-label class="field-label" for="profile-language">{{ 'default_language' | translate }}</app-label>
+            <app-form-field controlId="profile-language" appearance="outline" class="field-control">
               <app-select formControlName="language">
                 @for (lang of languages(); track lang.code) {
                   <app-option [value]="lang.code">{{ lang.name | translate }}</app-option>
@@ -154,8 +154,8 @@
 
         @if (countries().length > 0) {
           <div class="field">
-            <app-label class="field-label">{{ 'country_of_origin' | translate }}</app-label>
-            <app-form-field appearance="outline" class="field-control">
+            <app-label class="field-label" for="profile-country">{{ 'country_of_origin' | translate }}</app-label>
+            <app-form-field controlId="profile-country" appearance="outline" class="field-control">
               <app-select formControlName="country">
                 @for (country of countries(); track country.code) {
                   <app-option [value]="country.code">{{ country.name }}</app-option>
@@ -167,10 +167,10 @@
 
         @if (twoFactorTypes().length > 0) {
           <div class="field">
-            <app-label class="field-label" [style.font-weight]="!settingsForm.get('twoFactor')?.value ? '600' : '500'">
+            <app-label class="field-label" for="profile-twoFactor" [style.font-weight]="!settingsForm.get('twoFactor')?.value ? '600' : '500'">
               {{ 'two_factor_authorisation_type' | translate }}
             </app-label>
-            <app-form-field appearance="outline" class="field-control">
+            <app-form-field controlId="profile-twoFactor" appearance="outline" class="field-control">
               <app-select formControlName="twoFactor"
                           (click)="onOpen2FADropdown()"
                           (selectionChange)="on2FAChanged($event.value)">

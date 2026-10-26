@@ -1,13 +1,11 @@
-@import '../styles/variables.scss';
-
-.app-nav-list {
+:host(:where(.app-nav-list)) {
   display: block;
-  list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.app-list-item {
+:host(:where(.app-list-item)) {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);

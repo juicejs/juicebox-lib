@@ -1,12 +1,9 @@
-@import '../styles/variables';
-
 .data-table-wrapper {
   width: 100%;
   overflow-x: auto;
   background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: 8px;
-  overflow: hidden;
 }
 
 .data-table {
@@ -299,8 +296,4 @@
     &.login-btn:hover:not([disabled]) { color: var(--color-tertiary); }
     &.delete-btn:hover:not([disabled]) { color: var(--color-error); }
   }
-}
-
-@media (max-width: 768px) {
-  .data-table { min-width: 600px; }
 }

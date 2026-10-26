@@ -31,7 +31,7 @@
         <div class="filter-panel">
           <div class="autocomplete-search-container">
             <app-icon [icon]="'search'" class="search-icon"></app-icon>
-            <input class="autocomplete-search-input"
+            <input [attr.aria-label]="filter.placeholder" class="autocomplete-search-input"
                    [placeholder]="filter.placeholder"
                    (input)="onFilterSearch(filter.key, $any($event.target).value)" />
           </div>

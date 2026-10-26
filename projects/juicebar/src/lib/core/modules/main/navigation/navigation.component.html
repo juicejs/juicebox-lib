@@ -1,5 +1,13 @@
 <app-toolbar class="modern-navigation">
 
+  <!-- Small screens: opens the sidebar drawer -->
+  <button type="button" class="mobile-menu-btn"
+          [attr.aria-label]="'open_menu' | translate"
+          [attr.aria-expanded]="sidebarService.mobileOpen()"
+          (click)="sidebarService.openMobile()">
+    <app-icon [icon]="'menu'"></app-icon>
+  </button>
+
   <!-- Left Section - Breadcrumbs -->
   <div class="breadcrumbs-section">
     @if (locationTitle()) {
@@ -17,7 +25,7 @@
     <!-- Search -->
     <div class="search-cmd">
       <app-icon [icon]="'search'" class="search-cmd-icon"></app-icon>
-      <input #searchInput
+      <input aria-label="Search or jump to…" #searchInput
              type="text"
              class="search-cmd-input"
              placeholder="Search or jump to…"
@@ -29,7 +37,7 @@
 
       <!-- Help Button -->
       @if (fileInfo() || this.juicebox.hasPermission('juicebox:role#edit-help-document')) {
-        <button app-button
+        <button [attr.aria-label]="'help' | translate" app-button
                 appearance="icon"
                 class="action-button help-btn"
                 (click)="getHelp()"
@@ -40,7 +48,7 @@
 
       <!-- Language Switcher -->
       @if (languages().length > 1) {
-        <button app-button
+        <button [attr.aria-label]="'change_language' | translate" app-button
                 appearance="icon"
                 class="action-button language-btn"
                 [cdkMenuTriggerFor]="languageMenu"
@@ -62,7 +70,7 @@
     </ng-template>
 
       <!-- Theme Toggle -->
-      <button app-button
+      <button [attr.aria-label]="'toggle_theme' | translate" app-button
               appearance="icon"
               class="action-button theme-btn"
               (click)="toggleTheme()"
@@ -86,7 +94,7 @@
       <div class="dropdown-panel" cdkMenu>
         <div class="dropdown-panel-search" (click)="$event.stopPropagation()">
           <app-icon [icon]="'search'" class="dropdown-panel-search-icon"></app-icon>
-          <input type="text"
+          <input aria-label="Search…" type="text"
                  class="dropdown-panel-search-input"
                  [value]="orgSearch()"
                  (input)="onOrgSearch($event)"

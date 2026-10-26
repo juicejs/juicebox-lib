@@ -1,6 +1,6 @@
 <app-dialog-title>
     {{"create_vendor" | translate}}
-    <button app-button appearance="icon" (click)="cancel()" class="close-button">
+    <button [attr.aria-label]="'close' | translate" app-button appearance="icon" (click)="cancel()" class="close-button">
         <app-icon [icon]="'close'"></app-icon>
     </button>
 </app-dialog-title>

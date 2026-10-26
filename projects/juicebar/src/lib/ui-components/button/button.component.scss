@@ -1,5 +1,8 @@
-@import '../styles/variables.scss';
+// Host classes come from ButtonComponent: app-button-{appearance} app-button-{color}.
+// Rules use :host(:where(...)): they apply under view encapsulation but have the specificity of one
+// attribute, so a screen's own button styles always win.
 
+// Base: the design's ghost button (also used for `stroked`)
 :host {
   display: inline-flex;
   align-items: center;
@@ -23,95 +26,93 @@
     border-color: var(--color-border-dark);
   }
 
+  &:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 2px;
+  }
+
   &[disabled] {
     opacity: 0.4;
     cursor: not-allowed;
   }
 }
 
-// Raised appearance
-.app-button-raised {
-  box-shadow: var(--shadow-md);
+// Flat: a text button
+:host(:where(.app-button-flat)) {
+  border-color: transparent;
+  background: transparent;
 
   &:hover:not([disabled]) {
-    box-shadow: var(--shadow-lg);
-  }
-}
-
-// Stroked appearance
-.app-button-stroked {
-  background: var(--color-grey-100);
-
-  &:hover:not([disabled]) {
+    border-color: transparent;
     background: var(--color-grey-200);
   }
 }
 
-// Flat appearance
-.app-button-flat {
-  border-color: transparent;
-  background: transparent;
+// Raised: a slight lift for the main action
+:host(:where(.app-button-raised)) {
+  box-shadow: var(--shadow-sm);
 }
 
-:host(.app-button-primary),
-:host(.app-button-accent) {
+// Primary / accent: the design's primary button (any appearance)
+:host(:where(.app-button-primary)),
+:host(:where(.app-button-accent)) {
+  border-color: var(--color-secondary-dark);
   background: var(--color-secondary);
   color: var(--color-secondary-contrast);
-  border-color: var(--color-secondary-dark);
   font-weight: 600;
 
   &:hover:not([disabled]) {
-    background: var(--color-secondary-dark);
     border-color: var(--color-secondary-dark);
+    background: var(--color-secondary-dark);
   }
 }
 
-// Warn/Tertiary color (blue)
-.app-button-warn {
-  background: var(--color-tertiary);
-  color: var(--color-tertiary-contrast);
-  border-color: var(--color-tertiary);
+// Warn: destructive action, outlined in the error colour
+:host(:where(.app-button-warn)) {
+  border-color: var(--color-error);
+  background: transparent;
+  color: var(--color-error);
 
   &:hover:not([disabled]) {
-    background: var(--color-tertiary-dark);
+    border-color: var(--color-error);
+    background: var(--color-grey-200);
   }
 }
 
-// Loading state
-:host.app-button-loading {
+// Icon-only button (always give it an aria-label)
+:host(:where(.app-button-icon)) {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-text-secondary);
+
+  &:hover:not([disabled]) {
+    border-color: transparent;
+    background: var(--color-grey-200);
+    color: var(--color-text-primary);
+  }
+}
+
+// Loading state (PromiseButtonDirective)
+:host(:where(.app-button-loading)) {
   pointer-events: none;
   opacity: 0.7;
 
   &::before {
     content: '';
     display: inline-block;
+    flex-shrink: 0;
     width: 14px;
     height: 14px;
     border: 2px solid currentColor;
     border-top-color: transparent;
     border-radius: 50%;
     animation: app-btn-spin 0.6s linear infinite;
-    flex-shrink: 0;
   }
 }
 
 @keyframes app-btn-spin {
   to { transform: rotate(360deg); }
-}
-
-// Icon button
-.app-button-icon {
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border-radius: 5px;
-  background: transparent;
-  border-color: var(--color-border);
-  color: var(--color-text-secondary);
-
-  &:hover:not([disabled]) {
-    background: var(--color-grey-200);
-    border-color: var(--color-border-dark);
-    color: var(--color-text-primary);
-  }
 }

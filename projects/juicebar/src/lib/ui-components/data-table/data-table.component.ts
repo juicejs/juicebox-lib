@@ -90,6 +90,18 @@ export class DataTableComponent implements AfterContentInit {
   );
   columnKeys = computed(() => this.columnsForRender().map(c => c.key));
 
+  /**
+   * With table-layout: fixed, columns without a width share what the fixed ones leave over, which is nothing on a
+   * narrow screen. A minimum width keeps every column readable; the wrapper then scrolls sideways.
+   */
+  protected readonly minTableWidth = computed(() =>
+    this.columnsForRender().reduce((total, column) => {
+      const px = column.width?.endsWith('px') ? parseFloat(column.width) : NaN;
+      return total + (Number.isNaN(px) ? DataTableComponent.MIN_FLEX_COLUMN_WIDTH : px);
+    }, 0)
+  );
+  private static readonly MIN_FLEX_COLUMN_WIDTH = 140;
+
   displayedRows = computed(() => {
     const userPredicate = this.detailRowFor();
     const selectable = this.selectable();

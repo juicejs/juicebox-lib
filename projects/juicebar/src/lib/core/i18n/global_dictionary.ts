@@ -264,5 +264,10 @@ export const globalDictionary = {
   "page_not_found_text": {
     "en_GB": "The page you are looking for does not exist or has been moved.",
     "de_DE": "Die gesuchte Seite existiert nicht oder wurde verschoben."
+  },
+  "back": {
+    "en_GB": "Back",
+    "de_DE": "Zurück",
+    "hr_HR": "Natrag"
   }
 };

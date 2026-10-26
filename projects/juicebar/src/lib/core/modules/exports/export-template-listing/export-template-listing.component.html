@@ -42,7 +42,7 @@
                 {{ 'selected' | translate }}: {{ row.name }}
             </span>
             <div class="dt-selection-actions">
-                <button app-button
+                <button [attr.aria-label]="'download' | translate" app-button
                         appearance="icon"
                         [disabled]="!row._available_export_strategies.length"
                         [cdkMenuTriggerFor]="exportMenu"
@@ -64,7 +64,7 @@
                         </div>
                     </div>
                 </ng-template>
-                <button app-button
+                <button [attr.aria-label]="'delete' | translate" app-button
                         appearance="icon"
                         (click)="delete(row)"
                         [NoPermissionDisable]="'data-export:role#delete'"

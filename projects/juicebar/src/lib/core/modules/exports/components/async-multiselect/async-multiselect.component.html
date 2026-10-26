@@ -6,7 +6,7 @@
             @for (item of selectedItems(); track item.id) {
                 <div class="chip">
                     <span class="chip-text">{{ item.label }}</span>
-                    <button type="button" class="chip-remove" (click)="removeItem(item)">
+                    <button [attr.aria-label]="'clear' | translate" type="button" class="chip-remove" (click)="removeItem(item)">
                         <app-icon [icon]="'close'"></app-icon>
                     </button>
                 </div>
@@ -14,7 +14,7 @@
         </div>
 
         <div class="autocomplete-wrapper">
-            <input appInput
+            <input [attr.aria-label]="hasSelected() ? '' : ('select_options' | translate)" appInput
                    #searchInput
                    type="text"
                    (input)="onSearchInput($event)"
@@ -28,7 +28,7 @@
                 </div>
             }
             @if (!loading() && hasSelected()) {
-                <button type="button" class="input-suffix clear-button" (click)="clearAll()">
+                <button [attr.aria-label]="'clear' | translate" type="button" class="input-suffix clear-button" (click)="clearAll()">
                     <app-icon [icon]="'close'"></app-icon>
                 </button>
             }

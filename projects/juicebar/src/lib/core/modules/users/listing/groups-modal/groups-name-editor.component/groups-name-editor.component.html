@@ -1,6 +1,6 @@
 <app-dialog-content>
     <div class="groups-editor-content">
-        <button app-button appearance="icon" class="close-button" (click)="close()">
+        <button [attr.aria-label]="'close' | translate" app-button appearance="icon" class="close-button" (click)="close()">
             <app-icon [icon]="'close'"></app-icon>
         </button>
         <h2>

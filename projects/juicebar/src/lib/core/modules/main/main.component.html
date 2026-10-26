@@ -1,6 +1,9 @@
 <div class="main-container-new-ui">
     @if (navigationVisible()) {
-        <app-sidebar></app-sidebar>
+        <app-sidebar [class.mobile-open]="sidebarService.mobileOpen()"></app-sidebar>
+        @if (sidebarService.mobileOpen()) {
+            <div class="mobile-backdrop" (click)="sidebarService.closeMobile()"></div>
+        }
     }
 
     <div class="main-content">
@@ -17,7 +20,7 @@
             @if (navigationVisible() && (locationLink() || juicebox.actionButtons().length || juicebox.pageHeader())) {
                 <div class="location-container">
                     @if (locationLink()) {
-                        <button app-button appearance="icon" class="back-nav-btn" (click)="goTo(locationLink())">
+                        <button [attr.aria-label]="backLabel" app-button appearance="icon" class="back-nav-btn" (click)="goTo(locationLink())">
                             <app-icon [icon]="'keyboard_arrow_left'"></app-icon>
                         </button>
                     }

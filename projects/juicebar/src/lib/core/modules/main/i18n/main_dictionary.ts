@@ -1459,5 +1459,15 @@ export const mainDictionary = {
   "only_digits_allowed": {
     "en_GB": "Only digits allowed",
     "de_DE": "Nur Ziffern erlaubt"
+  },
+  "toggle_theme": {
+    "en_GB": "Switch light/dark mode",
+    "de_DE": "Hell-/Dunkelmodus wechseln",
+    "hr_HR": "Promijeni svijetli/tamni način"
+  },
+  "open_menu": {
+    "en_GB": "Open menu",
+    "de_DE": "Menü öffnen",
+    "hr_HR": "Otvori izbornik"
   }
 }

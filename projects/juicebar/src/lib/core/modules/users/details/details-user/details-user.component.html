@@ -11,11 +11,11 @@
             <form class="card-body" [formGroup]="form">
                 <div class="field-row">
                     <div class="field">
-                        <label class="field-label">
+                        <label class="field-label" for="user-salutation">
                             {{ 'salutation' | translate }}
                             <span class="field-opt">Optional</span>
                         </label>
-                        <app-form-field appearance="outline" class="field-control">
+                        <app-form-field controlId="user-salutation" appearance="outline" class="field-control">
                             <app-select formControlName="salutation">
                                 @for (salutation of juicebox.getSalutations(); track salutation.key) {
                                     <app-option [value]="salutation.key">{{ salutation.name }}</app-option>
@@ -28,8 +28,8 @@
                     </div>
 
                     <div class="field">
-                        <label class="field-label">{{ 'language' | translate }}</label>
-                        <app-form-field appearance="outline" class="field-control">
+                        <label class="field-label" for="user-language">{{ 'language' | translate }}</label>
+                        <app-form-field controlId="user-language" appearance="outline" class="field-control">
                             <app-select formControlName="language">
                                 @for (language of languages(); track language.code) {
                                     <app-option [value]="language.code">{{ language.name }}</app-option>
@@ -41,10 +41,10 @@
 
                 <div class="field-row">
                     <div class="field">
-                        <label class="field-label">
+                        <label class="field-label" for="user-firstname">
                             {{ 'firstname' | translate }}<span class="field-req">*</span>
                         </label>
-                        <app-form-field appearance="outline" class="field-control">
+                        <app-form-field controlId="user-firstname" appearance="outline" class="field-control">
                             <input appInput formControlName="firstname">
                             @if (form.controls['firstname'].hasError('required')) {
                                 <app-error>{{ 'include_firstname' | translate }}</app-error>
@@ -53,10 +53,10 @@
                     </div>
 
                     <div class="field">
-                        <label class="field-label">
+                        <label class="field-label" for="user-lastname">
                             {{ 'lastname' | translate }}<span class="field-req">*</span>
                         </label>
-                        <app-form-field appearance="outline" class="field-control">
+                        <app-form-field controlId="user-lastname" appearance="outline" class="field-control">
                             <input appInput formControlName="lastname">
                             @if (form.controls['lastname'].hasError('required')) {
                                 <app-error>{{ 'include_lastname' | translate }}</app-error>
@@ -67,18 +67,18 @@
 
                 @if (showNickname) {
                     <div class="field">
-                        <label class="field-label">{{ 'nickname' | translate }}</label>
-                        <app-form-field appearance="outline" class="field-control">
+                        <label class="field-label" for="user-nickname">{{ 'nickname' | translate }}</label>
+                        <app-form-field controlId="user-nickname" appearance="outline" class="field-control">
                             <input appInput formControlName="nickname">
                         </app-form-field>
                     </div>
                 }
 
                 <div class="field">
-                    <label class="field-label">
+                    <label class="field-label" for="user-email">
                         {{ 'email' | translate }}<span class="field-req">*</span>
                     </label>
-                    <app-form-field appearance="outline" class="field-control">
+                    <app-form-field controlId="user-email" appearance="outline" class="field-control">
                         <input appInput formControlName="email" [readonly]="readonlyEmail">
                         @if (form.controls['email'].hasError('required')) {
                             <app-error>{{ 'include_email' | translate }}</app-error>
@@ -92,8 +92,8 @@
 
                 @if (showDepartment) {
                     <div class="field">
-                        <label class="field-label">{{ 'department' | translate }}</label>
-                        <app-form-field appearance="outline" class="field-control">
+                        <label class="field-label" for="user-department">{{ 'department' | translate }}</label>
+                        <app-form-field controlId="user-department" appearance="outline" class="field-control">
                             <input appInput formControlName="department">
                         </app-form-field>
                     </div>
@@ -146,16 +146,16 @@
                     </header>
                     <form class="card-body" [formGroup]="pwForm">
                         <div class="field">
-                            <label class="field-label">{{ 'password' | translate }}</label>
-                            <app-form-field appearance="outline" class="field-control">
+                            <label class="field-label" for="user-password">{{ 'password' | translate }}</label>
+                            <app-form-field controlId="user-password" appearance="outline" class="field-control">
                                 <input appInput formControlName="password" type="password"
                                        [autocomplete]="'new-password'" placeholder="••••••••••">
                             </app-form-field>
                         </div>
 
                         <div class="field">
-                            <label class="field-label">{{ 'pass_repeat' | translate }}</label>
-                            <app-form-field appearance="outline" class="field-control">
+                            <label class="field-label" for="user-repeatPassword">{{ 'pass_repeat' | translate }}</label>
+                            <app-form-field controlId="user-repeatPassword" appearance="outline" class="field-control">
                                 <input appInput formControlName="repeatPassword" type="password"
                                        [autocomplete]="'new-password'" placeholder="••••••••••">
                             </app-form-field>
@@ -206,9 +206,9 @@
                     </header>
                     <div class="card-body">
                         <div class="field">
-                            <label class="field-label">{{ 'two_factor_authorisation_type' | translate }}</label>
+                            <label class="field-label" for="user-twoFactor">{{ 'two_factor_authorisation_type' | translate }}</label>
                             <div class="inline-input-row">
-                                <app-form-field appearance="outline" class="field-control inline-grow">
+                                <app-form-field controlId="user-twoFactor" appearance="outline" class="field-control inline-grow">
                                     <input appInput readonly [placeholder]="user().attributes.settings.twoFactor | translate">
                                 </app-form-field>
                                 <button app-button appearance="raised" color="primary"
@@ -233,9 +233,9 @@
                     </header>
                     <div class="card-body">
                         <div class="field">
-                            <label class="field-label">{{ 'wallet_address' | translate }}</label>
+                            <label class="field-label" for="user-wallet">{{ 'wallet_address' | translate }}</label>
                             <div class="inline-input-row">
-                                <app-form-field appearance="outline" class="field-control inline-grow">
+                                <app-form-field controlId="user-wallet" appearance="outline" class="field-control inline-grow">
                                     <input appInput [formControl]="walletCtrl"
                                            [placeholder]="'wallet_address' | translate">
                                 </app-form-field>

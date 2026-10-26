@@ -10,11 +10,11 @@
             <form class="card-body" [formGroup]="userForm">
                 <div class="field-row">
                     <div class="field">
-                        <app-label class="field-label">
+                        <app-label class="field-label" for="new-user-salutation">
                             {{ 'salutation' | translate }}
                             <span class="field-opt">Optional</span>
                         </app-label>
-                        <app-form-field appearance="outline" class="field-control">
+                        <app-form-field controlId="new-user-salutation" appearance="outline" class="field-control">
                             <app-select formControlName="salutation">
                                 @for (salutation of salutations; track salutation.key) {
                                     <app-option [value]="salutation.key">{{ salutation.name }}</app-option>
@@ -27,8 +27,8 @@
                     </div>
 
                     <div class="field">
-                        <app-label class="field-label">{{ 'language' | translate }}</app-label>
-                        <app-form-field appearance="outline" class="field-control">
+                        <app-label class="field-label" for="new-user-language">{{ 'language' | translate }}</app-label>
+                        <app-form-field controlId="new-user-language" appearance="outline" class="field-control">
                             <app-select formControlName="language">
                                 @for (language of languages; track language.code) {
                                     <app-option [value]="language.code">{{ language.name }}</app-option>
@@ -40,10 +40,10 @@
 
                 <div class="field-row">
                     <div class="field">
-                        <app-label class="field-label">
+                        <app-label class="field-label" for="new-user-firstname">
                             {{ 'firstname' | translate }}<span class="field-req">*</span>
                         </app-label>
-                        <app-form-field appearance="outline" class="field-control">
+                        <app-form-field controlId="new-user-firstname" appearance="outline" class="field-control">
                             <input appInput type="text" formControlName="firstname">
                             @if (userForm.controls['firstname'].touched && userForm.controls['firstname'].hasError('required')) {
                                 <app-error>{{ 'include_firstname' | translate }}</app-error>
@@ -52,10 +52,10 @@
                     </div>
 
                     <div class="field">
-                        <app-label class="field-label">
+                        <app-label class="field-label" for="new-user-lastname">
                             {{ 'lastname' | translate }}<span class="field-req">*</span>
                         </app-label>
-                        <app-form-field appearance="outline" class="field-control">
+                        <app-form-field controlId="new-user-lastname" appearance="outline" class="field-control">
                             <input appInput type="text" formControlName="lastname">
                             @if (userForm.controls['lastname'].touched && userForm.controls['lastname'].hasError('required')) {
                                 <app-error>{{ 'include_lastname' | translate }}</app-error>
@@ -66,8 +66,8 @@
 
                 @if (showNickname) {
                     <div class="field">
-                        <app-label class="field-label">{{ 'nickname' | translate }}</app-label>
-                        <app-form-field appearance="outline" class="field-control">
+                        <app-label class="field-label" for="new-user-nickname">{{ 'nickname' | translate }}</app-label>
+                        <app-form-field controlId="new-user-nickname" appearance="outline" class="field-control">
                             <input appInput type="text" formControlName="nickname">
                         </app-form-field>
                     </div>
@@ -75,10 +75,10 @@
 
                 @if (createFromTrainees) {
                     <div class="field">
-                        <app-label class="field-label">
+                        <app-label class="field-label" for="new-user-email">
                             {{ 'choose_email' | translate }}<span class="field-req">*</span>
                         </app-label>
-                        <app-form-field appearance="outline" class="field-control">
+                        <app-form-field controlId="new-user-email" appearance="outline" class="field-control">
                             <app-autocomplete formControlName="email"
                                               [options]="emailAutocompleteOptions"
                                               (inputChange)="onSearch($event)"
@@ -93,10 +93,10 @@
                     </div>
                 } @else {
                     <div class="field">
-                        <app-label class="field-label">
+                        <app-label class="field-label" for="new-user-email">
                             {{ 'email' | translate }}<span class="field-req">*</span>
                         </app-label>
-                        <app-form-field appearance="outline" class="field-control">
+                        <app-form-field controlId="new-user-email" appearance="outline" class="field-control">
                             <input appInput formControlName="email">
                             @if (userForm.controls['email'].touched && userForm.controls['email'].hasError('required')) {
                                 <app-error>{{ 'include_email' | translate }}</app-error>

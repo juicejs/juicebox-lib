@@ -104,7 +104,7 @@
                 <ng-container cdkColumnDef="actions">
                     <th cdk-header-cell *cdkHeaderCellDef class="col-actions">{{ 'actions' | translate }}</th>
                     <td cdk-cell *cdkCellDef="let row" class="col-actions">
-                        <button app-button
+                        <button [attr.aria-label]="'remove' | translate" app-button
                                 appearance="icon"
                                 [hasPermissions]="'users:role#updated|update'"
                                 [title]="'remove' | translate"

@@ -6,6 +6,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
+import { FormFieldComponent } from '../form-field/form-field.component';
 
 @Component({
   selector: 'app-option',
@@ -55,6 +56,9 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
   multiple = input<boolean>(false);
 
   selectionChange = output<{ value: any }>();
+
+  /** The trigger button gets the form field's control id, so the field's app-label labels it */
+  protected readonly triggerId = inject(FormFieldComponent, { optional: true })?.controlId;
 
   isOpen = signal(false);
   searchQuery = signal('');

@@ -6,7 +6,7 @@
             <h2 class="title">{{ 'groups_editor' | translate }}</h2>
             <p class="sub">{{ 'groups_editor_sub' | translate }}</p>
         </div>
-        <button app-button appearance="icon" class="close-btn" (click)="close()">
+        <button [attr.aria-label]="'close' | translate" app-button appearance="icon" class="close-btn" (click)="close()">
             <app-icon icon="close"></app-icon>
         </button>
     </header>
@@ -113,7 +113,7 @@
                                                 [disabled]="!hasPermission('groups:role#super-admin')">
                                             </app-slide-toggle>
                                         }
-                                        <button app-button appearance="icon"
+                                        <button [attr.aria-label]="'delete' | translate" app-button appearance="icon"
                                                 class="trash-btn"
                                                 [hasPermissions]="'groups:role#super-admin'"
                                                 [title]="'delete' | translate"
