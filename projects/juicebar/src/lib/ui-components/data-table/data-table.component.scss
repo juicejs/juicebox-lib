@@ -12,13 +12,12 @@
   border-collapse: collapse;
 
   th {
-    padding: 10px 16px;
+    height: 34px;
+    padding: 0 12px;
     text-align: left;
-    font-size: 10.5px;
+    font-size: 11.5px;
     font-weight: 500;
     color: var(--color-text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
     background: var(--color-background-secondary);
     border-bottom: 1px solid var(--color-border);
     white-space: nowrap;
@@ -27,8 +26,8 @@
     &.sortable {
       cursor: pointer;
       user-select: none;
-      &:hover { background: var(--color-grey-300); }
-      &:focus-visible { outline: 2px solid var(--color-tertiary); outline-offset: -2px; }
+      &:hover { background: var(--color-grey-200); }
+      &:focus-visible { outline: 2px solid var(--color-secondary); outline-offset: -2px; }
     }
 
     &.text-right .th-inner { justify-content: flex-end; }
@@ -38,12 +37,12 @@
   }
 
   td {
-    padding: 14px 16px;
+    padding: 10px 12px;
     text-align: left;
     border-bottom: 1px solid var(--color-border-light);
     color: var(--color-text-primary);
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 12.5px;
+    font-weight: 400;
     box-sizing: border-box;
 
     &.text-right { text-align: right; }
@@ -82,12 +81,12 @@
   tbody tr, tr[cdk-row] {
     transition: background 0.08s;
     &:last-child td { border-bottom: none; }
-    &:hover { background: var(--color-grey-300); }
+    &:hover { background: var(--color-grey-100); }
   }
 
   .clickable-row {
     cursor: pointer;
-    &:hover { background: var(--color-grey-200); }
+    &:hover { background: var(--color-grey-100); }
   }
 
   .detail-row {

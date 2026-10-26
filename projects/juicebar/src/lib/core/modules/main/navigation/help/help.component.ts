@@ -99,7 +99,8 @@ export class HelpComponent implements OnInit {
     deleteFile() {
         const dialogData: ConfirmationDialogData = {
             action: 'delete',
-            subject: this.fileInfo.name + this.fileInfo.extension
+            subject: this.fileInfo.name + this.fileInfo.extension,
+            destructive: true
         };
         
         const dialogRef = this.dialog.open(ConfirmationDialogComponent, {

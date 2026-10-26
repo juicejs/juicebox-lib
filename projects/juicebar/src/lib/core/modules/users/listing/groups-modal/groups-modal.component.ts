@@ -110,7 +110,8 @@ export class GroupsModalComponent implements OnInit {
             disableClose: true,
             data: {
                 subject: this.pipe.transform(role.role),
-                action: this.pipe.transform('delete')
+                action: this.pipe.transform('delete'),
+                destructive: true
             }
         });
         dialogRef.closed.subscribe(async confirmed => {

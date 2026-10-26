@@ -20,7 +20,7 @@
   </button>
   <button app-button
           appearance="raised"
-          color="primary"
+          [color]="destructive ? 'warn' : 'primary'"
           (click)="dialogRef.close(true)"
           type="button">
     {{confirm | translate}}

@@ -140,7 +140,7 @@ export class DetailsUserComponent implements OnInit {
         }
 
         const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-            data: { action: 'reset', subject: 'User two factor' }
+            data: { action: 'reset', subject: 'User two factor', destructive: true }
         });
         dialogRef.closed.subscribe(async (dialogResult) => {
             if (!dialogResult) return;

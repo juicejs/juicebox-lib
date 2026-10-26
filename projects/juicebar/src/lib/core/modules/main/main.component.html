@@ -48,8 +48,8 @@
                     <div class="button-bar">
                         @for (button of juicebox.actionButtons(); track button.title) {
                             <button app-button
-                                    appearance="raised"
-                                    color="accent"
+                                    [appearance]="button.type === 'btn-primary' ? 'raised' : 'stroked'"
+                                    [color]="button.type === 'btn-primary' ? 'accent' : 'basic'"
                                     (click)="button.callAction ? button.callAction() : button.callback?.()"
                                     [disabled]="button.disabled"
                                     [hasPermissions]="button.permissions || ''"

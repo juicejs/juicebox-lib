@@ -38,6 +38,8 @@ export class DataTableComponent implements AfterContentInit {
   sort = input<SortState>({ prop: '', dir: '' });
   detailRowFor = input<(row: any) => boolean>(() => false);
   selectable = input<boolean>(false);
+  /** Translated label for the paginator's page size control */
+  rowsPerPageLabel = input('Rows per page');
   idKey = input<string>('_id');
   clearAriaLabel = input<string>('Clear selection');
 

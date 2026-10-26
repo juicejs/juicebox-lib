@@ -2248,5 +2248,30 @@ export const usersDictionary = {
   "must_include_country": {
     "en_GB": "Must include country",
     "de_DE": "Muss Land enthalten"
+  },
+  "all": {
+    "en_GB": "All",
+    "de_DE": "Alle",
+    "hr_HR": "Svi"
+  },
+  "inactive": {
+    "en_GB": "Inactive",
+    "de_DE": "Inaktiv",
+    "hr_HR": "Neaktivni"
+  },
+  "status": {
+    "en_GB": "Status",
+    "de_DE": "Status",
+    "hr_HR": "Status"
+  },
+  "users_subtitle": {
+    "en_GB": "Manage members, roles and access.",
+    "de_DE": "Mitglieder, Rollen und Zugriffe verwalten.",
+    "hr_HR": "Upravljajte članovima, ulogama i pristupom."
+  },
+  "rows_per_page": {
+    "en_GB": "Rows per page",
+    "de_DE": "Zeilen pro Seite",
+    "hr_HR": "Redaka po stranici"
   }
 }

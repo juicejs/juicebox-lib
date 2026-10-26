@@ -274,7 +274,8 @@ export class GroupsUserComponent extends ListingComponent {
             disableClose: true,
             data: {
                 subject: `${this.pipe.transform('groups')}: ${names.join(', ')}`,
-                action: this.pipe.transform('remove')
+                action: this.pipe.transform('remove'),
+                destructive: true
             }
         });
         return !!(await firstValueFrom(dialogRef.closed));

@@ -2,11 +2,27 @@
 
 <div class="parent">
 
-  <filter-bar
-    [filters]="filterConfigs()"
-    (filterChanged)="onFilterChanged($event)"
-    (filterSearched)="onFilterSearched($event)">
-  </filter-bar>
+  <div class="listing-toolbar">
+    <div class="status-chips" role="group" [attr.aria-label]="'status' | translate">
+      @for (chip of statusChips; track chip) {
+        <button type="button" class="status-chip"
+                [class.active]="status() === chip"
+                [attr.aria-pressed]="status() === chip"
+                (click)="setStatus(chip)">
+          {{ chip | translate }}
+          @if (statusCounts(); as counts) {
+            <span class="status-chip-count">{{ counts[chip] }}</span>
+          }
+        </button>
+      }
+    </div>
+
+    <filter-bar
+      [filters]="filterConfigs()"
+      (filterChanged)="onFilterChanged($event)"
+      (filterSearched)="onFilterSearched($event)">
+    </filter-bar>
+  </div>
 
   <div class="w-100 p-0">
 
@@ -20,6 +36,7 @@
       [sort]="sortSig()"
       [selectable]="true"
       [clearAriaLabel]="'clear' | translate"
+      [rowsPerPageLabel]="'rows_per_page' | translate"
       (pageChange)="onPageChange($event)"
       (sortChange)="onSort($event)"
       (rowClick)="onSelect({type: 'click', row: $event})">
@@ -64,6 +81,13 @@
                  (focus)="$event.stopPropagation()"
                  (mousedown)="$event.stopPropagation()">
         </div>
+      </ng-template>
+
+      <ng-template [cellDef]="'firstname'" let-row>
+        <span class="name-cell">
+          <span class="name-avatar" aria-hidden="true">{{ (row.firstname?.[0] ?? '') + (row.lastname?.[0] ?? '') }}</span>
+          <span class="name-text">{{ row.firstname }}</span>
+        </span>
       </ng-template>
 
       <ng-template [cellDef]="'email'" let-row>

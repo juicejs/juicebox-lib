@@ -191,7 +191,8 @@ export class RolesUserComponent implements OnInit {
             disableClose: true,
             data: {
                 subject: this.i18n.transform(role.role),
-                action: this.i18n.transform('remove_role')
+                action: this.i18n.transform('remove_role'),
+                destructive: true
             }
         });
         dialogRef.closed.subscribe(async (result) => {

@@ -19,7 +19,6 @@ import {ButtonComponent, IconComponent} from '../../../ui-components';
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
-  styles:[`.my-custom-class { max-width: 500px; width: 400px; background: #F2F2F2; border: 2px solid #F66802; border-radius: 20px; } .my-custom-class > .arrow { right: 0.5em !important; }`],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [GlobalTranslationPipe],

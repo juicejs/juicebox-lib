@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { UsersService } from '../users.service';
 import { ListingComponent } from '../../../shared/components/listing/listing.component';
 import { Router, RouterLink } from '@angular/router';
@@ -24,6 +24,8 @@ export interface Sort {
     direction: 'asc' | 'desc' | '';
 }
 
+type UserStatus = 'all' | 'active' | 'inactive';
+
 @Component({
     selector: 'app-ng-table',
     styleUrls: ['./user-listing.component.scss'],
@@ -42,7 +44,7 @@ export interface Sort {
         SelectionDetailDefDirective
     ]
 })
-export class UserListingComponent extends ListingComponent implements OnInit {
+export class UserListingComponent extends ListingComponent implements OnInit, OnDestroy {
 
     protected readonly sortSig = signal<ISort>({ dir: 'asc', prop: 'lastname' });
     protected readonly filterSig = signal<Array<ISearchTerm>>([]);
@@ -74,6 +76,12 @@ export class UserListingComponent extends ListingComponent implements OnInit {
     // Filter configurations for reusable filter component
     protected readonly filterConfigs = signal<FilterConfig[]>([]);
 
+    /** Status chips above the table (All / Active / Inactive) with counts for the current filters */
+    protected readonly status = signal<UserStatus>('all');
+    protected readonly statusCounts = signal<Record<UserStatus, number> | null>(null);
+    protected readonly statusChips: ReadonlyArray<UserStatus> = ['all', 'active', 'inactive'];
+    private countsKey: string | null = null;
+
     actionButtons: Array<ActionButton> = [];
     displayedColumns: string[] = ['firstname', 'lastname', 'email', 'active', 'roles_count', 'groups', 'lastLogin', 'loginCount'];
 
@@ -82,10 +90,10 @@ export class UserListingComponent extends ListingComponent implements OnInit {
         { key: 'lastname',    label: '', sortable: true },
         { key: 'email',       label: '', sortable: true },
         { key: 'active',      label: '', width: '100px',  align: 'center', ellipsis: false, sortable: true },
-        { key: 'roles_count', label: '', width: '100px', align: 'center', ellipsis: false },
+        { key: 'roles_count', label: '', width: '100px', align: 'right', ellipsis: false },
         { key: 'groups',      label: '', width: '180px' },
         { key: 'lastLogin',   label: '', width: '140px', sortable: true },
-        { key: 'loginCount',  label: '', width: '100px', sortable: true }
+        { key: 'loginCount',  label: '', width: '100px', align: 'right', sortable: true }
     ];
 
     public usersService = inject(UsersService);
@@ -115,21 +123,27 @@ export class UserListingComponent extends ListingComponent implements OnInit {
             subject: this.i18n.transform('user_list'),
             link: 'main/users'
         });
+        this.juicebox.setPageHeader({
+            scope: '/main/users',
+            title: this.i18n.transform('users'),
+            subtitle: this.i18n.transform('users_subtitle')
+        });
 
+        // Main action last and primary; Groups as a secondary (ghost) button, as in the design
         const actionButtons = [{
+            title: this.i18n.transform("groups"),
+            type: "btn-secondary",
+            icon: "group_add",
+            permissions: "groups:role#read",
+            routerLink: "user-wizard",
+            callback: () => { this.openGroupsModal() }
+        }, {
             title: this.i18n.transform("add_new"),
             type: "btn-primary",
             icon: "add",
             permissions: "users:role#create",
             routerLink: "user-wizard",
             callback: () => { this.router.navigate(["/main/users/user-wizard"]) }
-        }, {
-            title: this.i18n.transform("groups"),
-            type: "btn-primary",
-            icon: "group_add",
-            permissions: "groups:role#read",
-            routerLink: "user-wizard",
-            callback: () => { this.openGroupsModal() }
         }];
 
         // Buttons the project registered via UsersService.addCustomActionButton
@@ -149,8 +163,19 @@ export class UserListingComponent extends ListingComponent implements OnInit {
         this.initializeFilterConfigs();
     }
 
+    ngOnDestroy() {
+        this.juicebox.setPageHeader(null);
+    }
+
     private async fetchUsers(): Promise<any> {
-        const result = await this.usersService.fetch(this.loggedInOrganisationId, this.pageSig() - 1, this.itemsPerPageSig(), this.sortSig(), this.filterSig());
+        // Status counts depend on the other filters only, so they are refreshed when those change
+        const countsKey = JSON.stringify(this.filterSig());
+        if (countsKey !== this.countsKey) {
+            this.countsKey = countsKey;
+            this.refreshStatusCounts();
+        }
+
+        const result = await this.usersService.fetch(this.loggedInOrganisationId, this.pageSig() - 1, this.itemsPerPageSig(), this.sortSig(), this.withStatus(this.filterSig()));
         if (!result.success)
             return false;
 
@@ -158,6 +183,34 @@ export class UserListingComponent extends ListingComponent implements OnInit {
 
         this.rowsSig.set(result.payload.items);
         this.count.set(result.payload.count);
+    }
+
+    protected async setStatus(status: UserStatus) {
+        if (status === this.status()) return;
+        this.status.set(status);
+        this.pageSig.set(1);
+        await this.fetchUsers();
+    }
+
+    private statusTerm(status: Exclude<UserStatus, 'all'>): ISearchTerm {
+        return { property: 'active', term: status === 'active', fullText: false, language: false };
+    }
+
+    private withStatus(filter: Array<ISearchTerm>): Array<ISearchTerm> {
+        const status = this.status();
+        return status === 'all' ? filter : [...filter, this.statusTerm(status)];
+    }
+
+    private async refreshStatusCounts() {
+        const filter = this.filterSig();
+        const count = async (extra: Array<ISearchTerm>) => {
+            const result = await this.usersService.fetch(this.loggedInOrganisationId, 0, 1, this.sortSig(), [...filter, ...extra]);
+            return result?.success ? result.payload.count : 0;
+        };
+        const [all, active, inactive] = await Promise.all([
+            count([]), count([this.statusTerm('active')]), count([this.statusTerm('inactive')])
+        ]);
+        this.statusCounts.set({ all, active, inactive });
     }
 
     getLoginData(users: Array<any>) {
@@ -220,6 +273,7 @@ export class UserListingComponent extends ListingComponent implements OnInit {
             data: {
                 title: this.i18n.transform('delete_user'),
                 action: 'delete user',
+                destructive: true,
                 subject: user.firstname + ' ' + user.lastname,
                 completeMessage: this.i18n.transform('are_you_sure_you_want_to_delete_user') + ' ' + user.firstname + ' ' + user.lastname
             }

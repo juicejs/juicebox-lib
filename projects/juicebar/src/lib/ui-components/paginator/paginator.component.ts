@@ -17,6 +17,10 @@ export class PaginatorComponent {
   pageSize = input<number>(10);
   pageSizeOptions = input<number[]>([5, 10, 25, 50]);
   pageIndex = model<number>(0);
+  /** Labels (the lib's ui-components have no dictionary; pass translated text) */
+  rowsPerPageLabel = input('Rows per page');
+  previousLabel = input('Previous page');
+  nextLabel = input('Next page');
 
   page = output<PageEvent>();
 
@@ -63,6 +67,13 @@ export class PaginatorComponent {
       this.pageIndex.update(i => i + 1);
       this.emitPageEvent();
     }
+  }
+
+  /** A new page size starts again at the first page */
+  setPageSize(size: number) {
+    if (size === this.pageSize()) return;
+    this.pageIndex.set(0);
+    this.page.emit({ pageIndex: 0, pageSize: size, length: this.length() });
   }
 
   private emitPageEvent() {

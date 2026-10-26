@@ -90,7 +90,8 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
             disableClose: true,
             data: {
                 subject: this.i18n.transform('organisation') + ": " + org.name,
-                action: this.i18n.transform('delete')
+                action: this.i18n.transform('delete'),
+                destructive: true
             }
         });
         dialogRef.closed.subscribe(async (result) => {

@@ -179,7 +179,8 @@ export class UserProfileDetailsComponent implements OnInit {
       const dialogRef = this.dialog.open<ConfirmationDialogComponent, any, boolean>(ConfirmationDialogComponent, {
         data: {
           completeMessage: this.i18n.transform('user_already_has_2fa'),
-          action: this.i18n.transform('update')
+          action: this.i18n.transform('update'),
+          destructive: true
         }
       });
       dialogRef.closed.subscribe(async confirmed => {
@@ -217,7 +218,8 @@ export class UserProfileDetailsComponent implements OnInit {
     const dialogRef = this.dialog.open<ConfirmationDialogComponent, any, boolean>(ConfirmationDialogComponent, {
       data: {
         completeMessage: this.i18n.transform('question_reset_2fa'),
-        action: this.i18n.transform('reset')
+        action: this.i18n.transform('reset'),
+        destructive: true
       }
     });
     dialogRef.closed.subscribe(async confirmed => {

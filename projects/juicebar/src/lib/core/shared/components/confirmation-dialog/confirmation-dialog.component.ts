@@ -15,6 +15,8 @@ export interface ConfirmationDialogData {
   title?: string;
   cancel?: string;
   confirm?: string;
+  /** Deletes or resets something: the confirm button is red */
+  destructive?: boolean;
 }
 
 @Component({
@@ -42,6 +44,7 @@ export class ConfirmationDialogComponent implements OnInit {
     public title: string;
     public cancel: string = 'cancel';
     public confirm: string = 'ok';
+    public destructive = false;
     public i18n: SharedTranslationPipe;
 
     constructor(
@@ -59,6 +62,7 @@ export class ConfirmationDialogComponent implements OnInit {
         this.title = data.title;
         this.cancel = data.cancel || 'cancel';
         this.confirm = data.confirm || 'ok';
+        this.destructive = !!data.destructive;
         
         // Initialize i18n pipe
         this.i18n = new SharedTranslationPipe(this.juicebox);

@@ -5,6 +5,12 @@
   display: contents;
 }
 
+// The page places the bar; it adds no outer spacing of its own
+.filter-bar {
+  margin: 0;
+  padding: 0;
+}
+
 .filter-value {
   display: inline-flex;
   align-items: center;

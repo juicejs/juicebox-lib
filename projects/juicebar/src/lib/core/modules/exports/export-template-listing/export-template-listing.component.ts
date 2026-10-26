@@ -133,6 +133,7 @@ export class ExportTemplateListingComponent {
             disableClose: true,
             data: {
                 action: 'delete',
+                destructive: true,
                 subject: this.autoLanguage.transform(template.name)
             }
         });

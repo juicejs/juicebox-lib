@@ -1,11 +1,10 @@
 // Modern Clean Navigation
 .modern-navigation {
   flex-shrink: 0;
-  height: 64px;
+  height: 48px;
   width: 100%;
-  background: var(--color-background-secondary);
-  // border-bottom: 2px solid var(--color-border);
-  box-shadow: var(--shadow-md);
+  background: var(--color-background);
+  border-bottom: 1px solid var(--color-border);
 
   display: flex;
   align-items: center;
@@ -61,13 +60,13 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      height: 32px;
+      height: 30px;
       padding: 0 8px 0 10px;
-      background: var(--color-background);
+      background: var(--color-background-secondary);
       border: 1px solid var(--color-border);
       border-radius: 6px;
       cursor: text;
-      min-width: 200px;
+      min-width: 240px;
       outline: none;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
@@ -134,22 +133,21 @@
 
     // Action Buttons (Language, Help, Theme)
     .action-button {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
       background-color: transparent;
       border: none;
       color: var(--color-text-secondary);
-      transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+      transition: background-color 0.15s ease, color 0.15s ease;
 
       &:hover {
         background-color: var(--color-grey-200);
         color: var(--color-text-primary);
-        transform: scale(1.05);
       }
 
       &:focus-visible {
-        outline: 2px solid var(--color-tertiary);
+        outline: 2px solid var(--color-secondary);
         outline-offset: 2px;
       }
     }
@@ -197,7 +195,6 @@
 
 @media (max-width: 480px) {
   .modern-navigation {
-    height: 56px;
 
     .nav-right-section {
       gap: 2px;
@@ -210,10 +207,6 @@
         gap: 0;
       }
 
-      .action-button {
-        width: 36px;
-        height: 36px;
-      }
     }
   }
 }

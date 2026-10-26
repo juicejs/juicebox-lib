@@ -79,6 +79,20 @@
   }
 }
 
+// Raised + warn: filled destructive button, e.g. to confirm a delete
+:host(:where(.app-button-raised.app-button-warn)) {
+  border-color: var(--color-error);
+  background: var(--color-error);
+  color: var(--color-error-contrast);
+  font-weight: 600;
+
+  &:hover:not([disabled]) {
+    border-color: var(--color-error);
+    background: var(--color-error);
+    filter: brightness(0.92);
+  }
+}
+
 // Icon-only button (always give it an aria-label)
 :host(:where(.app-button-icon)) {
   width: 30px;
