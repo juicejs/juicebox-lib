@@ -1,6 +1,6 @@
 <app-tabs [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="onTabChange($event)">
     @for (tab of visibleTabs(); track tab.route) {
-        <app-tab [label]="tab.label | translate"></app-tab>
+        <app-tab [label]="tab.label"></app-tab>
     }
 </app-tabs>
 

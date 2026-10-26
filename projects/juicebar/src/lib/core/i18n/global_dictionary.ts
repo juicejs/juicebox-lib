@@ -199,34 +199,70 @@ export const globalDictionary = {
   },
   "legal_agreement_explanation": {
     "en_GB": "I accept the privacy policy and the terms of use",
-    "de_DE": "Ich akzeptiere die Datenschutzerklärung und die Nutzungsbedingungen"
+    "de_DE": "Ich akzeptiere die Datenschutzerklärung und die Nutzungsbedingungen",
+    "cs_CZ": "I accept the privacy policy and the terms of use",
+    "sk_SK": "I accept the privacy policy and the terms of use",
+    "pt_PT": "I accept the privacy policy and the terms of use",
+    "da_DK": "I accept the privacy policy and the terms of use"
   },
   "legal_link_text_privacy_policy_part": {
     "en_GB": "Privacy policy",
-    "de_DE": "Datenschutzerklärung"
+    "de_DE": "Datenschutzerklärung",
+    "cs_CZ": "Privacy policy",
+    "sk_SK": "Privacy policy",
+    "pt_PT": "Privacy policy",
+    "da_DK": "Privacy policy"
   },
   "legal_link_text_middle_part": {
     "en_GB": "and the",
-    "de_DE": "und die"
+    "de_DE": "und die",
+    "cs_CZ": "and the",
+    "sk_SK": "and the",
+    "pt_PT": "and the",
+    "da_DK": "and the"
   },
   "legal_link_text_terms_of_use_part": {
     "en_GB": "terms of use",
-    "de_DE": "Nutzungsbedingungen"
+    "de_DE": "Nutzungsbedingungen",
+    "cs_CZ": "terms of use",
+    "sk_SK": "terms of use",
+    "pt_PT": "terms of use",
+    "da_DK": "terms of use"
   },
   "cse_privacy_policy_link": {
     "en_GB": "https://www.carlstahl.com/de/en/privacy-policy",
-    "de_DE": "https://www.carlstahl.com/de/de/privacy-policy"
+    "de_DE": "https://www.carlstahl.com/de/de/privacy-policy",
+    "cs_CZ": "https://www.carlstahl.com/de/en/privacy-policy",
+    "sk_SK": "https://www.carlstahl.com/de/en/privacy-policy",
+    "pt_PT": "https://www.carlstahl.com/de/en/privacy-policy",
+    "da_DK": "https://www.carlstahl.com/de/en/privacy-policy"
   },
   "mbt_privacy_policy_link": {
     "en_GB": "https://www.quality-circle.com/en/privacy",
-    "de_DE": "https://www.quality-circle.com/de/datenschutz"
+    "de_DE": "https://www.quality-circle.com/de/datenschutz",
+    "cs_CZ": "https://www.quality-circle.com/en/privacy",
+    "sk_SK": "https://www.quality-circle.com/en/privacy",
+    "pt_PT": "https://www.quality-circle.com/en/privacy",
+    "da_DK": "https://www.quality-circle.com/en/privacy"
   },
   "LEGAL_AGREEMENT_NOT_ACCEPTED": {
     "en_GB": "Please accept the privacy policy and terms of use",
-    "de_DE": "Bitte akzeptieren Sie die Datenschutzerklärung und die Nutzungsbedingungen"
+    "de_DE": "Bitte akzeptieren Sie die Datenschutzerklärung und die Nutzungsbedingungen",
+    "cs_CZ": "Please accept the privacy policy and terms of use",
+    "sk_SK": "Please accept the privacy policy and terms of use",
+    "pt_PT": "Please accept the privacy policy and terms of use",
+    "da_DK": "Please accept the privacy policy and terms of use"
   },
   "search_results": {
     "en_GB": "Search results",
     "de_DE": "Suchergebnisse"
+  },
+  "not-found": {
+    "en_GB": "Page not found",
+    "de_DE": "Seite nicht gefunden"
+  },
+  "page_not_found_text": {
+    "en_GB": "The page you are looking for does not exist or has been moved.",
+    "de_DE": "Die gesuchte Seite existiert nicht oder wurde verschoben."
   }
 };

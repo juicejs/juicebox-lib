@@ -57,6 +57,16 @@ export class ForgotPasswordComponent implements OnInit {
         if (this.forgotPasswordForm.invalid) return false;
 
         this.promiseBtn = (async () => {
+            const redirectUrl = window.location.protocol + '//' + window.location.host;
+            const result = await this.juicebox
+                .forgotPassword('users', 'forgotPassword', [this.forgotPasswordForm.value.email, redirectUrl])
+                .catch(() => null);
+            if (!result?.success) {
+                this.juicebox.showToast("error", result?.error || 'Error');
+                await this.helper.pause();
+                this.dialogRef.close();
+                return false;
+            }
             this.juicebox.showToast("success", this.i18n.transform('reset_email_sent'));
             await this.helper.pause();
             this.dialogRef.close();

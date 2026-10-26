@@ -105,6 +105,6 @@ export class ChannelsUserComponent implements OnInit {
             return;
         }
 
-        this.juicebox.showToast("success", "Success", "", { timeout: 500 });
+        this.juicebox.showToast("success", "Success");
     }
 }

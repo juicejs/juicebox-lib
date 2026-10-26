@@ -9,6 +9,7 @@ import { TabsComponent, TabComponent } from '../../../../ui-components';
 import {SharedModule} from '../../../shared/shared.module';
 import {UserTranslationPipe} from '../i18n/user.translation';
 import {UsersService} from '../users.service';
+import {injectCustomUserTabs, translateTabLabel} from '../custom-tabs';
 
 interface TabDef {
     label: string;
@@ -25,8 +26,7 @@ interface TabDef {
     RouterOutlet,
     TabsComponent,
     TabComponent,
-    SharedModule,
-    UserTranslationPipe
+    SharedModule
   ]
 })
 export class DetailsUsersComponent implements OnInit, OnDestroy {
@@ -50,6 +50,8 @@ export class DetailsUsersComponent implements OnInit, OnDestroy {
     private configurationService = inject(ConfigurationService);
     private usersService = inject(UsersService);
     private userPipe = inject(UserTranslationPipe);
+    /** Tabs added by the project via componentOverrides (e.g. customers, allowed types, clients) */
+    private readonly customTabs = injectCustomUserTabs(['details/:id']);
 
     protected readonly visibleTabs = computed<TabDef[]>(() => {
         const tabs: TabDef[] = [{ label: 'details', route: 'details-user' }];
@@ -71,20 +73,13 @@ export class DetailsUsersComponent implements OnInit, OnDestroy {
         if (!this.deprecated()) {
             tabs.push({ label: 'sidebar', route: 'sidebar-user' });
         }
-        if (this.juicebox.hasPermission('customers:role#read')) {
-            tabs.push({ label: 'customers', route: 'customers-user' });
-        }
-        if (this.juicebox.hasPermission('customers:role#allowed-types')) {
-            tabs.push({ label: 'allowed_types', route: 'allowed-types-user' });
-        }
-        if (this.juicebox.hasPermission('clients:role#super-admin') && this.juicebox.hasPermission('pdf:role')) {
-            tabs.push({ label: 'clients', route: 'clients-user' });
-        }
         if (this.channels()?.length > 1 && this.juicebox.hasPermission('users:role#roles')) {
             tabs.push({ label: 'channels', route: 'channels-user' });
         }
 
-        return tabs;
+        const builtIn = tabs.map(tab => ({ ...tab, label: translateTabLabel(this.userPipe, tab.label) }));
+        const builtInRoutes = new Set(builtIn.map(tab => tab.route));
+        return [...builtIn, ...this.customTabs.filter(tab => !builtInRoutes.has(tab.route))];
     });
 
     constructor() {
@@ -136,7 +131,7 @@ export class DetailsUsersComponent implements OnInit, OnDestroy {
         const child = this.route.snapshot.firstChild;
         const segment = child?.url[0]?.path;
         const tab = this.visibleTabs().find(t => t.route === segment);
-        const tabLabel = tab ? this.userPipe.transform(tab.label) : this.userPipe.transform('details');
+        const tabLabel = tab ? tab.label : this.userPipe.transform('details');
         this.juicebox.navigationEvent({
             location: this.userPipe.transform('users'),
             subject: `${this.user.email} - ${tabLabel}`,

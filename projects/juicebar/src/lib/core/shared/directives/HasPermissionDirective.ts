@@ -1,5 +1,6 @@
 import { Directive, ElementRef, inject, input, OnInit } from '@angular/core';
 import { JuiceboxService } from '../services/Juicebox.service';
+import { DISABLEABLE } from '../../../ui-components';
 
 @Directive({
   selector: `[hasPermissions]`
@@ -7,6 +8,8 @@ import { JuiceboxService } from '../services/Juicebox.service';
 export class HasPermissionDirective implements OnInit {
   private e = inject(ElementRef);
   private juicebox = inject(JuiceboxService);
+  /** Set when the host is an app-* control (app-button, app-checkbox) that manages its own `disabled` state. */
+  private disableable = inject(DISABLEABLE, { self: true, optional: true });
 
   readonly hasPermissions = input<string>();
 
@@ -26,8 +29,7 @@ export class HasPermissionDirective implements OnInit {
     if (hasRole && hasRole.permissions) {
       this.hasAllowedPermissions(permissions, hasRole.permissions);
     } else {
-      this.e.nativeElement.setAttribute("disabled", true);
-      this.e.nativeElement.classList.add('cursor-disabled');
+      this.setDisabled(true);
     }
   }
 
@@ -44,17 +46,27 @@ export class HasPermissionDirective implements OnInit {
       });
     } else if (permissions.includes('|')) { //Case to have only one permission listed
       separatedPermissions = permissions.split('|');
-      allow = !!separatedPermissions.find(permission => userPermissions[permission] === true);
+      allow = separatedPermissions.some(permission => !!userPermissions[permission]);
     } else if (!userPermissions[permissions] === true) { //Case if only one permission is selected
       allow = false;
     }
 
-    if (allow) this.e.nativeElement.removeAttribute("disabled");
-    else {
-      this.e.nativeElement.setAttribute("disabled", true);
-      this.e.nativeElement.classList.add('cursor-disabled');
-    }
+    this.setDisabled(!allow);
 
     return true;
+  }
+
+  private setDisabled(disabled: boolean) {
+    if (this.disableable) {
+      this.disableable.setExternallyDisabled(disabled);
+      return;
+    }
+
+    if (disabled) {
+      this.e.nativeElement.setAttribute("disabled", true);
+      this.e.nativeElement.classList.add('cursor-disabled');
+    } else {
+      this.e.nativeElement.removeAttribute("disabled");
+    }
   }
 }

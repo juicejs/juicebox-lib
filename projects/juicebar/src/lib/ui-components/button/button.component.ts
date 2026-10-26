@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, forwardRef, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DISABLEABLE, Disableable } from '../disableable';
 
 export type ButtonVariant = 'primary' | 'accent' | 'warn' | 'basic';
 export type ButtonAppearance = 'raised' | 'stroked' | 'flat' | 'icon';
@@ -10,15 +11,16 @@ export type ButtonAppearance = 'raised' | 'stroked' | 'flat' | 'icon';
   styleUrls: ['./button.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
+  providers: [{ provide: DISABLEABLE, useExisting: forwardRef(() => ButtonComponent) }],
   host: {
     '[class]': 'computedClasses()',
-    '[disabled]': 'disabled()',
+    '[disabled]': 'isDisabled()',
     '[attr.type]': 'type()',
-    '[attr.aria-disabled]': 'disabled()',
+    '[attr.aria-disabled]': 'isDisabled()',
     '(click)': 'handleClick($event)'
   }
 })
-export class ButtonComponent {
+export class ButtonComponent implements Disableable {
   color = input<ButtonVariant>('basic');
   appearance = input<ButtonAppearance>('flat');
   disabled = input<boolean>(false);
@@ -26,12 +28,20 @@ export class ButtonComponent {
 
   clicked = output<MouseEvent>();
 
+  private readonly externallyDisabled = signal(false);
+  /** `disabled` input combined with a disable set by a directive (see DISABLEABLE). */
+  readonly isDisabled = computed(() => this.disabled() || this.externallyDisabled());
+
   computedClasses() {
     return `app-button app-button-${this.appearance()} app-button-${this.color()}`;
   }
 
+  setExternallyDisabled(disabled: boolean) {
+    this.externallyDisabled.set(disabled);
+  }
+
   handleClick(event: MouseEvent) {
-    if (!this.disabled()) {
+    if (!this.isDisabled()) {
       this.clicked.emit(event);
     }
   }

@@ -1,0 +1,21 @@
+.not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xl) var(--spacing-md);
+  text-align: center;
+}
+
+.not-found__code {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 64px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.not-found__text {
+  margin: 0;
+  color: var(--color-text-secondary);
+}

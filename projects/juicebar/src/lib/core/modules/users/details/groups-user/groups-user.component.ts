@@ -5,10 +5,13 @@ import { UsersService } from '../../users.service';
 import { ActivatedRoute } from '@angular/router';
 import { UserTranslationPipe } from '../../i18n/user.translation';
 import { GroupsModalComponent } from '../../listing/groups-modal/groups-modal.component';
-import { DialogService, SnackbarService } from '../../../../../ui-components';
+import { DialogService } from '../../../../../ui-components';
 import { JuiceboxService } from '../../../../shared/services/Juicebox.service';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../../../../shared/shared.module';
+import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { Result } from '../../../../shared/types/Result';
+import { firstValueFrom } from 'rxjs';
 
 interface OrgNode {
     _id: string;
@@ -102,7 +105,6 @@ export class GroupsUserComponent extends ListingComponent {
         private userService: UsersService,
         public route: ActivatedRoute,
         public dialog: DialogService,
-        private snackbar: SnackbarService,
         private pipe: UserTranslationPipe,
     ) {
         super();
@@ -201,9 +203,13 @@ export class GroupsUserComponent extends ListingComponent {
         }
     }
 
+    /** Used by UnsavedChangesGuard: grid edits are only stored on Save. */
+    hasUnsavedChanges(): boolean {
+        return this.hasChanges();
+    }
+
     async saveChanges() {
         this.promiseBtn = (async () => {
-            this.loading.set(true);
             try {
                 const current = this.userGroupMatrix();
                 const original = this.originalMatrix();
@@ -222,29 +228,56 @@ export class GroupsUserComponent extends ListingComponent {
                 }
 
                 if (!additions.length && !removals.length) {
-                    this.snackbar.open(this.pipe.transform('no_changes_to_save') || 'No changes to save', 'info');
+                    this.juicebox.showToast('info', this.pipe.transform('no_changes_to_save'));
                     return;
                 }
 
-                for (const { orgId, groupKey } of additions) {
-                    await this.userService.addGroupToUser(groupKey, this.user._id, orgId);
-                }
-                for (const { orgId, groupKey } of removals) {
-                    await this.userService.deleteGroupFromUser(groupKey, this.user._id, orgId);
+                if (removals.length && !(await this.confirmRemovals(removals))) return;
+                this.loading.set(true);
+
+                let failed: Result<unknown> | null = null;
+                try {
+                    for (const { orgId, groupKey } of additions) {
+                        const result = await this.userService.addGroupToUser(groupKey, this.user._id, orgId);
+                        if (!result?.success) failed ??= result ?? { success: false };
+                    }
+                    for (const { orgId, groupKey } of removals) {
+                        const result = await this.userService.deleteGroupFromUser(groupKey, this.user._id, orgId);
+                        if (!result?.success) failed ??= result ?? { success: false };
+                    }
+                } catch {
+                    failed ??= { success: false };
                 }
 
-                this.snackbar.open(
-                    `${this.pipe.transform('success')}: ${this.pipe.transform('successfully_updated')}`,
-                    'success'
-                );
+                if (failed) {
+                    const translated = failed.error ? this.pipe.transform(failed.error) : '';
+                    const message = translated && !translated.startsWith('@')
+                        ? translated
+                        : failed.error || this.pipe.transform('error_adding_group_to_user');
+                    this.juicebox.showToast('error', this.pipe.transform('error'), message);
+                } else {
+                    this.juicebox.showToast('success', this.pipe.transform('success'), this.pipe.transform('successfully_updated'), { timeOut: 1000 });
+                }
 
+                // Reload so the grid shows what was actually saved, also after a partial failure
                 await this.initializeMatrix(this.user._id);
-            } catch (error) {
-                this.snackbar.open(`${this.pipe.transform('error')}: ${this.pipe.transform('error_adding_group_to_user')}`, 'error');
             } finally {
                 this.loading.set(false);
             }
         })();
+    }
+
+    private async confirmRemovals(removals: { orgId: string; groupKey: string }[]): Promise<boolean> {
+        const names = [...new Set(removals.map(({ groupKey }) =>
+            this.allGroups().find(group => group.key === groupKey)?.name ?? groupKey))];
+        const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+            disableClose: true,
+            data: {
+                subject: `${this.pipe.transform('groups')}: ${names.join(', ')}`,
+                action: this.pipe.transform('remove')
+            }
+        });
+        return !!(await firstValueFrom(dialogRef.closed));
     }
 
     toggleNode(orgId: string) {

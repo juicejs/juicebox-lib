@@ -1,9 +1,9 @@
-<label class="app-checkbox" [class.is-checked]="checked()" [class.is-disabled]="disabled()">
+<label class="app-checkbox" [class.is-checked]="checked()" [class.is-disabled]="isDisabled()">
   <input
     type="checkbox"
     class="app-checkbox-input"
     [checked]="checked()"
-    [disabled]="disabled()"
+    [disabled]="isDisabled()"
     (change)="onCheckboxChange($event)"
   />
   <span class="app-checkbox-label">

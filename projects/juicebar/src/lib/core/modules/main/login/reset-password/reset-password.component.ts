@@ -46,9 +46,16 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-      // @ts-ignore
-      this.subscription$ = this.route.queryParams.subscribe(async params => {
+        this.subscription$ = this.route.queryParams.subscribe(async params => {
             this.token = params['token'];
+
+            const result = await this.juicebox
+                .forgotPassword('users', 'isForgotPasswordTokenValid', [this.token])
+                .catch(() => null);
+            if (!result?.success) {
+                this.juicebox.showToast("error", 'Invalid token');
+                await this.router.navigateByUrl('/');
+            }
         });
 
         this.resetPasswordForm = new FormGroup({
@@ -69,6 +76,16 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
         }
 
         this.promiseBtn = (async () => {
+            const { password, repeatPassword } = this.resetPasswordForm.value;
+            const result = await this.juicebox
+                .forgotPassword('users', 'resetPassword', [password, repeatPassword, this.token])
+                .catch(() => null);
+            if (!result?.success) {
+                this.juicebox.showToast("error", result?.error || 'Error');
+                await this.helper.pause();
+                await this.router.navigateByUrl('/');
+                return false;
+            }
             this.juicebox.showToast("success", this.i18n.transform('password_changed'));
             await this.helper.pause();
             await this.router.navigateByUrl('/');

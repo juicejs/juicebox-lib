@@ -14,12 +14,32 @@ export interface ModuleConfig {
 }
 
 export interface ComponentOverride {
+  /**
+   * Route path inside the module, one entry per route level, e.g. `['']` for the users listing or
+   * `['details/:id', 'groups-user']` for a user details tab. An existing route gets this component;
+   * a path that does not exist yet is added under its parent (e.g. a new tab or wizard step).
+   */
   routePath: string[];
   component: Type<any>;
+  /**
+   * For an added route: show it as a tab on its parent page
+   * (users: `['details/:id', …]` tabs and `['user-wizard', …]` wizard steps).
+   */
+  tab?: ComponentOverrideTab;
+}
+
+export interface ComponentOverrideTab {
+  /** Translation key or plain text */
+  label: string;
+  /** Only show the tab when the user has this permission, e.g. `'customers:role#read'` */
+  permission?: string;
+  /** Only show the tab when the user has this role, e.g. `'pdf:role'` */
+  role?: string;
 }
 
 export interface ModuleCustomization {
   componentOverrides?: ComponentOverride[];
+  /** Extra providers for the module, e.g. services the override components need */
   providers?: Provider[];
 }
 

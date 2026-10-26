@@ -1,5 +1,12 @@
 import { Injectable, inject, ApplicationRef, createComponent, EnvironmentInjector } from '@angular/core';
-import { SnackbarComponent } from './snackbar.component';
+import { SnackbarComponent, SnackbarType } from './snackbar.component';
+
+export interface SnackbarConfig {
+  /** Milliseconds until the snackbar closes. 0 keeps it open until the user dismisses it. */
+  duration?: number;
+  type?: SnackbarType;
+  title?: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -7,24 +14,47 @@ import { SnackbarComponent } from './snackbar.component';
 export class SnackbarService {
   private appRef = inject(ApplicationRef);
   private injector = inject(EnvironmentInjector);
+  private container?: HTMLElement;
 
-  open(message: string, action?: string, duration: number = 3000) {
+  /** `config` may be a plain duration in milliseconds. */
+  open(message: string, action?: string, config: number | SnackbarConfig = {}) {
+    const { duration = 3000, type, title } = typeof config === 'number' ? { duration: config } : config;
+
     const componentRef = createComponent(SnackbarComponent, {
       environmentInjector: this.injector
     });
-
-    componentRef.instance.message = message;
-    componentRef.instance.action = action || '';
+    componentRef.setInput('message', message);
+    componentRef.setInput('action', action ?? '');
+    componentRef.setInput('title', title ?? '');
+    componentRef.setInput('type', type);
 
     this.appRef.attachView(componentRef.hostView);
-    const domElem = (componentRef.hostView as any).rootNodes[0] as HTMLElement;
-    document.body.appendChild(domElem);
+    const element = componentRef.location.nativeElement as HTMLElement;
+    this.getContainer().appendChild(element);
 
-    setTimeout(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    const close = () => {
+      clearTimeout(timeoutId);
+      if (componentRef.hostView.destroyed) return;
       this.appRef.detachView(componentRef.hostView);
       componentRef.destroy();
-    }, duration);
+      element.remove();
+    };
+
+    componentRef.instance.dismissed.subscribe(close);
+    if (duration > 0) {
+      timeoutId = setTimeout(close, duration);
+    }
 
     return componentRef.instance;
+  }
+
+  private getContainer(): HTMLElement {
+    if (!this.container) {
+      this.container = document.createElement('div');
+      this.container.className = 'app-snackbar-container';
+      document.body.appendChild(this.container);
+    }
+    return this.container;
   }
 }

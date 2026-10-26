@@ -1,20 +1,29 @@
-import { Component, ChangeDetectionStrategy, input, output, model } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, forwardRef, input, output, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DISABLEABLE, Disableable } from '../disableable';
 
 @Component({
   selector: 'app-checkbox',
   templateUrl: './checkbox.component.html',
   styleUrls: ['./checkbox.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule],
+  providers: [{ provide: DISABLEABLE, useExisting: forwardRef(() => CheckboxComponent) }]
 })
-export class CheckboxComponent {
+export class CheckboxComponent implements Disableable {
   checked = model<boolean>(false);
   disabled = input<boolean>(false);
   color = input<string>('primary');
 
   change = output<boolean>();
+
+  private readonly externallyDisabled = signal(false);
+  protected readonly isDisabled = computed(() => this.disabled() || this.externallyDisabled());
+
+  setExternallyDisabled(disabled: boolean) {
+    this.externallyDisabled.set(disabled);
+  }
 
   onCheckboxChange(event: Event) {
     const target = event.target as HTMLInputElement;

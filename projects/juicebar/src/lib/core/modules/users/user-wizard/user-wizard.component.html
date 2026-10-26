@@ -1,14 +1,8 @@
 <app-tabs class="p-3">
     <app-tab label="{{'main' | translate}}" [disabled]="true"></app-tab>
 
-    @if (juicebox.hasPermission('customers:role#read')) {
-        <app-tab label="{{'customers' | translate}}"
-                 [disabled]="true"></app-tab>
-    }
-
-    @if (juicebox.hasPermission('customers:role#allowed-types')) {
-        <app-tab label="{{'allowed_types' | translate}}"
-                 [disabled]="true"></app-tab>
+    @for (step of steps; track step.route) {
+        <app-tab [label]="step.label" [disabled]="true"></app-tab>
     }
 </app-tabs>
 

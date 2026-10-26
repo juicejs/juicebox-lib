@@ -1,32 +1,88 @@
-@import '../styles/variables.scss';
-
-.app-snackbar {
+.app-snackbar-container {
   position: fixed;
   bottom: var(--spacing-lg);
   left: 50%;
   transform: translateX(-50%);
+  z-index: 1100; // above the CDK overlay container (1000), so toasts show over open dialogs
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  max-width: calc(100vw - 32px);
+  pointer-events: none;
+}
+
+app-snackbar {
+  display: block;
+  pointer-events: auto;
+}
+
+.app-snackbar {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
+  max-width: 480px;
   padding: var(--spacing-md) var(--spacing-lg);
   background: var(--color-background-secondary);
   color: var(--color-text-primary);
   border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-xl);
-  z-index: 1000;
 
-  .message {
-    font-size: 14px;
+  &--success { border-left-color: var(--color-success); }
+  &--error { border-left-color: var(--color-error); }
+  &--warning { border-left-color: var(--color-warning); }
+  &--info { border-left-color: var(--color-info); }
+}
+
+.app-snackbar__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 14px;
+}
+
+.app-snackbar__title {
+  font-weight: 600;
+}
+
+.app-snackbar__message {
+  overflow-wrap: anywhere;
+}
+
+.app-snackbar__action,
+.app-snackbar__close {
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 2px;
+  }
+}
+
+.app-snackbar__action {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  color: var(--color-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.app-snackbar__close {
+  display: inline-flex;
+  padding: var(--spacing-xs);
+  color: var(--color-text-secondary);
+
+  &:hover {
+    color: var(--color-text-primary);
   }
 
-  .action {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border: none;
-    background: transparent;
-    color: var(--color-secondary);
-    cursor: pointer;
-    font-weight: 500;
-    text-transform: uppercase;
+  .material-icons {
+    font-size: 18px;
   }
 }

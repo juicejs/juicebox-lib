@@ -1,9 +1,9 @@
 import {inject, Injectable, Injector, isDevMode, signal, Type} from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import {SnackbarService} from "../../../ui-components";
+import {SnackbarType} from "../../../ui-components";
 import { interval, Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
-import { Juice } from './juice.service';
+import { Juice, ToastOptions } from './juice.service';
 import { DOCUMENT } from '@angular/common';
 import { IJuiceboxExtensions } from '../models/searchprovider.interface';
 import { switchMap } from 'rxjs/operators';
@@ -67,7 +67,6 @@ export class JuiceboxService {
     private juice = inject(Juice);
     private document = inject(DOCUMENT);
     private injector = inject(Injector);
-    private snackbar = inject(SnackbarService);
 
     constructor() {
         this.juice.addEventListener((e) => {
@@ -202,13 +201,8 @@ export class JuiceboxService {
         return this.juice;
     }
 
-    showToast(type: 'success' | 'error' | 'warning' | 'info', message: string, action: string = 'Close', options?: any) {
-        const snackBarOptions = {
-            duration: options?.duration || 5000,
-            panelClass: `${type}-snackbar`,
-            ...options
-        };
-        return this.snackbar.open(message, action, snackBarOptions);
+    showToast(type: SnackbarType, title: string, message?: string, options?: ToastOptions) {
+        return this.juice.showToast(type, title, message, options);
     }
 
     setAuthenticator(auth: string) {
@@ -682,7 +676,8 @@ export class JuiceboxService {
         const perm = permission.split('#')[1];
 
         const user = this.getUser();
-        if (!user || !user.roles) {
+        // Without `#permission` there is nothing to check; use hasRole() for role-only checks
+        if (!user || !user.roles || !perm) {
             return false;
         }
 
@@ -844,7 +839,7 @@ export class JuiceboxService {
     /**
      * Polls the server every N seconds and logs out if the token is not valid
      */
-    verify(_interval = 30000) {
+    verify(_interval = 300000) {
         if (isDevMode()) {
             return;
         }

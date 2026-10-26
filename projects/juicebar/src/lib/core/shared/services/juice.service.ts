@@ -1,6 +1,13 @@
 import {inject, Injectable, Injector} from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import {SnackbarService} from "../../../ui-components";
+import {SnackbarService, SnackbarType} from "../../../ui-components";
+
+export interface ToastOptions {
+    /** Milliseconds until the toast closes (default 5000). */
+    timeOut?: number;
+    /** Keep the toast open until the user closes it. */
+    disableTimeOut?: boolean;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -149,13 +156,13 @@ export class Juice {
         return this.injector.get(SnackbarService);
     }
 
-    showToast(type: 'success' | 'error' | 'warning' | 'info', message: string, action: string = 'Close', options?: any){
-        const snackBarOptions = {
-            duration: options?.duration || 5000,
-            panelClass: `${type}-snackbar`,
-            ...options
-        };
-        return this._snackBar.open(message, action, snackBarOptions);
+    /** Same signature as old juicebox (toastr): with only a title, the title is the message. */
+    showToast(type: SnackbarType, title: string, message?: string, options?: ToastOptions) {
+        return this._snackBar.open(message || title, undefined, {
+            type,
+            title: message ? title : undefined,
+            duration: options?.disableTimeOut ? 0 : options?.timeOut ?? 5000
+        });
     }
 
 }

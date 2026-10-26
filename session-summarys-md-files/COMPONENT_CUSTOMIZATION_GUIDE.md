@@ -92,6 +92,41 @@ provideUsers({
 }),
 ```
 
+## Adding Tabs and Wizard Steps
+
+A `routePath` that does not exist yet is **added** under its parent. With `tab`, it also shows up as a tab on the parent page: the users details tab bar (`['details/:id', …]`) or the create-user wizard (`['user-wizard', …]`, after the main step, which then shows "Next" instead of "Create").
+
+```typescript
+provideUsers({
+  componentOverrides: [
+    // replace the listing
+    { routePath: [''], component: CseUserListingComponent },
+    // new details tab, only for users with the permission
+    {
+      routePath: ['details/:id', 'customers-user'],
+      component: CustomersUserComponent,
+      tab: { label: 'customers', permission: 'customers:role#read' },
+    },
+    // tab that needs a permission and a role
+    {
+      routePath: ['details/:id', 'clients-user'],
+      component: PdfUsersClientsComponent,
+      tab: { label: 'clients', permission: 'clients:role#super-admin', role: 'pdf:role' },
+    },
+    // extra wizard step; it receives the main step's form values via router state
+    {
+      routePath: ['user-wizard', 'customers'],
+      component: UserWizardCustomersComponent,
+      tab: { label: 'customers', permission: 'customers:role#read' },
+    },
+  ],
+  // services the override components need
+  providers: [CustomersService],
+}),
+```
+
+`tab.label` is a users translation key or plain text. Added tabs come after the built-in ones, in the order they are listed. A `routePath` whose parent does not exist throws at startup.
+
 ## Route Path Reference
 
 ### Users Module
@@ -140,27 +175,8 @@ provideJuicebar({
 }),
 ```
 
-## Programmatic Route Override
-
-For dynamic overrides at runtime, inject `UsersService` and call `overwriteRoute`:
-
-```typescript
-import { UsersService } from 'juicebar';
-
-export class AppComponent {
-  private usersService = inject(UsersService);
-
-  replaceGroupsTab() {
-    this.usersService.overwriteRoute(
-      ['details/:id', 'groups-user'],
-      MyCustomComponent
-    );
-  }
-}
-```
-
 ## Technical Notes
 
-- Overrides are applied via `APP_INITIALIZER` after the router is ready (`router.initialNavigation()`)
+- Overrides are applied to the module's route config when `provideUsers()` / `provideExports()` builds it (`applyComponentOverrides` in `config/route-customization.ts`). There is no runtime route patching; the old `UsersService.overwriteRoute()` / `registerDynamicTab()` were removed.
+- A replaced route keeps its guards and child routes; only the component changes.
 - The sidebar registers entries only for modules whose provider was called — detected via `USERS_CUSTOMIZATION` / `EXPORTS_CUSTOMIZATION` injection tokens
-- `Router.resetConfig()` is used to apply the component swap at runtime

@@ -17,7 +17,7 @@ export function provideMain(): EnvironmentProviders {
       }
 
       if (exportsCustomization != null) {
-        sidebarService.registerSidebarItem('exports', 'exports', 'exports:role', 'fa-table', 'exports');
+        sidebarService.registerSidebarItem('exports', 'exports', 'data-export:role', 'fa-table', 'exports');
       }
 
       if (config?.mainRoutes) {

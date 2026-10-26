@@ -12,7 +12,7 @@
     </header>
 
     <app-card-content>
-      <form [formGroup]="loginForm" class="login-form" (ngSubmit)="org() ? loginWithOrg() : login()">
+      <form id="login-form" [formGroup]="loginForm" class="login-form" (ngSubmit)="org() ? loginWithOrg() : login()">
         <app-form-field appearance="outline" class="full-width">
           <app-label>{{ 'email' | translate }}</app-label>
           <input
@@ -100,13 +100,15 @@
     </app-card-content>
 
     <app-card-actions class="login-actions">
+      <!-- Outside <form>, linked by form="login-form" so Enter in a field submits -->
       <button
         app-button
         appearance="raised"
         color="accent"
         type="submit"
+        form="login-form"
         class="login-button"
-        (click)="org() ? loginWithOrg() : login()">
+        [promiseBtn]="promiseBtn">
         <app-icon [icon]="'login'"></app-icon>
         {{ 'sign_in' | translate }}
       </button>

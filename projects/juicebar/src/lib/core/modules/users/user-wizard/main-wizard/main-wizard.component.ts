@@ -8,6 +8,7 @@ import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import { TraineesService } from '../../../../shared/services/trainees.service';
 import { Trainee } from '../../../../shared/models/trainee.model';
 import { PromiseButtonDirective } from '../../../../shared/directives/PromiseButton';
+import { injectCustomUserTabs } from '../../custom-tabs';
 import {
     FormFieldComponent, LabelComponent, ErrorComponent, InputDirective,
     AutocompleteComponent, ButtonComponent, CardComponent,
@@ -43,8 +44,10 @@ export class MainWizardComponent implements OnInit {
     public promiseBtn: any;
     public i18n: UserTranslationPipe;
 
-    multipleTabs: boolean = false;
-    tabPaths: Array<string> = [];
+    /** Steps after 'main' that the project added via componentOverrides */
+    private readonly extraSteps = injectCustomUserTabs(['user-wizard']);
+    readonly multipleTabs = this.extraSteps.length > 0;
+    private readonly tabPaths = ['main', ...this.extraSteps.map(step => step.route)];
 
     languages: any[] = [];
     salutations: any[];
@@ -61,7 +64,6 @@ export class MainWizardComponent implements OnInit {
     }
 
     async ngOnInit() {
-        // this.checkForMultipleTabs();
         this.juicebox.navigationEvent({
             location: this.i18n.transform('user'),
             subject: this.i18n.transform('create_user'),
@@ -91,26 +93,6 @@ export class MainWizardComponent implements OnInit {
         if (this.projectTitle === 'QualityCircle' || this.projectTitle === 'FireCircle') {
             await this.typed();
             // this.filteredTrainees = this.trainees;
-        }
-    }
-
-    private checkForMultipleTabs() {
-        const currentRoutes = this.router.config;
-        const router = this.findRouter(currentRoutes[1], 'users,user-wizard');
-
-        this.multipleTabs = router.children.length > 2;
-        this.tabPaths = router.children.map(r => r.path);
-    }
-
-    private findRouter(route: any, path: string) {
-        const _path = path.split(',');
-        if (_path.length > 1) {
-            const router = this.findRouter(route, _path.shift());
-            return this.findRouter(router, _path.join(','));
-        } else {
-            return route.children.find(route => {
-                return route.path == path;
-            });
         }
     }
 

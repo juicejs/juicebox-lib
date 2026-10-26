@@ -141,7 +141,7 @@ export class UserListingComponent extends ListingComponent implements OnInit {
                 continue;
 
             if (excludeCreateUserFromTraineeButton.includes(this.projectTitle)
-                && button.title === 'Create user from Trainee' || button.title === 'Person als Benutzer anlegen') continue;
+                && (button.title === 'Create user from Trainee' || button.title === 'Person als Benutzer anlegen')) continue;
 
             if (button.title === 'Create vendor' || button.title === 'Verkäufer anlegen') {
                 button.type = 'btn-primary';

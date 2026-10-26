@@ -9,7 +9,7 @@ import { AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 import { ConfigurationService} from '../../../shared/services/configuration.service';
 import { Title } from '@angular/platform-browser';
 import { MainTranslationPipe } from '../i18n/main.translation';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
+import {CommonModule, Location, NgOptimizedImage} from '@angular/common';
 import {SharedModule} from '../../../shared/shared.module';
 
 @Component({
@@ -48,6 +48,7 @@ export class LoginComponent implements OnInit {
 
     private titleService = inject(Title);
     private router = inject(Router);
+    private location = inject(Location);
     public dialog = inject(DialogService);
     private route = inject(ActivatedRoute);
     private configuration = inject(ConfigurationService);
@@ -67,7 +68,8 @@ export class LoginComponent implements OnInit {
             two_factor_authorisation_code: new FormControl(null)
         })
 
-        this.returnUrl = sessionStorage.getItem('postLoginRedirect') || '/';
+        // Router path -> browser URL, so apps served under a base href (e.g. /backend/) land inside the app
+        this.returnUrl = this.location.prepareExternalUrl(sessionStorage.getItem('postLoginRedirect') || '/');
         sessionStorage.removeItem('postLoginRedirect');
         if (this.juicebox.isLoggedIn()) {
             let redirectUrl;

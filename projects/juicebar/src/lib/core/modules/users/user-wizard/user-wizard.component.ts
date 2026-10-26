@@ -1,10 +1,10 @@
-import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterOutlet} from '@angular/router';
-import { JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {SharedModule} from '../../../shared/shared.module';
 import {UserTranslationPipe} from '../i18n/user.translation';
 import {TabsComponent, TabComponent} from "../../../../ui-components";
+import {injectCustomUserTabs} from '../custom-tabs';
 
 @Component({
     selector: 'app-user-wizard',
@@ -19,10 +19,7 @@ import {TabsComponent, TabComponent} from "../../../../ui-components";
         TabComponent
     ]
 })
-export class UserWizardComponent implements OnInit {
-    public juicebox = inject(JuiceboxService);
-
-    ngOnInit(): void {
-    }
-
+export class UserWizardComponent {
+    /** Steps after 'main' that the project added via componentOverrides (e.g. customers, allowed types) */
+    protected readonly steps = injectCustomUserTabs(['user-wizard']);
 }

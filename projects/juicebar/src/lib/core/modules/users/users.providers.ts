@@ -10,6 +10,7 @@ export function provideUsers(customization?: ModuleCustomization): JuicebarFeatu
     routes: buildUsersRoute(customization?.componentOverrides),
     providers: makeEnvironmentProviders([
       UserTranslationPipe,
+      ...(customization?.providers ?? []),
       {
         provide: USERS_CUSTOMIZATION,
         useValue: customization ?? {},

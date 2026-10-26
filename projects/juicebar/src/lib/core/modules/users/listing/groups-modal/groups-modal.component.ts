@@ -9,7 +9,7 @@ import { GroupsNameEditorComponent } from './groups-name-editor.component/groups
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../../../../shared/shared.module';
-import { DialogService, SnackbarService } from '../../../../../ui-components';
+import { DialogService } from '../../../../../ui-components';
 
 @Component({
     selector: 'groups-modal',
@@ -23,7 +23,6 @@ export class GroupsModalComponent implements OnInit {
     private userService = inject(UsersService);
     private configurationService = inject(ConfigurationService);
     private dialogRef = inject(DialogRef<any>);
-    private snackbar = inject(SnackbarService);
     private pipe = inject(UserTranslationPipe);
     private dialog = inject(DialogService);
 
@@ -95,11 +94,11 @@ export class GroupsModalComponent implements OnInit {
 
         const result = await this.userService.addRoleToGroup(group._id, role);
         if (!result.success) {
-            this.snackbar.open(`Error: ${result.error}`, 'error');
+            this.juicebox.showToast('error', result.error);
             return;
         }
 
-        this.snackbar.open(`Success: ${this.pipe.transform('successfully_added')} "${role}"`, 'success');
+        this.juicebox.showToast('success', this.pipe.transform('success'), `${this.pipe.transform('successfully_added')} "${role}"`, { timeOut: 1000 });
         this.selectedRole.set(null);
         this.selectedGroup.set(result.payload);
         this.rows.set(result.payload.roles);
@@ -118,13 +117,13 @@ export class GroupsModalComponent implements OnInit {
             if (!confirmed) return;
             const result = await this.userService.deleteGroupRole(this.selectedGroup()._id, role);
             if (!result.success) {
-                this.snackbar.open(`Error: ${result.error}`, 'error');
+                this.juicebox.showToast('error', result.error);
                 return;
             }
             this.selectedGroup.set(result.payload);
             this.rows.set(result.payload.roles);
             await this.refreshRoles(result.payload.roles);
-            this.snackbar.open(`Success: ${this.pipe.transform('successfully_deleted')}`, 'success');
+            this.juicebox.showToast('success', this.pipe.transform('success'), this.pipe.transform('successfully_deleted'), { timeOut: 1000 });
         });
     }
 
@@ -141,14 +140,14 @@ export class GroupsModalComponent implements OnInit {
     async updateGroupRolePermission(role: any): Promise<void> {
         const result = await this.userService.updateGroupRolePermissions(this.selectedGroup()._id, role);
         if (!result.success) {
-            this.snackbar.open(`Error: ${result.error}`, 'error');
+            this.juicebox.showToast('error', result.error);
             const group = await this.userService.getGroupById(this.selectedGroup()._id);
             if (group?.success && group.payload) {
                 this.rows.set(group.payload.roles);
             }
             return;
         }
-        this.snackbar.open(`Success: ${this.pipe.transform('successfully_updated')}`, 'success');
+        this.juicebox.showToast('success', this.pipe.transform('success'), this.pipe.transform('successfully_updated'), { timeOut: 1000 });
     }
 
     close() {

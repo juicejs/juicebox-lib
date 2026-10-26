@@ -1,31 +1,38 @@
 export const exportsDictionary = {
   "no_results_found": {
     "en_GB": "No results found",
-    "de_DE": "Keine Ergebnisse gefunden"
+    "de_DE": "Keine Ergebnisse gefunden",
+    "hr_HR": "Nema rezultata"
   },
   "download": {
     "en_GB": "Download",
-    "de_DE": "Download"
+    "de_DE": "Download",
+    "hr_HR": "Download"
   },
   "edit": {
     "en_GB": "Edit",
-    "de_DE": "Bearbeiten"
+    "de_DE": "Bearbeiten",
+    "hr_HR": "Uredi"
   },
   "remove": {
     "en_GB": "Remove",
-    "de_DE": "Entfernen"
+    "de_DE": "Entfernen",
+    "hr_HR": "Ukloni"
   },
   "delete": {
     "en_GB": "Delete",
-    "de_DE": "Löschen"
+    "de_DE": "Löschen",
+    "hr_HR": "Obriši"
   },
   "copy": {
     "en_GB": "Copy",
-    "de_DE": "Kopieren"
+    "de_DE": "Kopieren",
+    "hr_HR": "Kopiraj"
   },
   "external_link": {
     "en_GB": "External link",
-    "de_DE": "Externer Link"
+    "de_DE": "Externer Link",
+    "hr_HR": "Vanjska poveznica"
   },
   "export": {
     "en_GB": "Export",
@@ -37,23 +44,29 @@ export const exportsDictionary = {
   },
   "exports": {
     "en_GB": "Exports",
-    "de_DE": "Exporte"
+    "de_DE": "Exporte",
+    "hr_HR": "Export",
+    "ru_RU": "Экспорты"
   },
   "submit": {
     "en_GB": "Submit",
-    "de_DE": "Absenden"
+    "de_DE": "Absenden",
+    "hr_HR": "Potvrdi"
   },
   "cancel": {
     "en_GB": "Cancel",
-    "de_DE": "Abbrechen"
+    "de_DE": "Abbrechen",
+    "hr_HR": "Odustani"
   },
   "save": {
     "en_GB": "Save",
-    "de_DE": "Speichern"
+    "de_DE": "Speichern",
+    "hr_HR": "Spremi"
   },
   "add": {
     "en_GB": "Add",
-    "de_DE": "Hinzufügen"
+    "de_DE": "Hinzufügen",
+    "hr_HR": "Dodaj"
   },
   "create": {
     "en_GB": "Create",

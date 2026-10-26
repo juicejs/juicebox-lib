@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, isSignal } from '@angular/core';
 import { CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { FormGroup } from '@angular/forms';
 import { DialogService } from '../../../ui-components';
@@ -7,7 +7,9 @@ import { JuiceboxService } from '../services/Juicebox.service';
 import { SharedTranslationPipe } from '../i18n/shared-translation.pipe';
 
 export interface CanComponentDeactivate {
-  canDeactivate: () => Promise<boolean> | boolean;
+  canDeactivate?: () => Promise<boolean> | boolean;
+  /** For unsaved state that is not a FormGroup, e.g. a signal-based editor. */
+  hasUnsavedChanges?: () => boolean;
 }
 
 @Injectable({
@@ -29,11 +31,10 @@ export class UnsavedChangesGuard implements CanDeactivate<CanComponentDeactivate
 
     if (component.canDeactivate) return component.canDeactivate();
 
-    const forms = Object.values(component).filter(item => item instanceof FormGroup);
-    if (!forms.length) return true;
-
-    const dirtyForms = forms.filter((form: FormGroup) => form.dirty);
-    if (!dirtyForms.length) return true;
+    const hasUnsavedChanges = component.hasUnsavedChanges
+      ? component.hasUnsavedChanges()
+      : this.hasDirtyForm(component);
+    if (!hasUnsavedChanges) return true;
 
     const dialogRef = this.dialog.open<ConfirmationDialogComponent, any, boolean>(ConfirmationDialogComponent, {
       disableClose: true,
@@ -46,5 +47,21 @@ export class UnsavedChangesGuard implements CanDeactivate<CanComponentDeactivate
     return new Promise<boolean>(resolve => {
       dialogRef.closed.subscribe(result => resolve(result === true));
     });
+  }
+
+  /** Finds dirty FormGroups on the component, including ones held in signals. */
+  private hasDirtyForm(component: object): boolean {
+    return Object.values(component)
+      .map(value => (isSignal(value) ? this.readSignal(value) : value))
+      .some(value => value instanceof FormGroup && value.dirty);
+  }
+
+  private readSignal(value: () => unknown): unknown {
+    try {
+      return value();
+    } catch {
+      // e.g. a required input() that has not been set
+      return null;
+    }
   }
 }

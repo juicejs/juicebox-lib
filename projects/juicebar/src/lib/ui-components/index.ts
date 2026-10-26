@@ -1,3 +1,5 @@
+export * from './disableable';
+
 // Button
 export * from './button/button.component';
 

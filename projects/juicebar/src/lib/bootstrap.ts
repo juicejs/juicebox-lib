@@ -95,6 +95,8 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], fe
   ];
 
   const mainChildren = [
+    // Plain /main stays empty; MainComponent then redirects to the first accessible module
+    { path: '', pathMatch: 'full' as const, children: [] },
     ...userProfileRoute,
     ...searchRoute,
     ...featureRoutes,
@@ -102,12 +104,23 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], fe
       path: m.path,
       ...(m.component ? { loadComponent: m.component } : { loadChildren: m.loadChildren }),
     })) ?? []),
+    {
+      path: 'not-found',
+      loadComponent: () => import('./core/modules/main/not-found/not-found.component').then(m => m.NotFoundComponent),
+    },
+    { path: '**', redirectTo: 'not-found' },
   ];
 
   return [
     {
       path: 'login',
       component: LoginComponent,
+    },
+    {
+      // Target of the link in the password reset email (`?token=`)
+      path: 'reset-password',
+      loadComponent: () =>
+        import('./core/modules/main/login/reset-password/reset-password.component').then(m => m.ResetPasswordComponent),
     },
     {
       path: '',
@@ -125,6 +138,7 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], fe
       ...(module.component ? { loadComponent: module.component } : { loadChildren: module.loadChildren }),
       canActivate: module.guards || [AuthGuard],
     })),
+    { path: '**', redirectTo: 'main/not-found' },
   ];
 }
 
