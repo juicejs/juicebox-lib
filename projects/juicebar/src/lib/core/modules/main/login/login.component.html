@@ -4,7 +4,7 @@
       <div class="logo-container">
         <!-- hardcoding juicebar in lib templates couples lib to consuming app's asset config. If another app uses different output path, breaks.
          Worth considering making path configurable via injection token later. -->
-        <img ngSrc="assets/juicebar/images/logo_small.png" alt="" class="logo" width="120" height="120">
+        <img ngSrc="assets/juicebar/images/logo_small.png" alt="" class="logo" width="120" height="120" priority>
       </div>
       <app-card-header>
         <app-card-title>{{ 'sign_in' | translate }}</app-card-title>

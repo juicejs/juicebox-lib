@@ -40,15 +40,18 @@ export function ngAdd(options: NgAddOptions): Rule {
   };
 }
 
-/** The lib's Angular peers (cdk, animations) and zone.js in the app's own package.json, matching its Angular version */
+/**
+ * @angular/cdk (and zone.js for zoneless apps) in the app's own package.json.
+ * The CDK is not released in lockstep with @angular/core (core 20.3 / cdk 20.2), so only the major is matched.
+ */
 function addPeerDependencies(tree: Tree, options: NgAddOptions): Rule {
   const angularVersion = getPackageJsonDependency(tree, '@angular/core')?.version;
   if (!angularVersion) {
     throw new SchematicsException('@angular/core not found in package.json.');
   }
+  const major = angularVersion.match(/\d+/)?.[0];
   const install = options.skipInstall ? InstallBehavior.None : InstallBehavior.Auto;
-  const rules = ['@angular/cdk', '@angular/animations'].map(name =>
-    addDependency(name, angularVersion, { type: DependencyType.Default, existing: ExistingBehavior.Skip, install }));
+  const rules = [addDependency('@angular/cdk', `^${major}.0.0`, { type: DependencyType.Default, existing: ExistingBehavior.Skip, install })];
   if (!getPackageJsonDependency(tree, 'zone.js')) {
     rules.push(addDependency('zone.js', '~0.15.0', { type: DependencyType.Default, existing: ExistingBehavior.Skip, install }));
   }
