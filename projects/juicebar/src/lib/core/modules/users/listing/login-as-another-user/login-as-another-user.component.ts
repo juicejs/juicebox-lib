@@ -3,7 +3,6 @@ import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { UsersService } from '../../users.service';
 import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
-import { CommonModule } from '@angular/common';
 import { SharedModule } from '../../../../shared/shared.module';
 
 @Component({
@@ -11,10 +10,9 @@ import { SharedModule } from '../../../../shared/shared.module';
     styleUrls: ['./login-as-another-user.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        SharedModule
-    ]
+    ReactiveFormsModule,
+    SharedModule
+]
 })
 export class LoginAsAnotherUserComponent implements OnInit {
 

@@ -1,5 +1,4 @@
 import { Component, ChangeDetectionStrategy, ViewEncapsulation, computed, inject, input, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 let nextFieldId = 0;
 
@@ -9,7 +8,7 @@ let nextFieldId = 0;
   styleUrls: ['./form-field.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  imports: [CommonModule]
+  imports: []
 })
 export class FormFieldComponent {
   appearance = input<'outline' | 'fill'>('outline');
@@ -36,7 +35,7 @@ export class FormFieldComponent {
   selector: 'app-label',
   template: '<label class="app-label-text" [attr.for]="target()"><ng-content></ng-content></label>',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
   host: {
     'class': 'app-label'
   },
@@ -65,7 +64,7 @@ export class LabelComponent {
   selector: 'app-error',
   template: '<ng-content></ng-content>',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
   host: {
     'class': 'app-error'
   },

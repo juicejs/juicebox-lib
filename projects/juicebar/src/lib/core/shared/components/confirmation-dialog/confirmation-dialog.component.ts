@@ -2,7 +2,6 @@ import {Component, Inject, OnInit, ChangeDetectionStrategy} from '@angular/core'
 import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
 import {JuiceboxService} from '../../services/Juicebox.service';
 import { SharedTranslationPipe} from '../../i18n/shared-translation.pipe';
-import {CommonModule} from '@angular/common';
 import {ButtonComponent, DialogTitleComponent, DialogContentComponent, DialogActionsComponent} from "../../../../ui-components";
 
 export interface ConfirmationDialogData {
@@ -25,13 +24,12 @@ export interface ConfirmationDialogData {
     styleUrls: ['./confirmation-dialog.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        ButtonComponent,
-        DialogTitleComponent,
-        DialogContentComponent,
-        DialogActionsComponent,
-        SharedTranslationPipe
-    ]
+    ButtonComponent,
+    DialogTitleComponent,
+    DialogContentComponent,
+    DialogActionsComponent,
+    SharedTranslationPipe
+]
 })
 export class ConfirmationDialogComponent implements OnInit {
 

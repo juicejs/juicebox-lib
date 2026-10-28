@@ -131,8 +131,5 @@
     "cache": {
       "enabled": false
     }
-  },
-  "experimental": {
-    "zoneless": true
   }
 }

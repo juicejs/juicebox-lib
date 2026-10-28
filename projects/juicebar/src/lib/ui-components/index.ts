@@ -28,9 +28,6 @@ export * from './data-table/cell-def.directive';
 
 export * from './data-table/data-table.types';
 
-// Menu
-export * from './menu/menu.component';
-
 // Tooltip
 export * from './tooltip/tooltip.directive';
 export * from './tooltip/tooltip.component';

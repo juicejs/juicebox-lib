@@ -6,7 +6,6 @@ import {CustomValidators} from '../../../../shared/CustomValidators';
 import {HelperService} from '../../../../shared/services/helper.service';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {GlobalTranslationPipe} from '../../../../i18n/global.translation';
-import {CommonModule} from '@angular/common';
 import {SharedModule} from '../../../../shared/shared.module';
 import {ButtonComponent} from '../../../../../ui-components';
 
@@ -16,12 +15,11 @@ import {ButtonComponent} from '../../../../../ui-components';
     styleUrls: ['./reset-password.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        SharedModule,
-        GlobalTranslationPipe,
-        ButtonComponent
-    ]
+    ReactiveFormsModule,
+    SharedModule,
+    GlobalTranslationPipe,
+    ButtonComponent
+]
 })
 export class ResetPasswordComponent implements OnInit, OnDestroy {
     public subscription$: Subscription = new Subscription();

@@ -1,12 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { ProgressSpinnerComponent } from './ui-components';
 
 @Component({
   selector: 'juicebox-lib',
   imports: [
-    CommonModule,
     RouterOutlet,
     ProgressSpinnerComponent
   ],

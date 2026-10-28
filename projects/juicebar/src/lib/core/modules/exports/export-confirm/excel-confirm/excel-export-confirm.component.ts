@@ -7,7 +7,6 @@ import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {ExportsTranslationPipe} from '../../i18n/exports.translation';
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {ConfigurationService} from '../../../../shared/services/configuration.service';
-import {CommonModule} from '@angular/common';
 import {SharedModule} from '../../../../shared/shared.module';
 import {ExportFiltersComponent} from '../../components/export-filters/export-filters.component';
 
@@ -22,12 +21,11 @@ export interface ExcelExportConfirmDialogData {
     templateUrl: './excel-export-confirm.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        SharedModule,
-        ReactiveFormsModule,
-        ExportsTranslationPipe,
-        ExportFiltersComponent,
-    ]
+    SharedModule,
+    ReactiveFormsModule,
+    ExportsTranslationPipe,
+    ExportFiltersComponent
+]
 })
 export class ExcelExportConfirmComponent {
     readonly promiseBtn = signal<Promise<any> | null>(null);

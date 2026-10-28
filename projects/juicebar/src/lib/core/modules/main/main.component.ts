@@ -8,7 +8,6 @@ import {OnInit, Component, ViewEncapsulation, signal, Signal, ChangeDetectionStr
 import {Subscription} from 'rxjs';
 import {SidebarService} from '../../shared/services/sidebar.service';
 import {toSignal} from '@angular/core/rxjs-interop';
-import {CommonModule} from '@angular/common';
 import {NavigationComponent} from './navigation/navigation.component';
 import {SidebarComponent} from './sidebar/sidebar.component';
 import {SharedModule} from '../../shared/shared.module';
@@ -23,14 +22,13 @@ import {ButtonComponent, IconComponent} from '../../../ui-components';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [GlobalTranslationPipe],
   imports: [
-    CommonModule,
     RouterOutlet,
     NavigationComponent,
     SidebarComponent,
     SharedModule,
     ButtonComponent,
-    IconComponent,
-  ]
+    IconComponent
+]
 })
 export class MainComponent implements OnInit {
 

@@ -8,7 +8,6 @@ import {MainTranslationPipe} from '../../../main/i18n/main.translation';
 import {ActivatedRoute, Router} from '@angular/router';
 import {User} from '../../models/user.model';
 import {Result} from '../../../../shared/types/Result';
-import {CommonModule} from '@angular/common';
 import {SharedModule} from '../../../../shared/shared.module';
 import {ProgressSpinnerComponent} from '../../../../../ui-components';
 
@@ -17,7 +16,7 @@ import {ProgressSpinnerComponent} from '../../../../../ui-components';
     templateUrl: './sidebar-user.component.html',
     styleUrls: ['./sidebar-user.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, SharedModule, CdkDropListGroup, CdkDropList, CdkDrag, ProgressSpinnerComponent]
+    imports: [SharedModule, CdkDropListGroup, CdkDropList, CdkDrag, ProgressSpinnerComponent]
 })
 export class SidebarUserComponent implements OnInit {
     private sidebarService = inject(SidebarService);

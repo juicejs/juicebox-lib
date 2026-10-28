@@ -1,5 +1,4 @@
 import { Component, input, output, ChangeDetectionStrategy, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { ButtonComponent, IconComponent } from '../../../../ui-components';
@@ -21,12 +20,11 @@ export interface FilterConfig {
   styleUrls: ['./filter-bar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     FormsModule,
     OverlayModule,
     ButtonComponent,
     IconComponent
-  ]
+]
 })
 export class FilterBarComponent {
 

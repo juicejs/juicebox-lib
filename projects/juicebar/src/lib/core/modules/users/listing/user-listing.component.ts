@@ -15,7 +15,6 @@ import { ActionButton} from '../../../shared/types/ActionButton';
 import { User } from '../models/user.model';
 import { LoginAsAnotherUserComponent } from './login-as-another-user/login-as-another-user.component';
 import { FilterConfig, FilterBarComponent } from '../../../shared/components/filter-bar/filter-bar.component';
-import {CommonModule} from '@angular/common';
 import {SharedModule} from '../../../shared/shared.module';
 import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 
@@ -32,17 +31,16 @@ type UserStatus = 'all' | 'active' | 'inactive';
     templateUrl: './user-listing.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        RouterLink,
-        FilterBarComponent,
-        SharedModule,
-        UserTranslationPipe,
-        AutoLanguagePipe,
-        DataTableComponent,
-        CellDefDirective,
-        HeaderDefDirective,
-        SelectionDetailDefDirective
-    ]
+    RouterLink,
+    FilterBarComponent,
+    SharedModule,
+    UserTranslationPipe,
+    AutoLanguagePipe,
+    DataTableComponent,
+    CellDefDirective,
+    HeaderDefDirective,
+    SelectionDetailDefDirective
+]
 })
 export class UserListingComponent extends ListingComponent implements OnInit, OnDestroy {
 

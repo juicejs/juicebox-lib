@@ -1,5 +1,4 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { JuiceboxService } from '../../../../shared/services/Juicebox.service';
 import { UsersService } from '../../users.service';
 import { ConfigurationService } from '../../../../shared/services/configuration.service';
@@ -16,7 +15,7 @@ import { DialogService } from '../../../../../ui-components';
     templateUrl: './groups-modal.component.html',
     styleUrl: './groups-modal.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, SharedModule, UserTranslationPipe]
+    imports: [FormsModule, SharedModule, UserTranslationPipe]
 })
 export class GroupsModalComponent implements OnInit {
     private juicebox = inject(JuiceboxService);

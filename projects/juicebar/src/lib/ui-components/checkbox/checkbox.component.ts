@@ -1,5 +1,4 @@
 import { Component, ChangeDetectionStrategy, computed, forwardRef, input, output, model, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DISABLEABLE, Disableable } from '../disableable';
 
@@ -8,7 +7,7 @@ import { DISABLEABLE, Disableable } from '../disableable';
   templateUrl: './checkbox.component.html',
   styleUrls: ['./checkbox.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   providers: [{ provide: DISABLEABLE, useExisting: forwardRef(() => CheckboxComponent) }]
 })
 export class CheckboxComponent implements Disableable {

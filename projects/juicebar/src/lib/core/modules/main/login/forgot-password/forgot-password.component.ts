@@ -1,6 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, inject} from '@angular/core';
 import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
-import {CommonModule} from '@angular/common';
 import {HelperService} from '../../../../shared/services/helper.service';
 import {GlobalTranslationPipe} from '../../../../i18n/global.translation';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
@@ -22,18 +21,17 @@ import {
     styleUrl: './forgot-password.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        SharedModule,
-        GlobalTranslationPipe,
-        ButtonComponent,
-        FormFieldComponent,
-        LabelComponent,
-        ErrorComponent,
-        InputDirective,
-        DialogContentComponent,
-        DialogActionsComponent
-    ]
+    ReactiveFormsModule,
+    SharedModule,
+    GlobalTranslationPipe,
+    ButtonComponent,
+    FormFieldComponent,
+    LabelComponent,
+    ErrorComponent,
+    InputDirective,
+    DialogContentComponent,
+    DialogActionsComponent
+]
 })
 export class ForgotPasswordComponent implements OnInit {
 

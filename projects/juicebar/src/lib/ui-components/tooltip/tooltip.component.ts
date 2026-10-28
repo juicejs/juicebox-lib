@@ -1,5 +1,4 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-tooltip',
@@ -11,7 +10,7 @@ import { CommonModule } from '@angular/common';
   `,
   styleUrls: ['./tooltip.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
   host: {
     'class': 'app-tooltip',
     'role': 'tooltip',

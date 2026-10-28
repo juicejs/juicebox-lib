@@ -7,7 +7,7 @@ import { ButtonComponent } from '../../../ui-components/button/button.component'
   selector: '[promiseBtn]',
   host: {
     '[class.app-button-loading]': 'isLoading()',
-    '[disabled]': 'isLoading() || button?.isDisabled() || null',
+    '[attr.disabled]': 'isLoading() || button?.isDisabled() || null',
     '[attr.aria-busy]': 'isLoading()',
   }
 })

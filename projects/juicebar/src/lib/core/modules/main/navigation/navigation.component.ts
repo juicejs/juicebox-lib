@@ -3,7 +3,6 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {filter} from 'rxjs/operators';
-import {CommonModule} from '@angular/common';
 import {DialogService} from '../../../../ui-components/dialog/dialog.service';
 import {HelpComponent} from './help/help.component';
 import {MainTranslationPipe} from '../i18n/main.translation';
@@ -38,11 +37,10 @@ interface FileInfo {
   styleUrls: ['./navigation.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     CdkMenuModule,
     SharedModule,
     MainTranslationPipe
-  ]
+]
 })
 export class NavigationComponent implements OnInit {
 

@@ -1,5 +1,4 @@
 import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
 import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -15,11 +14,10 @@ import {SharedModule} from '../../../../../shared/shared.module';
     templateUrl: './add-wallet-user.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        SharedModule,
-        UserTranslationPipe
-    ]
+    ReactiveFormsModule,
+    SharedModule,
+    UserTranslationPipe
+]
 })
 export class AddWalletUserComponent implements OnInit {
 

@@ -1,6 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { JuiceboxService } from '../../../../../../shared/services/Juicebox.service';
 import { UsersService } from '../../../../../users/users.service';
 import { DialogService } from '../../../../../../../ui-components';
@@ -31,7 +30,7 @@ function passwordMatchValidator(group: AbstractControl): ValidationErrors | null
   templateUrl: './user-profile-details.component.html',
   styleUrls: ['./user-profile-details.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ReactiveFormsModule, SharedModule, MainTranslationPipe]
+  imports: [ReactiveFormsModule, SharedModule, MainTranslationPipe]
 })
 export class UserProfileDetailsComponent implements OnInit {
   private juicebox = inject(JuiceboxService);

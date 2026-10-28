@@ -1,12 +1,11 @@
 import { Component, ChangeDetectionStrategy, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-icon',
   template: '<i [class]="iconClass()">{{ iconText() }}</i>',
   styleUrls: ['./icon.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
   host: {
     'class': 'app-icon',
     // Decorative: the ligature text ("delete", "chevron_left") must not be read out; label the button instead

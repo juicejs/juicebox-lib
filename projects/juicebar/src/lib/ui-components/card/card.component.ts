@@ -1,12 +1,11 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-card',
   template: '<ng-content></ng-content>',
   styleUrls: ['./card.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
   host: {
     'class': 'app-card'
   }
@@ -18,7 +17,7 @@ export class CardComponent {}
   template: '<ng-content></ng-content>',
   styleUrls: ['./card.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
   host: {
     'class': 'app-card-header'
   }
@@ -30,7 +29,7 @@ export class CardHeaderComponent {}
   template: '<ng-content></ng-content>',
   styleUrls: ['./card.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
   host: {
     'class': 'app-card-title'
   }
@@ -42,7 +41,7 @@ export class CardTitleComponent {}
   template: '<ng-content></ng-content>',
   styleUrls: ['./card.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
   host: {
     'class': 'app-card-content'
   }
@@ -54,7 +53,7 @@ export class CardContentComponent {}
   template: '<ng-content></ng-content>',
   styleUrls: ['./card.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
   host: {
     'class': 'app-card-actions'
   }
@@ -66,7 +65,7 @@ export class CardActionsComponent {}
   template: '<ng-content></ng-content>',
   styleUrls: ['./card.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
   host: {
     'class': 'app-card-footer'
   }

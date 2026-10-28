@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {ActivatedRoute} from "@angular/router";
 import {CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
@@ -22,14 +21,13 @@ import {ExportFiltersComponent} from '../components/export-filters/export-filter
     styleUrls: ['./export-template-edit.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        SharedModule,
-        ReactiveFormsModule,
-        DragDropModule,
-        AutoLanguagePipe,
-        ExportsTranslationPipe,
-        ExportFiltersComponent,
-    ]
+    SharedModule,
+    ReactiveFormsModule,
+    DragDropModule,
+    AutoLanguagePipe,
+    ExportsTranslationPipe,
+    ExportFiltersComponent
+]
 })
 export class ExportTemplateEditComponent {
 

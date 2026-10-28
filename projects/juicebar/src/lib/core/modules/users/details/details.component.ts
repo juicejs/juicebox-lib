@@ -1,5 +1,5 @@
 import {Component, computed, inject, OnDestroy, OnInit, output, signal, ChangeDetectionStrategy} from '@angular/core';
-import {CommonModule, Location} from '@angular/common';
+import { Location } from '@angular/common';
 import {ActivatedRoute, NavigationEnd, Router, RouterOutlet} from '@angular/router';
 import {Subscription} from 'rxjs';
 import {filter} from 'rxjs/operators';
@@ -22,12 +22,11 @@ interface TabDef {
   styleUrls: ['./details.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     RouterOutlet,
     TabsComponent,
     TabComponent,
     SharedModule
-  ]
+]
 })
 export class DetailsUsersComponent implements OnInit, OnDestroy {
 

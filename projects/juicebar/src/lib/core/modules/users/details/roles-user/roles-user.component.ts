@@ -1,5 +1,4 @@
 import {Component, inject, OnInit, ChangeDetectionStrategy, signal, computed} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {ActivatedRoute} from '@angular/router';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {ConfigurationService} from '../../../../shared/services/configuration.service';
@@ -17,11 +16,10 @@ import {SharedModule} from '../../../../shared/shared.module';
     templateUrl: './roles-user.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        FormsModule,
-        SharedModule,
-        UserTranslationPipe
-    ]
+    FormsModule,
+    SharedModule,
+    UserTranslationPipe
+]
 })
 export class RolesUserComponent implements OnInit {
 

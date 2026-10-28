@@ -1,6 +1,5 @@
 import { ListingComponent } from '../../../../shared/components/listing/listing.component';
 import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { UsersService } from '../../users.service';
 import { ActivatedRoute } from '@angular/router';
 import { UserTranslationPipe } from '../../i18n/user.translation';
@@ -32,7 +31,7 @@ interface VisibleRow {
     styleUrls: ['./groups-user.component.scss'],
     templateUrl: './groups-user.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, FormsModule, SharedModule, UserTranslationPipe]
+    imports: [FormsModule, SharedModule, UserTranslationPipe]
 })
 export class GroupsUserComponent extends ListingComponent {
 

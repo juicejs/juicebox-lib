@@ -1,5 +1,4 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ListingComponent} from '../../../../shared/components/listing/listing.component';
 import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
@@ -15,10 +14,9 @@ import { SharedModule } from '../../../../shared/shared.module';
     styleUrls: ['./organisations-user.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        SharedModule,
-        UserTranslationPipe
-    ]
+    SharedModule,
+    UserTranslationPipe
+]
 })
 export class OrganisationsUserComponent extends ListingComponent implements OnInit {
 

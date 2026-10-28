@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, output, signal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, ValidatorFn} from '@angular/forms';
 import {ExportValidators} from '../../shared/ExportValidators';
 import {AutoLanguagePipe} from '../../../../shared/pipes/auto-language.pipe';
@@ -19,14 +18,13 @@ import {FilterLabelPipe} from '../../pipes/filter-label.pipe';
     styleUrls: ['./export-filters.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        SharedModule,
-        AutoLanguagePipe,
-        ExportsTranslationPipe,
-        AsyncMultiselectComponent,
-        FilterLabelPipe,
-    ]
+    ReactiveFormsModule,
+    SharedModule,
+    AutoLanguagePipe,
+    ExportsTranslationPipe,
+    AsyncMultiselectComponent,
+    FilterLabelPipe
+]
 })
 export class ExportFiltersComponent {
 

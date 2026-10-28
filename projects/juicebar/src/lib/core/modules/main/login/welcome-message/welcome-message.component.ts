@@ -1,6 +1,5 @@
 import {Component, input, OnInit, ChangeDetectionStrategy, inject} from '@angular/core';
 import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
-import {CommonModule} from '@angular/common';
 import {ButtonComponent, DialogContentComponent, DialogActionsComponent} from '../../../../../ui-components';
 
 export interface WelcomeMessageData {
@@ -13,11 +12,10 @@ export interface WelcomeMessageData {
     styleUrls: ['./welcome-message.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        ButtonComponent,
-        DialogContentComponent,
-        DialogActionsComponent
-    ]
+    ButtonComponent,
+    DialogContentComponent,
+    DialogActionsComponent
+]
 })
 export class WelcomeMessageComponent implements OnInit {
 

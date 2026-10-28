@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component, ElementRef, forwardRef, input, output, signal, viewChild} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
@@ -85,7 +84,7 @@ export interface AutocompleteOption<T = any> {
     .app-autocomplete-option:hover { background: var(--color-background); }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, OverlayModule],
+  imports: [OverlayModule],
   providers: [{
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => AutocompleteComponent),

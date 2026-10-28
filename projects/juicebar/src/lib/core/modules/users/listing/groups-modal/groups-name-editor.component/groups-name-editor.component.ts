@@ -1,5 +1,4 @@
 import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
 import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
 import {UsersService} from '../../../users.service';
@@ -14,11 +13,10 @@ import {SnackbarService} from '../../../../../../ui-components';
     styleUrls: ['./groups-name-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        SharedModule,
-        UserTranslationPipe
-    ]
+    ReactiveFormsModule,
+    SharedModule,
+    UserTranslationPipe
+]
 })
 export class GroupsNameEditorComponent implements OnInit {
 

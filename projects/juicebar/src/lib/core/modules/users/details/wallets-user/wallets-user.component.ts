@@ -1,5 +1,4 @@
 import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {UsersService} from '../../users.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ListingComponent} from '../../../../shared/components/listing/listing.component';
@@ -16,10 +15,9 @@ import {SharedModule} from '../../../../shared/shared.module';
     templateUrl: './wallets-user.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        SharedModule,
-        UserTranslationPipe
-    ]
+    SharedModule,
+    UserTranslationPipe
+]
 })
 export class WalletsUserComponent extends ListingComponent{
 

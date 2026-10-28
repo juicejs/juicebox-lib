@@ -9,7 +9,6 @@ import {TableFilter, TableSort} from '../../../shared/services/helper.service';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {ExcelExportConfirmComponent} from '../export-confirm/excel-confirm/excel-export-confirm.component';
 import {PdfExportConfirmComponent} from '../export-confirm/pdf-confirm/pdf-export-confirm.component';
-import {CommonModule} from '@angular/common';
 import {SharedModule} from '../../../shared/shared.module';
 import {ColumnLabelsPipe} from '../pipes/column-labels.pipe';
 
@@ -25,15 +24,14 @@ export interface PageEvent {
     styleUrls: ['./export-template-listing.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        RouterLink,
-        SharedModule,
-        ExportsTranslationPipe,
-        DataTableComponent,
-        CellDefDirective,
-        SelectionDetailDefDirective,
-        ColumnLabelsPipe,
-    ]
+    RouterLink,
+    SharedModule,
+    ExportsTranslationPipe,
+    DataTableComponent,
+    CellDefDirective,
+    SelectionDetailDefDirective,
+    ColumnLabelsPipe
+]
 })
 export class ExportTemplateListingComponent {
 

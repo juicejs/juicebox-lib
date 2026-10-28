@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component, forwardRef, input, signal} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 @Component({
@@ -54,7 +53,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
   host: {
     '[class.has-value]': '!!dateValue()',
   },
-  imports: [CommonModule],
+  imports: [],
   providers: [{
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => DatepickerComponent),

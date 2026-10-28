@@ -10,7 +10,7 @@ import {MainTranslationPipe} from '../i18n/main.translation';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import {Subscription} from 'rxjs/internal/Subscription';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import {SharedModule} from '../../../shared/shared.module';
 
 @Component({
@@ -19,7 +19,6 @@ import {SharedModule} from '../../../shared/shared.module';
     styleUrls: ['./sidebar.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
         RouterLink,
         RouterLinkActive,
         ImageCropperComponent,

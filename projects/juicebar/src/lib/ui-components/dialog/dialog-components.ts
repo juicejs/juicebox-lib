@@ -1,5 +1,4 @@
 import { Component, ChangeDetectionStrategy, input, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { DialogRef } from '@angular/cdk/dialog';
 import { ButtonComponent } from '../button/button.component';
 import { IconComponent } from '../icon/icon.component';
@@ -22,7 +21,7 @@ import { IconComponent } from '../icon/icon.component';
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ButtonComponent, IconComponent],
+  imports: [ButtonComponent, IconComponent],
   host: {
     'class': 'app-dialog-title'
   }
@@ -36,7 +35,7 @@ export class DialogTitleComponent {
   selector: 'app-dialog-content',
   template: '<ng-content></ng-content>',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
   host: {
     'class': 'app-dialog-content'
   }
@@ -47,7 +46,7 @@ export class DialogContentComponent {}
   selector: 'app-dialog-actions',
   template: '<ng-content></ng-content>',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
   host: {
     'class': 'app-dialog-actions'
   }

@@ -1,5 +1,4 @@
 import { Component, ChangeDetectionStrategy, computed, forwardRef, input, output, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { DISABLEABLE, Disableable } from '../disableable';
 
 export type ButtonVariant = 'primary' | 'accent' | 'warn' | 'basic';
@@ -10,11 +9,11 @@ export type ButtonAppearance = 'raised' | 'stroked' | 'flat' | 'icon';
   template: '<ng-content></ng-content>',
   styleUrls: ['./button.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
   providers: [{ provide: DISABLEABLE, useExisting: forwardRef(() => ButtonComponent) }],
   host: {
     '[class]': 'computedClasses()',
-    '[disabled]': 'isDisabled()',
+    '[attr.disabled]': 'isDisabled() || null',
     '[attr.type]': 'type()',
     '[attr.aria-disabled]': 'isDisabled()',
     '(click)': 'handleClick($event)'

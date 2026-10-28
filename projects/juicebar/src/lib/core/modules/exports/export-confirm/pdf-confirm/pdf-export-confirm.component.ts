@@ -6,7 +6,6 @@ import {HelperService} from '../../../../shared/services/helper.service';
 import {AutoLanguagePipe, MultiLanguageObject} from '../../../../shared/pipes/auto-language.pipe';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {ExportsTranslationPipe} from '../../i18n/exports.translation';
-import {CommonModule} from '@angular/common';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {SharedModule} from '../../../../shared/shared.module';
 
@@ -22,12 +21,11 @@ export interface PdfExportConfirmDialogData {
     templateUrl: './pdf-export-confirm.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        SharedModule,
-        ExportsTranslationPipe,
-        AutoLanguagePipe,
-    ]
+    ReactiveFormsModule,
+    SharedModule,
+    ExportsTranslationPipe,
+    AutoLanguagePipe
+]
 })
 export class PdfExportConfirmComponent {
     readonly promiseBtn = signal<Promise<any> | null>(null);

@@ -1,5 +1,4 @@
 import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
 import {DialogRef} from '@angular/cdk/dialog';
@@ -16,11 +15,10 @@ import {injectUsersOptions} from '../../users-customization';
     templateUrl: './create-vendor.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        SharedModule,
-        UserTranslationPipe
-    ]
+    ReactiveFormsModule,
+    SharedModule,
+    UserTranslationPipe
+]
 })
 export class CreateVendorComponent implements OnInit {
 

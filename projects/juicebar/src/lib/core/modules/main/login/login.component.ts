@@ -11,7 +11,7 @@ import { Title } from '@angular/platform-browser';
 import { MainTranslationPipe } from '../i18n/main.translation';
 import { GlobalTranslationPipe } from '../../../i18n/global.translation';
 import { BASE_APP_CONFIG } from '../../../../config/base-app.config';
-import {CommonModule, Location, NgOptimizedImage} from '@angular/common';
+import { Location, NgOptimizedImage } from '@angular/common';
 import {SharedModule} from '../../../shared/shared.module';
 
 @Component({
@@ -20,13 +20,12 @@ import {SharedModule} from '../../../shared/shared.module';
     styleUrls: ['./login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        NgOptimizedImage,
-        ReactiveFormsModule,
-        SharedModule,
-        MainTranslationPipe,
-        AutoLanguagePipe
-    ]
+    NgOptimizedImage,
+    ReactiveFormsModule,
+    SharedModule,
+    MainTranslationPipe,
+    AutoLanguagePipe
+]
 })
 export class LoginComponent implements OnInit {
 

@@ -1,5 +1,4 @@
 import {Component, input, OnInit, output, ChangeDetectionStrategy, signal} from "@angular/core";
-import {CommonModule} from '@angular/common';
 import {ButtonComponent} from '../../../../ui-components';
 
 @Component({
@@ -7,9 +6,8 @@ import {ButtonComponent} from '../../../../ui-components';
     templateUrl: './page-size-selector.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        ButtonComponent
-    ]
+    ButtonComponent
+]
 })
 export class PageSizeSelectorComponent implements OnInit {
 

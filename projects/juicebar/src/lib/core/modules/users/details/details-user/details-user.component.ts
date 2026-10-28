@@ -1,5 +1,4 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { UsersService } from '../../users.service';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -18,11 +17,10 @@ import { injectUsersOptions } from '../../users-customization';
     styleUrls: ['./details-user.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        SharedModule,
-        UserTranslationPipe
-    ]
+    ReactiveFormsModule,
+    SharedModule,
+    UserTranslationPipe
+]
 })
 export class DetailsUserComponent implements OnInit {
 

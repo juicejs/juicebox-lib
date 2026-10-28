@@ -3,7 +3,6 @@ import {
   contentChildren, computed, ElementRef, inject, AfterContentInit, OnDestroy,
   ViewChild, forwardRef
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { FormFieldComponent } from '../form-field/form-field.component';
@@ -12,7 +11,7 @@ import { FormFieldComponent } from '../form-field/form-field.component';
   selector: 'app-option',
   template: '<ng-content></ng-content>',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
   host: {
     'class': 'app-option',
     '[class.app-option-selected]': 'selected()',
@@ -38,7 +37,7 @@ export class OptionComponent {
   styleUrls: ['./select.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  imports: [CommonModule, OverlayModule, FormsModule],
+  imports: [OverlayModule, FormsModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
