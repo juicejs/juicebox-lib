@@ -1,4 +1,5 @@
-// Copies the non-TypeScript schematic files (collection.json, schema.json) next to the compiled schematics.
+// Copies the non-TypeScript schematic files (collection.json, schema.json, and package.json, which keeps
+// the compiled CommonJS schematics CommonJS inside the "type": "module" package) next to the compiled schematics.
 import { cpSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
