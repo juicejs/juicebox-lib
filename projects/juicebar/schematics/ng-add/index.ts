@@ -177,7 +177,7 @@ export const appConfig: ApplicationConfig = {
         apiUrl: '${options.apiUrl}',
         appName: '${options.appName}',
         // Project modules inside the shell, with sidebar entries:
-        // { path: 'pages', loadChildren: () => import('./modules/pages/pages.routes'), navigation: { label: 'pages', role: 'pages:role', icon: 'article' } }
+        // { path: 'pages', loadChildren: () => import('./modules/pages/pages.routes'), navigation: { label: 'Pages', role: 'pages:role', icon: 'article' } }
         mainRoutes: [],
         // Routes outside the shell
         modules: [],

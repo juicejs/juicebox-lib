@@ -39,7 +39,8 @@ provideJuicebar(
       {
         path: 'pages',
         loadChildren: () => import('./modules/pages/pages.routes'),
-        navigation: { label: 'pages', role: 'pages:role', icon: 'article' },
+        // label is shown as written; icon is a Material icon name
+        navigation: { label: 'Pages', role: 'pages:role', icon: 'article' },
       },
     ],
     modules: [],                         // routes outside the shell

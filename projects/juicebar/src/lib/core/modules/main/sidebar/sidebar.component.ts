@@ -214,9 +214,11 @@ export class SidebarComponent implements OnInit, OnDestroy{
   // Add this method to your existing sidebar.component.ts
 
   /**
-   * Convert FontAwesome icons to Material Icons
+   * Convert FontAwesome icons to Material Icons; a Material icon name (e.g. 'article') is used as it is
    */
   getMatIcon(fontAwesomeIcon: string): string {
+    if (!fontAwesomeIcon.startsWith('fa-')) return fontAwesomeIcon;
+
     const iconMap = {
       'fa-home': 'home',
       'fa-dashboard': 'dashboard',
