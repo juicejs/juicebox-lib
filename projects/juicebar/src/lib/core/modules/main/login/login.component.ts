@@ -20,12 +20,11 @@ import {SharedModule} from '../../../shared/shared.module';
     styleUrls: ['./login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-    NgOptimizedImage,
-    ReactiveFormsModule,
-    SharedModule,
-    MainTranslationPipe,
-    AutoLanguagePipe
-]
+        NgOptimizedImage,
+        ReactiveFormsModule,
+        SharedModule,
+        MainTranslationPipe
+    ]
 })
 export class LoginComponent implements OnInit {
 

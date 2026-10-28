@@ -53,7 +53,7 @@ function addPeerDependencies(tree: Tree, options: NgAddOptions): Rule {
   const install = options.skipInstall ? InstallBehavior.None : InstallBehavior.Auto;
   const rules = [addDependency('@angular/cdk', `^${major}.0.0`, { type: DependencyType.Default, existing: ExistingBehavior.Skip, install })];
   if (!getPackageJsonDependency(tree, 'zone.js')) {
-    rules.push(addDependency('zone.js', '~0.15.0', { type: DependencyType.Default, existing: ExistingBehavior.Skip, install }));
+    rules.push(addDependency('zone.js', '~0.16.0', { type: DependencyType.Default, existing: ExistingBehavior.Skip, install }));
   }
   return chain(rules);
 }

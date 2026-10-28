@@ -1,6 +1,6 @@
 # @juicejs/juicebar
 
-The Juicebox admin for Angular 20: app shell (login, sidebar, search, profile), the users and exports modules, and CDK-based UI components. Each project's monorepo has its own small `juicebox/` app that installs this package and adds the project's own modules.
+The Juicebox admin for Angular 22: app shell (login, sidebar, search, profile), the users and exports modules, and CDK-based UI components. Each project's monorepo has its own small `juicebox/` app that installs this package and adds the project's own modules.
 
 ## New project
 
@@ -80,6 +80,8 @@ provideJuicebar(
 See `COMPONENT_CUSTOMIZATION_GUIDE.md` in the repository.
 
 ## Development (in this repository)
+
+Use Node 24: the Angular 22 CLI needs Node 22.22.3+ or 24.15+.
 
 | Command | What it does |
 |---|---|

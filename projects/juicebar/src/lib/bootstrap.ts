@@ -1,5 +1,5 @@
 import { APP_INITIALIZER, EnvironmentProviders, importProvidersFrom, isDevMode, makeEnvironmentProviders } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideRouter, Routes } from '@angular/router';
 import { BASE_APP_CONFIG, BaseAppConfig, JuicebarFeature, ModuleConfig } from './config/base-app.config';
 import { DialogModule } from '@angular/cdk/dialog';
@@ -22,7 +22,7 @@ export function provideJuicebar(config: BaseAppConfig, ...features: JuicebarFeat
   const featureProviders = features.map(f => f.providers);
 
   return makeEnvironmentProviders([
-    provideHttpClient(),
+    provideHttpClient(withXhr()),
     {
       provide: BASE_APP_CONFIG,
       useValue: config,

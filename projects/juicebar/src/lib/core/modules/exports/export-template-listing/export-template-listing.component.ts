@@ -1,6 +1,6 @@
 import {Component, inject, ChangeDetectionStrategy, signal} from '@angular/core';
 import {ExportsTranslationPipe} from "../i18n/exports.translation";
-import {Router, RouterLink} from "@angular/router";
+import {Router} from "@angular/router";
 import {ExportsService} from '../exports.service';
 import {DialogService, DataTableComponent, CellDefDirective, SelectionDetailDefDirective, ColumnConfig, SortState} from '../../../../ui-components';
 import {ConfirmationDialogComponent} from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -24,14 +24,13 @@ export interface PageEvent {
     styleUrls: ['./export-template-listing.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-    RouterLink,
-    SharedModule,
-    ExportsTranslationPipe,
-    DataTableComponent,
-    CellDefDirective,
-    SelectionDetailDefDirective,
-    ColumnLabelsPipe
-]
+        SharedModule,
+        ExportsTranslationPipe,
+        DataTableComponent,
+        CellDefDirective,
+        SelectionDetailDefDirective,
+        ColumnLabelsPipe
+    ]
 })
 export class ExportTemplateListingComponent {
 

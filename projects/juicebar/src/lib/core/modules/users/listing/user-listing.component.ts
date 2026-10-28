@@ -1,7 +1,7 @@
 import { Component, inject, OnDestroy, OnInit, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { UsersService } from '../users.service';
 import { ListingComponent } from '../../../shared/components/listing/listing.component';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { UserTranslationPipe } from '../i18n/user.translation';
 import { DialogService, PageEvent, DataTableComponent, CellDefDirective, HeaderDefDirective, SelectionDetailDefDirective, ColumnConfig, SortState } from '../../../../ui-components';
 import { GroupsModalComponent } from './groups-modal/groups-modal.component';
@@ -16,7 +16,6 @@ import { User } from '../models/user.model';
 import { LoginAsAnotherUserComponent } from './login-as-another-user/login-as-another-user.component';
 import { FilterConfig, FilterBarComponent } from '../../../shared/components/filter-bar/filter-bar.component';
 import {SharedModule} from '../../../shared/shared.module';
-import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 
 export interface Sort {
     active: string;
@@ -31,16 +30,14 @@ type UserStatus = 'all' | 'active' | 'inactive';
     templateUrl: './user-listing.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-    RouterLink,
-    FilterBarComponent,
-    SharedModule,
-    UserTranslationPipe,
-    AutoLanguagePipe,
-    DataTableComponent,
-    CellDefDirective,
-    HeaderDefDirective,
-    SelectionDetailDefDirective
-]
+        FilterBarComponent,
+        SharedModule,
+        UserTranslationPipe,
+        DataTableComponent,
+        CellDefDirective,
+        HeaderDefDirective,
+        SelectionDetailDefDirective
+    ]
 })
 export class UserListingComponent extends ListingComponent implements OnInit, OnDestroy {
 
