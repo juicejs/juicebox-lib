@@ -43,7 +43,7 @@ export class FormFieldComponent {
     :host {
       display: block;
       color: var(--color-text-secondary);
-      font-size: 11.5px;
+      font-size: 12.5px;
       font-weight: 500;
     }
 
@@ -72,7 +72,7 @@ export class LabelComponent {
     :host {
       display: block;
       color: var(--color-error);
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 500;
     }
   `]

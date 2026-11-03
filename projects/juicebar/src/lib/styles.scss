@@ -41,19 +41,19 @@
   width: 100%;
   height: 32px;
   padding: 0 10px;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-input);
   border-radius: 6px;
   background: var(--color-background);
   color: var(--color-text-primary);
   font-family: inherit;
-  font-size: 12.5px;
+  font-size: 14px;
   line-height: 1.5;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   box-sizing: border-box;
   outline: none;
 
   &:hover:not(:disabled):not([readonly]) {
-    border-color: var(--color-border-dark);
+    border-color: var(--color-text-secondary);
   }
 
   &:focus {
@@ -198,7 +198,7 @@
 .app-dialog-panel {
   input, textarea, select {
     background: var(--color-grey-100);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--color-border-input);
     color: var(--color-text-primary);
     border-radius: var(--radius-md);
     padding: 8px 12px;
@@ -302,6 +302,8 @@
   --color-border: #1f1f23;
   --color-border-light: #161618;
   --color-border-dark: #27272a;
+  // Outline of inputs, selects and checkboxes: at least 3:1 against page and card backgrounds (WCAG 1.4.11)
+  --color-border-input: #63636d;
   --color-warning-bg: rgba(251, 191, 36, 0.12);
   --color-warning-border: rgba(251, 191, 36, 0.3);
   --color-success-rgb: 74, 222, 128;
@@ -402,6 +404,7 @@ html.light-theme {
   --color-border: var(--color-grey-300);
   --color-border-light: #f0f0f0;
   --color-border-dark: var(--color-grey-400);
+  --color-border-input: #8a8a8a;
   --color-warning-bg: rgba(255, 152, 0, 0.1);
   --color-warning-border: rgba(255, 152, 0, 0.3);
   --color-success-rgb: 21, 128, 61;
@@ -1182,18 +1185,18 @@ html, body {
         gap: 6px;
         padding: 0 10px;
         height: 34px;
-        font-size: 12.5px;
+        font-size: 14px;
         font-weight: 400;
         text-transform: none;
         width: 100%;
         background: var(--color-grey-100);
-        border: 1px solid var(--color-border);
+        border: 1px solid var(--color-border-input);
         border-radius: 7px;
         color: var(--color-text-primary);
         transition: border-color 0.15s ease;
 
         &:hover {
-            border-color: var(--color-border-dark);
+            border-color: var(--color-text-secondary);
             background: var(--color-grey-200);
             box-shadow: none;
         }
