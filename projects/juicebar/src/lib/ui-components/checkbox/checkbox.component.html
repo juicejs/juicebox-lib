@@ -4,7 +4,7 @@
     class="app-checkbox-input"
     [checked]="checked()"
     [disabled]="isDisabled()"
-    (change)="onCheckboxChange($event)"
+    (change)="$event.stopPropagation(); onCheckboxChange($event)"
   />
   <span class="app-checkbox-label">
     <ng-content></ng-content>
