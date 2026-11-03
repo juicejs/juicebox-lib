@@ -70,7 +70,7 @@ export class SidebarService implements OnDestroy {
             const hasPermission = hasRole && hasRole.permissions['juicebox:visible'] == true;
             if (hasRole && hasPermission){
                 if (i18n)
-                    item.label = i18n.transform(item.id);
+                    item.label = this.translateLabel(i18n, item.id, item.label);
                 sidebar.visible.push(item);
             }
         }
@@ -94,6 +94,12 @@ export class SidebarService implements OnDestroy {
         })
 
         return sidebar.visible;
+    }
+
+    // A label the main dictionary doesn't know is shown as registered, not as '@label'
+    private translateLabel(i18n: { transform(value: string): string }, key: string, label: string): string {
+        const translated = i18n.transform(key);
+        return typeof translated === 'string' && !translated.startsWith('@') ? translated : label;
     }
 
     private visibleSidebarItemsPromise: Promise<SidebarItem[]> | null = null;
@@ -137,11 +143,11 @@ export class SidebarService implements OnDestroy {
             if (find) {
                 if (value === false) {
                     find.index = <false>value;
-                    find = {...find, label: this.mainTranslationPipe.transform(find.label)};
+                    find = {...find, label: this.translateLabel(this.mainTranslationPipe, find.label, find.label)};
                     sidebar.hidden.push({...find});
                 } else {
                     find.index = <number>value;
-                    find = {...find, label: this.mainTranslationPipe.transform(find.label)};
+                    find = {...find, label: this.translateLabel(this.mainTranslationPipe, find.label, find.label)};
                     sidebar.visible.push({...find});
                 }
             }

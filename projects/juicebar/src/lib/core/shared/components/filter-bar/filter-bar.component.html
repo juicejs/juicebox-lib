@@ -25,9 +25,9 @@
       <ng-template cdkConnectedOverlay
                    [cdkConnectedOverlayOrigin]="trigger"
                    [cdkConnectedOverlayOpen]="openKey() === filter.key"
-                   [cdkConnectedOverlayHasBackdrop]="true"
-                   cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
-                   (backdropClick)="close()">
+                   [cdkConnectedOverlayHasBackdrop]="false"
+                   (overlayOutsideClick)="onOutsideClick($event, filter.key, trigger)"
+                   (detach)="closeFilter(filter.key)">
         <div class="filter-panel">
           <div class="autocomplete-search-container">
             <app-icon [icon]="'search'" class="search-icon"></app-icon>

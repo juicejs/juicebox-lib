@@ -1,6 +1,6 @@
 import { Component, input, output, ChangeDetectionStrategy, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { OverlayModule } from '@angular/cdk/overlay';
+import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay';
 import { ButtonComponent, IconComponent } from '../../../../ui-components';
 
 export interface FilterConfig {
@@ -47,6 +47,20 @@ export class FilterBarComponent {
 
   close() {
     this.openKey.set(null);
+  }
+
+  // No backdrop, so a click on another filter opens that one straight away
+  onOutsideClick(event: MouseEvent, key: string, origin: CdkOverlayOrigin) {
+    // The filter's own button toggles its panel
+    if (origin.elementRef.nativeElement.contains(event.target as Node)) {
+      return;
+    }
+    this.closeFilter(key);
+  }
+
+  // Closes this filter's panel unless another filter has opened meanwhile (also on Escape)
+  closeFilter(key: string) {
+    this.openKey.update(k => (k === key ? null : k));
   }
 
   onFilterSelected(filterKey: string, value: any) {

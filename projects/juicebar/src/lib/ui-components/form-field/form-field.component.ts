@@ -47,7 +47,7 @@ export class FormFieldComponent {
       font-weight: 500;
     }
 
-    // The global label rule would make it larger and white
+    /* The global label rule would make it larger and white */
     .app-label-text {
       display: block;
       margin: 0;
