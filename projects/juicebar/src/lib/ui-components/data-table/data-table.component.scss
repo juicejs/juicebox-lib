@@ -157,7 +157,8 @@
 }
 
 // For header templates: <input class="dt-header-filter"> filters a column in place of its label
-.dt-header-filter {
+// (inside the table, so it outweighs the global input[type="text"] rule)
+.data-table .dt-header-filter {
   flex: 1 1 auto;
   min-width: 0;
   width: 100%;
