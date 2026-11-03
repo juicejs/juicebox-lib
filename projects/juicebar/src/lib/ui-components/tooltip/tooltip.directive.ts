@@ -7,10 +7,13 @@ export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 
 let nextTooltipId = 0;
 
+/** Hover pause before a tooltip shows, so moving across a row of buttons doesn't flash each one */
+const HOVER_DELAY_MS = 300;
+
 @Directive({
   selector: '[appTooltip]',
   host: {
-    '(mouseenter)': 'show()',
+    '(mouseenter)': 'showAfterPause()',
     '(mouseleave)': 'hide()',
     // Keyboard users get the tooltip too, and Escape closes it
     '(focusin)': 'show()',
@@ -29,6 +32,7 @@ export class TooltipDirective implements OnDestroy {
   private elementRef = inject(ElementRef);
   private overlayRef?: OverlayRef;
   private readonly tooltipId = `app-tooltip-${nextTooltipId++}`;
+  private showTimer?: ReturnType<typeof setTimeout>;
   protected readonly describedBy = signal<string | null>(null);
 
   private getPositions(): ConnectedPosition[] {
@@ -57,7 +61,13 @@ export class TooltipDirective implements OnDestroy {
     }
   }
 
+  showAfterPause() {
+    clearTimeout(this.showTimer);
+    this.showTimer = setTimeout(() => this.show(), HOVER_DELAY_MS);
+  }
+
   show() {
+    clearTimeout(this.showTimer);
     if (this.overlayRef?.hasAttached() || !this.appTooltip()) {
       return;
     }
@@ -79,6 +89,7 @@ export class TooltipDirective implements OnDestroy {
   }
 
   hide() {
+    clearTimeout(this.showTimer);
     if (this.overlayRef) {
       this.overlayRef.detach();
     }
@@ -86,6 +97,7 @@ export class TooltipDirective implements OnDestroy {
   }
 
   ngOnDestroy() {
+    clearTimeout(this.showTimer);
     this.overlayRef?.dispose();
   }
 }
