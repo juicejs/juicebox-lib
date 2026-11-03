@@ -108,12 +108,12 @@
 
     .menu-item-container {
       margin: 0 8px;
-      border-radius: 6px;
+      border-radius: 8px;
 
       .menu-item {
         position: relative;
         display: block;
-        border-radius: 6px;
+        border-radius: 8px;
         cursor: pointer;
         user-select: none;
         color: var(--color-sidebar-item);
@@ -178,16 +178,22 @@
         }
 
         // Active state
+        // Active: a raised pill on the sidebar, its icon in the accent colour
         &.active {
-          background: var(--color-secondary-active-bg);
-          color: var(--color-secondary-active-text);
+          background: var(--color-background);
+          color: var(--color-text-primary);
+          box-shadow: var(--shadow-sm), 0 0 0 1px var(--color-border);
 
           &:hover {
-            background: var(--color-secondary-active-bg);
+            background: var(--color-background);
+          }
+
+          app-icon {
+            color: var(--color-secondary);
           }
 
           .menu-label {
-            font-weight: 500;
+            font-weight: 600;
           }
         }
 

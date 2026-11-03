@@ -33,6 +33,7 @@
 
   &.app-tab-active {
     color: var(--color-text-primary);
+    font-weight: 600;
     border-bottom-color: var(--color-secondary);
   }
 
@@ -40,6 +41,12 @@
   &:disabled {
     opacity: 0.4;
     cursor: not-allowed;
+  }
+
+  // The current tab stays readable when it can't be clicked (a wizard's step)
+  &.app-tab-active.app-tab-disabled {
+    opacity: 1;
+    cursor: default;
   }
 }
 

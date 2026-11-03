@@ -11,10 +11,11 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 10px 12px;
-    background: var(--color-background);
+    padding: 12px 16px;
+    background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
 }
 
 .toolbar-left {
@@ -88,33 +89,39 @@
 
 /* Table */
 .roles-table {
-    background: var(--color-background-secondary);
+    background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
     overflow: hidden;
 }
 
+// The card above draws the frame
 :host ::ng-deep .roles-table .data-table {
     width: 100%;
     border-collapse: collapse;
+    border: none;
+    border-radius: 0;
 }
 
 :host ::ng-deep .roles-table .data-table th {
     text-align: left;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 0.01em;
     color: var(--color-text-secondary);
-    padding: 10px 16px;
+    height: 44px;
+    padding: 0 16px;
     border-bottom: 1px solid var(--color-border);
-    background: var(--color-background);
+    background: var(--color-background-secondary);
 }
 
 :host ::ng-deep .roles-table .data-table td {
-    padding: 12px 16px;
+    padding: 14px 16px;
     border-bottom: 1px solid var(--color-border-light, var(--color-border));
     vertical-align: middle;
     color: var(--color-text-primary);
-    font-size: 13px;
+    font-size: 13.5px;
 }
 
 :host ::ng-deep .roles-table .data-table tr:last-child td {
@@ -122,7 +129,15 @@
 }
 
 :host ::ng-deep .roles-table .data-table tbody tr:hover td {
-    background: var(--color-grey-100, var(--color-background));
+    background: var(--color-background-secondary);
+}
+
+:host ::ng-deep .roles-table .data-table :is(th, td):first-child {
+    padding-left: 20px;
+}
+
+:host ::ng-deep .roles-table .data-table :is(th, td):last-child {
+    padding-right: 20px;
 }
 
 :host ::ng-deep .col-visibility {

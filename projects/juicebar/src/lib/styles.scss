@@ -92,9 +92,9 @@
 // =============================================================================
 
 .app-dialog-panel {
-  background: var(--color-grey-200);
-  border: 1px solid var(--color-border-dark);
-  border-radius: var(--radius-lg);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
   box-shadow: var(--shadow-xl);
   padding: var(--spacing-lg);
   min-width: 300px;
@@ -121,8 +121,9 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-sm);
-  font-size: 1.25rem;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   margin: 0 0 var(--spacing-md) 0;
   padding-bottom: var(--spacing-md);
   border-bottom: 1px solid var(--color-border-light);
@@ -317,7 +318,19 @@
   // Background colors
   --color-background: #0a0a0b;
   --color-background-secondary: #131315;
+  // The canvas behind cards and tables, and the surface of dialogs
+  --color-page: #0a0a0b;
+  --color-surface-raised: #161618;
+  // Cards and tables on the canvas
+  --color-surface: #111113;
+  --radius-card: 16px;
+  --shadow-card: none;
   --color-backdrop: rgba(0, 0, 0, 0.6);
+
+  // Main action buttons
+  --color-action: #f4f4f5;
+  --color-action-hover: #e4e4e7;
+  --color-action-contrast: #0a0a0b;
 
   // Rich-text content: a light page in both themes, because stored HTML carries the website's own inline colors (mostly black text)
   --color-rich-text-background: #ffffff;
@@ -377,17 +390,17 @@ html.light-theme {
   --color-tertiary-dark: #003d6b;
   --color-tertiary-contrast: #ffffff;
 
-  // Grey scale
-  --color-grey-50: #fafafa;
-  --color-grey-100: #f5f5f5;
-  --color-grey-200: #eeeeee;
-  --color-grey-300: #e0e0e0;
-  --color-grey-400: #bdbdbd;
-  --color-grey-500: #9e9e9e;
-  --color-grey-600: #757575;
-  --color-grey-700: #616161;
-  --color-grey-800: #424242;
-  --color-grey-900: #212121;
+  // Grey scale (slate)
+  --color-grey-50: #f8fafc;
+  --color-grey-100: #f1f5f9;
+  --color-grey-200: #eaeef3;
+  --color-grey-300: #e2e8f0;
+  --color-grey-400: #cbd5e1;
+  --color-grey-500: #94a3b8;
+  --color-grey-600: #64748b;
+  --color-grey-700: #475569;
+  --color-grey-800: #334155;
+  --color-grey-900: #1e293b;
 
   // Semantic colors
   --color-success: #15803d;
@@ -400,15 +413,17 @@ html.light-theme {
   --color-info: #1d4ed8;
 
   // Text colors
-  --color-text-primary: rgba(0, 0, 0, 0.87);
-  --color-text-secondary: rgba(0, 0, 0, 0.6);
-  --color-text-disabled: rgba(0, 0, 0, 0.38);
+  --color-text-primary: #0f172a;
+  // 5:1 on white and on the page canvas
+  --color-text-secondary: #5b6b80;
+  --color-text-disabled: #94a3b8;
 
   // Border colors
   --color-border: var(--color-grey-300);
-  --color-border-light: #f0f0f0;
+  --color-border-light: #eef2f6;
   --color-border-dark: var(--color-grey-400);
-  --color-border-input: #8a8a8a;
+  // 3:1 on white and on the page canvas
+  --color-border-input: #7c8aa0;
   --color-warning-bg: rgba(255, 152, 0, 0.1);
   --color-warning-border: rgba(255, 152, 0, 0.3);
   --color-success-rgb: 21, 128, 61;
@@ -418,12 +433,21 @@ html.light-theme {
   // Background colors
   --color-background: var(--color-primary);
   --color-background-secondary: var(--color-grey-50);
+  --color-page: #f6f7fb;
+  --color-surface-raised: #ffffff;
+  --color-surface: #ffffff;
+  --shadow-card: 0 4px 6px rgba(15, 23, 42, 0.02);
 
-  // Shadows
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.15);
-  --shadow-xl: 0 8px 16px rgba(0, 0, 0, 0.2);
+  // Main action buttons
+  --color-action: #0f172a;
+  --color-action-hover: #1e293b;
+  --color-action-contrast: #ffffff;
+
+  // Shadows: soft and cool
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-xl: 0 20px 48px rgba(15, 23, 42, 0.14);
 
   // Border radius
   --radius-sm: 2px;
@@ -442,9 +466,9 @@ html.light-theme {
   // Light values for tokens the design palette does not define
   --color-secondary-active-bg: #fde8dc;
   --color-secondary-active-text: #9a3412;
-  --color-sidebar-item: #52525b;
-  --color-avatar-bg: #ececee;
-  --color-avatar-text: #424242;
+  --color-sidebar-item: #475569;
+  --color-avatar-bg: #eaeef3;
+  --color-avatar-text: #334155;
 }
 
 // =============================================================================
@@ -933,48 +957,50 @@ label {
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.25rem 0.6rem;
-  font-size: 0.75rem;
+  gap: 4px;
+  padding: 3px 9px;
+  font-size: 11px;
   font-weight: 600;
-  line-height: 1;
-  border-radius: var(--radius-full);
+  line-height: 1.2;
+  border-radius: 999px;
   white-space: nowrap;
 }
 
+// Tinted with their colour, the text in the colour itself
 .badge-primary {
-  background: var(--color-secondary);
-  color: var(--color-secondary-contrast);
+  background: color-mix(in srgb, var(--color-secondary) 12%, transparent);
+  color: var(--color-secondary);
 }
 
 .badge-secondary {
-  background: var(--color-tertiary);
-  color: var(--color-tertiary-contrast);
+  background: color-mix(in srgb, var(--color-tertiary) 12%, transparent);
+  color: var(--color-tertiary);
 }
 
 .badge-success {
-  background: var(--color-success);
-  color: var(--color-success-contrast);
+  background: var(--color-success-bg);
+  color: var(--color-success);
 }
 
 .badge-danger {
-  background: var(--color-error);
-  color: var(--color-error-contrast);
+  background: color-mix(in srgb, var(--color-error) 12%, transparent);
+  color: var(--color-error);
 }
 
 .badge-warning {
-  background: var(--color-warning);
-  color: var(--color-warning-contrast);
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
 }
 
 .badge-info {
-  background: var(--color-info);
-  color: var(--color-info-contrast);
+  background: color-mix(in srgb, var(--color-info) 12%, transparent);
+  color: var(--color-info);
 }
 
 .badge-outline {
   background: transparent;
   border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
+  color: var(--color-text-secondary);
 }
 
 // =============================================================================
@@ -1195,7 +1221,8 @@ html, body {
         font-weight: 400;
         text-transform: none;
         width: 100%;
-        background: var(--color-grey-100);
+        // Looks like an app-select trigger
+        background: var(--color-background);
         border: 1px solid var(--color-border-input);
         border-radius: 7px;
         color: var(--color-text-primary);
@@ -1203,31 +1230,38 @@ html, body {
 
         &:hover {
             border-color: var(--color-text-secondary);
-            background: var(--color-grey-200);
+            background: var(--color-background);
             box-shadow: none;
         }
 
+        &:focus-visible {
+            outline: none;
+            border-color: var(--color-secondary);
+            box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.15);
+        }
+
         .filter-icon {
-            width: 12px !important;
-            height: 12px !important;
+            width: 16px !important;
+            height: 16px !important;
             color: var(--color-text-secondary) !important;
             flex-shrink: 0;
-            margin-right: 4px;
 
             .material-icons, .material-symbols-outlined, i {
-                font-size: 12px !important;
-                width: 12px !important;
-                height: 12px !important;
+                font-size: 16px !important;
+                width: 16px !important;
+                height: 16px !important;
                 line-height: 1 !important;
             }
         }
 
+        // Like a select's placeholder
         .filter-label {
             color: var(--color-text-secondary);
-            font-weight: 500;
+            font-weight: 400;
             white-space: nowrap;
         }
 
+        // Like a select's chips
         .filter-value {
             display: inline-flex;
             align-items: center;
@@ -1235,9 +1269,9 @@ html, body {
             font-weight: 500;
             padding: 2px 6px;
             border-radius: 4px;
-            background: rgba(var(--color-secondary-rgb), 0.1);
-            color: var(--color-secondary);
-            border: 1px solid var(--color-secondary-dark);
+            background: var(--color-grey-200);
+            color: var(--color-text-primary);
+            border: 1px solid var(--color-border);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -1245,15 +1279,18 @@ html, body {
         }
 
         .dropdown-icon {
+            width: 16px;
+            height: 16px;
             color: var(--color-text-secondary);
             margin-left: auto;
             flex-shrink: 0;
         }
     }
 
+    // A filter with a value: a darker outline, the value shows as chips
     &.active .filter-btn,
     &.active .gdrive-filter-btn {
-        border-color: var(--color-tertiary);
+        border-color: var(--color-text-secondary);
     }
 
     // Hide the autocomplete input but keep it functional
@@ -1634,17 +1671,18 @@ html, body {
 table.data-table {
     width: 100%;
     border-collapse: collapse;
-    background: var(--color-background);
+    background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: var(--radius-card);
     overflow: hidden;
 
     th[cdk-header-cell] {
-        height: 34px;
+        height: 44px;
         padding: 0 12px;
         text-align: left;
-        font-size: 11.5px;
-        font-weight: 500;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.01em;
         color: var(--color-text-secondary);
         background: var(--color-background-secondary);
         border-bottom: 1px solid var(--color-border);
@@ -1654,8 +1692,8 @@ table.data-table {
     }
 
     td[cdk-cell] {
-        padding: 10px 12px;
-        font-size: 12.5px;
+        padding: 14px 12px;
+        font-size: 13.5px;
         font-weight: 400;
         color: var(--color-text-primary);
         border-bottom: 1px solid var(--color-border-light);
@@ -1663,10 +1701,14 @@ table.data-table {
         &.text-right { text-align: right; }
     }
 
+    // Room at the table's outer edges
+    th[cdk-header-cell]:first-child, td[cdk-cell]:first-child { padding-left: 20px; }
+    th[cdk-header-cell]:last-child, td[cdk-cell]:last-child { padding-right: 20px; }
+
     tr[cdk-row] {
         transition: background 0.08s;
         &:last-child td[cdk-cell] { border-bottom: none; }
-        &:hover { background: var(--color-grey-100); }
+        &:hover { background: var(--color-background-secondary); }
     }
 }
 

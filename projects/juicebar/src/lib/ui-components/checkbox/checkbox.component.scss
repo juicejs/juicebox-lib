@@ -2,19 +2,20 @@
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-sm);
-  padding: 6px 12px;
+  padding: 5px 11px 5px 6px;
   border: 1px solid var(--color-border);
   border-radius: 999px;
   background: var(--color-background-secondary);
-  color: var(--color-text-primary);
-  font-size: 14px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
   line-height: 1;
   cursor: pointer;
   user-select: none;
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 
   &:hover:not(.is-disabled) {
-    border-color: var(--color-secondary);
+    border-color: var(--color-border-dark);
+    color: var(--color-text-primary);
   }
 
   .app-checkbox-input {
@@ -36,7 +37,7 @@
   }
 
   .app-checkbox-label {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .app-checkbox-check {
@@ -52,16 +53,17 @@
     transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   }
 
-  // Checked: a tinted chip with a filled check, so the accent marks the state without flooding the screen
+  // Checked: a white chip with dark text and a filled green check; unchecked ones stay grey with an empty circle
   &.is-checked {
-    background: var(--color-secondary-active-bg);
-    border-color: rgba(var(--color-secondary-rgb), 0.4);
-    color: var(--color-secondary-active-text);
+    background: var(--color-surface);
+    border-color: var(--color-border-dark);
+    color: var(--color-text-primary);
+    font-weight: 500;
 
     .app-checkbox-check {
-      background: var(--color-secondary);
-      border-color: var(--color-secondary);
-      color: var(--color-secondary-contrast);
+      background: var(--color-success);
+      border-color: var(--color-success);
+      color: var(--color-success-contrast);
     }
   }
 

@@ -183,19 +183,19 @@ Same idea, for the header cell. Use this for in-header filter inputs.
 
 ```html
 <ng-template [headerDef]="'firstname'">
-  <div class="header-wrap">
-    <input class="filter-input"
-           type="text"
-           [placeholder]="'firstname' | translate"
-           debounceKeyUp
-           [debounceTime]="500"
-           (onEvent)="onFilter('firstname', $event.target['value'])"
-           (click)="$event.stopPropagation()">
-  </div>
+  <input class="dt-header-filter"
+         type="text"
+         [attr.aria-label]="'firstname' | translate"
+         [placeholder]="'firstname' | translate"
+         debounceKeyUp
+         [debounceTime]="500"
+         (onEvent)="onFilter('firstname', $event.target['value'])"
+         (click)="$event.stopPropagation()"
+         (keydown)="$event.stopPropagation()">
 </ng-template>
 ```
 
-When a `headerDef` is present for a column, it replaces the default label.
+When a `headerDef` is present for a column, it replaces the default label. `dt-header-filter` is the table's own style for a filter input in the header: it fills the column, borderless, with the column name as placeholder.
 
 ---
 

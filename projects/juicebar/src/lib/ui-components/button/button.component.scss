@@ -11,8 +11,8 @@
   height: 32px;
   padding: 0 12px;
   border: 1px solid var(--color-border);
-  border-radius: 6px;
-  background: var(--color-grey-100);
+  border-radius: 8px;
+  background: var(--color-background);
   color: var(--color-text-primary);
   cursor: pointer;
   font-family: inherit;
@@ -22,7 +22,7 @@
   white-space: nowrap;
 
   &:hover:not([disabled]) {
-    background: var(--color-grey-200);
+    background: var(--color-grey-100);
     border-color: var(--color-border-dark);
   }
 
@@ -53,18 +53,23 @@
   box-shadow: var(--shadow-sm);
 }
 
-// Primary / accent: the design's primary button (any appearance)
+// Primary / accent: the main action, solid in the action colour (any appearance)
 :host(:where(.app-button-primary)),
 :host(:where(.app-button-accent)) {
-  border-color: var(--color-secondary-dark);
-  background: var(--color-secondary);
-  color: var(--color-secondary-contrast);
+  border-color: var(--color-action);
+  background: var(--color-action);
+  color: var(--color-action-contrast);
   font-weight: 600;
 
   &:hover:not([disabled]) {
-    border-color: var(--color-secondary-dark);
-    background: var(--color-secondary-dark);
+    border-color: var(--color-action-hover);
+    background: var(--color-action-hover);
   }
+}
+
+:host(:where(.app-button-raised.app-button-primary)),
+:host(:where(.app-button-raised.app-button-accent)) {
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
 }
 
 // Warn: destructive action, outlined in the error colour
