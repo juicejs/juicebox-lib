@@ -1,12 +1,12 @@
+// Top right below the 48px top bar, newest on top, as the old juicebox's toasts were
 .app-snackbar-container {
   position: fixed;
-  bottom: var(--spacing-lg);
-  left: 50%;
-  transform: translateX(-50%);
+  top: 60px;
+  right: var(--spacing-md);
   z-index: 1100; // above the CDK overlay container (1000), so toasts show over open dialogs
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: column-reverse;
+  align-items: flex-end;
   gap: var(--spacing-sm);
   max-width: calc(100vw - 32px);
   pointer-events: none;
@@ -15,33 +15,68 @@
 app-snackbar {
   display: block;
   pointer-events: auto;
+  animation: app-snackbar-enter 200ms cubic-bezier(.2, .8, .2, 1);
+
+  &.app-snackbar-leaving {
+    animation: app-snackbar-leave 150ms ease-in forwards;
+  }
 }
 
+@keyframes app-snackbar-enter {
+  from { opacity: 0; transform: translateX(16px); }
+}
+
+@keyframes app-snackbar-leave {
+  to { opacity: 0; transform: translateX(16px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  app-snackbar,
+  app-snackbar.app-snackbar-leaving {
+    animation: none;
+  }
+}
+
+// One width for every toast, so a stack lines up
 .app-snackbar {
   display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  max-width: 480px;
-  padding: var(--spacing-md) var(--spacing-lg);
+  align-items: flex-start;
+  gap: 10px;
+  box-sizing: border-box;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  padding: 12px 12px 12px 14px;
   background: var(--color-background-secondary);
   color: var(--color-text-primary);
   border: 1px solid var(--color-border);
-  border-left: 3px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-xl);
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+}
 
-  &--success { border-left-color: var(--color-success); }
-  &--error { border-left-color: var(--color-error); }
-  &--warning { border-left-color: var(--color-warning); }
-  &--info { border-left-color: var(--color-info); }
+.app-snackbar__icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-size: 20px;
+
+  .app-snackbar--success & { color: var(--color-success); }
+  .app-snackbar--error & { color: var(--color-error); }
+  .app-snackbar--warning & { color: var(--color-warning); }
+  .app-snackbar--info & { color: var(--color-info); }
+
+  .material-symbols-outlined {
+    font-size: 20px;
+  }
 }
 
 .app-snackbar__text {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
-  font-size: 14px;
+  padding-top: 2px;
+  font-size: 13.5px;
+  line-height: 1.4;
 }
 
 .app-snackbar__title {
@@ -50,6 +85,12 @@ app-snackbar {
 
 .app-snackbar__message {
   overflow-wrap: anywhere;
+
+  // Under a title the message is the secondary line
+  &--secondary {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+  }
 }
 
 .app-snackbar__action,
@@ -82,7 +123,8 @@ app-snackbar {
     color: var(--color-text-primary);
   }
 
-  .material-icons {
+  .material-icons,
+  .material-symbols-outlined {
     font-size: 18px;
   }
 }

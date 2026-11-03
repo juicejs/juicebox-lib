@@ -8,6 +8,9 @@ export interface SnackbarConfig {
   title?: string;
 }
 
+/** Length of the leave animation in snackbar.component.scss */
+const LEAVE_MS = 150;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -33,12 +36,22 @@ export class SnackbarService {
     this.getContainer().appendChild(element);
 
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
-    const close = () => {
-      clearTimeout(timeoutId);
+    const remove = () => {
       if (componentRef.hostView.destroyed) return;
       this.appRef.detachView(componentRef.hostView);
       componentRef.destroy();
       element.remove();
+    };
+    const close = () => {
+      clearTimeout(timeoutId);
+      if (componentRef.hostView.destroyed || element.classList.contains('app-snackbar-leaving')) return;
+      // Fades out first (the stylesheet's leave animation), unless the user prefers reduced motion
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        remove();
+      } else {
+        element.classList.add('app-snackbar-leaving');
+        setTimeout(remove, LEAVE_MS);
+      }
     };
 
     componentRef.instance.dismissed.subscribe(close);
