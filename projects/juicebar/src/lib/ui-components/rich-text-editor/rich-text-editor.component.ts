@@ -107,6 +107,8 @@ export class RichTextEditorComponent implements ControlValueAccessor {
         ...(this.allowImages() ? [] : [['insertImage']]),
         // Replaced by the CSS font size menu
         ...(this.fontSizes() ? [['fontSize']] : []),
+        // Without custom classes the picker only offers "Clear Class"
+        ...(config.customClasses?.length ? [] : [['customClasses']]),
       ],
     };
   });

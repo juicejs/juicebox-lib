@@ -6,14 +6,15 @@
   --ae-toolbar-padding: var(--spacing-xs);
   --ae-toolbar-bg-color: var(--color-background-secondary);
   // kolkov's name for the toolbar border
-  --ae-toolbar-border-radius: 1px solid var(--color-border);
-  --ae-button-bg-color: var(--color-background);
-  --ae-button-border: 1px solid var(--color-border);
-  --ae-button-radius: var(--radius-md);
+  --ae-toolbar-border-radius: 1px solid var(--color-border-input);
+  // Toolbar buttons are bare icons until hovered or active
+  --ae-button-bg-color: transparent;
+  --ae-button-border: 1px solid transparent;
+  --ae-button-radius: 4px;
   --ae-button-hover-bg-color: var(--color-grey-200);
   --ae-button-active-bg-color: rgba(var(--color-secondary-rgb), 0.15);
   --ae-button-active-hover-bg-color: rgba(var(--color-secondary-rgb), 0.25);
-  --ae-button-disabled-bg-color: var(--color-grey-200);
+  --ae-button-disabled-bg-color: transparent;
   --ae-picker-color: var(--color-text-primary);
   --ae-picker-label-color: var(--color-background);
   --ae-picker-option-bg-color: var(--color-background);
@@ -35,28 +36,67 @@
     display: none !important;
   }
 
+  // The toolbar sits on top of the text area as one control
   .angular-editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 2px;
+    padding: 4px 6px;
     font-family: inherit;
-    border-radius: 6px;
+    border-bottom-color: var(--color-border);
+    border-radius: 6px 6px 0 0;
+  }
+
+  .angular-editor-toolbar-set {
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+    margin: 0;
+
+    // A thin divider between groups
+    &:has(> :not([hidden])):not(:last-child)::after {
+      content: '';
+      width: 1px;
+      height: 18px;
+      margin: 0 6px;
+      background: var(--color-border);
+    }
+
+    &:not(:has(> :not([hidden]))) {
+      display: none;
+    }
   }
 
   .angular-editor-button {
-    color: var(--color-text-primary);
+    width: 28px;
+    height: 28px;
+    padding: 6px;
+    color: var(--color-text-secondary);
     fill: currentColor;
+
+    &:hover:not(:disabled),
+    &.active {
+      color: var(--color-text-primary);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+    }
   }
 
   .font-size-trigger {
     display: inline-flex;
     align-items: center;
     gap: 2px;
-    height: 2rem;
+    height: 28px;
     padding: 0 var(--spacing-xs) 0 var(--spacing-sm);
     font: inherit;
-    font-size: 0.8rem;
+    font-size: 12px;
     color: var(--color-text-primary);
     background: var(--color-background);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
+    border-radius: 4px;
     cursor: pointer;
 
     &:hover:not(:disabled) {
@@ -71,9 +111,26 @@
   }
 
   .ae-picker {
+    height: 28px;
+
     .ae-picker-label {
+      height: 28px;
+      font-size: 12px;
       color: var(--color-text-primary);
+      background: var(--color-background);
       border-color: var(--color-border);
+      border-radius: 4px;
+
+      // kolkov fades the label's end into the background
+      &::before {
+        display: none;
+      }
+
+      svg {
+        width: 12px;
+        height: 12px;
+        opacity: 0.6;
+      }
 
       &:hover,
       &:hover::before {
@@ -111,6 +168,8 @@
     .angular-editor-textarea {
       color: var(--color-rich-text-text);
       background-color: var(--color-rich-text-background);
+      border-top-color: transparent;
+      border-radius: 0 0 6px 6px;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
       &:focus {
