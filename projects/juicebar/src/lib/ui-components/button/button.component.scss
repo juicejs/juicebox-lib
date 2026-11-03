@@ -69,7 +69,7 @@
 
 :host(:where(.app-button-raised.app-button-primary)),
 :host(:where(.app-button-raised.app-button-accent)) {
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
+  box-shadow: 0 4px 12px rgba(var(--color-secondary-rgb), 0.25);
 }
 
 // Warn: destructive action, outlined in the error colour

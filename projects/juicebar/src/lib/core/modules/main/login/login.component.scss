@@ -41,6 +41,18 @@
   }
 }
 
+// The project's login picture (config.theme.loginImage) in place of the brand-coloured glow
+.login-page.has-image {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  &::before,
+  &::after {
+    display: none;
+  }
+}
+
 @keyframes drift {
   0%   { transform: translate3d(0, 0, 0) scale(1); }
   50%  { transform: translate3d(2%, -1.5%, 0) scale(1.06); }
@@ -84,7 +96,7 @@
       .logo {
         width: 96px;
         height: auto;
-        filter: drop-shadow(0 8px 24px rgba(255, 107, 53, 0.35));
+        filter: drop-shadow(0 8px 24px rgba(var(--color-secondary-rgb), 0.35));
       }
     }
 

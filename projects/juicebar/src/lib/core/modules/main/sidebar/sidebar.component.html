@@ -5,10 +5,8 @@
 
     <!-- Logo Section -->
     <div class="sidebar-header">
-      <img ngSrc="assets/juicebar/images/logo_small.png"
+      <img [src]="logo()"
            alt="Logo"
-           width="432" height="210"
-           priority
            class="brand-logo"
            [class.vertical]="juicebox.collapsed">
       <button [attr.aria-label]="'collapse_sidebar' | translate" class="collapse-btn"

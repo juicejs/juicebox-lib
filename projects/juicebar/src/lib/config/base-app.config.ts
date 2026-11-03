@@ -61,6 +61,21 @@ export interface UsersCustomization extends ModuleCustomization {
   options?: UsersOptions;
 }
 
+/** A project's look, like the old juicebox themes/<project> folder. Everything is optional: without it the admin is juice orange with the juice logo. */
+export interface JuicebarTheme {
+  /**
+   * The brand colour as hex, like the old theme.scss `$primary` (e.g. '#243088'). Main buttons, the active sidebar item,
+   * tabs, links, checkboxes and focus rings use shades of it, worked out for light and dark mode with readable text.
+   */
+  primary?: string;
+  /** Logo in the sidebar and on the login page (a user's organisation logo still replaces it in the sidebar) */
+  logo?: string;
+  /** Picture behind the login card */
+  loginImage?: string;
+  /** Browser tab icon */
+  favicon?: string;
+}
+
 export interface BaseAppConfig {
   /** API used in development (`ng serve`). Production reads `url` from config.json instead. */
   apiUrl: string;
@@ -69,6 +84,8 @@ export interface BaseAppConfig {
   authenticator?: string;
   /** Privacy policy link on the login legal agreement: a global translation key or a URL (default 'cse_privacy_policy_link') */
   privacyPolicyLink?: string;
+  /** Colours, logo, login picture and favicon of this project */
+  theme?: JuicebarTheme;
   modules: ModuleConfig[];
   mainRoutes?: ModuleConfig[];
   providers?: (Provider | EnvironmentProviders)[];

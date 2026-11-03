@@ -10,8 +10,8 @@ import {MainTranslationPipe} from '../i18n/main.translation';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import {Subscription} from 'rxjs/internal/Subscription';
-import { NgOptimizedImage } from '@angular/common';
 import {SharedModule} from '../../../shared/shared.module';
+import {BrandService} from '../../../shared/services/brand.service';
 
 @Component({
     selector: 'app-sidebar',
@@ -23,8 +23,7 @@ import {SharedModule} from '../../../shared/shared.module';
         RouterLinkActive,
         ImageCropperComponent,
         SharedModule,
-        MainTranslationPipe,
-        NgOptimizedImage
+        MainTranslationPipe
     ],
     host: {
         '(document:keydown.escape)': 'closeMobile()'
@@ -75,6 +74,9 @@ export class SidebarComponent implements OnInit, OnDestroy{
     private socketService = inject(SocketService);
     private router = inject(Router);
     public juicebox = inject(JuiceboxService);
+    private brand = inject(BrandService);
+    /** The project's logo, or the user's organisation logo */
+    protected readonly logo = signal(this.brand.sidebarLogo());
     private dialog = inject(DialogService);
 
     constructor() {

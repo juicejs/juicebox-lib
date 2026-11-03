@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, EnvironmentProviders, importProvidersFrom, isDevMode, makeEnvironmentProviders } from '@angular/core';
+import { APP_INITIALIZER, EnvironmentProviders, importProvidersFrom, inject, isDevMode, makeEnvironmentProviders, provideAppInitializer } from '@angular/core';
 import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideRouter, Routes } from '@angular/router';
 import { BASE_APP_CONFIG, BaseAppConfig, JuicebarFeature, ModuleConfig } from './config/base-app.config';
@@ -16,6 +16,7 @@ import { Juice } from './core/shared/services/juice.service';
 import { JuiceboxService } from './core/shared/services/Juicebox.service';
 import { AuthGuard } from './core/shared/guards/auth.guard';
 import { UnsavedChangesGuard } from './core/shared/guards/unsaved-changes.guard';
+import { BrandService } from './core/shared/services/brand.service';
 
 export function provideJuicebar(config: BaseAppConfig, ...features: JuicebarFeature[]): EnvironmentProviders {
   const featureRoutes = features.flatMap(f => f.routes);
@@ -46,6 +47,8 @@ export function provideJuicebar(config: BaseAppConfig, ...features: JuicebarFeat
       deps: [Juice, JuiceboxService, BASE_APP_CONFIG],
       multi: true,
     },
+    // The project's colours and favicon (config.theme), before anything renders
+    provideAppInitializer(() => inject(BrandService).apply()),
     AuthGuard,
     UnsavedChangesGuard,
     ...(config.providers || []),

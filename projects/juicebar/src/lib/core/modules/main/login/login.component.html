@@ -1,10 +1,8 @@
-<main class="login-page">
+<main class="login-page" [class.has-image]="brand.loginImage" [style.background-image]="loginBackground">
   <app-card class="login-card">
     <header class="login-header">
       <div class="logo-container">
-        <!-- hardcoding juicebar in lib templates couples lib to consuming app's asset config. If another app uses different output path, breaks.
-         Worth considering making path configurable via injection token later. -->
-        <img ngSrc="assets/juicebar/images/logo_small.png" alt="" class="logo" width="432" height="210" priority>
+        <img [src]="brand.logo" alt="" class="logo">
       </div>
       <app-card-header>
         <app-card-title>{{ 'sign_in' | translate }}</app-card-title>

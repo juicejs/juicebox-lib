@@ -69,7 +69,7 @@
   &.active {
     background: var(--color-secondary-active-bg);
     border-color: rgba(var(--color-secondary-rgb), 0.3);
-    color: var(--color-warning);
+    color: var(--color-secondary-active-text);
     font-weight: 600;
     cursor: default;
   }

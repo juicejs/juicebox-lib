@@ -327,10 +327,10 @@
   --shadow-card: none;
   --color-backdrop: rgba(0, 0, 0, 0.6);
 
-  // Main action buttons
-  --color-action: #f4f4f5;
-  --color-action-hover: #e4e4e7;
-  --color-action-contrast: #0a0a0b;
+  // Main action buttons: the brand colour (config.theme.primary)
+  --color-action: var(--color-secondary);
+  --color-action-hover: var(--color-secondary-dark);
+  --color-action-contrast: var(--color-secondary-contrast);
 
   // Rich-text content: a light page in both themes, because stored HTML carries the website's own inline colors (mostly black text)
   --color-rich-text-background: #ffffff;
@@ -363,6 +363,11 @@
   --color-sidebar-item: #a4a4ad;
   --color-avatar-bg: #26262b;
   --color-avatar-text: #d4d4d8;
+  // Tooltips: a lighter surface over the dark page
+  --color-tooltip-background: #2a2a2e;
+  --color-tooltip-text: #f4f4f5;
+  --color-tooltip-border: #3f3f46;
+  --color-tooltip-muted: #a1a1aa;
 }
 
 // Light theme (toggled by ThemeService adding html.light-theme)
@@ -422,8 +427,8 @@ html.light-theme {
   --color-border: var(--color-grey-300);
   --color-border-light: #eef2f6;
   --color-border-dark: var(--color-grey-400);
-  // 3:1 on white and on the page canvas
-  --color-border-input: #7c8aa0;
+  // A soft outline: the darker 3:1 grey made long fields and editors heavy; hover and focus still strengthen it
+  --color-border-input: #b4bfcd;
   --color-warning-bg: rgba(255, 152, 0, 0.1);
   --color-warning-border: rgba(255, 152, 0, 0.3);
   --color-success-rgb: 21, 128, 61;
@@ -438,10 +443,6 @@ html.light-theme {
   --color-surface: #ffffff;
   --shadow-card: 0 4px 6px rgba(15, 23, 42, 0.02);
 
-  // Main action buttons
-  --color-action: #0f172a;
-  --color-action-hover: #1e293b;
-  --color-action-contrast: #ffffff;
 
   // Shadows: soft and cool
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
@@ -469,6 +470,11 @@ html.light-theme {
   --color-sidebar-item: #475569;
   --color-avatar-bg: #eaeef3;
   --color-avatar-text: #334155;
+  // Tooltips: dark slate over the light page
+  --color-tooltip-background: #0f172a;
+  --color-tooltip-text: #ffffff;
+  --color-tooltip-border: #0f172a;
+  --color-tooltip-muted: #94a3b8;
 }
 
 // =============================================================================

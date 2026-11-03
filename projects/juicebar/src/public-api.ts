@@ -70,6 +70,7 @@ export * from './lib/core/shared/services/NavigationService';
 export * from './lib/core/shared/services/client-routes.service';
 export * from './lib/core/shared/services/Juicebox.service';
 export * from './lib/core/shared/services/sidebar.service';
+export * from './lib/core/shared/services/brand.service';
 export * from './lib/core/shared/services/helper.service';
 export * from './lib/core/shared/services/CustomDatepickerI18n';
 export * from './lib/core/shared/services/juice.service';

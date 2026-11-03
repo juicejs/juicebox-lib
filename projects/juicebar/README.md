@@ -35,6 +35,7 @@ provideJuicebar(
     appName: 'Stoked admin',
     authenticator: 'juicebox:cse:user', // optional login authenticator
     privacyPolicyLink: 'https://…',     // optional; translation key or URL
+    theme: { primary: '#243088' },      // optional; see Theme below
     mainRoutes: [                        // project modules inside the shell
       {
         path: 'pages',
@@ -70,6 +71,22 @@ provideJuicebar(
 | `hidePassword: true` | Hides the password section on user details |
 | `hideOrganisationsTab: true` | Hides the organisations tab |
 | `createFromTrainees: true` | The create wizard picks the email from trainees that have no user profile yet |
+
+**Theme.** `theme` replaces the old juicebox `themes/<project>` folder. Every field is optional; without `theme` the admin is juice orange with the juice logo.
+
+```ts
+theme: {
+  primary: '#243088',                  // the old theme.scss $primary
+  logo: 'assets/logo_small.png',       // sidebar and login page
+  loginImage: 'assets/login_picture.png', // picture behind the login card
+  favicon: 'assets/favicon.ico',
+}
+```
+
+- `primary` colours the main buttons, the active sidebar item, tabs, links, checkboxes and focus rings. The lib works out the shades for light and dark mode, and darkens or lightens the colour where needed so the text on it stays readable (WCAG AA).
+- A user's `attributes.organisationLogo` still replaces the logo in the sidebar.
+- The files go in the project's `public/` (or assets) folder, like the old `themes/<project>/images`.
+- The title still comes from `config.json` `title` (login) and the backend's juicebox options.
 
 **Overrides.** `componentOverrides` can do three things:
 

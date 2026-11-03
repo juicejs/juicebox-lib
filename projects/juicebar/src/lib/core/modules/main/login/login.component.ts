@@ -11,8 +11,9 @@ import { Title } from '@angular/platform-browser';
 import { MainTranslationPipe } from '../i18n/main.translation';
 import { GlobalTranslationPipe } from '../../../i18n/global.translation';
 import { BASE_APP_CONFIG } from '../../../../config/base-app.config';
-import { Location, NgOptimizedImage } from '@angular/common';
+import { Location } from '@angular/common';
 import {SharedModule} from '../../../shared/shared.module';
+import { BrandService } from '../../../shared/services/brand.service';
 
 @Component({
     selector: 'app-login',
@@ -20,7 +21,6 @@ import {SharedModule} from '../../../shared/shared.module';
     styleUrls: ['./login.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        NgOptimizedImage,
         ReactiveFormsModule,
         SharedModule,
         MainTranslationPipe
@@ -55,6 +55,9 @@ export class LoginComponent implements OnInit {
     private configuration = inject(ConfigurationService);
     private baseConfig = inject(BASE_APP_CONFIG, { optional: true });
     public juicebox = inject(JuiceboxService);
+    protected readonly brand = inject(BrandService);
+    /** The project's login picture behind the card (config.theme.loginImage) */
+    protected readonly loginBackground = this.brand.loginImage ? `url("${this.brand.loginImage}")` : null;
 
     constructor() {
       this.autoLanguagePipe = new AutoLanguagePipe(this.juicebox);
