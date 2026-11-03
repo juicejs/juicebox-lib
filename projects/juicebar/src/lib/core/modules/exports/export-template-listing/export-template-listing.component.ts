@@ -1,8 +1,8 @@
 import {Component, inject, ChangeDetectionStrategy, signal} from '@angular/core';
 import {ExportsTranslationPipe} from "../i18n/exports.translation";
-import {Router} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import {ExportsService} from '../exports.service';
-import {DialogService, DataTableComponent, CellDefDirective, SelectionDetailDefDirective, ColumnConfig, SortState} from '../../../../ui-components';
+import {DialogService, DataTableComponent, CellDefDirective, ColumnConfig, SortState} from '../../../../ui-components';
 import {ConfirmationDialogComponent} from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 import {TableFilter, TableSort} from '../../../shared/services/helper.service';
@@ -28,8 +28,8 @@ export interface PageEvent {
         ExportsTranslationPipe,
         DataTableComponent,
         CellDefDirective,
-        SelectionDetailDefDirective,
-        ColumnLabelsPipe
+        ColumnLabelsPipe,
+        RouterLink
     ]
 })
 export class ExportTemplateListingComponent {
@@ -62,7 +62,8 @@ export class ExportTemplateListingComponent {
             { key: 'name', label: this.i18n.transform('name'), width: '200px', sortable: true },
             { key: '_data_source.name', label: this.i18n.transform('datasource'), width: '200px', sortable: true },
             { key: 'columns', label: this.i18n.transform('columns') },
-            { key: 'filters', label: this.i18n.transform('filters') }
+            { key: 'filters', label: this.i18n.transform('filters') },
+            { key: 'actions', label: this.i18n.transform('actions'), width: '96px', align: 'right', ellipsis: false }
         ]);
 
         this.getOnloadData();

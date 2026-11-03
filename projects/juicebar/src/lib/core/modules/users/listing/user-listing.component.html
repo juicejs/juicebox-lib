@@ -34,8 +34,6 @@
       [pageIndex]="pageSig() - 1"
       [pageSizeOptions]="[10, 20, 30, 50]"
       [sort]="sortSig()"
-      [selectable]="true"
-      [clearAriaLabel]="'clear' | translate"
       [rowsPerPageLabel]="'rows_per_page' | translate"
       (pageChange)="onPageChange($event)"
       (sortChange)="onSort($event)"
@@ -84,10 +82,10 @@
       </ng-template>
 
       <ng-template [cellDef]="'firstname'" let-row>
-        <span class="name-cell">
+        <a class="dt-row-link name-cell" [routerLink]="['/main/users/details', row._id]" (click)="$event.stopPropagation()">
           <span class="name-avatar" aria-hidden="true">{{ (row.firstname?.[0] ?? '') + (row.lastname?.[0] ?? '') }}</span>
           <span class="name-text">{{ row.firstname }}</span>
-        </span>
+        </a>
       </ng-template>
 
       <ng-template [cellDef]="'email'" let-row>
@@ -132,15 +130,12 @@
         {{row.lastLogin | timeAgo}}
       </ng-template>
 
-      <ng-template selectionDetailDef let-row>
-        <span class="dt-selection-label">
-          {{ 'selected' | translate }}: {{ row.firstname }} {{ row.lastname }}
-        </span>
-        <div class="dt-selection-actions">
+      <ng-template [cellDef]="'actions'" let-row>
+        <div class="dt-row-actions">
           @if (canLoginAsOther()) {
             <button [attr.aria-label]="'login_as_another_user' | translate" app-button
                     appearance="icon"
-                    (click)="openModalToLoginAsAnotherUser(row)"
+                    (click)="$event.stopPropagation(); openModalToLoginAsAnotherUser(row)"
                     [hasPermissionsHide]="'users:role#super-admin'"
                     [appTooltip]="'login' | translate"
                     class="primary">
@@ -149,7 +144,7 @@
           }
           <button [attr.aria-label]="'delete' | translate" app-button
                   appearance="icon"
-                  (click)="delete(row)"
+                  (click)="$event.stopPropagation(); delete(row)"
                   [hasPermissions]="'users:role#delete'"
                   [appTooltip]="'delete' | translate"
                   class="danger">

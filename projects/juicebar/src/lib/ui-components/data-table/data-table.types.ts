@@ -5,6 +5,8 @@ export interface ColumnConfig {
   align?: 'left' | 'center' | 'right';
   ellipsis?: boolean;
   sortable?: boolean;
+  /** Drag the header's right edge to change the width (default true) */
+  resizable?: boolean;
 }
 
 export type SortDir = 'asc' | 'desc' | '';

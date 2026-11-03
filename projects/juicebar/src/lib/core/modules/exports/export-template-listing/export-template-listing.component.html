@@ -15,11 +15,13 @@
         [pageSize]="pageSize()"
         [pageIndex]="page() - 1"
         [sort]="sort()"
-        [selectable]="true"
-        [clearAriaLabel]="'clear' | translate"
         (pageChange)="onPageChange($event)"
         (sortChange)="onSort($event)"
         (rowClick)="onSelect($event._id)">
+
+        <ng-template [cellDef]="'name'" let-row>
+            <a class="dt-row-link" [routerLink]="['/main/exports/edit', row._id]" (click)="$event.stopPropagation()">{{ row.name }}</a>
+        </ng-template>
 
         <ng-template [cellDef]="'columns'" let-row>
             <span [title]="row._columns.length ? (row._columns | columnLabels:true) : null"
@@ -37,15 +39,13 @@
             </span>
         </ng-template>
 
-        <ng-template selectionDetailDef let-row>
-            <span class="dt-selection-label">
-                {{ 'selected' | translate }}: {{ row.name }}
-            </span>
-            <div class="dt-selection-actions">
+        <ng-template [cellDef]="'actions'" let-row>
+            <div class="dt-row-actions">
                 <button [attr.aria-label]="'download' | translate" app-button
                         appearance="icon"
                         [disabled]="!row._available_export_strategies.length"
                         [cdkMenuTriggerFor]="exportMenu"
+                        (click)="$event.stopPropagation()"
                         [NoPermissionDisable]="row.data_source_key == 'sap-data:strategy' ? 'data-export:role#admin' : 'data-export:role#export'"
                         [appTooltip]="'export' | translate"
                         class="primary">
@@ -66,7 +66,7 @@
                 </ng-template>
                 <button [attr.aria-label]="'delete' | translate" app-button
                         appearance="icon"
-                        (click)="delete(row)"
+                        (click)="$event.stopPropagation(); delete(row)"
                         [NoPermissionDisable]="'data-export:role#delete'"
                         [appTooltip]="'delete' | translate"
                         class="danger">

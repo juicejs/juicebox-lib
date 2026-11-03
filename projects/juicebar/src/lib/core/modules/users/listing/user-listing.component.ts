@@ -1,9 +1,9 @@
 import { Component, inject, OnDestroy, OnInit, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { UsersService } from '../users.service';
 import { ListingComponent } from '../../../shared/components/listing/listing.component';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { UserTranslationPipe } from '../i18n/user.translation';
-import { DialogService, PageEvent, DataTableComponent, CellDefDirective, HeaderDefDirective, SelectionDetailDefDirective, ColumnConfig, SortState } from '../../../../ui-components';
+import { DialogService, PageEvent, DataTableComponent, CellDefDirective, HeaderDefDirective, ColumnConfig, SortState } from '../../../../ui-components';
 import { GroupsModalComponent } from './groups-modal/groups-modal.component';
 import { HelperService} from '../../../shared/services/helper.service';
 import { ISearchTerm} from '../../../shared/interfaces/ISearchTerm';
@@ -36,7 +36,7 @@ type UserStatus = 'all' | 'active' | 'inactive';
         DataTableComponent,
         CellDefDirective,
         HeaderDefDirective,
-        SelectionDetailDefDirective
+        RouterLink
     ]
 })
 export class UserListingComponent extends ListingComponent implements OnInit, OnDestroy {
@@ -88,7 +88,8 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
         { key: 'roles_count', label: '', width: '100px', align: 'right', ellipsis: false },
         { key: 'groups',      label: '', width: '180px' },
         { key: 'lastLogin',   label: '', width: '140px', sortable: true },
-        { key: 'loginCount',  label: '', width: '100px', align: 'right', sortable: true }
+        { key: 'loginCount',  label: '', width: '100px', align: 'right', sortable: true },
+        { key: 'actions',     label: '', width: '96px', align: 'right', ellipsis: false }
     ];
 
     public usersService = inject(UsersService);

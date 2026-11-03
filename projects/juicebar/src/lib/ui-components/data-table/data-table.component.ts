@@ -42,6 +42,8 @@ export class DataTableComponent implements AfterContentInit {
   rowsPerPageLabel = input('Rows per page');
   idKey = input<string>('_id');
   clearAriaLabel = input<string>('Clear selection');
+  /** Translated label of a column's resize handle, followed by the column label */
+  resizeAriaLabel = input('Resize column');
 
   pageChange = output<PageEvent>();
   rowClick = output<any>();
@@ -87,9 +89,16 @@ export class DataTableComponent implements AfterContentInit {
   private cellMap = signal<Map<string, TemplateRef<any>>>(new Map());
   private headerMap = signal<Map<string, TemplateRef<any>>>(new Map());
 
-  columnsForRender = computed(() =>
-    this.selectable() ? [DataTableComponent.SELECT_COLUMN, ...this.columns()] : this.columns()
-  );
+  /** Widths set by dragging a header's edge (px), kept while the table lives */
+  private readonly resizedWidths = signal<Record<string, number>>({});
+  private resizing: { key: string; startX: number; startWidth: number } | null = null;
+  private static readonly MIN_RESIZED_WIDTH = 60;
+
+  columnsForRender = computed(() => {
+    const widths = this.resizedWidths();
+    const columns = this.selectable() ? [DataTableComponent.SELECT_COLUMN, ...this.columns()] : this.columns();
+    return columns.map(column => widths[column.key] ? { ...column, width: `${widths[column.key]}px` } : column);
+  });
   columnKeys = computed(() => this.columnsForRender().map(c => c.key));
 
   /**
@@ -164,6 +173,36 @@ export class DataTableComponent implements AfterContentInit {
     const current = this.sortDirFor(col.key);
     const next: SortDir = current === '' ? 'asc' : current === 'asc' ? 'desc' : '';
     this.sortChange.emit({ prop: next === '' ? '' : col.key, dir: next });
+  }
+
+  protected startResize(event: PointerEvent, key: string): void {
+    event.preventDefault();
+    const handle = event.currentTarget as HTMLElement;
+    handle.setPointerCapture(event.pointerId);
+    this.resizing = { key, startX: event.clientX, startWidth: handle.closest('th')!.getBoundingClientRect().width };
+  }
+
+  protected onResizeMove(event: PointerEvent): void {
+    if (this.resizing) {
+      const { key, startX, startWidth } = this.resizing;
+      this.setResizedWidth(key, startWidth + event.clientX - startX);
+    }
+  }
+
+  protected endResize(): void {
+    this.resizing = null;
+  }
+
+  protected onResizeKey(event: KeyboardEvent, key: string): void {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      const width = (event.currentTarget as HTMLElement).closest('th')!.getBoundingClientRect().width;
+      this.setResizedWidth(key, width + (event.key === 'ArrowRight' ? 16 : -16));
+    }
+  }
+
+  private setResizedWidth(key: string, width: number): void {
+    this.resizedWidths.update(widths => ({ ...widths, [key]: Math.max(DataTableComponent.MIN_RESIZED_WIDTH, Math.round(width)) }));
   }
 
   onSortKey(event: KeyboardEvent, col: ColumnConfig): void {

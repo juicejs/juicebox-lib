@@ -161,3 +161,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+// Underline only the name, not the initials
+a.name-cell:hover {
+  text-decoration: none;
+
+  .name-text {
+    text-decoration: underline;
+  }
+}

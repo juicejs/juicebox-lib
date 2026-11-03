@@ -27,6 +27,19 @@
                 </app-icon>
               }
             </span>
+            @if (col.resizable !== false) {
+              <span class="dt-resize-handle"
+                    role="separator"
+                    aria-orientation="vertical"
+                    tabindex="0"
+                    [attr.aria-label]="resizeAriaLabel() + ': ' + col.label"
+                    (pointerdown)="$event.stopPropagation(); startResize($event, col.key)"
+                    (pointermove)="onResizeMove($event)"
+                    (pointerup)="endResize()"
+                    (lostpointercapture)="endResize()"
+                    (click)="$event.stopPropagation()"
+                    (keydown)="$event.stopPropagation(); onResizeKey($event, col.key)"></span>
+            }
           }
         </th>
         <td cdk-cell *cdkCellDef="let row"
