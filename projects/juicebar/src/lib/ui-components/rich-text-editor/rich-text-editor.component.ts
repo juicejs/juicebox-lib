@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, DOCUMENT, ElementRef, afterRenderEffect, computed, forwardRef, inject, input, signal, viewChild } from '@angular/core';
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlContainer, ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { CdkMenuModule } from '@angular/cdk/menu';
 import { AE_SANITIZER, AngularEditorComponent, AngularEditorConfig, AngularEditorModule } from '@kolkov/angular-editor';
 import { IconComponent } from '../icon/icon.component';
@@ -71,6 +71,9 @@ function cleanHtml(html: string, inertDocument: Document): string {
       },
     },
   ],
+  // The ngModels inside (this template's and kolkov's toolbar pickers) are not controls of the page's form;
+  // hiding the form from them stops Angular's NG01354 warning. The editor itself still binds to the form.
+  viewProviders: [{ provide: ControlContainer, useValue: null }],
   host: {
     '[class.disabled]': 'isDisabled()',
     '(focusout)': 'onFocusOut($event)',

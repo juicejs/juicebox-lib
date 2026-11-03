@@ -2,7 +2,8 @@
 :host {
   display: block;
 
-  --ae-gap: var(--spacing-xs);
+  // No gap between toolbar and text area: they share one outline
+  --ae-gap: 0;
   --ae-toolbar-padding: var(--spacing-xs);
   --ae-toolbar-bg-color: var(--color-background-secondary);
   // kolkov's name for the toolbar border
@@ -168,7 +169,8 @@
     .angular-editor-textarea {
       color: var(--color-rich-text-text);
       background-color: var(--color-rich-text-background);
-      border-top-color: transparent;
+      // The toolbar's bottom line divides them
+      border-top-width: 0;
       border-radius: 0 0 6px 6px;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
