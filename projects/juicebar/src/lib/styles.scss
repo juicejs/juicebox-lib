@@ -4,7 +4,10 @@
 // This file contains shared styles, variables, and utilities for the Juicebox library
 // Shipped as styles.scss at the package root; apps add node_modules/@juicejs/juicebar/styles.scss to angular.json styles (ng add does this)
 
+// Material Icons stays for templates that use its class directly; app-icon uses Material Symbols
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,300,0,0&display=block');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 // =============================================================================
 // GLOBAL SCROLLBAR
@@ -299,9 +302,10 @@
   --color-text-disabled: #52525b;
 
   // Border colors
-  --color-border: #1f1f23;
-  --color-border-light: #161618;
-  --color-border-dark: #27272a;
+  // Page, card and border are visibly different steps
+  --color-border: #27272c;
+  --color-border-light: #1c1c20;
+  --color-border-dark: #34343a;
   // Outline of inputs, selects and checkboxes: at least 3:1 against page and card backgrounds (WCAG 1.4.11)
   --color-border-input: #63636d;
   --color-warning-bg: rgba(251, 191, 36, 0.12);
@@ -312,7 +316,7 @@
 
   // Background colors
   --color-background: #0a0a0b;
-  --color-background-secondary: #0f0f10;
+  --color-background-secondary: #131315;
   --color-backdrop: rgba(0, 0, 0, 0.6);
 
   // Rich-text content: a light page in both themes, because stored HTML carries the website's own inline colors (mostly black text)
@@ -344,8 +348,8 @@
   --color-secondary-active-bg: #1a0f08;
   --color-secondary-active-text: #fbbf24;
   --color-sidebar-item: #a4a4ad;
-  --color-avatar-bg: #3b2a1f;
-  --color-avatar-text: #f59e0b;
+  --color-avatar-bg: #26262b;
+  --color-avatar-text: #d4d4d8;
 }
 
 // Light theme (toggled by ThemeService adding html.light-theme)
@@ -439,8 +443,8 @@ html.light-theme {
   --color-secondary-active-bg: #fde8dc;
   --color-secondary-active-text: #9a3412;
   --color-sidebar-item: #52525b;
-  --color-avatar-bg: #fde8dc;
-  --color-avatar-text: #c2500a;
+  --color-avatar-bg: #ececee;
+  --color-avatar-text: #424242;
 }
 
 // =============================================================================
@@ -1111,6 +1115,8 @@ html, body {
     background-color: var(--color-background);
     color: var(--color-text-primary);
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     margin: 0;
     padding: 0;
 }
@@ -1208,7 +1214,7 @@ html, body {
             flex-shrink: 0;
             margin-right: 4px;
 
-            .material-icons, i {
+            .material-icons, .material-symbols-outlined, i {
                 font-size: 12px !important;
                 width: 12px !important;
                 height: 12px !important;

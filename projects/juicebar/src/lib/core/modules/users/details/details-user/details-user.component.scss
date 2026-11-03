@@ -80,7 +80,7 @@
 }
 
 .field-label {
-  font-size: 11.5px;
+  font-size: 12.5px;
   font-weight: 500;
   color: var(--color-text-secondary);
   display: flex;
@@ -98,8 +98,6 @@
   color: var(--color-text-disabled, var(--color-text-secondary));
   font-weight: 400;
   margin-left: auto;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
 }
 
 .field-control {

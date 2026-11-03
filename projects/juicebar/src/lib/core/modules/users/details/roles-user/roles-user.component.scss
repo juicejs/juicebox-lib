@@ -31,10 +31,8 @@
 }
 
 .tool-label {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--color-text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
 }
 
 .org-picker {
@@ -70,10 +68,8 @@
 }
 
 .stat-label {
-    font-size: 10.5px;
+    font-size: 12px;
     color: var(--color-text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
 }
 
 .stat-value {
@@ -105,10 +101,8 @@
 
 :host ::ng-deep .roles-table .data-table th {
     text-align: left;
-    font-size: 10.5px;
+    font-size: 12px;
     font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
     color: var(--color-text-secondary);
     padding: 10px 16px;
     border-bottom: 1px solid var(--color-border);

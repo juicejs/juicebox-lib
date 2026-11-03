@@ -16,7 +16,7 @@ export class IconComponent {
   icon = input.required<string>();
 
   iconClass() {
-    return 'material-icons';
+    return 'material-symbols-outlined';
   }
 
   iconText() {

@@ -52,15 +52,16 @@
     transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   }
 
+  // Checked: a tinted chip with a filled check, so the accent marks the state without flooding the screen
   &.is-checked {
-    background: var(--color-secondary);
-    border-color: var(--color-secondary);
-    color: var(--color-secondary-contrast);
+    background: var(--color-secondary-active-bg);
+    border-color: rgba(var(--color-secondary-rgb), 0.4);
+    color: var(--color-secondary-active-text);
 
     .app-checkbox-check {
-      background: var(--color-secondary-contrast);
-      border-color: var(--color-secondary-contrast);
-      color: var(--color-secondary);
+      background: var(--color-secondary);
+      border-color: var(--color-secondary);
+      color: var(--color-secondary-contrast);
     }
   }
 
