@@ -141,5 +141,13 @@ export const sharedDictionary = {
   "confirm": {
     "en_GB": "Confirm",
     "de_DE": "Bestätigen"
+  },
+  "organisation": {
+    "en_GB": "Organisation",
+    "de_DE": "Organisation",
+    "hr_HR": "Organizacija",
+    "da_DK": "Organisation",
+    "sv_SE": "Organisation",
+    "fi_FI": "Organisaatio"
   }
 }
