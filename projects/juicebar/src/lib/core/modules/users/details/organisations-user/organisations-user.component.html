@@ -36,8 +36,12 @@
         </button> -->
     </div>
 
-    <div class="orgs-table">
-        @if (rows().length === 0) {
+    <div class="orgs-table" [attr.aria-busy]="isLoading()">
+        @if (isLoading()) {
+            <div class="orgs-loading">
+                <app-progress-spinner [diameter]="32"></app-progress-spinner>
+            </div>
+        } @else if (rows().length === 0) {
             <div class="orgs-empty">
                 <div class="orgs-empty-title">{{ 'no_organisations_assigned' | translate }}</div>
                 <div class="orgs-empty-text">{{ 'pick_one_from_dropdown_above' | translate }}</div>

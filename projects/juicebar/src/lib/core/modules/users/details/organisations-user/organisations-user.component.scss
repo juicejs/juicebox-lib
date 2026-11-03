@@ -41,6 +41,12 @@
     overflow: hidden;
 }
 
+.orgs-loading {
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px;
+}
+
 :host ::ng-deep .orgs-table .data-table {
     width: 100%;
     border-collapse: collapse;

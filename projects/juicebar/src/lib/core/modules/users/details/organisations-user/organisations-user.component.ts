@@ -4,7 +4,7 @@ import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { UsersService } from '../../users.service';
 import { ConfirmationDialogComponent} from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import { DialogService } from '../../../../../ui-components';
+import { DialogService, ProgressSpinnerComponent } from '../../../../../ui-components';
 import { UserTranslationPipe } from '../../i18n/user.translation';
 import { SharedModule } from '../../../../shared/shared.module';
 
@@ -15,13 +15,16 @@ import { SharedModule } from '../../../../shared/shared.module';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
     SharedModule,
-    UserTranslationPipe
+    UserTranslationPipe,
+    ProgressSpinnerComponent
 ]
 })
 export class OrganisationsUserComponent extends ListingComponent implements OnInit {
 
     organisations: any[] = [];
     selectedOrganisation = signal<any>(null);
+    /** The user's organisations and the dropdown's options are still loading */
+    protected readonly isLoading = signal(true);
 
     organisationsCount: number = 0;
 
@@ -46,8 +49,12 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
         if (result?._id)
             this.loggedInOrganisationId = result._id;
 
-        await this.getUserOrganisations(this.userId);
-        await this.getOrganisations();
+        try {
+            await this.getUserOrganisations(this.userId);
+            await this.getOrganisations();
+        } finally {
+            this.isLoading.set(false);
+        }
     }
 
     private async getOrganisations(): Promise<any> {
