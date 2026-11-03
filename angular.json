@@ -60,6 +60,11 @@
                 "glob": "**/*",
                 "input": "projects/juicebar/src/lib/assets",
                 "output": "assets/juicebar"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/juicebar/src/lib/editor-icons",
+                "output": "assets/ae-icons"
               }
             ],
             "styles": [

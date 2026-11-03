@@ -14,6 +14,8 @@ interface NgAddOptions {
 const LIB = '@juicejs/juicebar';
 const LIB_STYLES = `node_modules/${LIB}/styles.scss`;
 const LIB_ASSETS = { glob: '**/*', input: `node_modules/${LIB}/assets`, output: 'assets/juicebar' };
+// The rich-text editor loads its toolbar icons from assets/ae-icons/icons.svg
+const EDITOR_ICONS = { glob: '**/*', input: `node_modules/${LIB}/ae-icons`, output: 'assets/ae-icons' };
 
 /**
  * Sets up a new Angular app (`ng new`) as a Juicebox admin.
@@ -72,11 +74,10 @@ function configureBuild(projectName: string): Rule {
       buildOptions['styles'] = [LIB_STYLES, ...styles];
     }
 
-    // Lib images are referenced as assets/juicebar/...
+    // Lib images are referenced as assets/juicebar/..., the editor icons as assets/ae-icons/...
     const assets = (buildOptions['assets'] as JsonValue[] | undefined) ?? [];
-    if (!assets.some(asset => typeof asset === 'object' && (asset as { input?: string } | null)?.input === LIB_ASSETS.input)) {
-      buildOptions['assets'] = [...assets, LIB_ASSETS];
-    }
+    const hasAsset = (input: string) => assets.some(asset => typeof asset === 'object' && (asset as { input?: string } | null)?.input === input);
+    buildOptions['assets'] = [...assets, ...[LIB_ASSETS, EDITOR_ICONS].filter(asset => !hasAsset(asset.input))];
 
     // The lib uses zone-based change detection
     const polyfills = (buildOptions['polyfills'] as string[] | undefined) ?? [];

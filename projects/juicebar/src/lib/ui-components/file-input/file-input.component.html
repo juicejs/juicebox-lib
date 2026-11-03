@@ -1,0 +1,79 @@
+<div class="file-input">
+  <input
+    type="file"
+    class="native"
+    [id]="inputId()"
+    [accept]="accept()"
+    [multiple]="multiple()"
+    [disabled]="isLocked()"
+    [attr.aria-describedby]="errors().length ? errorId() : null"
+    (change)="onSelect($event)"
+    (blur)="onTouched()"
+  />
+  <label
+    class="file-input-zone"
+    [for]="inputId()"
+    [class.dragging]="isDragging()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)">
+    @if (busy()) {
+      <app-progress-spinner [diameter]="18"></app-progress-spinner>
+    } @else {
+      <app-icon [icon]="'upload_file'"></app-icon>
+    }
+    <span>{{ zoneLabel() }}</span>
+  </label>
+</div>
+
+@if (picked().length || stored()) {
+  <!-- Previews are object URLs or stored files of any origin, so NgOptimizedImage does not apply -->
+  <ul class="file-input-files">
+    @for (item of picked(); track item) {
+      <li class="file-input-file">
+        @if (preview() && item.kind === 'image') {
+          <img class="file-preview" [src]="item.url" alt="" />
+        } @else if (preview() && item.kind === 'video') {
+          <video class="file-preview" [src]="item.url" muted playsinline preload="metadata"></video>
+        } @else {
+          <app-icon [icon]="'description'"></app-icon>
+        }
+        <span class="file-name">{{ item.file.name }}</span>
+        <span class="file-size">{{ item.size }}</span>
+        <button
+          app-button
+          appearance="icon"
+          type="button"
+          [attr.aria-label]="removeLabel() + ': ' + item.file.name"
+          [disabled]="isLocked()"
+          (click)="remove(item)">
+          <app-icon [icon]="'close'"></app-icon>
+        </button>
+      </li>
+    }
+    @if (stored(); as file) {
+      <li class="file-input-file">
+        @if (preview() && file.url && file.kind === 'image') {
+          <img class="file-preview" [src]="file.url" alt="" />
+        } @else if (preview() && file.url && file.kind === 'video') {
+          <video class="file-preview" [src]="file.url" muted playsinline preload="metadata"></video>
+        } @else {
+          <app-icon [icon]="'description'"></app-icon>
+        }
+        @if (file.url) {
+          <a class="file-name" [href]="file.url" target="_blank" rel="noopener">{{ file.name }}</a>
+        } @else {
+          <span class="file-name">{{ file.name }}</span>
+        }
+      </li>
+    }
+  </ul>
+}
+
+@if (errors().length) {
+  <div class="file-input-errors" role="alert" [id]="errorId()">
+    @for (message of errors(); track message) {
+      <p class="file-input-error">{{ message }}</p>
+    }
+  </div>
+}

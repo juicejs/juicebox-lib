@@ -5,9 +5,10 @@
     "entryFile": "src/public-api.ts",
     "styleIncludePaths": ["src/lib"]
   },
-  "allowedNonPeerDependencies": ["moment", "ngx-image-cropper", "randexp", "socket.io-client"],
+  "allowedNonPeerDependencies": ["@kolkov/angular-editor", "moment", "ngx-image-cropper", "randexp", "socket.io-client"],
   "assets": [
     { "input": "src/lib/assets", "glob": "**/*", "output": "assets" },
+    { "input": "src/lib/editor-icons", "glob": "**/*", "output": "ae-icons" },
     { "input": "src/lib", "glob": "styles.scss", "output": "." }
   ]
 }

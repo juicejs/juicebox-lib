@@ -11,6 +11,8 @@ export * from './form-field/form-field.component';
 export * from './input/input.directive';
 export * from './select/select.component';
 export * from './checkbox/checkbox.component';
+export * from './rich-text-editor/rich-text-editor.component';
+export * from './file-input/file-input.component';
 
 // Icon
 export * from './icon/icon.component';

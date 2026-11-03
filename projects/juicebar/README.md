@@ -20,7 +20,7 @@ The registry for `@juicejs` packages is GitHub Packages, so the project needs an
 `ng add` sets up the new app:
 
 - `src/main.ts` bootstraps `JuicebarComponent`, and `src/app/app.config.ts` calls `provideJuicebar(...)` with users and exports;
-- `angular.json` gets the lib styles and assets, builds into `dist/` and allows a larger bundle;
+- `angular.json` gets the lib styles and assets (with the rich-text editor's icons in `assets/ae-icons/`), builds into `dist/` and allows a larger bundle;
 - `public/config.json` is created;
 - the placeholder root component is removed.
 

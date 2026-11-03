@@ -1,0 +1,32 @@
+<angular-editor
+  [config]="editorConfig()"
+  [placeholder]="placeholder()"
+  [ngModel]="shown()"
+  [disabled]="isDisabled()"
+  (ngModelChange)="onEdit($event)"
+  (viewMode)="isSourceMode.set(!$event)">
+  <ng-template #customButtons let-executeCommandFn="executeCommandFn">
+    @if (fontSizes(); as sizes) {
+      <div aeToolbarSet>
+        <button
+          type="button"
+          class="font-size-trigger"
+          [cdkMenuTriggerFor]="fontSizeMenu"
+          [disabled]="isSourceMode()"
+          (cdkMenuOpened)="saveFontSizeRange()">
+          {{ fontSizeLabel() }}
+          <app-icon [icon]="'arrow_drop_down'"></app-icon>
+        </button>
+      </div>
+      <ng-template #fontSizeMenu>
+        <div class="dropdown-panel dropdown-panel--compact" cdkMenu>
+          <div class="dropdown-panel-options">
+            @for (size of sizes; track size) {
+              <button class="dropdown-option" cdkMenuItem (click)="applyFontSize(size, executeCommandFn)">{{ size }}</button>
+            }
+          </div>
+        </div>
+      </ng-template>
+    }
+  </ng-template>
+</angular-editor>

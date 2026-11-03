@@ -1,0 +1,131 @@
+// @kolkov/angular-editor in the lib's tokens: the toolbar follows the theme, the content area is a light page
+:host {
+  display: block;
+
+  --ae-gap: var(--spacing-xs);
+  --ae-toolbar-padding: var(--spacing-xs);
+  --ae-toolbar-bg-color: var(--color-background-secondary);
+  // kolkov's name for the toolbar border
+  --ae-toolbar-border-radius: 1px solid var(--color-border);
+  --ae-button-bg-color: var(--color-background);
+  --ae-button-border: 1px solid var(--color-border);
+  --ae-button-radius: var(--radius-md);
+  --ae-button-hover-bg-color: var(--color-grey-200);
+  --ae-button-active-bg-color: rgba(var(--color-secondary-rgb), 0.15);
+  --ae-button-active-hover-bg-color: rgba(var(--color-secondary-rgb), 0.25);
+  --ae-button-disabled-bg-color: var(--color-grey-200);
+  --ae-picker-color: var(--color-text-primary);
+  --ae-picker-label-color: var(--color-background);
+  --ae-picker-option-bg-color: var(--color-background);
+  --ae-picker-option-active-bg-color: rgba(var(--color-secondary-rgb), 0.15);
+  --ae-picker-option-focused-bg-color: var(--color-grey-200);
+  --ae-picker-option-hover-bg-color: var(--color-grey-200);
+  --ae-text-area-border: 1px solid var(--color-border);
+  --ae-text-area-border-radius: 6px;
+}
+
+:host(.disabled) {
+  opacity: 0.6;
+}
+
+// The rules below replace kolkov's fixed colors; the `angular-editor` element outweighs its encapsulated selectors
+:host ::ng-deep angular-editor {
+  // toolbarHiddenButtons hides with [hidden], which kolkov's button display would override
+  [hidden] {
+    display: none !important;
+  }
+
+  .angular-editor-toolbar {
+    font-family: inherit;
+    border-radius: 6px;
+  }
+
+  .angular-editor-button {
+    color: var(--color-text-primary);
+    fill: currentColor;
+  }
+
+  .font-size-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    height: 2rem;
+    padding: 0 var(--spacing-xs) 0 var(--spacing-sm);
+    font: inherit;
+    font-size: 0.8rem;
+    color: var(--color-text-primary);
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: var(--color-grey-200);
+    }
+
+    &:disabled {
+      color: var(--color-text-disabled);
+      background: var(--color-grey-200);
+      cursor: not-allowed;
+    }
+  }
+
+  .ae-picker {
+    .ae-picker-label {
+      color: var(--color-text-primary);
+      border-color: var(--color-border);
+
+      &:hover,
+      &:hover::before {
+        background: var(--color-grey-200);
+      }
+
+      // Pickers are disabled while the HTML source is shown
+      &:disabled,
+      &:disabled::before {
+        background: var(--color-grey-200);
+        color: var(--color-text-disabled);
+      }
+    }
+
+    &.ae-expanded {
+      .ae-picker-label {
+        color: var(--color-text-secondary);
+      }
+
+      .ae-picker-options {
+        border-color: var(--color-border);
+      }
+    }
+
+    .ae-picker-options {
+      box-shadow: var(--shadow-md);
+
+      .ae-picker-item.selected {
+        color: var(--color-secondary);
+      }
+    }
+  }
+
+  .angular-editor .angular-editor-wrapper {
+    .angular-editor-textarea {
+      color: var(--color-rich-text-text);
+      background-color: var(--color-rich-text-background);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+      &:focus {
+        border-color: var(--color-secondary);
+        box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.15);
+      }
+    }
+
+    .angular-editor-placeholder {
+      color: var(--color-rich-text-placeholder);
+      opacity: 1;
+    }
+  }
+}
+
+:host(.ng-invalid.ng-touched) ::ng-deep angular-editor .angular-editor .angular-editor-wrapper .angular-editor-textarea {
+  border-color: var(--color-error);
+}

@@ -313,6 +313,11 @@
   --color-background-secondary: #0f0f10;
   --color-backdrop: rgba(0, 0, 0, 0.6);
 
+  // Rich-text content: a light page in both themes, because stored HTML carries the website's own inline colors (mostly black text)
+  --color-rich-text-background: #ffffff;
+  --color-rich-text-text: rgba(0, 0, 0, 0.87);
+  --color-rich-text-placeholder: rgba(0, 0, 0, 0.6);
+
   // Shadows
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.5);
