@@ -13,6 +13,8 @@ import {SidebarComponent} from './sidebar/sidebar.component';
 import {SharedModule} from '../../shared/shared.module';
 import {GlobalTranslationPipe} from '../../i18n/global.translation';
 import {ButtonComponent, IconComponent} from '../../../ui-components';
+import {ConnectedPosition, OverlayModule} from '@angular/cdk/overlay';
+import {MainTranslationPipe} from './i18n/main.translation';
 
 @Component({
   selector: 'app-main',
@@ -27,7 +29,8 @@ import {ButtonComponent, IconComponent} from '../../../ui-components';
     SidebarComponent,
     SharedModule,
     ButtonComponent,
-    IconComponent
+    IconComponent,
+    OverlayModule
 ]
 })
 export class MainComponent implements OnInit {
@@ -50,6 +53,14 @@ export class MainComponent implements OnInit {
     private globalPipe = inject(GlobalTranslationPipe);
     protected readonly backLabel = this.globalPipe.transform('back');
 
+    /** The module's help text, opened from the "?" next to the page's actions (ngbPopover in the old app) */
+    protected readonly helpOpen = signal(false);
+    protected readonly helpLabel = new MainTranslationPipe(this.juicebox).transform('help');
+    protected readonly helpPositions: ConnectedPosition[] = [
+        { originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center', offsetX: -8 },
+        { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 8 },
+    ];
+
     constructor() {
         this.navigationVisible = toSignal(this.sidebarService.navigationVisible$, { initialValue: true });
 
@@ -61,8 +72,10 @@ export class MainComponent implements OnInit {
                 const url = (event as any).urlAfterRedirects ?? event.url;
                 const splitUrl = url.split('/');
                 const currentModule = splitUrl[2];
-                if(currentModule != this.module())
+                if(currentModule != this.module()) {
+                    this.helpOpen.set(false);
                     await this.getHelpText();
+                }
                 this.module.set(currentModule);
                 this.resolvePageHeader(url);
             }
@@ -97,9 +110,17 @@ export class MainComponent implements OnInit {
     async ngOnInit() {
         const url = this.router.url.split('?')[0].replace(/\/$/, '');
         if (url === '/main') {
+            // A user without roles, or without any module to open, is logged out
+            // (a sidebar that couldn't be loaded is not a reason to)
+            if (!this.juicebox.getUser()?.roles?.length) {
+                this.juicebox.logout();
+                return;
+            }
             const route = await this.sidebarService.getFirstAccessibleRoute();
             if (route) {
                 await this.router.navigateByUrl('/main/' + route);
+            } else if (route === null) {
+                this.juicebox.logout();
             }
         }
     }
@@ -147,6 +168,11 @@ export class MainComponent implements OnInit {
         const result = await this.juicebox.getHelpText(module)
         const language = this.juicebox.getLanguage()
         this.text.set(result && result.success ? result.payload.text[language] : null);
+    }
+
+    /** A click on the "?" itself toggles instead */
+    protected onHelpOutsideClick(event: MouseEvent, origin: HTMLElement) {
+        if (!origin.contains(event.target as Node)) this.helpOpen.set(false);
     }
 
     async helpTextUpdated() {

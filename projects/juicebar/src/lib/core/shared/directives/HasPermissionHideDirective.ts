@@ -38,8 +38,8 @@ export class HasPermissionHideDirective implements OnInit {
                 if (!userPermissions[permission] || userPermissions[permission] === false) allow = false;
             });
         } else if (permissions.includes('|')) { //Case to have only one permission listed
-             separatedPermissions = permissions.split('|');
-            allow = !!separatedPermissions.find(permission => userPermissions[permission] === true);
+            separatedPermissions = permissions.split('|');
+            allow = separatedPermissions.some(permission => !!userPermissions[permission]);
         } else if (!userPermissions[permissions] === true) { //Case if only one permission is selected
             allow = false;
         }

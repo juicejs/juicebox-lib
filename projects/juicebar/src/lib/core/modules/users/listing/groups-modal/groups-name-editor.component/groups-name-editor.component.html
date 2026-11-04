@@ -12,8 +12,8 @@
             <app-form-field appearance="outline" class="full-width">
                 <app-label>{{'name' | translate}}*</app-label>
                 <input appInput type="text" formControlName="name">
-                @if (groupForm.get('name')?.hasError('required')) {
-                    <app-error>{{'name' | translate}} is required</app-error>
+                @if (groupForm.get('name')?.touched && groupForm.get('name')?.hasError('required')) {
+                    <app-error>{{'include_name' | translate}}</app-error>
                 }
             </app-form-field>
 
@@ -22,8 +22,8 @@
                 <input appInput type="text" formControlName="key"
                        (keydown.space)="$event.preventDefault()"
                        placeholder="{{'group key' | translate}}" [readonly]="!!group">
-                @if (groupForm.get('key')?.hasError('required')) {
-                    <app-error>{{'key' | translate}} is required</app-error>
+                @if (groupForm.get('key')?.touched && groupForm.get('key')?.hasError('required')) {
+                    <app-error>{{'include_group_key' | translate}}</app-error>
                 }
             </app-form-field>
 

@@ -14,6 +14,9 @@ export class PageSizeSelectorComponent implements OnInit {
     sizes = input<number[]>();
     defaultSize = input<number>();
 
+    /** The old juicebox name of the event, which the ported project templates bind to */
+    pageSizeChanged = output<number>();
+    /** Same event, for apps already written against the lib */
     onChange = output<number>();
 
     _sizes = signal<number[]>([10, 20, 50]);
@@ -30,6 +33,7 @@ export class PageSizeSelectorComponent implements OnInit {
 
     select(size: number) {
         this.pageSize.set(size);
+        this.pageSizeChanged.emit(size);
         this.onChange.emit(size);
     }
 }

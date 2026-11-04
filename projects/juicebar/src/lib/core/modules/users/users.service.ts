@@ -297,4 +297,13 @@ export class UsersService {
         );
     }
 
+    /** Creates an entity (e.g. an organisation, `type: 'organisation'`), as the old entity wizard did */
+    createEntity(data: any): Promise<Result<any>> {
+        return this.juice.request(
+            'entities',
+            'createEntity',
+            [data]
+        );
+    }
+
 }

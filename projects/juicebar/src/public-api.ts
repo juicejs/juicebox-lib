@@ -43,9 +43,13 @@ export * from './lib/core/shared/components/listing/listing.component';
 export * from './lib/core/shared/components/filter-container/filter-container.component';
 export * from './lib/core/shared/components/page-size-selector/page-size-selector.component';
 export * from './lib/core/shared/components/filter-bar/filter-bar.component';
+// Opened by a project's own "Create vendor" listing button, as in the old company-profile module
+export * from './lib/core/modules/users/listing/create-vendor/create-vendor.component';
 
 // Services
 export * from './lib/core/shared/services/configuration.service';
+// Projects add their own users-listing buttons with UsersService.addCustomActionButton
+export * from './lib/core/modules/users/users.service';
 
 // Pipes
 export * from './lib/core/shared/i18n/shared-translation.pipe';

@@ -907,6 +907,10 @@ export const mainDictionary = {
   "help_document": {
     "en_GB": "Help document",
     "de_DE": "Hilfedokument",
+    "hr_HR": "Help dokument",
+    "sv_SE": "Hjälp",
+    "da_DK": "Hjælp",
+    "fi_FI": "Ohje",
   },
   "upload": {
     "en_GB": "Upload",

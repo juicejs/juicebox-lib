@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, inject, OnInit, ChangeDetectionStrategy, signal} from '@angular/core';
 import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
 import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -22,7 +22,7 @@ import {SharedModule} from '../../../../../shared/shared.module';
 export class AddWalletUserComponent implements OnInit {
 
     public walletForm: FormGroup;
-    public publishers: Array<any>;
+    public readonly publishers = signal<Array<any>>([]);
 
     id: any;
 
@@ -59,9 +59,10 @@ export class AddWalletUserComponent implements OnInit {
             "fetch",
             [page, pageSize,{filters:filter}]
         ).then(result => {
-            this.publishers = result.payload.publishers;
-            if (this.publishers.length == 1) {
-                this.walletForm.patchValue({ publisher: this.publishers[0].id });
+            const publishers = result?.payload?.publishers ?? [];
+            this.publishers.set(publishers);
+            if (publishers.length == 1) {
+                this.walletForm.patchValue({ publisher: publishers[0].id });
             }
         })
     }
@@ -81,7 +82,8 @@ export class AddWalletUserComponent implements OnInit {
                 });
                 if (result.success) {
                     this.juicebox.showToast("success", this.i18n.transform(address ? 'wallet_added' : 'wallet_created'));
-                    this.dialogRef.close();
+                    // true: the wallets tab reloads its list
+                    this.dialogRef.close(true);
                     await this.router.navigateByUrl("/main/users/details/"+this.id+"/wallets-user");
                 } else {
                     this.juicebox.showToast("error", this.i18n.transform(address ? 'wallet_add_failed' : 'wallet_create_failed'));

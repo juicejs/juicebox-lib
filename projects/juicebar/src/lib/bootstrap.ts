@@ -15,6 +15,7 @@ import { provideMain } from './core/modules/main/main.providers';
 import { Juice } from './core/shared/services/juice.service';
 import { JuiceboxService } from './core/shared/services/Juicebox.service';
 import { AuthGuard } from './core/shared/guards/auth.guard';
+import { ClientRouteGuard } from './core/shared/guards/client-route.guard';
 import { UnsavedChangesGuard } from './core/shared/guards/unsaved-changes.guard';
 import { BrandService } from './core/shared/services/brand.service';
 
@@ -103,6 +104,8 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], fe
     ...(mainRoutes?.map(m => ({
       path: m.path,
       ...(m.component ? { loadComponent: m.component } : { loadChildren: m.loadChildren }),
+      // The shell already requires a login; a module's own guards (e.g. a role check) apply on top
+      ...(m.guards?.length ? { canActivate: m.guards } : {}),
     })) ?? []),
     {
       path: 'not-found',
@@ -115,6 +118,7 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], fe
     {
       path: 'login',
       component: LoginComponent,
+      canActivate: [ClientRouteGuard],
     },
     {
       // Target of the link in the password reset email (`?token=`)
@@ -131,6 +135,8 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], fe
       path: 'main',
       component: MainComponent,
       canActivate: [AuthGuard],
+      // As in the old juicebox: every page under /main checks the organisation's client route
+      canActivateChild: [ClientRouteGuard],
       children: mainChildren,
     },
     ...modules.map(module => ({

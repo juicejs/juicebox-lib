@@ -1,5 +1,7 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {RouterOutlet} from '@angular/router';
+import {Component, ChangeDetectionStrategy, inject} from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {ActivatedRoute, NavigationEnd, Router, RouterOutlet} from '@angular/router';
+import {filter, map, startWith} from 'rxjs/operators';
 import {SharedModule} from '../../../shared/shared.module';
 import {UserTranslationPipe} from '../i18n/user.translation';
 import {TabsComponent, TabComponent} from "../../../../ui-components";
@@ -20,4 +22,22 @@ import {injectCustomUserTabs} from '../users-customization';
 export class UserWizardComponent {
     /** Steps after 'main' that the project added via componentOverrides (e.g. customers, allowed types) */
     protected readonly steps = injectCustomUserTabs(['user-wizard']);
+
+    private readonly route = inject(ActivatedRoute);
+    private readonly router = inject(Router);
+
+    /** The current step's tab is highlighted, as routerLinkActive did in the old wizard */
+    protected readonly selectedIndex = toSignal(
+        this.router.events.pipe(
+            filter(event => event instanceof NavigationEnd),
+            startWith(null),
+            map(() => this.currentStepIndex())
+        ),
+        { initialValue: 0 }
+    );
+
+    private currentStepIndex(): number {
+        const segment = this.route.snapshot.firstChild?.url[0]?.path;
+        return Math.max(['main', ...this.steps.map(step => step.route)].indexOf(segment), 0);
+    }
 }

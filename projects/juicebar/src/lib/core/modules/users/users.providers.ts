@@ -21,21 +21,31 @@ export function provideUsers(customization?: UsersCustomization): JuicebarFeatur
 
         juicebox.registerSearchProvider(
           {
+            // First name, last name or email. The users list's fetch (same scoping as the list) needs all of its terms
+            // to match, so each field is its own request and the results are merged; two or more words are also
+            // tried as first name + last name.
             search: async (token: string) => {
               const organisationId = juicebox.getUser().organisation_id;
-              const results = await userService.fetch(
-                organisationId,
-                0,
-                10,
-                { dir: 'asc', prop: 'lastname' },
-                [{ property: 'email', term: token, fullText: true, language: false }],
-              );
-              if (!results?.success) return [];
-              return results.payload.items.map(user => ({
-                title: `${user.firstname} ${user.lastname}`,
-                details: user.email,
-                link: 'main/users/details/' + user._id + '/details-user',
-              }));
+              const term = (property: string, value: string) => ({ property, term: value, fullText: true, language: false });
+              const queries = [[term('firstname', token)], [term('lastname', token)], [term('email', token)]];
+              const words = token.trim().split(/\s+/);
+              if (words.length > 1) queries.push([term('firstname', words[0]), term('lastname', words.slice(1).join(' '))]);
+
+              const results = await Promise.all(queries.map(filter =>
+                userService.fetch(organisationId, 0, 10, { dir: 'asc', prop: 'lastname' }, filter).catch(() => null)));
+              const users = new Map<string, any>();
+              for (const result of results) {
+                if (!result?.success) continue;
+                for (const user of result.payload.items) users.set(user._id, user);
+              }
+              return [...users.values()]
+                .sort((a, b) => `${a.lastname ?? ''} ${a.firstname ?? ''}`.localeCompare(`${b.lastname ?? ''} ${b.firstname ?? ''}`))
+                .slice(0, 10)
+                .map(user => ({
+                  title: `${user.firstname} ${user.lastname}`,
+                  details: user.email,
+                  link: 'main/users/details/' + user._id + '/details-user',
+                }));
             },
           },
           'Users',

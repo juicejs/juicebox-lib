@@ -2273,5 +2273,68 @@ export const usersDictionary = {
     "en_GB": "Rows per page",
     "de_DE": "Zeilen pro Seite",
     "hr_HR": "Redaka po stranici"
+  },
+  "create_organisation": {
+    "en_GB": "Create organisation",
+    "de_DE": "Organisation erstellen",
+    "hr_HR": "Kreiraj organizaciju"
+  },
+  "organisation_created": {
+    "en_GB": "Organisation created",
+    "de_DE": "Organisation erstellt",
+    "hr_HR": "Organizacija je kreirana"
+  },
+  "error_creating_organisation": {
+    "en_GB": "The organisation could not be created",
+    "de_DE": "Die Organisation konnte nicht erstellt werden",
+    "hr_HR": "Organizaciju nije moguće kreirati"
+  },
+  "tax_number": {
+    "en_GB": "Tax number",
+    "de_DE": "Steuer-ID",
+    "hr_HR": "Porezni broj"
+  },
+  "phone": {
+    "en_GB": "Phone",
+    "de_DE": "Telefon",
+    "hr_HR": "Telefon",
+    "da_DK": "Telefon",
+    "sv_SE": "Telefon",
+    "fi_FI": "Puhelin"
+  },
+  "mobilephone": {
+    "en_GB": "Mobile phone",
+    "de_DE": "Mobiltelefon",
+    "hr_HR": "Mobitel"
+  },
+  "delete_user": {
+    "en_GB": "Delete user",
+    "de_DE": "Benutzer löschen",
+    "hr_HR": "Obriši korisnika"
+  },
+  "code_required": {
+    "en_GB": "Enter the code",
+    "de_DE": "Bitte den Code eingeben",
+    "hr_HR": "Unesite kod"
+  },
+  "code_numbers_only": {
+    "en_GB": "The code may only contain numbers",
+    "de_DE": "Der Code darf nur Ziffern enthalten",
+    "hr_HR": "Kod smije sadržavati samo brojeve"
+  },
+  "code_six_digits": {
+    "en_GB": "The code must have exactly 6 digits",
+    "de_DE": "Der Code muss genau 6 Ziffern haben",
+    "hr_HR": "Kod mora imati točno 6 znamenki"
+  },
+  "include_publisher": {
+    "en_GB": "You must include a publisher",
+    "de_DE": "Sie müssen einen Herausgeber angeben",
+    "hr_HR": "Morate odabrati izdavača"
+  },
+  "include_group_key": {
+    "en_GB": "You must include a key",
+    "de_DE": "Sie müssen einen Schlüssel angeben",
+    "hr_HR": "Morate unijeti ključ"
   }
 }

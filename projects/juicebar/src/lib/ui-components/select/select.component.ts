@@ -1,11 +1,14 @@
 import {
   Component, ChangeDetectionStrategy, ViewEncapsulation, input, output, model, signal,
   contentChildren, computed, ElementRef, inject, AfterContentInit, OnDestroy,
-  ViewChild, forwardRef
+  ViewChild, forwardRef, linkedSignal, DOCUMENT, afterRenderEffect, viewChild
 } from '@angular/core';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { FormFieldComponent } from '../form-field/form-field.component';
+import { DISABLEABLE, Disableable } from '../disableable';
+
+let nextSelectId = 0;
 
 @Component({
   selector: 'app-option',
@@ -43,27 +46,52 @@ export class OptionComponent {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => SelectComponent),
       multi: true,
-    }
+    },
+    { provide: DISABLEABLE, useExisting: forwardRef(() => SelectComponent) },
   ]
 })
-export class SelectComponent implements AfterContentInit, OnDestroy, ControlValueAccessor {
+export class SelectComponent implements AfterContentInit, OnDestroy, ControlValueAccessor, Disableable {
   value = model<any>(null);
   disabled = input<boolean>(false);
   placeholder = input<string>('Select an option');
   searchable = input<boolean>(false);
   searchPlaceholder = input<string>('Search...');
   multiple = input<boolean>(false);
+  /** The typed search only goes out through `searchChange`; the options are not filtered here (a server search) */
+  externalSearch = input<boolean>(false);
+  /** Shows a × that empties a single selection, like ng-select's clear button */
+  clearable = input<boolean>(false);
+  clearLabel = input<string>('Clear');
 
   selectionChange = output<{ value: any }>();
+  /** The text typed in the search field ('' when it is cleared) */
+  searchChange = output<string>();
+  /**
+   * The end of the options list is in view, e.g. to load the next page (ng-select's scrollToEnd).
+   * Also when the options don't fill the panel, since a list that can't scroll never reaches its end otherwise.
+   */
+  scrolledToEnd = output<void>();
 
   /** The trigger button gets the form field's control id, so the field's app-label labels it */
   protected readonly triggerId = inject(FormFieldComponent, { optional: true })?.controlId;
+  /** ids for the listbox and its options (aria-controls, aria-activedescendant) */
+  protected readonly panelId = `app-select-${nextSelectId++}`;
+  protected readonly optionIdPrefix = `${this.panelId}-option-`;
+
+  /** Disabled by the `disabled` input, the form control (`control.disable()`) or a permission directive */
+  private readonly formDisabled = signal(false);
+  private readonly externallyDisabled = signal(false);
+  protected readonly isDisabled = computed(() => this.disabled() || this.formDisabled() || this.externallyDisabled());
 
   isOpen = signal(false);
   searchQuery = signal('');
   private storedLabel = signal<string>('');
 
   @ViewChild('searchInput') searchInputEl?: ElementRef<HTMLInputElement>;
+  @ViewChild('triggerButton') private triggerEl?: ElementRef<HTMLButtonElement>;
+  /** The options list; only there while the panel is open */
+  private readonly optionsList = viewChild<ElementRef<HTMLElement>>('optionsList');
+  private readonly document = inject(DOCUMENT);
 
   private options = contentChildren(OptionComponent);
 
@@ -84,6 +112,11 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
   });
 
   protected readonly selectedValue = computed(() => this.value());
+
+  protected readonly showClear = computed(() => {
+    const val = this.value();
+    return this.clearable() && !this.multiple() && !this.isDisabled() && val !== null && val !== undefined && val !== '';
+  });
 
   protected readonly selectedArray = computed<any[]>(() => {
     if (!this.multiple()) return [];
@@ -106,11 +139,32 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
 
   protected readonly filteredOptions = computed(() => {
     const query = this.searchQuery().toLowerCase();
-    if (!query) return this.options();
+    if (!query || this.externalSearch()) return this.options();
     return this.options().filter(o =>
       o.getLabel().toLowerCase().includes(query)
     );
   });
+
+  /**
+   * The highlighted option, as in ng-select: moved with the arrow keys or the mouse, chosen with Enter.
+   * A new search highlights the first result; options added below the others (the next page) leave it in place.
+   */
+  protected readonly activeIndex = linkedSignal<readonly OptionComponent[], number>({
+    source: this.filteredOptions,
+    computation: (options, previous) => {
+      if (!previous) return 0;
+      const before = previous.source;
+      const added = options.length > before.length && before.every((option, i) => options[i] === option);
+      return added ? previous.value : 0;
+    },
+  });
+  protected readonly activeOptionId = computed(() =>
+    this.isOpen() && this.filteredOptions()[this.activeIndex()] ? this.optionId(this.activeIndex()) : null,
+  );
+
+  /** Letters typed in a row, to pick an option by its label (type-ahead) */
+  private typedKeys = '';
+  private typedKeysTimer?: ReturnType<typeof setTimeout>;
 
   protected readonly allFilteredSelected = computed(() => {
     const filtered = this.filteredOptions();
@@ -119,11 +173,20 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
     return filtered.every(o => sel.some(v => this.equals(v, o.value())));
   });
 
+  constructor() {
+    // Options that don't fill the panel can't be scrolled, so their end is reported once they are shown
+    afterRenderEffect(() => {
+      this.filteredOptions();
+      const list = this.optionsList()?.nativeElement;
+      if (list) this.emitIfAtEnd(list);
+    });
+  }
+
   ngAfterContentInit() {}
   ngOnDestroy() {}
 
   toggle() {
-    if (!this.disabled()) {
+    if (!this.isDisabled()) {
       if (this.isOpen()) {
         this.close();
       } else {
@@ -133,15 +196,150 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
   }
 
   open() {
+    if (this.isDisabled() || this.isOpen()) return;
     this.isOpen.set(true);
-    this.searchQuery.set('');
+    this.setSearchQuery('');
+    this.activateSelectedOrFirst();
     setTimeout(() => this.searchInputEl?.nativeElement.focus(), 50);
   }
 
-  close() {
+  protected setSearchQuery(query: string) {
+    if (query === this.searchQuery()) return;
+    this.searchQuery.set(query);
+    this.searchChange.emit(query);
+  }
+
+  protected onOptionsScroll(event: Event) {
+    this.emitIfAtEnd(event.target as HTMLElement);
+  }
+
+  private emitIfAtEnd(list: HTMLElement) {
+    if (list.scrollTop + list.clientHeight >= list.scrollHeight - 24) this.scrolledToEnd.emit();
+  }
+
+  /** `restoreFocus` returns focus to the trigger, e.g. after Escape or a choice made with the keyboard */
+  close(restoreFocus = false) {
+    if (!this.isOpen()) return;
     this.isOpen.set(false);
-    this.searchQuery.set('');
+    this.setSearchQuery('');
     this.onTouched();
+    if (restoreFocus) this.triggerEl?.nativeElement.focus();
+  }
+
+  /** Keys on the trigger and in the search field, as ng-select handled them */
+  protected onKeydown(event: KeyboardEvent) {
+    if (this.isDisabled()) return;
+    const inSearch = event.target === this.searchInputEl?.nativeElement;
+    switch (event.key) {
+      case 'ArrowDown':
+      case 'ArrowUp':
+        event.preventDefault();
+        if (!this.isOpen()) {
+          this.open();
+        } else {
+          this.moveActive(event.key === 'ArrowDown' ? 1 : -1);
+        }
+        return;
+      case 'Home':
+      case 'End':
+        if (!this.isOpen() || inSearch) return;
+        event.preventDefault();
+        this.setActive(event.key === 'Home' ? this.firstEnabled(0, 1) : this.firstEnabled(this.filteredOptions().length - 1, -1));
+        return;
+      case 'Enter':
+        event.preventDefault();
+        if (!this.isOpen()) {
+          this.open();
+          return;
+        }
+        this.chooseActive();
+        return;
+      case ' ':
+        if (inSearch) return;
+        event.preventDefault();
+        this.open();
+        return;
+      case 'Escape':
+        if (!this.isOpen()) return;
+        event.preventDefault();
+        this.close(true);
+        return;
+      case 'Tab':
+        if (!this.isOpen()) return;
+        // The panel is not in the page's tab order: close it and continue from the trigger
+        if (inSearch) {
+          event.preventDefault();
+          this.close(true);
+        } else {
+          this.close();
+        }
+        return;
+    }
+    if (!inSearch && event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      this.typeAhead(event.key);
+    }
+  }
+
+  protected onTriggerBlur() {
+    if (!this.isOpen()) this.onTouched();
+  }
+
+  private optionId(index: number): string {
+    return this.optionIdPrefix + index;
+  }
+
+  protected setActive(index: number) {
+    if (index < 0) return;
+    this.activeIndex.set(index);
+    // Keep the highlighted option in view once the panel has rendered it
+    setTimeout(() => this.document.getElementById(this.optionId(index))?.scrollIntoView({ block: 'nearest' }));
+  }
+
+  private activateSelectedOrFirst() {
+    const options = this.filteredOptions();
+    const selected = options.findIndex(o => this.isSelected(o));
+    this.setActive(selected >= 0 ? selected : this.firstEnabled(0, 1));
+  }
+
+  private moveActive(step: 1 | -1) {
+    const options = this.filteredOptions();
+    if (!options.length) return;
+    let index = this.activeIndex();
+    for (let i = 0; i < options.length; i++) {
+      index = (index + step + options.length) % options.length;
+      if (!options[index].disabled()) break;
+    }
+    this.setActive(index);
+  }
+
+  private firstEnabled(from: number, step: 1 | -1): number {
+    const options = this.filteredOptions();
+    for (let i = from; i >= 0 && i < options.length; i += step) {
+      if (!options[i].disabled()) return i;
+    }
+    return -1;
+  }
+
+  private chooseActive() {
+    const option = this.filteredOptions()[this.activeIndex()];
+    if (!option) return;
+    this.select(option);
+  }
+
+  /** As in ng-select: on a closed select the typed label is chosen, on an open one it is highlighted */
+  private typeAhead(key: string) {
+    clearTimeout(this.typedKeysTimer);
+    this.typedKeys += key.toLocaleLowerCase();
+    this.typedKeysTimer = setTimeout(() => (this.typedKeys = ''), 500);
+    const options = this.filteredOptions();
+    const index = options.findIndex(o => !o.disabled() && o.getLabel().toLocaleLowerCase().startsWith(this.typedKeys));
+    if (index < 0) return;
+    if (this.isOpen() || this.multiple()) {
+      if (!this.isOpen()) this.open();
+      this.setActive(index);
+    } else {
+      this.select(options[index]);
+    }
   }
 
   select(option: OptionComponent) {
@@ -161,8 +359,21 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
       this.value.set(option.value());
       this.onChange(option.value());
       this.selectionChange.emit({ value: option.value() });
-      this.close();
+      // Focus stays on the select, as it did with ng-select (the search field closes with the panel)
+      this.close(true);
     }
+  }
+
+  /** Empties the selection; the value becomes null, as with ng-select's clear button */
+  clear() {
+    this.storedLabel.set('');
+    this.value.set(null);
+    this.onChange(null);
+    this.onTouched();
+    this.selectionChange.emit({ value: null });
+    this.close();
+    // The × goes away once the value is empty, so focus moves to the select itself
+    this.triggerEl?.nativeElement.focus();
   }
 
   isSelected(option: OptionComponent): boolean {
@@ -208,6 +419,16 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
   // ControlValueAccessor
   writeValue(val: any): void {
     this.value.set(val);
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.formDisabled.set(isDisabled);
+    if (isDisabled) this.close();
+  }
+
+  setExternallyDisabled(disabled: boolean): void {
+    this.externallyDisabled.set(disabled);
+    if (disabled) this.close();
   }
 
   registerOnChange(fn: (v: any) => void): void {

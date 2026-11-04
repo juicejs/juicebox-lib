@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, output, signal, untracked} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FormControl, FormGroup, ReactiveFormsModule, ValidatorFn} from '@angular/forms';
 import {ExportValidators} from '../../shared/ExportValidators';
@@ -34,6 +34,10 @@ export class ExportFiltersComponent {
     filters = input<Array<ExportFilter>>([]);
     disabled = input<boolean>(false);
     selectedDataSourceKey = input<ExportStrategy>();
+    /**
+     * The filter form itself, on every change (as in the old admin), so its `valid` and `dirty` are the real ones.
+     * Read its values with `exportFilterValues()`, which gives dates in the stored `{year, month, day}` shape.
+     */
     filtersValueChange = output<FormGroup>();
 
     filterForm = new FormGroup({});
@@ -42,10 +46,13 @@ export class ExportFiltersComponent {
     private autoLanguage = new AutoLanguagePipe(this.juicebox);
 
     constructor() {
+        // Rebuilt only when the filters change, as in the old admin; `disabled` alone keeps what was typed
         effect(() => {
             this.filters();
-            this.generateForm();
-            this.filtersValueChange.emit(this.filterForm);
+            untracked(() => {
+                this.generateForm();
+                this.filtersValueChange.emit(this.filterForm);
+            });
         });
 
         effect(() => {
@@ -66,24 +73,10 @@ export class ExportFiltersComponent {
         this.filterForm = new FormGroup(controls);
         if (this.disabled()) this.filterForm.disable();
 
-        this.filterForm.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-            const formValue = this.filterForm.value;
-            const convertedForm = new FormGroup({});
-
-            Object.keys(formValue).forEach(key => {
-                const filter = filters.find(f => f.id === key);
-                const value = formValue[key];
-
-                if (filter?.type === 'date' && value instanceof Date) {
-                    const dateObject = CustomMaterialDateAdapter.formatAppDateObjectValue(value);
-                    convertedForm.addControl(key, new FormControl(dateObject));
-                } else {
-                    convertedForm.addControl(key, new FormControl(value));
-                }
-            });
-
+        const form = this.filterForm;
+        form.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
             this.filterFormTick.update(v => v + 1);
-            this.filtersValueChange.emit(convertedForm);
+            this.filtersValueChange.emit(form);
         });
     }
 

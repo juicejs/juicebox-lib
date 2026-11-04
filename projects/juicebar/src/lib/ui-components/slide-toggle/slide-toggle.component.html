@@ -3,7 +3,7 @@
     type="checkbox"
     class="toggle-input"
     [checked]="checked()"
-    [disabled]="disabled()"
+    [disabled]="isDisabled()"
     (change)="onToggleChange($event)"
   />
   <span class="toggle-slider"></span>

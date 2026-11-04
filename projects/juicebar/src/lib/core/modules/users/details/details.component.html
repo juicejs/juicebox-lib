@@ -4,4 +4,7 @@
     }
 </app-tabs>
 
-<router-outlet></router-outlet>
+<!-- One outlet per user: the tabs are created anew when another user is opened -->
+@for (id of [userId()]; track id) {
+    <router-outlet></router-outlet>
+}

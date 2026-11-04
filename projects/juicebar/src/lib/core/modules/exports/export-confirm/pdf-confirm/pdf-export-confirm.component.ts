@@ -92,7 +92,7 @@ export class PdfExportConfirmComponent {
     }
 
     private async getDataSourceFileNameColumns(dataSourceKey: string, exportTemplateId: string) {
-        const result = await this.exportsService.getDataSourceFileNameColumns(dataSourceKey, exportTemplateId);
+        const result = await this.exportsService.getDataSourceFileNameColumns(exportTemplateId, dataSourceKey);
         if (!result) return;
         if (result.success) {
             this.fileNameProperties.set(result.payload);

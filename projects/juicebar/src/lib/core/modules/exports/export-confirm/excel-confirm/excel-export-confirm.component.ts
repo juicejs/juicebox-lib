@@ -9,6 +9,7 @@ import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {ConfigurationService} from '../../../../shared/services/configuration.service';
 import {SharedModule} from '../../../../shared/shared.module';
 import {ExportFiltersComponent} from '../../components/export-filters/export-filters.component';
+import {exportFilterValues} from '../../components/export-filters/export-filter-values';
 
 export interface ExcelExportConfirmDialogData {
     fileName?: string;
@@ -63,14 +64,22 @@ export class ExcelExportConfirmComponent {
         }
     }
 
+    /** If the filters can't be loaded, the dialog works as in the old app: the export uses the template's saved filters */
     private async getDataSourceFilters() {
         this.isLoading.set(true);
-        const result = await this.exportsService.getFilters(this.exportTemplate.data_source_key);
-        this.filters.set(result.payload.map(filter => {
-            const _filter: {id, value} = this.exportTemplate.filters.find(_filter => _filter.id === filter.id);
-            return {...filter, value: _filter ? _filter.value : null};
-        }));
-        this.isLoading.set(false);
+        try {
+            const result = await this.exportsService.getFilters(this.exportTemplate.data_source_key);
+            if (!result?.success || !Array.isArray(result.payload)) throw new Error(result?.error);
+            this.filters.set(result.payload.map(filter => {
+                const _filter: {id, value} = this.exportTemplate.filters?.find(_filter => _filter.id === filter.id);
+                return {...filter, value: _filter ? _filter.value : null};
+            }));
+        } catch {
+            this.allowFiltersEditOnConfirm.set(false);
+            this.juicebox.showToast('warning', this.i18n.transform('filters_load_failed'));
+        } finally {
+            this.isLoading.set(false);
+        }
     }
 
     cancel() {
@@ -78,7 +87,7 @@ export class ExcelExportConfirmComponent {
     }
 
     onFiltersValueChange(filterForm: FormGroup) {
-        this.selectedFilters = filterForm.value;
+        this.selectedFilters = exportFilterValues(filterForm);
         this.filterForm = filterForm;
     }
 

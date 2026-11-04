@@ -1,0 +1,15 @@
+.create-org-form {
+    width: min(560px, 100%);
+}
+
+.create-org-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 12px;
+}
+
+@media (max-width: 600px) {
+    .create-org-row {
+        grid-template-columns: 1fr;
+    }
+}

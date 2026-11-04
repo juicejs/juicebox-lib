@@ -41,5 +41,10 @@
             <div class="spinner"></div>
             <p class="mt-2">{{"loading" | translate}}</p>
         </div>
+        <div class="dialog-actions p-3">
+            <button app-button appearance="flat" (click)="cancel()">
+                {{"cancel" | translate}}
+            </button>
+        </div>
     </div>
 }

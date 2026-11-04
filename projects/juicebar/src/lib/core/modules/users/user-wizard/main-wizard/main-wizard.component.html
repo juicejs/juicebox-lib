@@ -15,7 +15,7 @@
                             <span class="field-opt">Optional</span>
                         </app-label>
                         <app-form-field controlId="new-user-salutation" appearance="outline" class="field-control">
-                            <app-select formControlName="salutation">
+                            <app-select formControlName="salutation" [clearable]="true" placeholder="{{ 'salutation' | translate }}">
                                 @for (salutation of salutations; track salutation.key) {
                                     <app-option [value]="salutation.key">{{ salutation.name }}</app-option>
                                 }
@@ -80,7 +80,7 @@
                         </app-label>
                         <app-form-field controlId="new-user-email" appearance="outline" class="field-control">
                             <app-autocomplete formControlName="email"
-                                              [options]="emailAutocompleteOptions"
+                                              [options]="emailAutocompleteOptions()"
                                               (inputChange)="onSearch($event)"
                                               (optionSelected)="onSelectChange($event)"></app-autocomplete>
                             @if (userForm.controls['email'].touched && userForm.controls['email'].hasError('required')) {

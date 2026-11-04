@@ -690,7 +690,8 @@ export class JuiceboxService {
             let separatedPermissions: any = [];
             let allow: boolean = false;
 
-            //Case to have all permissions on directive
+            //Case of a list: any one of the permissions is enough, as with `|`
+            //(unlike the hasPermissions directive, where `,` needs all of them; kept as the old juicebox had it)
             if (perm.includes(',')) {
                 separatedPermissions = perm.split(',');
                 separatedPermissions.forEach(permission => {

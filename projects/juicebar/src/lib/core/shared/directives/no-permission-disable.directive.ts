@@ -1,15 +1,21 @@
 import { Directive, ElementRef, inject, input, OnInit } from '@angular/core';
 import { JuiceboxService } from '../services/Juicebox.service';
+import { DISABLEABLE } from '../../../ui-components';
 
 /**
  * Disables a component if there is no required permission
  * example: 'users:role#create' - checks for role users and permission create
  * example2: 'users:role#read' - checks only for role users
+ *
+ * Disables app-button, app-checkbox, app-select, app-slide-toggle and app-datepicker through DISABLEABLE
+ * (as the old directive did for ng-select, ui-switch and the ngb pickers), and any other element natively.
  */
 @Directive({ selector: '[NoPermissionDisable]' })
 export class NoPermissionDisableDirective implements OnInit {
     private el = inject(ElementRef);
     private juicebox = inject(JuiceboxService);
+    /** An app-* control manages its own `disabled`; a `disabled` set from outside would be overwritten */
+    private disableable = inject(DISABLEABLE, { self: true, optional: true });
 
     readonly NoPermissionDisable = input.required<string>();
 
@@ -23,6 +29,10 @@ export class NoPermissionDisableDirective implements OnInit {
 
     disableElement(hasPermission: boolean) {
         if (hasPermission) return;
+        if (this.disableable) {
+            this.disableable.setExternallyDisabled(true);
+            return;
+        }
         this.el.nativeElement.disabled = true;
         this.el.nativeElement.classList.add('cursor-disabled');
     }

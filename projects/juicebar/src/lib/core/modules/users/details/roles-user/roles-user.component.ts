@@ -73,14 +73,14 @@ export class RolesUserComponent implements OnInit {
 
     async ngOnInit() {
         this.userId = this.route.snapshot.parent.params['id'];
-        this.selectedOrganisation.set(this.juicebox.getUserOrganisationId());
-        await this.getOrganisations();
-        await this.getUserData();
-
+        // Known right away, so the table has its columns before the data arrives
         this.hasVisibilityFeature = this.juicebox.getOptions().sidebarPermissions;
         if (this.hasVisibilityFeature) {
             this.displayedColumns = ['name', 'visibility', 'permissions', 'actions'];
         }
+        this.selectedOrganisation.set(this.juicebox.getUserOrganisationId());
+        await this.getOrganisations();
+        await this.getUserData();
     }
 
     async getUserData() {

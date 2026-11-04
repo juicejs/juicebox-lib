@@ -14,6 +14,7 @@ import {ExportFilter} from '../types/ExportFilter';
 import {SharedModule} from '../../../shared/shared.module';
 import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 import {ExportFiltersComponent} from '../components/export-filters/export-filters.component';
+import {exportFilterValues} from '../components/export-filters/export-filter-values';
 
 @Component({
     selector: 'app-export-template-edit',
@@ -319,7 +320,7 @@ export class ExportTemplateEditComponent {
 
     onFiltersValueChange(filterForm: FormGroup) {
         this.filtersValid.set(filterForm.valid);
-        this.templateForm().get('filters').patchValue(filterForm.value);
+        this.templateForm().get('filters').patchValue(exportFilterValues(filterForm));
     }
 
     onColumnDrop(event: CdkDragDrop<ExportColumn[]>) {

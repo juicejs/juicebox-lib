@@ -33,7 +33,6 @@
                     appearance="raised"
                     color="primary"
                     [promiseBtn]="promiseBtn"
-                    [hasPermissions]="'groups:role#updated|update'"
                     [disabled]="!hasChanges() || loading()"
                     (click)="saveChanges()">
                 <app-icon [icon]="'save'"></app-icon>
@@ -84,7 +83,12 @@
                             </th>
                             @for (group of filteredGroups(); track group.key) {
                                 <th class="group-col">
-                                    <div class="group-col-name" [title]="group.name">{{ group.name }}</div>
+                                    @if (groupRoles()[group.key]; as roles) {
+                                        <div class="group-col-name" tabindex="0"
+                                             [appTooltip]="roles" [appTooltipTitle]="group.name">{{ group.name }}</div>
+                                    } @else {
+                                        <div class="group-col-name" [title]="group.name">{{ group.name }}</div>
+                                    }
                                 </th>
                             }
                         </tr>
@@ -103,6 +107,7 @@
                                         <td class="group-cell">
                                             <input type="checkbox"
                                                    [checked]="!!userGroupMatrix()[org._id]?.[group.key]"
+                                                   [disabled]="!!originalMatrix()[org._id]?.[group.key] ? !canRemove() : !canAdd()"
                                                    (change)="toggleGroupAssignment(org._id, group.key, $any($event.target).checked)">
                                         </td>
                                     }
@@ -136,6 +141,7 @@
                                         <td class="group-cell">
                                             <input type="checkbox"
                                                    [checked]="!!userGroupMatrix()[row.node._id]?.[group.key]"
+                                                   [disabled]="!!originalMatrix()[row.node._id]?.[group.key] ? !canRemove() : !canAdd()"
                                                    (change)="toggleGroupAssignment(row.node._id, group.key, $any($event.target).checked)">
                                         </td>
                                     }

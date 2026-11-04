@@ -1,9 +1,17 @@
-// Top right below the 48px top bar, newest on top, as the old juicebox's toasts were
+// Top right below the 48px top bar, newest on top, as the old juicebox's toasts were.
+// The container is a manual popover (in the top layer, above dialogs): the browser's popover box is undone.
 .app-snackbar-container {
   position: fixed;
+  inset: auto;
   top: 60px;
   right: var(--spacing-md);
-  z-index: 1100; // above the CDK overlay container (1000), so toasts show over open dialogs
+  z-index: 1100; // when popovers are not supported: above the CDK overlay container (1000)
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  overflow: visible;
   display: flex;
   flex-direction: column-reverse;
   align-items: flex-end;
@@ -16,6 +24,10 @@ app-snackbar {
   display: block;
   pointer-events: auto;
   animation: app-snackbar-enter 200ms cubic-bezier(.2, .8, .2, 1);
+
+  &.app-snackbar-entered {
+    animation: none;
+  }
 
   &.app-snackbar-leaving {
     animation: app-snackbar-leave 150ms ease-in forwards;

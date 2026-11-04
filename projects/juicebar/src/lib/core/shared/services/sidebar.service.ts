@@ -102,16 +102,21 @@ export class SidebarService implements OnDestroy {
         return typeof translated === 'string' && !translated.startsWith('@') ? translated : label;
     }
 
-    private visibleSidebarItemsPromise: Promise<SidebarItem[]> | null = null;
+    /** Resolves to null when the user's sidebar couldn't be loaded */
+    private visibleSidebarItemsPromise: Promise<SidebarItem[] | null> | null = null;
 
-    getVisibleSidebarItems(): Promise<SidebarItem[]> {
+    async getVisibleSidebarItems(): Promise<SidebarItem[]> {
+        return (await this.loadVisibleSidebarItems()) ?? [];
+    }
+
+    private loadVisibleSidebarItems(): Promise<SidebarItem[] | null> {
         if (!this.visibleSidebarItemsPromise) {
             this.visibleSidebarItemsPromise = this.computeVisibleSidebarItems();
         }
         return this.visibleSidebarItemsPromise;
     }
 
-    private async computeVisibleSidebarItems(): Promise<SidebarItem[]> {
+    private async computeVisibleSidebarItems(): Promise<SidebarItem[] | null> {
         const user = this.juicebox.getUser();
         if (!user) return [];
         const options = await this.juicebox.getOptions();
@@ -119,11 +124,13 @@ export class SidebarService implements OnDestroy {
             return this.getSidebarItemsWithPermissions(user, this.mainTranslationPipe);
         }
         const res = await this.getSidebarItems(this.juicebox.getUserId(), this.juicebox.getUserOrganisationId());
-        return res?.visible ?? [];
+        return res ? res.visible : null;
     }
 
-    async getFirstAccessibleRoute(): Promise<string | null> {
-        const visible = await this.getVisibleSidebarItems();
+    /** The first module in the sidebar; null when the user has none, undefined when the sidebar couldn't be loaded */
+    async getFirstAccessibleRoute(): Promise<string | null | undefined> {
+        const visible = await this.loadVisibleSidebarItems();
+        if (!visible) return undefined;
         return visible.length ? visible[0].router : null;
     }
 

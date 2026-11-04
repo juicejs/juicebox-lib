@@ -1,5 +1,6 @@
-import {ChangeDetectionStrategy, Component, forwardRef, input, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, forwardRef, input, signal} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {DISABLEABLE, Disableable} from '../disableable';
 
 @Component({
   selector: 'app-datepicker',
@@ -7,7 +8,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
     <input type="date"
            class="app-datepicker-input"
            [value]="dateValue()"
-           [disabled]="disabled()"
+           [disabled]="isDisabled()"
            [readonly]="readonly()"
            [attr.placeholder]="placeholder()"
            (input)="onInput($any($event.target).value)"
@@ -58,14 +59,20 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => DatepickerComponent),
     multi: true,
+  }, {
+    provide: DISABLEABLE,
+    useExisting: forwardRef(() => DatepickerComponent),
   }],
 })
-export class DatepickerComponent implements ControlValueAccessor {
+export class DatepickerComponent implements ControlValueAccessor, Disableable {
   placeholder = input<string>('');
   readonly = input<boolean>(false);
 
   dateValue = signal<string>('');
   disabled = signal<boolean>(false);
+  /** Set by a permission directive on the same element */
+  private readonly externallyDisabled = signal(false);
+  protected readonly isDisabled = computed(() => this.disabled() || this.externallyDisabled());
 
   private onChange: (value: Date | null) => void = () => {};
   onTouched: () => void = () => {};
@@ -89,6 +96,8 @@ export class DatepickerComponent implements ControlValueAccessor {
   registerOnChange(fn: (value: Date | null) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
   setDisabledState(disabled: boolean): void { this.disabled.set(disabled); }
+
+  setExternallyDisabled(disabled: boolean): void { this.externallyDisabled.set(disabled); }
 
   onInput(value: string): void {
     this.dateValue.set(value);

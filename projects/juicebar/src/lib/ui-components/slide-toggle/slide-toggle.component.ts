@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy, model, input, output, forwardRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, model, input, output, forwardRef, signal, computed } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { DISABLEABLE, Disableable } from '../disableable';
 
 @Component({
   selector: 'app-slide-toggle',
@@ -12,14 +13,20 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => SlideToggleComponent),
       multi: true,
-    }
+    },
+    { provide: DISABLEABLE, useExisting: forwardRef(() => SlideToggleComponent) },
   ]
 })
-export class SlideToggleComponent implements ControlValueAccessor {
+export class SlideToggleComponent implements ControlValueAccessor, Disableable {
   checked = model<boolean>(false);
   disabled = input<boolean>(false);
 
   toggled = output<boolean>();
+
+  /** Disabled by the `disabled` input, the form control (`control.disable()`) or a permission directive */
+  private readonly formDisabled = signal(false);
+  private readonly externallyDisabled = signal(false);
+  protected readonly isDisabled = computed(() => this.disabled() || this.formDisabled() || this.externallyDisabled());
 
   private onChange: (v: boolean) => void = () => {};
   private onTouched: () => void = () => {};
@@ -45,6 +52,10 @@ export class SlideToggleComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    // disabled is an input(), handled via [disabled] binding in template
+    this.formDisabled.set(isDisabled);
+  }
+
+  setExternallyDisabled(disabled: boolean): void {
+    this.externallyDisabled.set(disabled);
   }
 }

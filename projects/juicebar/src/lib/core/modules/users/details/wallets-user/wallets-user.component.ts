@@ -1,4 +1,5 @@
-import {Component, inject, ChangeDetectionStrategy} from '@angular/core';
+import {Component, DestroyRef, inject, ChangeDetectionStrategy} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {UsersService} from '../../users.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ListingComponent} from '../../../../shared/components/listing/listing.component';
@@ -30,12 +31,13 @@ export class WalletsUserComponent extends ListingComponent{
     private userDetails = inject(DetailsUsersComponent);
     private route = inject(ActivatedRoute);
     private dialog = inject(DialogService);
+    private destroyRef = inject(DestroyRef);
 
     public constructor() {
         super();
 
         this.juicebox.setActionButtons([{
-            title: "add_new",
+            title: new UserTranslationPipe(this.juicebox).transform("add_new"),
             icon: "fa-plus-circle",
             type: "btn-primary",
             callback: () => { this.openDialog() }
@@ -47,10 +49,8 @@ export class WalletsUserComponent extends ListingComponent{
             disableClose: true,
             data: { id: this.user._id }
         });
-        dialogRef.closed.subscribe((result) => {
-            if (result) {
-                this.ngOnInit();
-            }
+        dialogRef.closed.subscribe((added) => {
+            if (added) this.loadWallets(this.user._id);
         });
     }
 
@@ -61,13 +61,17 @@ export class WalletsUserComponent extends ListingComponent{
             {name: i18n.transform('name'), prop: "name" },
             {name: i18n.transform('address'), prop: "address" }
         ];
-        this.route.parent.params.subscribe(params => {
-            this.usersService.getUser(params['id']).then(result => {
-                this.user = result.payload;
-                this.id = result.payload._id;
-                this.rows.set(result.payload.wallets);
-            });
+        this.route.parent.params.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+            this.loadWallets(params['id']);
         });
+    }
+
+    private async loadWallets(userId: string) {
+        const result = await this.usersService.getUser(userId);
+        if (!result?.success) return;
+        this.user = result.payload;
+        this.id = result.payload._id;
+        this.rows.set(result.payload.wallets ?? []);
     }
 
 }

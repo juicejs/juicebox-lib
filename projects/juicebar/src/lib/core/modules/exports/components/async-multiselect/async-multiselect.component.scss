@@ -122,17 +122,17 @@
   cursor: pointer;
   transition: background-color 0.2s;
 
-  &:hover:not(.disabled) {
+  &.active:not(.disabled) {
     background-color: var(--color-grey-100);
   }
 
-  &.selected,
-  &.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  // Selected options stay in the list (clicking one unselects it), as in ng-select
+  &.selected {
+    font-weight: 600;
   }
 
-  &.disabled:not(.selected) {
+  &.disabled {
+    opacity: 0.5;
     cursor: default;
   }
 }

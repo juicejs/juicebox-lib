@@ -76,6 +76,8 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
     protected readonly statusCounts = signal<Record<UserStatus, number> | null>(null);
     protected readonly statusChips: ReadonlyArray<UserStatus> = ['all', 'active', 'inactive'];
     private countsKey: string | null = null;
+    /** Counts the status-count requests, so an older answer can't overwrite a newer one */
+    private countsRequest = 0;
 
     actionButtons: Array<ActionButton> = [];
     displayedColumns: string[] = ['firstname', 'lastname', 'email', 'active', 'roles_count', 'groups', 'lastLogin', 'loginCount'];
@@ -163,10 +165,11 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
         this.juicebox.setPageHeader(null);
     }
 
-    private async fetchUsers(): Promise<any> {
+    /** `refreshCounts` also reloads the status counts when the filters are unchanged (e.g. after a delete) */
+    private async fetchUsers(refreshCounts = false): Promise<any> {
         // Status counts depend on the other filters only, so they are refreshed when those change
         const countsKey = JSON.stringify(this.filterSig());
-        if (countsKey !== this.countsKey) {
+        if (refreshCounts || countsKey !== this.countsKey) {
             this.countsKey = countsKey;
             this.refreshStatusCounts();
         }
@@ -197,16 +200,23 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
         return status === 'all' ? filter : [...filter, this.statusTerm(status)];
     }
 
+    /** Only the latest request sets the counts; if one of its requests fails, the counts stay as they were */
     private async refreshStatusCounts() {
+        const request = ++this.countsRequest;
         const filter = this.filterSig();
         const count = async (extra: Array<ISearchTerm>) => {
             const result = await this.usersService.fetch(this.loggedInOrganisationId, 0, 1, this.sortSig(), [...filter, ...extra]);
-            return result?.success ? result.payload.count : 0;
+            if (!result?.success) throw new Error(result?.error);
+            return result.payload.count;
         };
-        const [all, active, inactive] = await Promise.all([
-            count([]), count([this.statusTerm('active')]), count([this.statusTerm('inactive')])
-        ]);
-        this.statusCounts.set({ all, active, inactive });
+        try {
+            const [all, active, inactive] = await Promise.all([
+                count([]), count([this.statusTerm('active')]), count([this.statusTerm('inactive')])
+            ]);
+            if (request === this.countsRequest) this.statusCounts.set({ all, active, inactive });
+        } catch {
+            // keep the previous counts
+        }
     }
 
     getLoginData(users: Array<any>) {
@@ -283,7 +293,7 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
                 } else {
                     this.juicebox.showToast('error', this.i18n.transform('error_while_deleting'));
                 }
-                await this.fetchUsers();
+                await this.fetchUsers(true);
             });
         });
     }

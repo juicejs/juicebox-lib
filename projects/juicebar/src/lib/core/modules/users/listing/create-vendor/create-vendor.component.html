@@ -14,14 +14,14 @@
             <app-form-field appearance="outline" class="full-width">
                 <app-label>{{"firstname" | translate}}*</app-label>
                 <input type="text" placeholder='{{"firstname" | translate}}' formControlName="firstname">
-                @if (createVendorForm.controls['firstname'].hasError('required')) {
+                @if (createVendorForm.controls['firstname'].touched && createVendorForm.controls['firstname'].hasError('required')) {
                     <app-error>{{"include_firstname" | translate}}</app-error>
                 }
             </app-form-field>
             <app-form-field appearance="outline" class="full-width">
                 <app-label>{{"lastname" | translate}}*</app-label>
                 <input type="text" placeholder='{{"lastname" | translate}}' formControlName="lastname">
-                @if (createVendorForm.controls['lastname'].hasError('required')) {
+                @if (createVendorForm.controls['lastname'].touched && createVendorForm.controls['lastname'].hasError('required')) {
                     <app-error>{{"include_lastname" | translate}}</app-error>
                 }
             </app-form-field>
@@ -29,7 +29,7 @@
                 <app-form-field appearance="outline" class="full-width">
                     <app-label>{{"nickname" | translate}}</app-label>
                     <input type="text" placeholder='{{"nickname" | translate}}' formControlName="nickname">
-                    @if (createVendorForm.controls['nickname'].hasError('required')) {
+                    @if (createVendorForm.controls['nickname'].touched && createVendorForm.controls['nickname'].hasError('required')) {
                         <app-error>{{"include_nickname" | translate}}</app-error>
                     }
                 </app-form-field>
@@ -37,10 +37,10 @@
             <app-form-field appearance="outline" class="full-width">
                 <app-label>{{"email" | translate}}*</app-label>
                 <input type="email" placeholder='{{"email" | translate}}' formControlName="email">
-                @if (createVendorForm.controls['email'].hasError('required')) {
+                @if (createVendorForm.controls['email'].touched && createVendorForm.controls['email'].hasError('required')) {
                     <app-error>{{"include_email" | translate}}</app-error>
                 }
-                @if (createVendorForm.controls['email'].hasError('email')) {
+                @if (createVendorForm.controls['email'].touched && createVendorForm.controls['email'].hasError('email')) {
                     <app-error>{{"invalid_email" | translate}}</app-error>
                 }
             </app-form-field>
@@ -49,7 +49,7 @@
                     <app-form-field appearance="outline" class="full-width">
                         <app-label>{{'street' | translate}}</app-label>
                         <input type="text" placeholder="{{'street' | translate}}" formControlName="street">
-                        @if (createVendorForm.controls['street'].hasError('required')) {
+                        @if (createVendorForm.controls['street'].touched && createVendorForm.controls['street'].hasError('required')) {
                             <app-error>You must include a street.</app-error>
                         }
                     </app-form-field>
@@ -59,7 +59,7 @@
                     <app-form-field appearance="outline" class="full-width">
                         <app-label>{{'postcode' | translate}}</app-label>
                         <input type="text" placeholder="{{'postcode' | translate}}" formControlName="postcode">
-                        @if (createVendorForm.controls['postcode'].hasError('required')) {
+                        @if (createVendorForm.controls['postcode'].touched && createVendorForm.controls['postcode'].hasError('required')) {
                             <app-error>You must include a postcode.</app-error>
                         }
                     </app-form-field>
@@ -71,7 +71,7 @@
                     <app-form-field appearance="outline" class="full-width">
                         <app-label>{{'city' | translate}}</app-label>
                         <input type="text" placeholder="{{'city' | translate}}" formControlName="city">
-                        @if (createVendorForm.controls['city'].hasError('required')) {
+                        @if (createVendorForm.controls['city'].touched && createVendorForm.controls['city'].hasError('required')) {
                             <app-error>You must include a city.</app-error>
                         }
                     </app-form-field>
@@ -87,7 +87,7 @@
                                 </app-option>
                             }
                         </app-select>
-                        @if (createVendorForm.controls['country'].hasError('required')) {
+                        @if (createVendorForm.controls['country'].touched && createVendorForm.controls['country'].hasError('required')) {
                             <app-error>{{'must_include_country' | translate}}</app-error>
                         }
                     </app-form-field>

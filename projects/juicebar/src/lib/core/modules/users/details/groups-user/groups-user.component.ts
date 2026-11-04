@@ -62,6 +62,20 @@ export class GroupsUserComponent extends ListingComponent {
 
     protected readonly isSearching = computed(() => this.searchTerm().trim().length > 0);
 
+    /** What each group grants, one "role: permissions" line per role (the old tab's roles column) */
+    protected readonly groupRoles = computed(() => {
+        const texts: Record<string, string> = {};
+        for (const group of this.allGroups()) {
+            texts[group.key] = (group.roles ?? []).map(role => {
+                const translated = this.pipe.transform(role.role);
+                const name = typeof translated === 'string' && !translated.startsWith('@') ? translated : role.role;
+                const permissions = Object.keys(role.permissions ?? {}).filter(key => role.permissions[key]).join(', ');
+                return `${name}: ${permissions}`;
+            }).join('\n');
+        }
+        return texts;
+    });
+
     /** Flat list of orgs matching the org search. */
     protected readonly searchResults = computed(() => {
         const term = this.searchTerm().toLowerCase().trim();
@@ -85,6 +99,13 @@ export class GroupsUserComponent extends ListingComponent {
         walk(this.organisationTree(), 0);
         return rows;
     });
+
+    /**
+     * As in the old admin: adding a group needs groups:role update, removing one needs users:role update.
+     * The grid enforces this per cell; Save then stores whatever the user was allowed to change.
+     */
+    protected readonly canAdd = signal(false);
+    protected readonly canRemove = signal(false);
 
     protected readonly hasChanges = computed(() => {
         const current = this.userGroupMatrix();
@@ -110,6 +131,8 @@ export class GroupsUserComponent extends ListingComponent {
     }
 
     override async ngOnInit() {
+        this.canAdd.set(!!this.juicebox.hasPermission('groups:role#updated|update'));
+        this.canRemove.set(!!this.juicebox.hasPermission('users:role#updated|update'));
         this.route.parent.params.subscribe(async (params): Promise<any> => {
             const result = await this.userService.getUser(params['id']);
             if (!result.success) return false;
@@ -173,6 +196,7 @@ export class GroupsUserComponent extends ListingComponent {
     }
 
     toggleGroupAssignment(orgId: string, groupKey: string, isChecked: boolean) {
+        if (!this.mayChange(orgId, groupKey, isChecked)) return;
         const next = this.deepCloneMatrix(this.userGroupMatrix());
         if (!next[orgId]) next[orgId] = {};
         next[orgId][groupKey] = isChecked;
@@ -195,11 +219,18 @@ export class GroupsUserComponent extends ListingComponent {
     ) {
         for (const child of children) {
             if (!matrix[child._id]) matrix[child._id] = {};
-            matrix[child._id][groupKey] = isChecked;
+            if (this.mayChange(child._id, groupKey, isChecked)) matrix[child._id][groupKey] = isChecked;
             if (child.children?.length) {
                 this.applyCascadeToChildren(matrix, child.children, groupKey, isChecked);
             }
         }
+    }
+
+    /** Setting a cell back to its saved state is always allowed; otherwise adding or removing needs its permission */
+    private mayChange(orgId: string, groupKey: string, assigned: boolean): boolean {
+        const saved = !!this.originalMatrix()[orgId]?.[groupKey];
+        if (assigned === saved) return true;
+        return assigned ? this.canAdd() : this.canRemove();
     }
 
     /** Used by UnsavedChangesGuard: grid edits are only stored on Save. */

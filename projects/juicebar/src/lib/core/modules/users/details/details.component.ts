@@ -35,6 +35,11 @@ export class DetailsUsersComponent implements OnInit, OnDestroy {
     public email: Array<any> = [];
     private sub: Subscription;
     private id: any;
+    /**
+     * The user shown. The tabs read it once when they are created, so the outlet is rebuilt for another user
+     * (e.g. one opened from the search while a user's details are open) instead of reusing the tab.
+     */
+    protected readonly userId = signal<string | null>(null);
     private user: any;
     public name: any;
     protected readonly channels = signal<Array<string>>([]);
@@ -78,7 +83,11 @@ export class DetailsUsersComponent implements OnInit, OnDestroy {
 
     async ngOnInit() {
         this.sub = this.route.paramMap.subscribe(async paramMap => {
-            this.id = (paramMap as any).params.id;
+            const id = paramMap.get('id');
+            const otherUser = !!this.id && this.id !== id;
+            this.id = id;
+            this.userId.set(id);
+            if (otherUser) await this.setUserPageHeader();
         });
         this.channels.set((await this.configurationService.getBySchema(
             "carlstahl:channel"

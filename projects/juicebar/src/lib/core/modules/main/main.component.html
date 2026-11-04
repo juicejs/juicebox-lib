@@ -17,7 +17,7 @@
         }
         <div class="content-container">
         <div class="flex-column navigation-container next">
-            @if (navigationVisible() && (locationLink() || juicebox.actionButtons().length || juicebox.pageHeader())) {
+            @if (navigationVisible() && (locationLink() || juicebox.actionButtons().length || juicebox.pageHeader() || text())) {
                 <div class="location-container">
                     @if (locationLink()) {
                         <button [attr.aria-label]="backLabel" app-button appearance="icon" class="back-nav-btn" (click)="goTo(locationLink())">
@@ -46,11 +46,28 @@
                         </div>
                     }
                     <div class="button-bar">
+                        @if (text()) {
+                            <button type="button" class="help-text-btn"
+                                    cdkOverlayOrigin #helpOrigin="cdkOverlayOrigin"
+                                    [attr.aria-label]="helpLabel"
+                                    [attr.aria-expanded]="helpOpen()"
+                                    (click)="helpOpen.set(!helpOpen())">?</button>
+                            <ng-template cdkConnectedOverlay
+                                         [cdkConnectedOverlayOrigin]="helpOrigin"
+                                         [cdkConnectedOverlayOpen]="helpOpen()"
+                                         [cdkConnectedOverlayPositions]="helpPositions"
+                                         (overlayOutsideClick)="onHelpOutsideClick($event, helpOrigin.elementRef.nativeElement)"
+                                         (overlayKeydown)="$event.key === 'Escape' && helpOpen.set(false)"
+                                         (detach)="helpOpen.set(false)">
+                                <div class="help-text-popover" role="dialog" [attr.aria-label]="helpLabel">{{ text() }}</div>
+                            </ng-template>
+                        }
                         @for (button of juicebox.actionButtons(); track button.title) {
                             <button app-button
                                     [appearance]="button.type === 'btn-primary' ? 'raised' : 'stroked'"
                                     [color]="button.type === 'btn-primary' ? 'accent' : 'basic'"
                                     (click)="button.callAction ? button.callAction() : button.callback?.()"
+                                    [promiseBtn]="button.promise"
                                     [disabled]="button.disabled"
                                     [hasPermissions]="button.permissions || ''"
                                     [hasPermissionsHide]="button.permissionsHide || ''">

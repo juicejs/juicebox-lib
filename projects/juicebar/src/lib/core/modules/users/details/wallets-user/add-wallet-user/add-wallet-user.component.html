@@ -1,7 +1,7 @@
 <h2>
     {{"add_wallet" | translate}}
-    <button app-button class="close-button" (click)="cancel()">
-        <app-icon icon="colse">close</app-icon>
+    <button app-button class="close-button" [attr.aria-label]="'close' | translate" (click)="cancel()">
+        <app-icon icon="close"></app-icon>
     </button>
 </h2>
 <app-dialog-content>
@@ -10,12 +10,12 @@
         <app-form-field appearance="outline" class="full-width">
             <app-label>{{ 'publisher' | translate}}</app-label>
             <app-select formControlName="publisher" placeholder="{{'choose_publisher' | translate}}">
-                @for (pub of publishers; track pub.id) {
+                @for (pub of publishers(); track pub.id) {
                     <app-option [value]="pub.id">{{pub.title}}</app-option>
                 }
             </app-select>
-            @if (walletForm.controls['publisher'].hasError('required')) {
-                <app-error>You must include a publisher</app-error>
+            @if (walletForm.controls['publisher'].touched && walletForm.controls['publisher'].hasError('required')) {
+                <app-error>{{"include_publisher" | translate}}</app-error>
             }
         </app-form-field>
 
@@ -23,7 +23,7 @@
             <app-label>{{"name" | translate}}*</app-label>
             <input appInput type="text" placeholder="{{'name' | translate}}"
                    formControlName="name">
-            @if (walletForm.controls['name'].hasError('required')) {
+            @if (walletForm.controls['name'].touched && walletForm.controls['name'].hasError('required')) {
                 <app-error>{{"include_name" | translate}}</app-error>
             }
         </app-form-field>
@@ -31,7 +31,7 @@
             <app-label>{{"existing_address" | translate}}</app-label>
             <input appInput type="text" placeholder="{{'leave_empty_for_new_wallet' | translate}}"
                    formControlName="address">
-            @if (walletForm.controls['address'].hasError('addressLength')) {
+            @if (walletForm.controls['address'].touched && walletForm.controls['address'].hasError('addressLength')) {
                 <app-error>{{"include_address" | translate}}</app-error>
             }
         </app-form-field>
@@ -39,7 +39,7 @@
             <app-label>{{"private_key" | translate}}</app-label>
             <input appInput type="text" placeholder="{{'leave_empty_for_new_wallet' | translate}}"
                    formControlName="privateKey">
-            @if (walletForm.controls['privateKey'].hasError('required')) {
+            @if (walletForm.controls['privateKey'].touched && walletForm.controls['privateKey'].hasError('required')) {
                 <app-error>{{"include_key" | translate}}</app-error>
             }
         </app-form-field>

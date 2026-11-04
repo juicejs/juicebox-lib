@@ -1,9 +1,10 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { UsersService } from '../../users.service';
 import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import { SharedModule } from '../../../../shared/shared.module';
+import { UserTranslationPipe } from '../../i18n/user.translation';
 
 @Component({
     templateUrl: './login-as-another-user.component.html',
@@ -11,7 +12,8 @@ import { SharedModule } from '../../../../shared/shared.module';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    UserTranslationPipe
 ]
 })
 export class LoginAsAnotherUserComponent implements OnInit {
@@ -25,7 +27,8 @@ export class LoginAsAnotherUserComponent implements OnInit {
         organisation: new FormControl('', Validators.nullValidator)
     });
 
-    organisations: any[] = [];
+    /** The user's organisations to log in to, when there is more than one */
+    readonly organisations = signal<any[]>([]);
 
     private dialogRef = inject<DialogRef<any>>(DialogRef);
     public data = inject<{ user_id: string }>(DIALOG_DATA);
@@ -58,7 +61,7 @@ export class LoginAsAnotherUserComponent implements OnInit {
             orgs.push(org);
         }
 
-        this.organisations = [...orgs];
+        this.organisations.set(orgs);
     }
 
     async login() {

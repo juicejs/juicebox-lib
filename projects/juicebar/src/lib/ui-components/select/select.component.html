@@ -1,14 +1,20 @@
-<div class="app-select" cdkOverlayOrigin #trigger="cdkOverlayOrigin">
+<div class="app-select" [class.app-select-clearable]="showClear()" cdkOverlayOrigin #trigger="cdkOverlayOrigin">
   <button
+    #triggerButton
     type="button"
     class="app-select-trigger"
     [attr.id]="triggerId?.()"
-    [class.disabled]="disabled()"
+    [disabled]="isDisabled()"
+    [class.disabled]="isDisabled()"
     [class.open]="isOpen()"
     (click)="toggle()"
+    (keydown)="onKeydown($event)"
+    (blur)="onTriggerBlur()"
     role="combobox"
+    aria-haspopup="listbox"
     [attr.aria-expanded]="isOpen()"
-    [attr.aria-disabled]="disabled()">
+    [attr.aria-controls]="isOpen() ? panelId : null"
+    [attr.aria-activedescendant]="searchable() ? null : activeOptionId()">
     @if (multiple()) {
       @if (selectedCount() > 0) {
         <span class="app-select-chips">
@@ -30,6 +36,14 @@
       <polyline points="6 9 12 15 18 9"></polyline>
     </svg>
   </button>
+  @if (showClear()) {
+    <button type="button" class="app-select-clear" [attr.aria-label]="clearLabel()" [title]="clearLabel()" (click)="clear()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  }
 </div>
 
 <div hidden>
@@ -43,7 +57,7 @@
   [cdkConnectedOverlayHasBackdrop]="false"
   (overlayOutsideClick)="close()"
   (detach)="close()">
-  <div class="app-select-panel" role="listbox" [class.app-select-panel-multi]="multiple()">
+  <div class="app-select-panel" [class.app-select-panel-multi]="multiple()">
     @if (searchable()) {
       <div class="app-select-search">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -54,10 +68,15 @@
           #searchInput
           class="app-select-search-input"
           type="text"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded="true"
+          [attr.aria-controls]="panelId"
+          [attr.aria-activedescendant]="activeOptionId()"
           [placeholder]="searchPlaceholder()"
           [ngModel]="searchQuery()"
-          (ngModelChange)="searchQuery.set($event)"
-          (keydown.escape)="close()"
+          (ngModelChange)="setSearchQuery($event)"
+          (keydown)="onKeydown($event)"
           (click)="$event.stopPropagation()" />
       </div>
     }
@@ -67,14 +86,19 @@
         <button type="button" class="app-select-action-btn" (click)="clearAll()">Clear all</button>
       </div>
     }
-    <div class="app-select-options">
+    <div #optionsList class="app-select-options" role="listbox" [attr.id]="panelId" [attr.aria-multiselectable]="multiple() || null"
+         (scroll)="onOptionsScroll($event)">
       @if (filteredOptions().length === 0) {
         <div class="app-select-empty">No results</div>
       } @else {
-        @for (option of filteredOptions(); track option.value()) {
+        @for (option of filteredOptions(); track option.value(); let i = $index) {
           <div class="app-option"
+               [attr.id]="optionIdPrefix + i"
                [class.app-option-selected]="isSelected(option)"
+               [class.app-option-active]="i === activeIndex()"
                [class.app-option-disabled]="option.disabled()"
+               (mousedown)="$event.preventDefault()"
+               (mouseenter)="activeIndex.set(i)"
                (click)="select(option)"
                role="option"
                [attr.aria-selected]="isSelected(option)"

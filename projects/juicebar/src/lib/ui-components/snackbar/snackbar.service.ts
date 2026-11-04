@@ -33,7 +33,10 @@ export class SnackbarService {
 
     this.appRef.attachView(componentRef.hostView);
     const element = componentRef.location.nativeElement as HTMLElement;
+    // Once in, the toast keeps still when the container is shown again for a later toast
+    element.addEventListener('animationend', () => element.classList.add('app-snackbar-entered'), { once: true });
     this.getContainer().appendChild(element);
+    this.raiseContainer();
 
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
     const remove = () => {
@@ -66,8 +69,19 @@ export class SnackbarService {
     if (!this.container) {
       this.container = document.createElement('div');
       this.container.className = 'app-snackbar-container';
+      // CDK 22 shows dialogs in the browser's top layer, which no z-index reaches. A manual popover is in the
+      // top layer too, and an open dialog does not hide elements with `popover` from screen readers.
+      if ('showPopover' in this.container) this.container.setAttribute('popover', 'manual');
       document.body.appendChild(this.container);
     }
     return this.container;
+  }
+
+  /** Shows the container again, which puts it above dialogs opened since the last toast */
+  private raiseContainer() {
+    const container = this.container;
+    if (!container?.hasAttribute('popover')) return;
+    if (container.matches(':popover-open')) container.hidePopover();
+    container.showPopover();
   }
 }

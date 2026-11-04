@@ -24,7 +24,8 @@
 
   .tooltip-body {
     padding: 5px 8px;
-    white-space: normal;
+    // Line breaks in the text start a new line (e.g. one role per line)
+    white-space: pre-line;
     word-break: break-word;
   }
 }

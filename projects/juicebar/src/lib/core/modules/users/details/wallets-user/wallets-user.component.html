@@ -22,12 +22,7 @@
                 <ng-container cdkColumnDef="name">
                     <th cdk-header-cell *cdkHeaderCellDef>{{"name" | translate}}</th>
                     <td cdk-cell *cdkCellDef="let row">
-                        @if (!row.active) {
-                            <div>{{row.name}}</div>
-                        } @else {
-                            <app-icon [icon]="'block'" style="color:red;"></app-icon>
-                            {{row.name}}
-                        }
+                        {{row.name}}
                     </td>
                 </ng-container>
 

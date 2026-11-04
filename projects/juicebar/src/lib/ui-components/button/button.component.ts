@@ -28,8 +28,10 @@ export class ButtonComponent implements Disableable {
   clicked = output<MouseEvent>();
 
   private readonly externallyDisabled = signal(false);
-  /** `disabled` input combined with a disable set by a directive (see DISABLEABLE). */
-  readonly isDisabled = computed(() => this.disabled() || this.externallyDisabled());
+  /** Set by `[promiseBtn]` while its promise runs */
+  private readonly loading = signal(false);
+  /** `disabled` input combined with a disable set by a directive (see DISABLEABLE) or a running `[promiseBtn]`. */
+  readonly isDisabled = computed(() => this.disabled() || this.externallyDisabled() || this.loading());
 
   computedClasses() {
     return `app-button app-button-${this.appearance()} app-button-${this.color()}`;
@@ -37,6 +39,10 @@ export class ButtonComponent implements Disableable {
 
   setExternallyDisabled(disabled: boolean) {
     this.externallyDisabled.set(disabled);
+  }
+
+  setLoading(loading: boolean) {
+    this.loading.set(loading);
   }
 
   handleClick(event: MouseEvent) {

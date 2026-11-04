@@ -1,4 +1,4 @@
-<div class="form-group" [formGroup]="formGroup()">
+<div class="form-group">
     <app-form-field appearance="outline" class="full-width">
         <app-label>{{ filter().label | translate }}</app-label>
 
@@ -6,19 +6,32 @@
             @for (item of selectedItems(); track item.id) {
                 <div class="chip">
                     <span class="chip-text">{{ item.label }}</span>
-                    <button [attr.aria-label]="'clear' | translate" type="button" class="chip-remove" (click)="removeItem(item)">
-                        <app-icon [icon]="'close'"></app-icon>
-                    </button>
+                    @if (!disabled()) {
+                        <button [attr.aria-label]="('remove' | translate) + ' ' + item.label" type="button" class="chip-remove"
+                                (click)="removeItem(item.id)">
+                            <app-icon [icon]="'close'"></app-icon>
+                        </button>
+                    }
                 </div>
             }
         </div>
 
         <div class="autocomplete-wrapper">
-            <input [attr.aria-label]="hasSelected() ? '' : ('select_options' | translate)" appInput
-                   #searchInput
+            <input appInput
                    type="text"
+                   role="combobox"
+                   aria-autocomplete="list"
+                   [attr.aria-label]="filter().label | translate"
+                   [attr.aria-expanded]="showPanel()"
+                   [attr.aria-controls]="showPanel() ? listboxId : null"
+                   [attr.aria-activedescendant]="activeOptionId()"
+                   [disabled]="disabled()"
+                   [value]="searchTerm()"
                    (input)="onSearchInput($event)"
-                   (blur)="clearOptions()"
+                   (focus)="open.set(true)"
+                   (click)="open.set(true)"
+                   (blur)="onBlur()"
+                   (keydown)="onKeydown($event)"
                    [placeholder]="hasSelected() ? '' : ('select_options' | translate)"
                    autocomplete="off">
 
@@ -27,24 +40,29 @@
                     <div class="spinner"></div>
                 </div>
             }
-            @if (!loading() && hasSelected()) {
+            @if (!loading() && hasSelected() && !disabled()) {
                 <button [attr.aria-label]="'clear' | translate" type="button" class="input-suffix clear-button" (click)="clearAll()">
                     <app-icon [icon]="'close'"></app-icon>
                 </button>
             }
 
-            @if (searchInput.value) {
-                <div class="autocomplete-panel">
-                    @if ((filteredItems$ | async)?.length === 0 && !loading()) {
+            @if (showPanel()) {
+                <div class="autocomplete-panel" role="listbox" aria-multiselectable="true" [id]="listboxId">
+                    @if (!items().length) {
                         <div class="autocomplete-option disabled">
-                            {{ 'no_data_to_display' | translate }}
+                            {{ (loading() ? 'loading' : 'no_data_to_display') | translate }}
                         </div>
                     }
-                    @for (item of filteredItems$ | async; track item.id) {
+                    @for (item of options(); track item.id; let i = $index) {
                         <div class="autocomplete-option"
-                             [class.selected]="isSelected(item)"
-                             [class.disabled]="isSelected(item)"
-                             (click)="!isSelected(item) && onOptionSelected(item)">
+                             role="option"
+                             [id]="optionIdPrefix + i"
+                             [attr.aria-selected]="item.selected"
+                             [class.selected]="item.selected"
+                             [class.active]="i === activeIndex()"
+                             (mousedown)="$event.preventDefault()"
+                             (mouseenter)="activeIndex.set(i)"
+                             (click)="toggle(item)">
                             {{ item.label }}
                         </div>
                     }

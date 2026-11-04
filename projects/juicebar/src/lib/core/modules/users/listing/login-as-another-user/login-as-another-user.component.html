@@ -9,25 +9,27 @@
     <form class="d-flex flex-column" [formGroup]="twoFaForm">
         <app-form-field appearance="outline" class="full-width">
             <app-label>{{'two_factor_authorisation_code' | translate}}</app-label>
-            <input appInput maxlength="6" formControlName="code" 
-                   placeholder="Enter 6-digit code">
-            @if (twoFaForm.get('code')?.hasError('required')) {
-                <app-error>Code is required</app-error>
-            }
-            @if (twoFaForm.get('code')?.hasError('pattern')) {
-                <app-error>Code must contain only numbers</app-error>
-            }
-            @if (twoFaForm.get('code')?.hasError('minlength') || twoFaForm.get('code')?.hasError('maxlength')) {
-                <app-error>Code must be exactly 6 digits</app-error>
+            <input appInput maxlength="6" formControlName="code"
+                   inputmode="numeric" autocomplete="one-time-code">
+            @if (twoFaForm.get('code')?.touched) {
+                @if (twoFaForm.get('code')?.hasError('required')) {
+                    <app-error>{{ 'code_required' | translate }}</app-error>
+                }
+                @if (twoFaForm.get('code')?.hasError('pattern')) {
+                    <app-error>{{ 'code_numbers_only' | translate }}</app-error>
+                }
+                @if (twoFaForm.get('code')?.hasError('minlength') || twoFaForm.get('code')?.hasError('maxlength')) {
+                    <app-error>{{ 'code_six_digits' | translate }}</app-error>
+                }
             }
         </app-form-field>
 
-        @if (organisations.length) {
+        @if (organisations().length) {
         <app-form-field appearance="outline" class="full-width">
             <app-label>{{'select_organisation' | translate}}</app-label>
             <app-select formControlName="organisation"
                         placeholder="{{'organisation' | translate}}">
-                @for (org of organisations; track org._id) {
+                @for (org of organisations(); track org._id) {
                     <app-option [value]="org._id">{{org.name}}</app-option>
                 }
             </app-select>

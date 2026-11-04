@@ -1,0 +1,74 @@
+<app-dialog-title>{{ 'create_organisation' | translate }}</app-dialog-title>
+
+<app-dialog-content>
+    <form class="m-0 create-org-form" [formGroup]="form" (ngSubmit)="create()">
+        <app-form-field appearance="outline" class="full-width">
+            <app-label>{{ 'name' | translate }}*</app-label>
+            <input appInput type="text" formControlName="name">
+            @if (form.controls.name.touched && form.controls.name.hasError('required')) {
+                <app-error>{{ 'include_name' | translate }}</app-error>
+            }
+        </app-form-field>
+
+        <app-form-field appearance="outline" class="full-width">
+            <app-label>{{ 'tax_number' | translate }}</app-label>
+            <input appInput type="text" formControlName="taxNumber">
+        </app-form-field>
+
+        <div class="create-org-row">
+            <app-form-field appearance="outline">
+                <app-label>{{ 'phone' | translate }}</app-label>
+                <input appInput type="tel" formControlName="phone">
+            </app-form-field>
+            <app-form-field appearance="outline">
+                <app-label>{{ 'mobilephone' | translate }}</app-label>
+                <input appInput type="tel" formControlName="mobilephone">
+            </app-form-field>
+        </div>
+
+        <div class="create-org-row">
+            <app-form-field appearance="outline">
+                <app-label>{{ 'street' | translate }}</app-label>
+                <input appInput type="text" formControlName="street">
+            </app-form-field>
+            <app-form-field appearance="outline">
+                <app-label>{{ 'street' | translate }} 2</app-label>
+                <input appInput type="text" formControlName="street2">
+            </app-form-field>
+        </div>
+
+        <div class="create-org-row">
+            <app-form-field appearance="outline">
+                <app-label>{{ 'postcode' | translate }}</app-label>
+                <input appInput type="text" formControlName="postcode">
+            </app-form-field>
+            <app-form-field appearance="outline">
+                <app-label>{{ 'city' | translate }}</app-label>
+                <input appInput type="text" formControlName="city">
+            </app-form-field>
+        </div>
+
+        <app-form-field appearance="outline" class="full-width">
+            <app-label>{{ 'country' | translate }}</app-label>
+            <app-select formControlName="country" [searchable]="true" placeholder="{{ 'country' | translate }}">
+                @for (country of countries; track country.code) {
+                    <app-option [value]="country.code">{{ country.name }}</app-option>
+                }
+            </app-select>
+        </app-form-field>
+    </form>
+</app-dialog-content>
+
+<app-dialog-actions align="end">
+    <button app-button (click)="cancel()">
+        {{ 'cancel' | translate }}
+    </button>
+    <button app-button
+            appearance="raised"
+            color="primary"
+            (click)="create()"
+            [disabled]="form.invalid"
+            [promiseBtn]="promiseBtn">
+        {{ 'create' | translate }}
+    </button>
+</app-dialog-actions>

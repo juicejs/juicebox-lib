@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from '../../models/user.model';
@@ -37,7 +37,9 @@ export class MainWizardComponent implements OnInit {
 
     public trainees: Trainee[] = [];
     filteredTrainees: Trainee[] = [];
-    emailAutocompleteOptions: Array<{ value: any, label: string }> = [];
+    readonly emailAutocompleteOptions = signal<Array<{ value: any, label: string }>>([]);
+    /** Email of the trainee picked from the list; typing another email unlinks the trainee */
+    private selectedTraineeEmail: string | null = null;
     configuration: any;
 
     public promiseBtn: any;
@@ -83,7 +85,7 @@ export class MainWizardComponent implements OnInit {
 
         this.userForm = new FormGroup({
             entity_id: new FormControl(null),
-            salutation: new FormControl(this.salutations ? this.salutations[0].key : null),
+            salutation: new FormControl(''),
             firstname: new FormControl('', Validators.required),
             email: new FormControl(null, [Validators.required, Validators.email]),
             lastname: new FormControl('', Validators.required),
@@ -128,12 +130,15 @@ export class MainWizardComponent implements OnInit {
 
     onSelectChange(selected: any) {
         if (!selected) {
+            this.selectedTraineeEmail = null;
             this.userForm.patchValue({
                 entity_id: null,
                 email: null
             });
             return;
         }
+
+        this.selectedTraineeEmail = selected.email;
 
         this.userForm.patchValue({
             entity_id: selected._id,
@@ -166,7 +171,7 @@ export class MainWizardComponent implements OnInit {
 
         this.trainees = (result.payload ?? []).filter(item => item.email !== null);
         this.filteredTrainees = [...this.trainees];
-        this.emailAutocompleteOptions = this.buildOptions(this.filteredTrainees);
+        this.emailAutocompleteOptions.set(this.buildOptions(this.filteredTrainees));
     }
 
     private buildOptions(trainees: Trainee[]): Array<{ value: any, label: string }> {
@@ -190,6 +195,12 @@ export class MainWizardComponent implements OnInit {
     onSearch(data: any) {
         const searchTerm = (typeof data === 'string' ? data : data?.term)?.trim() || '';
 
+        // The email no longer belongs to the picked trainee, so the new user is not linked to them
+        if (this.userForm.value.entity_id && searchTerm !== this.selectedTraineeEmail) {
+            this.userForm.patchValue({ entity_id: null });
+            this.selectedTraineeEmail = null;
+        }
+
         if (!searchTerm) {
             this.filteredTrainees = [...this.trainees];
         } else {
@@ -198,7 +209,7 @@ export class MainWizardComponent implements OnInit {
             );
         }
 
-        this.emailAutocompleteOptions = this.buildOptions(this.filteredTrainees);
+        this.emailAutocompleteOptions.set(this.buildOptions(this.filteredTrainees));
     }
 
 }

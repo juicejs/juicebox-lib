@@ -1,4 +1,4 @@
-<app-tabs class="p-3">
+<app-tabs class="p-3" [selectedIndex]="selectedIndex()">
     <app-tab label="{{'main' | translate}}" [disabled]="true"></app-tab>
 
     @for (step of steps; track step.route) {

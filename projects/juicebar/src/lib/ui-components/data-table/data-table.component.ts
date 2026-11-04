@@ -170,9 +170,10 @@ export class DataTableComponent implements AfterContentInit {
 
   toggleSort(col: ColumnConfig): void {
     if (!col.sortable) return;
-    const current = this.sortDirFor(col.key);
-    const next: SortDir = current === '' ? 'asc' : current === 'asc' ? 'desc' : '';
-    this.sortChange.emit({ prop: next === '' ? '' : col.key, dir: next });
+    // Ascending, then descending and back, as ngx-datatable did; there is no unsorted step,
+    // so a listing never sends the backend an empty sort
+    const next: SortDir = this.sortDirFor(col.key) === 'asc' ? 'desc' : 'asc';
+    this.sortChange.emit({ prop: col.key, dir: next });
   }
 
   protected startResize(event: PointerEvent, key: string): void {
