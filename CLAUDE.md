@@ -22,6 +22,17 @@ You are a dedicated Angular developer building the `juicebar` (or `juicebox`) li
 
 ---
 
+## Functionality: Same as the Old Juicebox
+
+The lib is a port of the old juicebox admin ([juicejs/juicebox](https://github.com/juicejs/juicebox): Angular with ng-select, ngx-datatable and ng-bootstrap). **Functionality must stay exactly as it is there. Do not invent new behaviour.**
+
+- Before changing or adding behaviour, look up how the old juicebox does it and match it: events, defaults, permissions and edge cases.
+- No new features, options or behaviour "improvements". If the old juicebox has a bug, or the lib can't do what it did, flag it and ask before deviating.
+- Changes that restore the old behaviour in the CDK-based components are fine (e.g. making `app-select` load the next page the way ng-select's `scrollToEnd` did).
+- This covers functionality. The visual design follows the new look.
+
+---
+
 ## TypeScript
 
 - Use strict type checking.

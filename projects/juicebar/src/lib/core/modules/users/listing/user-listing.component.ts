@@ -15,7 +15,7 @@ import { ActionButton} from '../../../shared/types/ActionButton';
 import { User } from '../models/user.model';
 import { LoginAsAnotherUserComponent } from './login-as-another-user/login-as-another-user.component';
 import { FilterConfig, FilterBarComponent } from '../../../shared/components/filter-bar/filter-bar.component';
-import {SharedModule} from '../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 
 export interface Sort {
     active: string;
@@ -31,7 +31,7 @@ type UserStatus = 'all' | 'active' | 'inactive';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         FilterBarComponent,
-        SharedModule,
+        SHARED_IMPORTS,
         UserTranslationPipe,
         DataTableComponent,
         CellDefDirective,

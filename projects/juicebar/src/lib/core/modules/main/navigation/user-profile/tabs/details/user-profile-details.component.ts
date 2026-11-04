@@ -6,7 +6,7 @@ import { DialogService } from '../../../../../../../ui-components';
 import { ConfirmationDialogComponent } from '../../../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TotpTwoFaModalComponent, TotpDialogData } from '../../components/totp-two-fa-modal/totp-two-fa-modal.component';
 import { MainTranslationPipe } from '../../../../i18n/main.translation';
-import { SharedModule } from '../../../../../../shared/shared.module';
+import { SHARED_IMPORTS } from '../../../../../../shared/shared-imports';
 
 interface IUserSettings {
   language?: string;
@@ -30,7 +30,7 @@ function passwordMatchValidator(group: AbstractControl): ValidationErrors | null
   templateUrl: './user-profile-details.component.html',
   styleUrls: ['./user-profile-details.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, SharedModule, MainTranslationPipe]
+  imports: [ReactiveFormsModule, SHARED_IMPORTS, MainTranslationPipe]
 })
 export class UserProfileDetailsComponent implements OnInit {
   private juicebox = inject(JuiceboxService);

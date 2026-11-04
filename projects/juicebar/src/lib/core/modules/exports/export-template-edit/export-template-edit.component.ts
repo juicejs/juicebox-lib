@@ -11,7 +11,7 @@ import {ExportTemplate} from '../types/ExportTemplate';
 import {ExportStrategy} from '../types/ExportStrategy';
 import {ExportColumn} from '../types/ExportColumn';
 import {ExportFilter} from '../types/ExportFilter';
-import {SharedModule} from '../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 import {ExportFiltersComponent} from '../components/export-filters/export-filters.component';
 import {exportFilterValues} from '../components/export-filters/export-filter-values';
@@ -22,7 +22,7 @@ import {exportFilterValues} from '../components/export-filters/export-filter-val
     styleUrls: ['./export-template-edit.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-    SharedModule,
+    SHARED_IMPORTS,
     ReactiveFormsModule,
     DragDropModule,
     AutoLanguagePipe,

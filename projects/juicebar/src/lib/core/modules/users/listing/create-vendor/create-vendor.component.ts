@@ -6,7 +6,7 @@ import {ConfigurationService} from '../../../../shared/services/configuration.se
 import {UsersService} from '../../users.service';
 import {UserTranslationPipe} from '../../i18n/user.translation';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
-import {SharedModule} from '../../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../../shared/shared-imports';
 import {injectUsersOptions} from '../../users-customization';
 
 
@@ -16,7 +16,7 @@ import {injectUsersOptions} from '../../users-customization';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
     ReactiveFormsModule,
-    SharedModule,
+    SHARED_IMPORTS,
     UserTranslationPipe
 ]
 })

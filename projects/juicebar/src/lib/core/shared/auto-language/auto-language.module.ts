@@ -1,20 +1,12 @@
-import {NgModule} from '@angular/core';
-import {AutoLanguageComponent} from './auto-language.component';
-import {CommonModule} from '@angular/common';
+import { NgModule } from '@angular/core';
+import { AutoLanguageComponent } from './auto-language.component';
 
+/**
+ * @deprecated Import `AutoLanguageComponent`. Kept for project code that imports `AutoLanguageModule`, which exports
+ * only that component. The lib itself does not use it.
+ */
 @NgModule({
-    declarations: [
-        // Moved to imports - standalone is default in Angular v20+
-    ],
-    imports: [
-        CommonModule,
-        AutoLanguageComponent
-    ],
-    exports: [AutoLanguageComponent],
-    providers: [],
-    bootstrap: []
+    imports: [AutoLanguageComponent],
+    exports: [AutoLanguageComponent]
 })
-export class AutoLanguageModule {
-
-
-}
+export class AutoLanguageModule {}

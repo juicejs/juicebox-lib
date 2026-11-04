@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, EnvironmentProviders, importProvidersFrom, inject, isDevMode, makeEnvironmentProviders, provideAppInitializer } from '@angular/core';
+import { EnvironmentProviders, importProvidersFrom, inject, isDevMode, makeEnvironmentProviders, provideAppInitializer } from '@angular/core';
 import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideRouter, Routes } from '@angular/router';
 import { BASE_APP_CONFIG, BaseAppConfig, JuicebarFeature, ModuleConfig } from './config/base-app.config';
@@ -14,9 +14,9 @@ import { MainComponent } from './core/modules/main/main.component';
 import { provideMain } from './core/modules/main/main.providers';
 import { Juice } from './core/shared/services/juice.service';
 import { JuiceboxService } from './core/shared/services/Juicebox.service';
-import { AuthGuard } from './core/shared/guards/auth.guard';
-import { ClientRouteGuard } from './core/shared/guards/client-route.guard';
-import { UnsavedChangesGuard } from './core/shared/guards/unsaved-changes.guard';
+import { authGuard } from './core/shared/guards/auth.guard';
+import { clientRouteGuard } from './core/shared/guards/client-route.guard';
+import { unsavedChangesGuard } from './core/shared/guards/unsaved-changes.guard';
 import { BrandService } from './core/shared/services/brand.service';
 
 export function provideJuicebar(config: BaseAppConfig, ...features: JuicebarFeature[]): EnvironmentProviders {
@@ -42,16 +42,9 @@ export function provideJuicebar(config: BaseAppConfig, ...features: JuicebarFeat
     ),
     provideMain(),
     ...featureProviders,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: JuiceboxProviderFactory,
-      deps: [Juice, JuiceboxService, BASE_APP_CONFIG],
-      multi: true,
-    },
+    provideAppInitializer(() => JuiceboxProviderFactory(inject(Juice), inject(JuiceboxService), inject(BASE_APP_CONFIG))()),
     // The project's colours and favicon (config.theme), before anything renders
     provideAppInitializer(() => inject(BrandService).apply()),
-    AuthGuard,
-    UnsavedChangesGuard,
     ...(config.providers || []),
   ]);
 }
@@ -64,7 +57,7 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], fe
         import('./core/modules/main/navigation/user-profile/user-profile-tabs.component').then(
           m => m.UserProfileTabsComponent
         ),
-      canDeactivate: [UnsavedChangesGuard],
+      canDeactivate: [unsavedChangesGuard],
       children: [
         { path: '', redirectTo: 'details', pathMatch: 'full' as const },
         {
@@ -73,7 +66,7 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], fe
             import('./core/modules/main/navigation/user-profile/tabs/details/user-profile-details.component').then(
               m => m.UserProfileDetailsComponent
             ),
-          canDeactivate: [UnsavedChangesGuard],
+          canDeactivate: [unsavedChangesGuard],
         },
         {
           path: 'sidebar',
@@ -81,7 +74,7 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], fe
             import('./core/modules/main/navigation/user-profile/tabs/sidebar/user-profile-sidebar.component').then(
               m => m.UserProfileSidebarComponent
             ),
-          canDeactivate: [UnsavedChangesGuard],
+          canDeactivate: [unsavedChangesGuard],
         },
       ],
     },
@@ -118,7 +111,7 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], fe
     {
       path: 'login',
       component: LoginComponent,
-      canActivate: [ClientRouteGuard],
+      canActivate: [clientRouteGuard],
     },
     {
       // Target of the link in the password reset email (`?token=`)
@@ -134,15 +127,15 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], fe
     {
       path: 'main',
       component: MainComponent,
-      canActivate: [AuthGuard],
+      canActivate: [authGuard],
       // As in the old juicebox: every page under /main checks the organisation's client route
-      canActivateChild: [ClientRouteGuard],
+      canActivateChild: [clientRouteGuard],
       children: mainChildren,
     },
     ...modules.map(module => ({
       path: module.path,
       ...(module.component ? { loadComponent: module.component } : { loadChildren: module.loadChildren }),
-      canActivate: module.guards || [AuthGuard],
+      canActivate: module.guards || [authGuard],
     })),
     { path: '**', redirectTo: 'main/not-found' },
   ];

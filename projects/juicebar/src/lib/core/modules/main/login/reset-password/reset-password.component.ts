@@ -6,7 +6,7 @@ import {CustomValidators} from '../../../../shared/CustomValidators';
 import {HelperService} from '../../../../shared/services/helper.service';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {GlobalTranslationPipe} from '../../../../i18n/global.translation';
-import {SharedModule} from '../../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../../shared/shared-imports';
 import {ButtonComponent} from '../../../../../ui-components';
 
 @Component({
@@ -16,7 +16,7 @@ import {ButtonComponent} from '../../../../../ui-components';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
     ReactiveFormsModule,
-    SharedModule,
+    SHARED_IMPORTS,
     GlobalTranslationPipe,
     ButtonComponent
 ]

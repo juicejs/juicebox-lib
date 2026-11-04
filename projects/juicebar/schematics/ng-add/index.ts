@@ -43,7 +43,7 @@ export function ngAdd(options: NgAddOptions): Rule {
 }
 
 /**
- * @angular/cdk (and zone.js for zoneless apps) in the app's own package.json.
+ * @angular/cdk in the app's own package.json. The lib is zoneless (Angular's default), so no zone.js.
  * The CDK is not released in lockstep with @angular/core (core 20.3 / cdk 20.2), so only the major is matched.
  */
 function addPeerDependencies(tree: Tree, options: NgAddOptions): Rule {
@@ -53,11 +53,7 @@ function addPeerDependencies(tree: Tree, options: NgAddOptions): Rule {
   }
   const major = angularVersion.match(/\d+/)?.[0];
   const install = options.skipInstall ? InstallBehavior.None : InstallBehavior.Auto;
-  const rules = [addDependency('@angular/cdk', `^${major}.0.0`, { type: DependencyType.Default, existing: ExistingBehavior.Skip, install })];
-  if (!getPackageJsonDependency(tree, 'zone.js')) {
-    rules.push(addDependency('zone.js', '~0.16.0', { type: DependencyType.Default, existing: ExistingBehavior.Skip, install }));
-  }
-  return chain(rules);
+  return addDependency('@angular/cdk', `^${major}.0.0`, { type: DependencyType.Default, existing: ExistingBehavior.Skip, install });
 }
 
 function configureBuild(projectName: string): Rule {
@@ -78,12 +74,6 @@ function configureBuild(projectName: string): Rule {
     const assets = (buildOptions['assets'] as JsonValue[] | undefined) ?? [];
     const hasAsset = (input: string) => assets.some(asset => typeof asset === 'object' && (asset as { input?: string } | null)?.input === input);
     buildOptions['assets'] = [...assets, ...[LIB_ASSETS, EDITOR_ICONS].filter(asset => !hasAsset(asset.input))];
-
-    // The lib uses zone-based change detection
-    const polyfills = (buildOptions['polyfills'] as string[] | undefined) ?? [];
-    if (!polyfills.includes('zone.js')) {
-      buildOptions['polyfills'] = ['zone.js', ...polyfills];
-    }
 
     // CommonJS packages the lib uses; avoids a build warning in every project
     const commonJs = (buildOptions['allowedCommonJsDependencies'] as string[] | undefined) ?? [];
@@ -165,13 +155,12 @@ bootstrapApplication(JuicebarComponent, appConfig)
 }
 
 function appConfigTs(options: NgAddOptions): string {
-  return `import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
+  return `import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideExports, provideJuicebar, provideUsers } from '${LIB}';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
     provideJuicebar(
       {
         // Backend for \`ng serve\`; production builds read \`url\` from config.json

@@ -2,7 +2,7 @@ import {Component, ChangeDetectionStrategy, inject} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {ActivatedRoute, NavigationEnd, Router, RouterOutlet} from '@angular/router';
 import {filter, map, startWith} from 'rxjs/operators';
-import {SharedModule} from '../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 import {UserTranslationPipe} from '../i18n/user.translation';
 import {TabsComponent, TabComponent} from "../../../../ui-components";
 import {injectCustomUserTabs} from '../users-customization';
@@ -13,7 +13,7 @@ import {injectCustomUserTabs} from '../users-customization';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
     RouterOutlet,
-    SharedModule,
+    SHARED_IMPORTS,
     UserTranslationPipe,
     TabsComponent,
     TabComponent

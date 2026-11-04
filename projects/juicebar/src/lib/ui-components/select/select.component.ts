@@ -1,7 +1,7 @@
 import {
   Component, ChangeDetectionStrategy, ViewEncapsulation, input, output, model, signal,
   contentChildren, computed, ElementRef, inject, AfterContentInit, OnDestroy,
-  ViewChild, forwardRef, linkedSignal, DOCUMENT, afterRenderEffect, viewChild
+  forwardRef, linkedSignal, DOCUMENT, afterRenderEffect, viewChild
 } from '@angular/core';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
@@ -87,8 +87,8 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
   searchQuery = signal('');
   private storedLabel = signal<string>('');
 
-  @ViewChild('searchInput') searchInputEl?: ElementRef<HTMLInputElement>;
-  @ViewChild('triggerButton') private triggerEl?: ElementRef<HTMLButtonElement>;
+  private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+  private readonly triggerButton = viewChild<ElementRef<HTMLButtonElement>>('triggerButton');
   /** The options list; only there while the panel is open */
   private readonly optionsList = viewChild<ElementRef<HTMLElement>>('optionsList');
   private readonly document = inject(DOCUMENT);
@@ -200,7 +200,7 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
     this.isOpen.set(true);
     this.setSearchQuery('');
     this.activateSelectedOrFirst();
-    setTimeout(() => this.searchInputEl?.nativeElement.focus(), 50);
+    setTimeout(() => this.searchInput()?.nativeElement.focus(), 50);
   }
 
   protected setSearchQuery(query: string) {
@@ -223,13 +223,13 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
     this.isOpen.set(false);
     this.setSearchQuery('');
     this.onTouched();
-    if (restoreFocus) this.triggerEl?.nativeElement.focus();
+    if (restoreFocus) this.triggerButton()?.nativeElement.focus();
   }
 
   /** Keys on the trigger and in the search field, as ng-select handled them */
   protected onKeydown(event: KeyboardEvent) {
     if (this.isDisabled()) return;
-    const inSearch = event.target === this.searchInputEl?.nativeElement;
+    const inSearch = event.target === this.searchInput()?.nativeElement;
     switch (event.key) {
       case 'ArrowDown':
       case 'ArrowUp':
@@ -373,7 +373,7 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
     this.selectionChange.emit({ value: null });
     this.close();
     // The × goes away once the value is empty, so focus moves to the select itself
-    this.triggerEl?.nativeElement.focus();
+    this.triggerButton()?.nativeElement.focus();
   }
 
   isSelected(option: OptionComponent): boolean {

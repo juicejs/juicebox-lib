@@ -8,7 +8,7 @@ import {HelpComponent} from './help/help.component';
 import {MainTranslationPipe} from '../i18n/main.translation';
 import {SidebarService} from '../../../shared/services/sidebar.service';
 import {CdkMenuModule} from '@angular/cdk/menu';
-import {SharedModule} from '../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 import {ThemeService, Theme} from '../../../shared/services/theme.service';
 
 export interface Language {
@@ -38,7 +38,7 @@ interface FileInfo {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CdkMenuModule,
-    SharedModule,
+    SHARED_IMPORTS,
     MainTranslationPipe
 ]
 })

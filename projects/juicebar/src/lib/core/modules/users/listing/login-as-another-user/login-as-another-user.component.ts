@@ -3,7 +3,7 @@ import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { UsersService } from '../../users.service';
 import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
-import { SharedModule } from '../../../../shared/shared.module';
+import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 import { UserTranslationPipe } from '../../i18n/user.translation';
 
 @Component({
@@ -12,7 +12,7 @@ import { UserTranslationPipe } from '../../i18n/user.translation';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
     ReactiveFormsModule,
-    SharedModule,
+    SHARED_IMPORTS,
     UserTranslationPipe
 ]
 })

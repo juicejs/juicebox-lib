@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { ComponentOverride } from '../../../config/base-app.config';
 import { applyComponentOverrides } from '../../../config/route-customization';
-import { UnsavedChangesGuard } from '../../shared/guards/unsaved-changes.guard';
+import { unsavedChangesGuard } from '../../shared/guards/unsaved-changes.guard';
 
 export function buildUsersRoute(overrides?: ComponentOverride[]): Routes {
   return applyComponentOverrides([{
@@ -31,7 +31,7 @@ export function buildUsersRoute(overrides?: ComponentOverride[]): Routes {
           {
             path: 'details-user',
             loadComponent: () => import('./details/details-user/details-user.component').then(m => m.DetailsUserComponent),
-            canDeactivate: [UnsavedChangesGuard],
+            canDeactivate: [unsavedChangesGuard],
           },
           {
             path: 'documents-user',
@@ -52,7 +52,7 @@ export function buildUsersRoute(overrides?: ComponentOverride[]): Routes {
           {
             path: 'groups-user',
             loadComponent: () => import('./details/groups-user/groups-user.component').then(m => m.GroupsUserComponent),
-            canDeactivate: [UnsavedChangesGuard],
+            canDeactivate: [unsavedChangesGuard],
           },
           {
             path: 'sidebar-user',

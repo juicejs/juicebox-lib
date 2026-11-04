@@ -7,7 +7,7 @@ import { UserTranslationPipe } from '../../i18n/user.translation';
 import { GroupsNameEditorComponent } from './groups-name-editor.component/groups-name-editor.component';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { FormsModule } from '@angular/forms';
-import { SharedModule } from '../../../../shared/shared.module';
+import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 import { DialogService } from '../../../../../ui-components';
 
 @Component({
@@ -15,7 +15,7 @@ import { DialogService } from '../../../../../ui-components';
     templateUrl: './groups-modal.component.html',
     styleUrl: './groups-modal.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [FormsModule, SharedModule, UserTranslationPipe]
+    imports: [FormsModule, SHARED_IMPORTS, UserTranslationPipe]
 })
 export class GroupsModalComponent implements OnInit {
     private juicebox = inject(JuiceboxService);

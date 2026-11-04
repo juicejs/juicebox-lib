@@ -8,7 +8,7 @@ import {AddWalletUserComponent} from './add-wallet-user/add-wallet-user-componen
 import {UserTranslationPipe} from '../../i18n/user.translation';
 import {DetailsUsersComponent} from '../details.component';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
-import {SharedModule} from '../../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../../shared/shared-imports';
 
 @Component({
     selector: 'app-wallets-user',
@@ -16,7 +16,7 @@ import {SharedModule} from '../../../../shared/shared.module';
     templateUrl: './wallets-user.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-    SharedModule,
+    SHARED_IMPORTS,
     UserTranslationPipe
 ]
 })

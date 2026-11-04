@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
 import { Juice } from '../../../../../../shared/services/juice.service';
 import { JuiceboxService } from '../../../../../../shared/services/Juicebox.service';
-import { SharedModule } from '../../../../../../shared/shared.module';
+import { SHARED_IMPORTS } from '../../../../../../shared/shared-imports';
 import { MainTranslationPipe } from '../../../../i18n/main.translation';
 
 export interface TotpDialogData {
@@ -15,7 +15,7 @@ export interface TotpDialogData {
   templateUrl: './totp-two-fa-modal.component.html',
   styleUrls: ['./totp-two-fa-modal.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, SharedModule, MainTranslationPipe]
+  imports: [ReactiveFormsModule, SHARED_IMPORTS, MainTranslationPipe]
 })
 export class TotpTwoFaModalComponent implements OnInit {
   private juice = inject(Juice);

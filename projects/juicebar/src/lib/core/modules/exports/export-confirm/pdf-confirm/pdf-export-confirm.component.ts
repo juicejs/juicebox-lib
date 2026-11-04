@@ -7,7 +7,7 @@ import {AutoLanguagePipe, MultiLanguageObject} from '../../../../shared/pipes/au
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {ExportsTranslationPipe} from '../../i18n/exports.translation';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
-import {SharedModule} from '../../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../../shared/shared-imports';
 
 export interface PdfExportConfirmDialogData {
     fileName?: string;
@@ -22,7 +22,7 @@ export interface PdfExportConfirmDialogData {
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
     ReactiveFormsModule,
-    SharedModule,
+    SHARED_IMPORTS,
     ExportsTranslationPipe,
     AutoLanguagePipe
 ]

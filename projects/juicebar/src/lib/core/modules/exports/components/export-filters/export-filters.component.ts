@@ -7,7 +7,7 @@ import {ExportFilter} from '../../types/ExportFilter';
 import {ExportStrategy} from '../../types/ExportStrategy';
 import {CustomMaterialDateAdapter} from '../../../../shared/services/CustomDatepickerI18n';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
-import {SharedModule} from '../../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../../shared/shared-imports';
 import {ExportsTranslationPipe} from '../../i18n/exports.translation';
 import {AsyncMultiselectComponent} from '../async-multiselect/async-multiselect.component';
 import {FilterLabelPipe} from '../../pipes/filter-label.pipe';
@@ -19,7 +19,7 @@ import {FilterLabelPipe} from '../../pipes/filter-label.pipe';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
     ReactiveFormsModule,
-    SharedModule,
+    SHARED_IMPORTS,
     AutoLanguagePipe,
     ExportsTranslationPipe,
     AsyncMultiselectComponent,

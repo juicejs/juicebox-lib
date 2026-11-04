@@ -10,7 +10,7 @@ import {HelperService} from '../../../../shared/services/helper.service';
 import {ConfirmationDialogComponent, ConfirmationDialogData} from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {Router} from '@angular/router';
-import {SharedModule} from '../../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../../shared/shared-imports';
 
 @Component({
     selector: 'app-help',
@@ -18,7 +18,7 @@ import {SharedModule} from '../../../../shared/shared.module';
     styleUrls: ['./help.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-    SharedModule,
+    SHARED_IMPORTS,
     ReactiveFormsModule,
     MainTranslationPipe
 ]

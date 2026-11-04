@@ -9,7 +9,7 @@ import {ExportFilter, FilterOptions} from '../../types/ExportFilter';
 import {ExportStrategy} from '../../types/ExportStrategy';
 import {ExportsService} from '../../exports.service';
 import {Result} from '../../../../shared/types/Result';
-import {SharedModule} from '../../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../../shared/shared-imports';
 
 let nextId = 0;
 
@@ -24,7 +24,7 @@ let nextId = 0;
     styleUrls: ['./async-multiselect.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        SharedModule,
+        SHARED_IMPORTS,
         ExportsTranslationPipe
     ]
 })

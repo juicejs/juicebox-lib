@@ -6,7 +6,7 @@ import { UsersService } from '../../users.service';
 import { ConfirmationDialogComponent} from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { DialogService, ProgressSpinnerComponent } from '../../../../../ui-components';
 import { UserTranslationPipe } from '../../i18n/user.translation';
-import { SharedModule } from '../../../../shared/shared.module';
+import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 import { HelperService } from '../../../../shared/services/helper.service';
 import { ISearchTerm } from '../../../../shared/interfaces/ISearchTerm';
 import { CreateOrganisationComponent } from './create-organisation/create-organisation.component';
@@ -17,7 +17,7 @@ import { CreateOrganisationComponent } from './create-organisation/create-organi
     styleUrls: ['./organisations-user.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-    SharedModule,
+    SHARED_IMPORTS,
     UserTranslationPipe,
     ProgressSpinnerComponent
 ]

@@ -6,7 +6,7 @@ import {UsersService} from '../../../users.service';
 import {UserTranslationPipe} from '../../../i18n/user.translation';
 import {CustomValidators} from '../../../../../shared/CustomValidators';
 import {JuiceboxService} from '../../../../../shared/services/Juicebox.service';
-import {SharedModule} from '../../../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../../../shared/shared-imports';
 
 
 @Component({
@@ -15,7 +15,7 @@ import {SharedModule} from '../../../../../shared/shared.module';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
     ReactiveFormsModule,
-    SharedModule,
+    SHARED_IMPORTS,
     UserTranslationPipe
 ]
 })

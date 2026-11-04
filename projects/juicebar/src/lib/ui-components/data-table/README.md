@@ -29,7 +29,7 @@ import {
   // ...
   imports: [
     CommonModule,
-    SharedModule,
+    SHARED_IMPORTS,
     DataTableComponent,
     CellDefDirective,
     HeaderDefDirective,   // only if you project header templates

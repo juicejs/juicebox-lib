@@ -10,7 +10,7 @@ import {MainTranslationPipe} from '../i18n/main.translation';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import {Subscription} from 'rxjs/internal/Subscription';
-import {SharedModule} from '../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 import {BrandService} from '../../../shared/services/brand.service';
 
 @Component({
@@ -22,7 +22,7 @@ import {BrandService} from '../../../shared/services/brand.service';
         RouterLink,
         RouterLinkActive,
         ImageCropperComponent,
-        SharedModule,
+        SHARED_IMPORTS,
         MainTranslationPipe
     ],
     host: {

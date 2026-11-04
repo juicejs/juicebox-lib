@@ -9,7 +9,7 @@ import {TableFilter, TableSort} from '../../../shared/services/helper.service';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {ExcelExportConfirmComponent} from '../export-confirm/excel-confirm/excel-export-confirm.component';
 import {PdfExportConfirmComponent} from '../export-confirm/pdf-confirm/pdf-export-confirm.component';
-import {SharedModule} from '../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 import {ColumnLabelsPipe} from '../pipes/column-labels.pipe';
 
 export interface PageEvent {
@@ -24,7 +24,7 @@ export interface PageEvent {
     styleUrls: ['./export-template-listing.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        SharedModule,
+        SHARED_IMPORTS,
         ExportsTranslationPipe,
         DataTableComponent,
         CellDefDirective,

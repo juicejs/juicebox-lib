@@ -7,7 +7,7 @@ import { GroupsModalComponent } from '../../listing/groups-modal/groups-modal.co
 import { DialogService } from '../../../../../ui-components';
 import { JuiceboxService } from '../../../../shared/services/Juicebox.service';
 import { FormsModule } from '@angular/forms';
-import { SharedModule } from '../../../../shared/shared.module';
+import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { Result } from '../../../../shared/types/Result';
 import { firstValueFrom } from 'rxjs';
@@ -31,7 +31,7 @@ interface VisibleRow {
     styleUrls: ['./groups-user.component.scss'],
     templateUrl: './groups-user.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [FormsModule, SharedModule, UserTranslationPipe]
+    imports: [FormsModule, SHARED_IMPORTS, UserTranslationPipe]
 })
 export class GroupsUserComponent extends ListingComponent {
 
@@ -233,7 +233,7 @@ export class GroupsUserComponent extends ListingComponent {
         return assigned ? this.canAdd() : this.canRemove();
     }
 
-    /** Used by UnsavedChangesGuard: grid edits are only stored on Save. */
+    /** Used by unsavedChangesGuard: grid edits are only stored on Save. */
     hasUnsavedChanges(): boolean {
         return this.hasChanges();
     }

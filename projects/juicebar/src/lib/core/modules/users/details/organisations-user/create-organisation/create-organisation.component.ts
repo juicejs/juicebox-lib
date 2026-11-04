@@ -5,7 +5,7 @@ import { UsersService } from '../../../users.service';
 import { UserTranslationPipe } from '../../../i18n/user.translation';
 import { JuiceboxService } from '../../../../../shared/services/Juicebox.service';
 import { ConfigurationService } from '../../../../../shared/services/configuration.service';
-import { SharedModule } from '../../../../../shared/shared.module';
+import { SHARED_IMPORTS } from '../../../../../shared/shared-imports';
 
 /**
  * Creates an organisation (an entity of type `organisation`) with the fields of the old entity wizard's
@@ -18,7 +18,7 @@ import { SharedModule } from '../../../../../shared/shared.module';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         ReactiveFormsModule,
-        SharedModule,
+        SHARED_IMPORTS,
         UserTranslationPipe
     ]
 })

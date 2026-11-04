@@ -8,7 +8,7 @@ import { HelperService} from '../../../../shared/services/helper.service';
 import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import { ConfirmationDialogComponent} from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { DialogService } from '../../../../../ui-components';
-import { SharedModule } from '../../../../shared/shared.module';
+import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 import { injectUsersOptions } from '../../users-customization';
 
 @Component({
@@ -18,7 +18,7 @@ import { injectUsersOptions } from '../../users-customization';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
     ReactiveFormsModule,
-    SharedModule,
+    SHARED_IMPORTS,
     UserTranslationPipe
 ]
 })

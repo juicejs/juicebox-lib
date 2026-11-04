@@ -6,7 +6,7 @@ import {filter} from 'rxjs/operators';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import { ConfigurationService} from '../../../shared/services/configuration.service';
 import { TabsComponent, TabComponent } from '../../../../ui-components';
-import {SharedModule} from '../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 import {UserTranslationPipe} from '../i18n/user.translation';
 import {UsersService} from '../users.service';
 import {injectCustomUserTabs, injectUsersOptions, translateTabLabel} from '../users-customization';
@@ -25,7 +25,7 @@ interface TabDef {
     RouterOutlet,
     TabsComponent,
     TabComponent,
-    SharedModule
+    SHARED_IMPORTS
 ]
 })
 export class DetailsUsersComponent implements OnInit, OnDestroy {

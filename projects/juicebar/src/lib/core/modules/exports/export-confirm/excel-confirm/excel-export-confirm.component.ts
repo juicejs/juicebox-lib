@@ -7,7 +7,7 @@ import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {ExportsTranslationPipe} from '../../i18n/exports.translation';
 import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {ConfigurationService} from '../../../../shared/services/configuration.service';
-import {SharedModule} from '../../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../../shared/shared-imports';
 import {ExportFiltersComponent} from '../../components/export-filters/export-filters.component';
 import {exportFilterValues} from '../../components/export-filters/export-filter-values';
 
@@ -22,7 +22,7 @@ export interface ExcelExportConfirmDialogData {
     templateUrl: './excel-export-confirm.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-    SharedModule,
+    SHARED_IMPORTS,
     ReactiveFormsModule,
     ExportsTranslationPipe,
     ExportFiltersComponent

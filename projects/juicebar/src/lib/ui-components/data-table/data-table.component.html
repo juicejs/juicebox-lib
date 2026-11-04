@@ -72,10 +72,10 @@
       <td cdk-cell *cdkCellDef="let marker"
           [attr.colspan]="columnKeys().length"
           class="detail-cell">
-        @if (selectable() && selectionDetailDef) {
+        @if (selectable() && selectionDetailDef(); as detailDef) {
           <div class="dt-selection-row" role="toolbar">
             <div class="dt-selection-content">
-              <ng-container *ngTemplateOutlet="selectionDetailDef.templateRef; context: { $implicit: marker.source, row: marker.source }"></ng-container>
+              <ng-container *ngTemplateOutlet="detailDef.templateRef; context: { $implicit: marker.source, row: marker.source }"></ng-container>
             </div>
             <button class="dt-clear-action"
                     type="button"

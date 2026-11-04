@@ -10,7 +10,7 @@ import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {ExportsService} from '../exports.service';
 import {ConfigurationService} from '../../../shared/services/configuration.service';
 import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
-import {SharedModule} from '../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 import {ExportFiltersComponent} from '../components/export-filters/export-filters.component';
 import {exportFilterValues} from '../components/export-filters/export-filter-values';
 
@@ -20,7 +20,7 @@ import {exportFilterValues} from '../components/export-filters/export-filter-val
     styleUrls: ['./export-template-create.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-    SharedModule,
+    SHARED_IMPORTS,
     ReactiveFormsModule,
     DragDropModule,
     AutoLanguagePipe,

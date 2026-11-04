@@ -2,18 +2,16 @@ import {
   Component,
   ChangeDetectionStrategy,
   ViewEncapsulation,
-  ContentChild,
-  ContentChildren,
-  QueryList,
   TemplateRef,
   computed,
+  contentChild,
+  contentChildren,
   effect,
   input,
   output,
-  AfterContentInit,
   signal
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { CdkTableModule } from '@angular/cdk/table';
 import { PaginatorComponent, PageEvent } from '../paginator/paginator.component';
 import { IconComponent } from '../icon/icon.component';
@@ -26,9 +24,9 @@ import { ColumnConfig, SortDir, SortState } from './data-table.types';
   styleUrls: ['./data-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  imports: [CommonModule, CdkTableModule, PaginatorComponent, IconComponent]
+  imports: [NgTemplateOutlet, CdkTableModule, PaginatorComponent, IconComponent]
 })
-export class DataTableComponent implements AfterContentInit {
+export class DataTableComponent {
   rows = input<any[]>([]);
   columns = input.required<ColumnConfig[]>();
   totalCount = input<number>(0);
@@ -50,9 +48,9 @@ export class DataTableComponent implements AfterContentInit {
   sortChange = output<SortState>();
   selectionChange = output<any | null>();
 
-  @ContentChildren(CellDefDirective) cellDefs!: QueryList<CellDefDirective>;
-  @ContentChildren(HeaderDefDirective) headerDefs!: QueryList<HeaderDefDirective>;
-  @ContentChild(SelectionDetailDefDirective) selectionDetailDef?: SelectionDetailDefDirective;
+  private readonly cellDefs = contentChildren(CellDefDirective);
+  private readonly headerDefs = contentChildren(HeaderDefDirective);
+  protected readonly selectionDetailDef = contentChild(SelectionDetailDefDirective);
 
   private static readonly SELECT_COLUMN: ColumnConfig = {
     key: '__select__', label: '', width: '44px', align: 'center', ellipsis: false
@@ -86,8 +84,9 @@ export class DataTableComponent implements AfterContentInit {
     this.selectedId.set(null);
   }
 
-  private cellMap = signal<Map<string, TemplateRef<any>>>(new Map());
-  private headerMap = signal<Map<string, TemplateRef<any>>>(new Map());
+  /** The projected cell and header templates by column key */
+  private readonly cellMap = computed(() => new Map<string, TemplateRef<any>>(this.cellDefs().map(d => [d.cellDef(), d.templateRef])));
+  private readonly headerMap = computed(() => new Map<string, TemplateRef<any>>(this.headerDefs().map(d => [d.headerDef(), d.templateRef])));
 
   /** Widths set by dragging a header's edge (px), kept while the table lives */
   private readonly resizedWidths = signal<Record<string, number>>({});
@@ -129,22 +128,6 @@ export class DataTableComponent implements AfterContentInit {
 
   isDetailRow = (_: number, r: any) => !!r?.__detail;
   isDataRow   = (_: number, r: any) => !r?.__detail;
-
-  ngAfterContentInit(): void {
-    this.refresh();
-    this.cellDefs.changes.subscribe(() => this.refresh());
-    this.headerDefs.changes.subscribe(() => this.refresh());
-  }
-
-  private refresh(): void {
-    const c = new Map<string, TemplateRef<any>>();
-    this.cellDefs.forEach(d => c.set(d.cellDef(), d.templateRef));
-    this.cellMap.set(c);
-
-    const h = new Map<string, TemplateRef<any>>();
-    this.headerDefs.forEach(d => h.set(d.headerDef(), d.templateRef));
-    this.headerMap.set(h);
-  }
 
   cellTpl(key: string): TemplateRef<any> | null { return this.cellMap().get(key) ?? null; }
   headerTpl(key: string): TemplateRef<any> | null { return this.headerMap().get(key) ?? null; }

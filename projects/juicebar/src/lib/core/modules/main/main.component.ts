@@ -10,7 +10,7 @@ import {SidebarService} from '../../shared/services/sidebar.service';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {NavigationComponent} from './navigation/navigation.component';
 import {SidebarComponent} from './sidebar/sidebar.component';
-import {SharedModule} from '../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../shared/shared-imports';
 import {GlobalTranslationPipe} from '../../i18n/global.translation';
 import {ButtonComponent, IconComponent} from '../../../ui-components';
 import {ConnectedPosition, OverlayModule} from '@angular/cdk/overlay';
@@ -27,7 +27,7 @@ import {MainTranslationPipe} from './i18n/main.translation';
     RouterOutlet,
     NavigationComponent,
     SidebarComponent,
-    SharedModule,
+    SHARED_IMPORTS,
     ButtonComponent,
     IconComponent,
     OverlayModule

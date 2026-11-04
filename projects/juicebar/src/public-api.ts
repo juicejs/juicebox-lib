@@ -24,6 +24,7 @@ export * from './lib/config/base-app.config';
 export * from './lib/config/app.config';
 
 // Modules
+export * from './lib/core/shared/shared-imports';
 export * from './lib/core/shared/shared.module';
 export * from './lib/core/modules/main/main.providers';
 export * from './lib/core/modules/users/users.providers';
@@ -81,6 +82,7 @@ export * from './lib/core/shared/services/juice.service';
 
 // Socket.io module and service
 export * from './lib/core/shared/socket-io/socket-io.service';
+export * from './lib/core/shared/socket-io/socket-io.providers';
 export * from './lib/core/shared/socket-io/socket-io.module';
 export * from './lib/core/shared/socket-io/config/socket-io.config';
 

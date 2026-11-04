@@ -3,7 +3,7 @@ import {FormControl, FormGroup, Validators, ReactiveFormsModule} from '@angular/
 import {HelperService} from '../../../../shared/services/helper.service';
 import {GlobalTranslationPipe} from '../../../../i18n/global.translation';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
-import {SharedModule} from '../../../../shared/shared.module';
+import {SHARED_IMPORTS} from '../../../../shared/shared-imports';
 import {DialogRef} from '@angular/cdk/dialog';
 import {
     ButtonComponent,
@@ -22,7 +22,7 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
     ReactiveFormsModule,
-    SharedModule,
+    SHARED_IMPORTS,
     GlobalTranslationPipe,
     ButtonComponent,
     FormFieldComponent,

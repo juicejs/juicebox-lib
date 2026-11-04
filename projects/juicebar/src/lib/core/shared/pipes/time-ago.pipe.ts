@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, inject, NgZone, Pipe, PipeTransform, OnDestroy} from "@angular/core";
+import {ChangeDetectorRef, inject, Pipe, PipeTransform, OnDestroy} from "@angular/core";
 import {JuiceboxService} from "../services/Juicebox.service";
 @Pipe({
     name:'timeAgo',
@@ -7,7 +7,6 @@ import {JuiceboxService} from "../services/Juicebox.service";
 export class TimeAgoPipe implements PipeTransform, OnDestroy {
     private juicebox = inject(JuiceboxService);
     private changeDetectorRef = inject(ChangeDetectorRef);
-    private ngZone = inject(NgZone);
     private timer: number;
     private language: string = this.juicebox.getLanguage() || 'en_GB';
     transform(value:string) {
@@ -16,15 +15,10 @@ export class TimeAgoPipe implements PipeTransform, OnDestroy {
         let now = new Date();
         let seconds = Math.round(Math.abs((now.getTime() - d.getTime())/1000));
         let timeToUpdate = (Number.isNaN(seconds)) ? 1000 : this.getSecondsUntilUpdate(seconds) *1000;
-        // As in the old juicebox: redraw the host view when the text is due to change (OnPush or zoneless included)
-        this.timer = this.ngZone.runOutsideAngular(() => {
-            if (typeof window !== 'undefined') {
-                return window.setTimeout(() => {
-                    this.ngZone.run(() => this.changeDetectorRef.markForCheck());
-                }, timeToUpdate);
-            }
-            return null;
-        });
+        // As in the old juicebox: redraw the host view when the text is due to change
+        if (typeof window !== 'undefined') {
+            this.timer = window.setTimeout(() => this.changeDetectorRef.markForCheck(), timeToUpdate);
+        }
         let minutes = Math.round(Math.abs(seconds / 60));
         let hours = Math.round(Math.abs(minutes / 60));
         let days = Math.round(Math.abs(hours / 24));

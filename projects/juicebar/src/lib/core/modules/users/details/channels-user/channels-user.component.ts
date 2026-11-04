@@ -6,7 +6,7 @@ import { UsersService } from "../../users.service";
 import { UserTranslationPipe } from "../../i18n/user.translation";
 import DefaultChannelAccess from "./channel-access-default";
 import { FormsModule } from '@angular/forms';
-import { SharedModule } from '../../../../shared/shared.module';
+import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
 @Component({
     selector: "app-channels-user",
@@ -14,7 +14,7 @@ import { SharedModule } from '../../../../shared/shared.module';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
     FormsModule,
-    SharedModule,
+    SHARED_IMPORTS,
     UserTranslationPipe
 ]
 })

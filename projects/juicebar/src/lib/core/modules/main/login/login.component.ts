@@ -12,7 +12,8 @@ import { MainTranslationPipe } from '../i18n/main.translation';
 import { GlobalTranslationPipe } from '../../../i18n/global.translation';
 import { BASE_APP_CONFIG } from '../../../../config/base-app.config';
 import { Location } from '@angular/common';
-import {SharedModule} from '../../../shared/shared.module';
+import { lastValueFrom } from 'rxjs';
+import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 import { BrandService } from '../../../shared/services/brand.service';
 
 @Component({
@@ -22,7 +23,7 @@ import { BrandService } from '../../../shared/services/brand.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         ReactiveFormsModule,
-        SharedModule,
+        SHARED_IMPORTS,
         MainTranslationPipe
     ]
 })
@@ -343,7 +344,7 @@ export class LoginComponent implements OnInit {
                 disableClose: true,
                 data: { message: message }
             });
-            await dialogRef.closed.toPromise();
+            await lastValueFrom(dialogRef.closed, { defaultValue: undefined });
             return true;
         }
         return true;
