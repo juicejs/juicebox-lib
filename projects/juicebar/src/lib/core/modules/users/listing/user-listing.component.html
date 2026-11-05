@@ -101,7 +101,7 @@
       <ng-template [cellDef]="'groups'" let-row>
         @if (row.hasGroups) {
           <div class="group-chips" [appTooltip]="row.groupsTooltip" [appTooltipTitle]="'groups' | translate">
-            @for (group of row.groupsList.slice(0, 2); track group) {
+            @for (group of row.groupsShown; track group) {
               <span class="group-chip">{{ group }}</span>
             }
             @if (row.groupsList.length > 2) {

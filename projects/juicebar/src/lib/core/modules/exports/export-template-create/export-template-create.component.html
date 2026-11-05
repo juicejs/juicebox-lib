@@ -8,7 +8,7 @@
                    type="text"
                    formControlName="name"
                    [placeholder]="'name' | translate">
-            @if (form.get('name')?.touched && form.get('name')?.errors?.['required']) {
+            @if (form.controls['name']?.touched && form.controls['name']?.errors?.['required']) {
                 <app-error>{{'field_required' | translate}}</app-error>
             }
         </app-form-field>
@@ -24,7 +24,7 @@
                     <app-option [value]="ds">{{ ds.name | autoLanguage }}</app-option>
                 }
             </app-select>
-            @if (form.get('data_source_key')?.touched && form.get('data_source_key')?.errors?.['required']) {
+            @if (form.controls['data_source_key']?.touched && form.controls['data_source_key']?.errors?.['required']) {
                 <app-error>{{'field_required' | translate}}</app-error>
             }
         </app-form-field>
@@ -228,7 +228,7 @@
                     appearance="raised"
                     color="primary"
                     (click)="create()"
-                    [disabled]="!juicebox.hasPermission('data-export:role#create') || form.invalid || !filtersValid()"
+                    [disabled]="!canCreate || form.invalid || !filtersValid()"
                     [promiseBtn]="promiseBtn()">
                 {{'create' | translate}}
             </button>

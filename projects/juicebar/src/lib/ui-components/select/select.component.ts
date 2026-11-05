@@ -168,6 +168,11 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
   private typedKeys = '';
   private typedKeysTimer?: ReturnType<typeof setTimeout>;
 
+  /** The filtered options with whether each is selected, for the panel */
+  protected readonly renderedOptions = computed(() =>
+    this.filteredOptions().map(option => ({ option, selected: this.isSelected(option) })),
+  );
+
   protected readonly allFilteredSelected = computed(() => {
     const filtered = this.filteredOptions();
     if (!filtered.length) return false;

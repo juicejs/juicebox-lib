@@ -48,6 +48,7 @@ export class ExportTemplateCreateComponent {
     });
 
     public juicebox = inject(JuiceboxService);
+    protected readonly canCreate = !!this.juicebox.hasPermission('data-export:role#create');
     private exports = inject(ExportsService);
     private router = inject(Router);
     private configurationService = inject(ConfigurationService);

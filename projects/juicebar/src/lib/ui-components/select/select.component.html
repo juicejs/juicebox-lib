@@ -91,20 +91,21 @@
       @if (filteredOptions().length === 0) {
         <div class="app-select-empty">No results</div>
       } @else {
-        @for (option of filteredOptions(); track option.value(); let i = $index) {
+        @for (item of renderedOptions(); track item.option.value(); let i = $index) {
+          @let option = item.option;
           <div class="app-option"
                [attr.id]="optionIdPrefix + i"
-               [class.app-option-selected]="isSelected(option)"
+               [class.app-option-selected]="item.selected"
                [class.app-option-active]="i === activeIndex()"
                [class.app-option-disabled]="option.disabled()"
                (mousedown)="$event.preventDefault()"
                (mouseenter)="activeIndex.set(i)"
                (click)="select(option)"
                role="option"
-               [attr.aria-selected]="isSelected(option)"
+               [attr.aria-selected]="item.selected"
                [attr.aria-disabled]="option.disabled()">
             <span class="app-option-label">{{ option.getLabel() }}</span>
-            @if (isSelected(option)) {
+            @if (item.selected) {
               <svg class="app-option-check" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m3 8 3 3 7-7"/>
               </svg>

@@ -1,6 +1,6 @@
 <div class="app-paginator">
   <span class="paginator-range">
-    {{ pageIndex() * pageSize() + 1 }}–{{ Math.min((pageIndex() + 1) * pageSize(), length()) }} of {{ length() }}
+    {{ rangeStart() }}–{{ rangeEnd() }} of {{ length() }}
   </span>
 
   @if (pageSizeOptions().length > 1) {
@@ -31,7 +31,7 @@
       }
     }
 
-    <button type="button" class="pager-arrow" [attr.aria-label]="nextLabel()" (click)="nextPage()" [disabled]="pageIndex() >= totalPages - 1">
+    <button type="button" class="pager-arrow" [attr.aria-label]="nextLabel()" (click)="nextPage()" [disabled]="isLastPage()">
       <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 3 5 5-5 5"/></svg>
     </button>
   </div>

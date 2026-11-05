@@ -30,6 +30,7 @@ export class GroupsNameEditorComponent implements OnInit {
     private userService = inject(UsersService);
     private pipe = inject(UserTranslationPipe);
     public juicebox = inject(JuiceboxService);
+    protected readonly canUpdateGroups = !!this.juicebox.hasPermission('groups:role#updated|update');
 
     constructor() {
         this.group = this.data?.group;

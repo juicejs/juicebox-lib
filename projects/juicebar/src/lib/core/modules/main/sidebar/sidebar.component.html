@@ -43,7 +43,7 @@
             <div class="menu-item-content">
               <div class="menu-icon-container">
                 @if (!isDragging()) {
-                  <app-icon class="menu-icon" [icon]="getMatIcon(menuItem.icon)"></app-icon>
+                  <app-icon class="menu-icon" [icon]="menuItem.icon | matIcon"></app-icon>
                 }
                 @if (isDragging()) {
                   <app-icon class="drag-handle" [icon]="'drag_indicator'"></app-icon>

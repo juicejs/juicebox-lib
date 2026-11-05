@@ -11,14 +11,14 @@
             <app-label>{{'two_factor_authorisation_code' | translate}}</app-label>
             <input appInput maxlength="6" formControlName="code"
                    inputmode="numeric" autocomplete="one-time-code">
-            @if (twoFaForm.get('code')?.touched) {
-                @if (twoFaForm.get('code')?.hasError('required')) {
+            @if (twoFaForm.controls['code']?.touched) {
+                @if (twoFaForm.controls['code']?.errors?.['required']) {
                     <app-error>{{ 'code_required' | translate }}</app-error>
                 }
-                @if (twoFaForm.get('code')?.hasError('pattern')) {
+                @if (twoFaForm.controls['code']?.errors?.['pattern']) {
                     <app-error>{{ 'code_numbers_only' | translate }}</app-error>
                 }
-                @if (twoFaForm.get('code')?.hasError('minlength') || twoFaForm.get('code')?.hasError('maxlength')) {
+                @if (twoFaForm.controls['code']?.errors?.['minlength'] || twoFaForm.controls['code']?.errors?.['maxlength']) {
                     <app-error>{{ 'code_six_digits' | translate }}</app-error>
                 }
             }

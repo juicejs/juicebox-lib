@@ -13,7 +13,8 @@ You are a dedicated Angular developer building the `juicebar` (or `juicebox`) li
 - Always use **standalone components** — do NOT set `standalone: true` in decorators (it's the default in Angular v20+).
 - **Strictly NO Angular Material** — the project has migrated to a CDK-based custom UI library. Use components prefixed with `app-` (e.g., `<app-card>`, `<app-button>`).
 - Use **signals** for state management.
-- Use **OnPush** change detection on every component.
+- Components are **OnPush**: that is Angular 22's default, so don't set `changeDetection` (like `standalone: true`, it's redundant), and never use `ChangeDetectionStrategy.Eager`.
+- The lib is **zoneless** (Angular 22's default; no zone.js). The view updates on signal changes, template events, the async pipe or `markForCheck()`. A plain field changed after an `await`, a timer or a subscription does not show: keep such state in a signal.
 - Use `inject()` instead of constructor injection.
 - Use `input()` / `output()` functions instead of decorators.
 - Use native control flow (`@if`, `@for`, `@switch`) — never `*ngIf`, `*ngFor`, `*ngSwitch`.
@@ -62,7 +63,7 @@ The project has completely migrated from Angular Material to a custom UI compone
 ## Components
 
 - Keep components small and single-responsibility.
-- Set `changeDetection: ChangeDetectionStrategy.OnPush` in every `@Component`.
+- Don't set `changeDetection`: OnPush is the default in Angular 22. (Older components still set it explicitly; that's harmless.)
 - Use `input()` signal for inputs.
 - Use `output()` function for outputs.
 - Use `computed()` for derived state.
@@ -75,14 +76,13 @@ The project has completely migrated from Angular Material to a custom UI compone
 ### Component Example
 
 ```typescript
-import { ChangeDetectionStrategy, Component, signal, inject } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { DialogService } from '../../../ui-components';
 
 @Component({
   selector: 'app-server-status',
   templateUrl: './server-status.html',
   styleUrl: './server-status.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ServerStatusComponent {
   protected readonly isServerRunning = signal(true);

@@ -193,6 +193,7 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
                 ? (Object.values(user.groups) as string[][]).flat().filter(g => !!g && g.trim().length > 0)
                 : [];
             user.groupsList = groupList;
+            user.groupsShown = groupList.slice(0, 2);
             user.groupsTooltip = groupList.join(', ');
             user.hasGroups = groupList.length > 0;
         }

@@ -19,7 +19,7 @@
             formControlName="email"
             autocomplete="username"
             [readonly]="org() || !!twoFactorAuthTimestamp()">
-          @if (loginForm.get('email')?.touched && loginForm.get('email')?.errors?.['required']) {
+          @if (loginForm.controls['email']?.touched && loginForm.controls['email']?.errors?.['required']) {
             <app-error>{{ 'email_required' | translate }}</app-error>
           }
         </app-form-field>
@@ -32,7 +32,7 @@
             formControlName="password"
             autocomplete="current-password"
             [readonly]="org() || !!twoFactorAuthTimestamp()">
-          @if (loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['required']) {
+          @if (loginForm.controls['password']?.touched && loginForm.controls['password']?.errors?.['required']) {
             <app-error>{{ 'password_required' | translate }}</app-error>
           }
         </app-form-field>

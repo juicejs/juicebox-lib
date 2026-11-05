@@ -1,6 +1,7 @@
 <div class="data-table-wrapper">
-  <table cdk-table [dataSource]="displayedRows()" [trackBy]="trackRow" class="data-table" [style.min-width.px]="minTableWidth()">
-    @for (col of columnsForRender(); track trackKey($index, col)) {
+  <table cdk-table [dataSource]="renderRows()" [trackBy]="trackRow" class="data-table" [style.min-width.px]="minTableWidth()">
+    @for (column of renderColumns(); track column.col.key) {
+      @let col = column.col;
       <ng-container [cdkColumnDef]="col.key">
         <th cdk-header-cell *cdkHeaderCellDef
             [style.width]="col.width || null"
@@ -9,12 +10,12 @@
             [class.sortable]="col.sortable"
             [attr.role]="col.sortable ? 'button' : null"
             [attr.tabindex]="col.sortable ? 0 : null"
-            [attr.aria-sort]="col.sortable ? (sortDirFor(col.key) === 'asc' ? 'ascending' : sortDirFor(col.key) === 'desc' ? 'descending' : 'none') : null"
+            [attr.aria-sort]="col.sortable ? column.ariaSort : null"
             (click)="col.key === '__select__' ? null : toggleSort(col)"
             (keydown)="onSortKey($event, col)">
           @if (col.key !== '__select__') {
             <span class="th-inner">
-              @if (headerTpl(col.key); as h) {
+              @if (column.headerTpl; as h) {
                 <ng-container *ngTemplateOutlet="h; context: { $implicit: col }"></ng-container>
               } @else {
                 <span class="th-label" [title]="col.label">{{ col.label }}</span>
@@ -22,8 +23,8 @@
               @if (col.sortable) {
                 <app-icon
                   class="sort-icon"
-                  [class.active]="sortDirFor(col.key) !== ''"
-                  [icon]="sortIcon(col.key)">
+                  [class.active]="column.sortDir !== ''"
+                  [icon]="column.sortIcon">
                 </app-icon>
               }
             </span>
@@ -42,28 +43,28 @@
             }
           }
         </th>
-        <td cdk-cell *cdkCellDef="let row"
+        <td cdk-cell *cdkCellDef="let item"
             [style.width]="col.width || null"
             [class.cell-ellipsis]="col.ellipsis !== false && col.key !== '__select__'"
             [class.text-right]="col.align === 'right'"
             [class.text-center]="col.align === 'center'"
-            (click)="col.key === '__select__' ? null : rowClick.emit(row)">
+            (click)="col.key === '__select__' ? null : rowClick.emit(item.row)">
           @if (col.key === '__select__') {
             <div class="dt-select-cell"
                  role="checkbox"
                  tabindex="0"
-                 [attr.aria-checked]="isRowSelected(row)"
-                 (click)="$event.stopPropagation(); toggleRow(row)"
-                 (keydown.space)="$event.preventDefault(); $event.stopPropagation(); toggleRow(row)"
-                 (keydown.enter)="$event.preventDefault(); $event.stopPropagation(); toggleRow(row)">
-              <span class="dt-select-box" [class.is-checked]="isRowSelected(row)" aria-hidden="true">
+                 [attr.aria-checked]="item.selected"
+                 (click)="$event.stopPropagation(); toggleRow(item.row)"
+                 (keydown.space)="$event.preventDefault(); $event.stopPropagation(); toggleRow(item.row)"
+                 (keydown.enter)="$event.preventDefault(); $event.stopPropagation(); toggleRow(item.row)">
+              <span class="dt-select-box" [class.is-checked]="item.selected" aria-hidden="true">
                 <app-icon [icon]="'check'"></app-icon>
               </span>
             </div>
-          } @else if (cellTpl(col.key); as t) {
-            <ng-container *ngTemplateOutlet="t; context: { $implicit: row, row: row }"></ng-container>
+          } @else if (column.cellTpl; as t) {
+            <ng-container *ngTemplateOutlet="t; context: { $implicit: item.row, row: item.row }"></ng-container>
           } @else {
-            <span [title]="value(row, col.key)">{{ value(row, col.key) ?? '-' }}</span>
+            <span [title]="item.values[col.key]">{{ item.values[col.key] ?? '-' }}</span>
           }
         </td>
       </ng-container>
@@ -85,7 +86,7 @@
               <app-icon [icon]="'close'"></app-icon>
             </button>
           </div>
-        } @else if (cellTpl('__detail__'); as t) {
+        } @else if (detailTpl(); as t) {
           <ng-container *ngTemplateOutlet="t; context: { $implicit: marker.source, row: marker.source }"></ng-container>
         }
       </td>

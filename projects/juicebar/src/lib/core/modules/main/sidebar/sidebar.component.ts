@@ -1,4 +1,4 @@
-import {Component, inject, OnDestroy, OnInit, TemplateRef, ChangeDetectionStrategy, signal, computed} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit, TemplateRef, ChangeDetectionStrategy, signal, computed, Pipe, PipeTransform} from '@angular/core';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {SidebarItem, SidebarService} from '../../../shared/services/sidebar.service';
 import {SocketService} from '../../../shared/services/socket.service';
@@ -13,6 +13,126 @@ import {Subscription} from 'rxjs/internal/Subscription';
 import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 import {BrandService} from '../../../shared/services/brand.service';
 
+/** Font Awesome names of the old juicebox (fa-…) and the Material icons they become in the sidebar */
+const FA_TO_MATERIAL_ICONS: Record<string, string> = {
+  'fa-home': 'home',
+  'fa-dashboard': 'dashboard',
+  'fa-users': 'people',
+  'fa-user': 'person',
+  'fa-settings': 'settings',
+  'fa-cog': 'settings',
+  'fa-chart-bar': 'bar_chart',
+  'fa-analytics': 'analytics',
+  'fa-file': 'description',
+  'fa-folder': 'folder',
+  'fa-envelope': 'email',
+  'fa-mail': 'email',
+  'fa-phone': 'phone',
+  'fa-calendar': 'calendar_today',
+  'fa-clock': 'schedule',
+  'fa-search': 'search',
+  'fa-plus': 'add',
+  'fa-edit': 'edit',
+  'fa-trash': 'delete',
+  'fa-download': 'download',
+  'fa-upload': 'upload',
+  'fa-star': 'star',
+  'fa-heart': 'favorite',
+  'fa-bookmark': 'bookmark',
+  'fa-tag': 'label',
+  'fa-tags': 'labels',
+  'fa-shopping-cart': 'shopping_cart',
+  'fa-credit-card': 'credit_card',
+  'fa-money': 'attach_money',
+  'fa-bell': 'notifications',
+  'fa-globe': 'public',
+  'fa-lock': 'lock',
+  'fa-unlock': 'lock_open',
+  'fa-key': 'vpn_key',
+  'fa-shield': 'security',
+  'fa-warning': 'warning',
+  'fa-info': 'info',
+  'fa-question': 'help',
+  'fa-check': 'check',
+  'fa-times': 'close',
+  'fa-arrow-left': 'arrow_back',
+  'fa-arrow-right': 'arrow_forward',
+  'fa-arrow-up': 'arrow_upward',
+  'fa-arrow-down': 'arrow_downward',
+  'fa-chevron-left': 'chevron_left',
+  'fa-chevron-right': 'chevron_right',
+  'fa-chevron-up': 'expand_less',
+  'fa-chevron-down': 'expand_more',
+  'fa-menu': 'menu',
+  'fa-bars': 'menu',
+  'fa-list': 'list',
+  'fa-grid': 'grid_view',
+  'fa-th': 'apps',
+  'fa-database': 'storage',
+  'fa-server': 'dns',
+  'fa-cloud': 'cloud',
+  'fa-wifi': 'wifi',
+  'fa-signal': 'signal_cellular_4_bar',
+  'fa-battery': 'battery_full',
+  'fa-power-off': 'power_settings_new',
+  'fa-refresh': 'refresh',
+  'fa-sync': 'sync',
+  'fa-share': 'share',
+  'fa-copy': 'content_copy',
+  'fa-paste': 'content_paste',
+  'fa-cut': 'content_cut',
+  'fa-print': 'print',
+  'fa-save': 'save',
+  'fa-undo': 'undo',
+  'fa-redo': 'redo',
+  'fa-play': 'play_arrow',
+  'fa-pause': 'pause',
+  'fa-stop': 'stop',
+  'fa-volume-up': 'volume_up',
+  'fa-volume-down': 'volume_down',
+  'fa-volume-off': 'volume_off',
+  'fa-image': 'image',
+  'fa-video': 'videocam',
+  'fa-camera': 'camera_alt',
+  'fa-microphone': 'mic',
+  'fa-headphones': 'headset',
+  'fa-gamepad': 'sports_esports',
+  'fa-puzzle-piece': 'extension',
+  'fa-wrench': 'build',
+  'fa-hammer': 'construction',
+  'fa-paint-brush': 'brush',
+  'fa-palette': 'palette',
+  'fa-code': 'code',
+  'fa-terminal': 'terminal',
+  'fa-bug': 'bug_report',
+  'fa-rocket': 'rocket_launch',
+  'fa-school': 'school',
+  'fa-address-book': 'contacts',
+  'fa-table': 'file_download',
+  'fa-location-dot': 'location_on',
+  'fa-map-location-dot': 'location_on',
+  'fa-map-marker': 'location_on',
+  'fa-map-marker-alt': 'location_on',
+  'fa-map-pin': 'location_on',
+  'fa-location': 'location_on',
+  'fa-map': 'map'
+};
+
+/** A sidebar item's icon: a Font Awesome name (fa-…) becomes its Material icon, anything else stays as it is */
+@Pipe({name: 'matIcon'})
+export class MatIconPipe implements PipeTransform {
+    transform(fontAwesomeIcon: string): string {
+        if (!fontAwesomeIcon.startsWith('fa-')) return fontAwesomeIcon;
+
+        // Remove 'fa-' prefix if present and look up the icon
+        const cleanIcon = fontAwesomeIcon.replace('fa-', '');
+        const materialIcon = FA_TO_MATERIAL_ICONS[`fa-${cleanIcon}`] || FA_TO_MATERIAL_ICONS[fontAwesomeIcon];
+
+        // If no mapping found, return a default icon or the original
+        return materialIcon || 'circle';
+    }
+}
+
 @Component({
     selector: 'app-sidebar',
     templateUrl: './sidebar.component.html',
@@ -23,7 +143,8 @@ import {BrandService} from '../../../shared/services/brand.service';
         RouterLinkActive,
         ImageCropperComponent,
         SHARED_IMPORTS,
-        MainTranslationPipe
+        MainTranslationPipe,
+        MatIconPipe
     ],
     host: {
         '(document:keydown.escape)': 'closeMobile()'
@@ -210,126 +331,4 @@ export class SidebarComponent implements OnInit, OnDestroy{
     logout() {
         this.juicebox.logout();
     }
-
-
-  // Add this method to your existing sidebar.component.ts
-
-  /**
-   * Convert FontAwesome icons to Material Icons; a Material icon name (e.g. 'article') is used as it is
-   */
-  getMatIcon(fontAwesomeIcon: string): string {
-    if (!fontAwesomeIcon.startsWith('fa-')) return fontAwesomeIcon;
-
-    const iconMap = {
-      'fa-home': 'home',
-      'fa-dashboard': 'dashboard',
-      'fa-users': 'people',
-      'fa-user': 'person',
-      'fa-settings': 'settings',
-      'fa-cog': 'settings',
-      'fa-chart-bar': 'bar_chart',
-      'fa-analytics': 'analytics',
-      'fa-file': 'description',
-      'fa-folder': 'folder',
-      'fa-envelope': 'email',
-      'fa-mail': 'email',
-      'fa-phone': 'phone',
-      'fa-calendar': 'calendar_today',
-      'fa-clock': 'schedule',
-      'fa-search': 'search',
-      'fa-plus': 'add',
-      'fa-edit': 'edit',
-      'fa-trash': 'delete',
-      'fa-download': 'download',
-      'fa-upload': 'upload',
-      'fa-star': 'star',
-      'fa-heart': 'favorite',
-      'fa-bookmark': 'bookmark',
-      'fa-tag': 'label',
-      'fa-tags': 'labels',
-      'fa-shopping-cart': 'shopping_cart',
-      'fa-credit-card': 'credit_card',
-      'fa-money': 'attach_money',
-      'fa-bell': 'notifications',
-      'fa-globe': 'public',
-      'fa-lock': 'lock',
-      'fa-unlock': 'lock_open',
-      'fa-key': 'vpn_key',
-      'fa-shield': 'security',
-      'fa-warning': 'warning',
-      'fa-info': 'info',
-      'fa-question': 'help',
-      'fa-check': 'check',
-      'fa-times': 'close',
-      'fa-arrow-left': 'arrow_back',
-      'fa-arrow-right': 'arrow_forward',
-      'fa-arrow-up': 'arrow_upward',
-      'fa-arrow-down': 'arrow_downward',
-      'fa-chevron-left': 'chevron_left',
-      'fa-chevron-right': 'chevron_right',
-      'fa-chevron-up': 'expand_less',
-      'fa-chevron-down': 'expand_more',
-      'fa-menu': 'menu',
-      'fa-bars': 'menu',
-      'fa-list': 'list',
-      'fa-grid': 'grid_view',
-      'fa-th': 'apps',
-      'fa-database': 'storage',
-      'fa-server': 'dns',
-      'fa-cloud': 'cloud',
-      'fa-wifi': 'wifi',
-      'fa-signal': 'signal_cellular_4_bar',
-      'fa-battery': 'battery_full',
-      'fa-power-off': 'power_settings_new',
-      'fa-refresh': 'refresh',
-      'fa-sync': 'sync',
-      'fa-share': 'share',
-      'fa-copy': 'content_copy',
-      'fa-paste': 'content_paste',
-      'fa-cut': 'content_cut',
-      'fa-print': 'print',
-      'fa-save': 'save',
-      'fa-undo': 'undo',
-      'fa-redo': 'redo',
-      'fa-play': 'play_arrow',
-      'fa-pause': 'pause',
-      'fa-stop': 'stop',
-      'fa-volume-up': 'volume_up',
-      'fa-volume-down': 'volume_down',
-      'fa-volume-off': 'volume_off',
-      'fa-image': 'image',
-      'fa-video': 'videocam',
-      'fa-camera': 'camera_alt',
-      'fa-microphone': 'mic',
-      'fa-headphones': 'headset',
-      'fa-gamepad': 'sports_esports',
-      'fa-puzzle-piece': 'extension',
-      'fa-wrench': 'build',
-      'fa-hammer': 'construction',
-      'fa-paint-brush': 'brush',
-      'fa-palette': 'palette',
-      'fa-code': 'code',
-      'fa-terminal': 'terminal',
-      'fa-bug': 'bug_report',
-      'fa-rocket': 'rocket_launch',
-      'fa-school': 'school',
-      'fa-address-book': 'contacts',
-      'fa-table': 'file_download',
-      'fa-location-dot': 'location_on',
-      'fa-map-location-dot': 'location_on',
-      'fa-map-marker': 'location_on',
-      'fa-map-marker-alt': 'location_on',
-      'fa-map-pin': 'location_on',
-      'fa-location': 'location_on',
-      'fa-map': 'map'
-    };
-
-    // Remove 'fa-' prefix if present and look up the icon
-    const cleanIcon = fontAwesomeIcon.replace('fa-', '');
-    const materialIcon = iconMap[`fa-${cleanIcon}`] || iconMap[fontAwesomeIcon];
-
-    // If no mapping found, return a default icon or the original
-    return materialIcon || 'circle';
-  }
-
 }

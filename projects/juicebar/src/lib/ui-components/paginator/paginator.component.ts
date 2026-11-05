@@ -24,11 +24,14 @@ export class PaginatorComponent {
 
   page = output<PageEvent>();
 
-  protected readonly Math = Math;
-
   get totalPages(): number {
     return Math.ceil(this.length() / this.pageSize());
   }
+
+  /** First and last item of the current page, for the "x–y of z" range */
+  protected readonly rangeStart = computed(() => this.pageIndex() * this.pageSize() + 1);
+  protected readonly rangeEnd = computed(() => Math.min((this.pageIndex() + 1) * this.pageSize(), this.length()));
+  protected readonly isLastPage = computed(() => this.pageIndex() >= this.totalPages - 1);
 
   protected readonly pages = computed<(number | '…')[]>(() => {
     const total = Math.ceil(this.length() / this.pageSize());

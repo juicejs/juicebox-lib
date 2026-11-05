@@ -22,7 +22,7 @@
                                 }
                             </app-select>
                         </app-form-field>
-                        @if (form.controls['salutation'].hasError('required') && form.controls['salutation'].touched) {
+                        @if (form.controls['salutation'].errors?.['required'] && form.controls['salutation'].touched) {
                             <div class="field-error">{{ 'include_salutation' | translate }}</div>
                         }
                     </div>
@@ -46,7 +46,7 @@
                         </label>
                         <app-form-field controlId="user-firstname" appearance="outline" class="field-control">
                             <input appInput formControlName="firstname">
-                            @if (form.controls['firstname'].touched && form.controls['firstname'].hasError('required')) {
+                            @if (form.controls['firstname'].touched && form.controls['firstname'].errors?.['required']) {
                                 <app-error>{{ 'include_firstname' | translate }}</app-error>
                             }
                         </app-form-field>
@@ -58,7 +58,7 @@
                         </label>
                         <app-form-field controlId="user-lastname" appearance="outline" class="field-control">
                             <input appInput formControlName="lastname">
-                            @if (form.controls['lastname'].touched && form.controls['lastname'].hasError('required')) {
+                            @if (form.controls['lastname'].touched && form.controls['lastname'].errors?.['required']) {
                                 <app-error>{{ 'include_lastname' | translate }}</app-error>
                             }
                         </app-form-field>
@@ -80,10 +80,10 @@
                     </label>
                     <app-form-field controlId="user-email" appearance="outline" class="field-control">
                         <input appInput formControlName="email" [readonly]="readonlyEmail">
-                        @if (form.controls['email'].touched && form.controls['email'].hasError('required')) {
+                        @if (form.controls['email'].touched && form.controls['email'].errors?.['required']) {
                             <app-error>{{ 'include_email' | translate }}</app-error>
                         }
-                        @if (form.controls['email'].touched && form.controls['email'].hasError('email')) {
+                        @if (form.controls['email'].touched && form.controls['email'].errors?.['email']) {
                             <app-error>{{ 'invalid_email' | translate }}</app-error>
                         }
                     </app-form-field>
@@ -110,7 +110,7 @@
                         </div>
                     </div>
 
-                    @if (juicebox.hasPermission('users:role#super-admin')) {
+                    @if (isSuperAdmin) {
                         <div class="toggle-cell">
                             <app-slide-toggle formControlName="admin"></app-slide-toggle>
                             <div class="toggle-text">
@@ -195,7 +195,7 @@
                 </app-card>
             }
 
-            @if (user()?.attributes?.settings?.twoFactor && juicebox.hasPermission('users:role#super-admin')) {
+            @if (user()?.attributes?.settings?.twoFactor && isSuperAdmin) {
                 <app-card class="details-card">
                     <header class="card-head">
                         <div>

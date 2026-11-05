@@ -17,10 +17,10 @@
     <app-form-field appearance="outline" class="full-width">
       <app-label>{{ 'two_factor_authorisation_code' | translate }}</app-label>
       <input appInput type="text" inputmode="numeric" formControlName="code" maxlength="6" autocomplete="one-time-code">
-      @if (twoFaForm.get('code')?.touched && twoFaForm.get('code')?.errors?.['required']) {
+      @if (twoFaForm.controls.code.touched && twoFaForm.controls.code.errors?.['required']) {
         <app-error>{{ 'field_required' | translate }}</app-error>
       }
-      @if (twoFaForm.get('code')?.touched && twoFaForm.get('code')?.errors?.['pattern']) {
+      @if (twoFaForm.controls.code.touched && twoFaForm.controls.code.errors?.['pattern']) {
         <app-error>{{ 'only_digits_allowed' | translate }}</app-error>
       }
     </app-form-field>

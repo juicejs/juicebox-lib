@@ -90,7 +90,7 @@
                     <th cdk-header-cell *cdkHeaderCellDef>{{ 'permissions' | translate }}</th>
                     <td cdk-cell *cdkCellDef="let row">
                         <div class="perm-chips">
-                            @for (permission of getRolePermissions(row); track permission.key) {
+                            @for (permission of rolePermissions()[row.role] ?? []; track permission.key) {
                                 <app-checkbox
                                     [(checked)]="row.permissions[permission.key]"
                                     [hasPermissions]="'users:role#updated|update'"

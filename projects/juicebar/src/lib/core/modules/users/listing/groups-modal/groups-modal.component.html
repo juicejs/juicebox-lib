@@ -113,7 +113,7 @@
                                             <app-slide-toggle
                                                 [checked]="row.permissions['juicebox:visible']"
                                                 (toggled)="toggleVisibility(row, $event)"
-                                                [disabled]="!hasPermission('groups:role#super-admin')">
+                                                [disabled]="!isGroupsSuperAdmin">
                                             </app-slide-toggle>
                                         }
                                         <button [attr.aria-label]="'delete' | translate" app-button appearance="icon"
@@ -128,10 +128,10 @@
                                 </div>
 
                                 <div class="perm-grid">
-                                    @for (permission of getRolePermissions(row); track permission.key) {
+                                    @for (permission of rolePermissions()[row.role] ?? []; track permission.key) {
                                         <app-checkbox
                                             [(checked)]="row.permissions[permission.key]"
-                                            [disabled]="!hasPermission('groups:role#super-admin')"
+                                            [disabled]="!isGroupsSuperAdmin"
                                             (change)="updateGroupRolePermission(row)"
                                             class="perm-chip">
                                             {{ permission.key }}

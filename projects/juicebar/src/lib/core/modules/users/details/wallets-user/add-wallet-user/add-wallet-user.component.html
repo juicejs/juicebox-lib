@@ -14,7 +14,7 @@
                     <app-option [value]="pub.id">{{pub.title}}</app-option>
                 }
             </app-select>
-            @if (walletForm.controls['publisher'].touched && walletForm.controls['publisher'].hasError('required')) {
+            @if (walletForm.controls['publisher'].touched && walletForm.controls['publisher'].errors?.['required']) {
                 <app-error>{{"include_publisher" | translate}}</app-error>
             }
         </app-form-field>
@@ -23,7 +23,7 @@
             <app-label>{{"name" | translate}}*</app-label>
             <input appInput type="text" placeholder="{{'name' | translate}}"
                    formControlName="name">
-            @if (walletForm.controls['name'].touched && walletForm.controls['name'].hasError('required')) {
+            @if (walletForm.controls['name'].touched && walletForm.controls['name'].errors?.['required']) {
                 <app-error>{{"include_name" | translate}}</app-error>
             }
         </app-form-field>
@@ -31,7 +31,7 @@
             <app-label>{{"existing_address" | translate}}</app-label>
             <input appInput type="text" placeholder="{{'leave_empty_for_new_wallet' | translate}}"
                    formControlName="address">
-            @if (walletForm.controls['address'].touched && walletForm.controls['address'].hasError('addressLength')) {
+            @if (walletForm.controls['address'].touched && walletForm.controls['address'].errors?.['addressLength']) {
                 <app-error>{{"include_address" | translate}}</app-error>
             }
         </app-form-field>
@@ -39,7 +39,7 @@
             <app-label>{{"private_key" | translate}}</app-label>
             <input appInput type="text" placeholder="{{'leave_empty_for_new_wallet' | translate}}"
                    formControlName="privateKey">
-            @if (walletForm.controls['privateKey'].touched && walletForm.controls['privateKey'].hasError('required')) {
+            @if (walletForm.controls['privateKey'].touched && walletForm.controls['privateKey'].errors?.['required']) {
                 <app-error>{{"include_key" | translate}}</app-error>
             }
         </app-form-field>

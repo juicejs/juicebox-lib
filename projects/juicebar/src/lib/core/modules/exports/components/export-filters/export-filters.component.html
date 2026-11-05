@@ -1,6 +1,7 @@
 @if (filters().length) {
 <div [formGroup]="filterForm">
     @for (filter of filters(); track filter.id) {
+    @let control = filterForm.controls[filter.id];
     <div class="filter-item">
 
         @switch (filter.type) {
@@ -8,7 +9,7 @@
                 <app-form-field appearance="outline" class="full-width">
                     <app-label>{{ filter | filterLabel }}</app-label>
                     <input appInput type="text" [formControlName]="filter.id">
-                    @if (getFilterError(filter); as error) {
+                    @if ((control.touched && control.errors) | exportFilterError: filter : filterFormTick(); as error) {
                         <app-error>{{ error }}</app-error>
                     }
                 </app-form-field>
@@ -17,7 +18,7 @@
                 <app-form-field appearance="outline" class="full-width">
                     <app-label>{{ filter | filterLabel }}</app-label>
                     <input appInput type="number" [formControlName]="filter.id">
-                    @if (getFilterError(filter); as error) {
+                    @if ((control.touched && control.errors) | exportFilterError: filter : filterFormTick(); as error) {
                         <app-error>{{ error }}</app-error>
                     }
                 </app-form-field>
@@ -27,7 +28,7 @@
                     <app-label>{{ filter | filterLabel }}</app-label>
                     <app-datepicker [formControlName]="filter.id"
                                     placeholder="DD.MM.YYYY"></app-datepicker>
-                    @if (getFilterError(filter); as error) {
+                    @if ((control.touched && control.errors) | exportFilterError: filter : filterFormTick(); as error) {
                         <app-error>{{ error }}</app-error>
                     }
                 </app-form-field>
@@ -44,7 +45,7 @@
                             <app-option [value]="item.id">{{ item.label | autoLanguage }}</app-option>
                         }
                     </app-select>
-                    @if (getFilterError(filter); as error) {
+                    @if ((control.touched && control.errors) | exportFilterError: filter : filterFormTick(); as error) {
                         <app-error>{{ error }}</app-error>
                     }
                 </app-form-field>
@@ -53,7 +54,7 @@
                 <app-export-multiselect-async [formGroup]="filterForm"
                                               [selectedDataSourceKey]="selectedDataSourceKey()"
                                               [filter]="filter"></app-export-multiselect-async>
-                @if (getFilterError(filter); as error) {
+                @if ((control.touched && control.errors) | exportFilterError: filter : filterFormTick(); as error) {
                     <app-error class="mat-error-standalone">{{ error }}</app-error>
                 }
             }
@@ -69,7 +70,7 @@
                             <app-option [value]="item.id">{{ item.label | autoLanguage }}</app-option>
                         }
                     </app-select>
-                    @if (getFilterError(filter); as error) {
+                    @if ((control.touched && control.errors) | exportFilterError: filter : filterFormTick(); as error) {
                         <app-error>{{ error }}</app-error>
                     }
                 </app-form-field>

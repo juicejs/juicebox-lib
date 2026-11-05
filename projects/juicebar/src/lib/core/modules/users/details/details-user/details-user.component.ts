@@ -47,6 +47,8 @@ export class DetailsUserComponent implements OnInit {
     private helper = inject(HelperService);
     public juicebox = inject(JuiceboxService);
     private dialog = inject(DialogService);
+    /** Permissions don't change within a session, so they're read once */
+    protected readonly isSuperAdmin = !!this.juicebox.hasPermission('users:role#super-admin');
     private userPipe = inject(UserTranslationPipe);
 
     private static customPassword(control: AbstractControl): ValidationErrors | null {

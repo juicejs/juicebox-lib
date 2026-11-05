@@ -51,6 +51,7 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
     private userService = inject(UsersService);
     private dialog = inject(DialogService);
     private helper = inject(HelperService);
+    protected readonly canUpdateRoles = !!this.juicebox.hasPermission('users:role#update');
 
     constructor() {
         super();

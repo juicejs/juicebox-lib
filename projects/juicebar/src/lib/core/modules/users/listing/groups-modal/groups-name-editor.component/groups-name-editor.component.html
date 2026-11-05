@@ -12,7 +12,7 @@
             <app-form-field appearance="outline" class="full-width">
                 <app-label>{{'name' | translate}}*</app-label>
                 <input appInput type="text" formControlName="name">
-                @if (groupForm.get('name')?.touched && groupForm.get('name')?.hasError('required')) {
+                @if (groupForm.controls['name']?.touched && groupForm.controls['name']?.errors?.['required']) {
                     <app-error>{{'include_name' | translate}}</app-error>
                 }
             </app-form-field>
@@ -22,7 +22,7 @@
                 <input appInput type="text" formControlName="key"
                        (keydown.space)="$event.preventDefault()"
                        placeholder="{{'group key' | translate}}" [readonly]="!!group">
-                @if (groupForm.get('key')?.touched && groupForm.get('key')?.hasError('required')) {
+                @if (groupForm.controls['key']?.touched && groupForm.controls['key']?.errors?.['required']) {
                     <app-error>{{'include_group_key' | translate}}</app-error>
                 }
             </app-form-field>
@@ -40,7 +40,7 @@
                 {{"cancel" | translate}}
             </button>
             <button app-button appearance="raised" color="primary" (click)="submit()"
-                    [disabled]="!groupForm || !groupForm.valid || !juicebox.hasPermission('groups:role#updated|update')"
+                    [disabled]="!groupForm || !groupForm.valid || !canUpdateGroups"
                     [promiseBtn]="promiseBtn">
                 {{"save" | translate}}
             </button>

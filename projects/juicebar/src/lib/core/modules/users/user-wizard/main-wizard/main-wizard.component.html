@@ -20,7 +20,7 @@
                                     <app-option [value]="salutation.key">{{ salutation.name }}</app-option>
                                 }
                             </app-select>
-                            @if (userForm.controls['salutation'].touched && userForm.controls['salutation'].hasError('required')) {
+                            @if (userForm.controls['salutation'].touched && userForm.controls['salutation'].errors?.['required']) {
                                 <app-error>{{ 'include_salutation' | translate }}</app-error>
                             }
                         </app-form-field>
@@ -45,7 +45,7 @@
                         </app-label>
                         <app-form-field controlId="new-user-firstname" appearance="outline" class="field-control">
                             <input appInput type="text" formControlName="firstname">
-                            @if (userForm.controls['firstname'].touched && userForm.controls['firstname'].hasError('required')) {
+                            @if (userForm.controls['firstname'].touched && userForm.controls['firstname'].errors?.['required']) {
                                 <app-error>{{ 'include_firstname' | translate }}</app-error>
                             }
                         </app-form-field>
@@ -57,7 +57,7 @@
                         </app-label>
                         <app-form-field controlId="new-user-lastname" appearance="outline" class="field-control">
                             <input appInput type="text" formControlName="lastname">
-                            @if (userForm.controls['lastname'].touched && userForm.controls['lastname'].hasError('required')) {
+                            @if (userForm.controls['lastname'].touched && userForm.controls['lastname'].errors?.['required']) {
                                 <app-error>{{ 'include_lastname' | translate }}</app-error>
                             }
                         </app-form-field>
@@ -83,10 +83,10 @@
                                               [options]="emailAutocompleteOptions()"
                                               (inputChange)="onSearch($event)"
                                               (optionSelected)="onSelectChange($event)"></app-autocomplete>
-                            @if (userForm.controls['email'].touched && userForm.controls['email'].hasError('required')) {
+                            @if (userForm.controls['email'].touched && userForm.controls['email'].errors?.['required']) {
                                 <app-error>{{ 'include_email' | translate }}</app-error>
                             }
-                            @if (userForm.controls['email'].touched && userForm.controls['email'].hasError('email')) {
+                            @if (userForm.controls['email'].touched && userForm.controls['email'].errors?.['email']) {
                                 <app-error>{{ 'invalid_email' | translate }}</app-error>
                             }
                         </app-form-field>
@@ -98,10 +98,10 @@
                         </app-label>
                         <app-form-field controlId="new-user-email" appearance="outline" class="field-control">
                             <input appInput formControlName="email">
-                            @if (userForm.controls['email'].touched && userForm.controls['email'].hasError('required')) {
+                            @if (userForm.controls['email'].touched && userForm.controls['email'].errors?.['required']) {
                                 <app-error>{{ 'include_email' | translate }}</app-error>
                             }
-                            @if (userForm.controls['email'].touched && userForm.controls['email'].hasError('email')) {
+                            @if (userForm.controls['email'].touched && userForm.controls['email'].errors?.['email']) {
                                 <app-error>{{ 'invalid_email' | translate }}</app-error>
                             }
                         </app-form-field>

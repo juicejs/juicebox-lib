@@ -34,6 +34,8 @@ export class RolesUserComponent implements OnInit {
     public userHasGroups: boolean;
 
     public allRoles = [];
+    /** The permissions each role offers, by role key (from allRoles) */
+    protected readonly rolePermissions = signal<Record<string, any[]>>({});
 
     i18n: UserTranslationPipe;
     public promiseBtn;
@@ -123,6 +125,7 @@ export class RolesUserComponent implements OnInit {
         this.allRoles = oldRoles.payload;
         this.allRoles = this.allRoles.concat(roles.payload);
         if (!this.allRoles) return false;
+        this.rolePermissions.set(Object.fromEntries(this.allRoles.map(role => [role.key, role.permissions || []])));
 
         const available = this.allRoles.map(role => {
             let has = this.user.roles.find(_role => _role.role == role.key);
@@ -204,13 +207,6 @@ export class RolesUserComponent implements OnInit {
             this.juicebox.showToast("success", "Success", this.i18n.transform('role_deleted'), { timeOut: 1000 })
             await this.getUserData();
         });
-    }
-
-    getRolePermissions(_role: any) {
-        const role = this.allRoles.find(role => role.key === _role.role);
-        if (role && role.permissions) return role.permissions;
-
-        return [];
     }
 
     async toggleVisibility(role: string, visible: boolean, permissions: { [key: string]: boolean }) {

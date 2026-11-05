@@ -19,7 +19,7 @@
     </div>
     <div class="wrapper" cdkDropListGroup>
         <div class="column">
-            <span class="group-handle">{{i18nMain.transform('visible')}}</span>
+            <span class="group-handle">{{ visibleLabel }}</span>
             <div class="container" id="sidebar" cdkDropList
                  [cdkDropListData]="sidebar()"
                  [cdkDropListDisabled]="disabledDragAndDrop()"
@@ -32,7 +32,7 @@
 
         @if (allowHidden()) {
             <div class="column">
-                <span class="group-handle">{{i18nMain.transform('hidden')}}</span>
+                <span class="group-handle">{{ hiddenLabel }}</span>
                 <div class="container" id="sidebarHidden" cdkDropList
                      [cdkDropListData]="sidebarHidden()"
                      [cdkDropListDisabled]="disabledDragAndDrop()"

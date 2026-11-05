@@ -19,7 +19,7 @@
 
         <button app-button
                 appearance="stroked"
-                [disabled]="!juicebox.hasPermission('users:role#update') || !selectedOrganisation()"
+                [disabled]="!canUpdateRoles || !selectedOrganisation()"
                 [promiseBtn]="promiseBtn"
                 (click)="add()">
             <app-icon [icon]="'add'"></app-icon>

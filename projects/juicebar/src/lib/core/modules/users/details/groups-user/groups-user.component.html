@@ -129,7 +129,7 @@
                                                 <button class="chevron-btn"
                                                         (click)="toggleNode(row.node._id)"
                                                         [attr.aria-label]="'toggle'">
-                                                    <app-icon [icon]="expandedOrgs().has(row.node._id) ? 'expand_more' : 'chevron_right'"></app-icon>
+                                                    <app-icon [icon]="row.expanded ? 'expand_more' : 'chevron_right'"></app-icon>
                                                 </button>
                                             } @else {
                                                 <span class="bullet">•</span>

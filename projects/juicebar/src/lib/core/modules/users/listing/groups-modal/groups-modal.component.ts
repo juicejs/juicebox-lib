@@ -19,6 +19,8 @@ import { DialogService } from '../../../../../ui-components';
 })
 export class GroupsModalComponent implements OnInit {
     private juicebox = inject(JuiceboxService);
+    /** Permissions don't change within a session, so they're read once */
+    protected readonly isGroupsSuperAdmin = !!this.juicebox.hasPermission('groups:role#super-admin');
     private userService = inject(UsersService);
     private configurationService = inject(ConfigurationService);
     private dialogRef = inject(DialogRef<any>);
@@ -27,6 +29,9 @@ export class GroupsModalComponent implements OnInit {
 
     protected readonly groups = signal<Array<any>>([]);
     protected readonly roles = signal<Array<any>>([]);
+    /** The permissions each role offers, by role key */
+    protected readonly rolePermissions = computed<Record<string, any[]>>(() =>
+        Object.fromEntries(this.roles().map(role => [role.key, role.permissions ?? []])));
     protected readonly rows = signal<Array<any>>([]);
     protected readonly selectedGroup = signal<any>(null);
     protected readonly selectedRole = signal<string | null>(null);
@@ -133,11 +138,6 @@ export class GroupsModalComponent implements OnInit {
         });
     }
 
-    getRolePermissions(_role: any): Array<any> {
-        const role = this.roles().find(r => r.key === _role.role);
-        return role?.permissions ?? [];
-    }
-
     async toggleVisibility(role: any, visible: boolean): Promise<void> {
         role.permissions['juicebox:visible'] = visible;
         await this.userService.updateGroupRolePermissions(this.selectedGroup()._id, role);
@@ -172,7 +172,4 @@ export class GroupsModalComponent implements OnInit {
         })));
     }
 
-    hasPermission(permission: string): boolean {
-        return !!this.juicebox.hasPermission(permission);
-    }
 }

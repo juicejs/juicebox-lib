@@ -5,7 +5,7 @@
         <app-form-field appearance="outline" class="full-width">
             <app-label>{{ 'name' | translate }}*</app-label>
             <input appInput type="text" formControlName="name">
-            @if (form.controls.name.touched && form.controls.name.hasError('required')) {
+            @if (form.controls.name.touched && form.controls.name.errors?.['required']) {
                 <app-error>{{ 'include_name' | translate }}</app-error>
             }
         </app-form-field>

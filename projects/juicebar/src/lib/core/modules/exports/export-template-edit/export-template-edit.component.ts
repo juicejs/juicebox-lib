@@ -53,6 +53,7 @@ export class ExportTemplateEditComponent {
     private readonly amgExport = signal(false);
 
     public juicebox = inject(JuiceboxService);
+    protected readonly canUpdate = !!this.juicebox.hasPermission('data-export:role#update');
     private exports = inject(ExportsService);
     private route = inject(ActivatedRoute);
     private configurationService = inject(ConfigurationService);

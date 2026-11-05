@@ -27,6 +27,8 @@ export class SidebarUserComponent implements OnInit {
 
     i18n: UserTranslationPipe;
     i18nMain: MainTranslationPipe;
+    protected readonly visibleLabel: string;
+    protected readonly hiddenLabel: string;
 
     protected readonly sidebar = signal<SidebarItem[]>([]);
     protected readonly sidebarHidden = signal<SidebarItem[]>([]);
@@ -43,6 +45,8 @@ export class SidebarUserComponent implements OnInit {
     constructor() {
       this.i18n = new UserTranslationPipe(this.juicebox);
       this.i18nMain = new MainTranslationPipe(this.juicebox);
+      this.visibleLabel = this.i18nMain.transform('visible');
+      this.hiddenLabel = this.i18nMain.transform('hidden');
     }
 
     async ngOnInit() {

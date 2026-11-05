@@ -24,6 +24,7 @@ interface VisibleRow {
     node: OrgNode;
     level: number;
     hasChildren: boolean;
+    expanded: boolean;
 }
 
 @Component({
@@ -90,8 +91,9 @@ export class GroupsUserComponent extends ListingComponent {
         const walk = (nodes: OrgNode[], level: number) => {
             for (const n of nodes) {
                 const hasChildren = !!n.children && n.children.length > 0;
-                rows.push({ node: n, level, hasChildren });
-                if (hasChildren && expanded.has(n._id)) {
+                const isExpanded = expanded.has(n._id);
+                rows.push({ node: n, level, hasChildren, expanded: isExpanded });
+                if (hasChildren && isExpanded) {
                     walk(n.children, level + 1);
                 }
             }

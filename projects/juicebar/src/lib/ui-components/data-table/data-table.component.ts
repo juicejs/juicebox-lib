@@ -128,6 +128,45 @@ export class DataTableComponent {
     return out;
   });
 
+  /**
+   * What the header and cells of each rendered column show, worked out when the columns, sort or projected templates
+   * change rather than on every check
+   */
+  protected readonly renderColumns = computed(() => {
+    const cells = this.cellMap();
+    const headers = this.headerMap();
+    return this.columnsForRender().map(col => {
+      const sortDir = this.sortDirFor(col.key);
+      return {
+        col,
+        sortDir,
+        ariaSort: sortDir === 'asc' ? 'ascending' : sortDir === 'desc' ? 'descending' : 'none',
+        sortIcon: this.sortIcon(col.key),
+        headerTpl: headers.get(col.key) ?? null,
+        cellTpl: cells.get(col.key) ?? null,
+      };
+    });
+  });
+
+  /** Template of the `__detail__` cell, for detail rows that don't show the selection toolbar */
+  protected readonly detailTpl = computed(() => this.cellMap().get('__detail__') ?? null);
+
+  /**
+   * The table's data source: each data row with its selected state and the values its plain cells show (detail
+   * markers pass through). Worked out when the rows, columns or selection change rather than on every check.
+   */
+  protected readonly renderRows = computed(() => {
+    const keys = this.columns().map(column => column.key);
+    const selectable = this.selectable();
+    const sid = this.selectedId();
+    const idKey = this.idKey();
+    return this.displayedRows().map(r => r?.__detail ? r : {
+      row: r,
+      selected: selectable && r?.[idKey] === sid,
+      values: Object.fromEntries(keys.map(key => [key, this.value(r, key)])) as Record<string, any>,
+    });
+  });
+
   isDetailRow = (_: number, r: any) => !!r?.__detail;
   isDataRow   = (_: number, r: any) => !r?.__detail;
 
@@ -199,9 +238,9 @@ export class DataTableComponent {
     }
   }
 
-  trackKey = (_: number, c: ColumnConfig) => c.key;
+  /** Rows of `renderRows()` are tracked by their row's id, so a row keeps its view when its values or selection change */
   trackRow = (i: number, r: any) => {
     const k = this.idKey();
-    return r?.__detail ? `__detail_${r.source?.[k] ?? i}` : (r?.[k] ?? i);
+    return r?.__detail ? `__detail_${r.source?.[k] ?? i}` : (r?.row?.[k] ?? i);
   };
 }
