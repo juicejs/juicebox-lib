@@ -1,0 +1,39 @@
+<fieldset class="app-timepicker-fields" [disabled]="isDisabled()">
+  @for (field of fields(); track field.unit; let last = $last) {
+    <div class="app-timepicker-unit">
+      @if (spinners()) {
+        <button type="button" class="app-timepicker-spin" tabindex="-1" [attr.aria-label]="field.upLabel" (click)="step(field.unit, field.step)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="18 15 12 9 6 15"></polyline>
+          </svg>
+        </button>
+      }
+      <input #unitInput
+             type="text"
+             class="app-timepicker-input"
+             maxlength="2"
+             inputmode="numeric"
+             autocomplete="off"
+             [attr.aria-label]="field.label"
+             [placeholder]="field.placeholder"
+             [value]="field.text"
+             [readOnly]="readonlyInputs()"
+             (input)="onlyDigits(unitInput)"
+             (change)="type(field.unit, unitInput)"
+             (focus)="unitInput.select()"
+             (blur)="handleBlur()"
+             (keydown.arrowup)="step(field.unit, field.step); $event.preventDefault()"
+             (keydown.arrowdown)="step(field.unit, -field.step); $event.preventDefault()">
+      @if (spinners()) {
+        <button type="button" class="app-timepicker-spin" tabindex="-1" [attr.aria-label]="field.downLabel" (click)="step(field.unit, -field.step)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+      }
+    </div>
+    @if (!last) {
+      <span class="app-timepicker-separator" aria-hidden="true">:</span>
+    }
+  }
+</fieldset>

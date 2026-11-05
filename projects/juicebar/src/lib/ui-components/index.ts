@@ -43,8 +43,14 @@ export * from './divider/divider.component';
 // Progress
 export * from './progress-spinner/progress-spinner.component';
 
-// Datepicker
+// Dates and times
+export * from './datepicker/calendar.component';
 export * from './datepicker/datepicker.component';
+export * from './datepicker/date-range-picker.component';
+export * from './datepicker/datetime-picker.component';
+export * from './timepicker/timepicker.component';
+export type {DateStruct, TimeStruct, DateRange, DateValueFormat, DateTimeValueFormat, DateInput} from './datepicker/date-utils';
+export type {PickerAutoClose} from './datepicker/picker-field';
 
 // Autocomplete
 export * from './autocomplete/autocomplete.component';

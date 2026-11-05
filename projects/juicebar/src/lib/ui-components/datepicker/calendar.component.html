@@ -1,0 +1,109 @@
+<div class="app-calendar-header">
+  <button type="button" class="app-calendar-title" [attr.aria-expanded]="mode() !== 'days'" [disabled]="isDisabled()" (click)="toggleYearsView()">
+    {{ mode() === 'months' ? monthsTitle() : title() }}
+    <svg class="app-calendar-title-chevron" [class.rotated]="mode() !== 'days'" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </button>
+  @if (mode() === 'days') {
+    <div class="app-calendar-arrows">
+      <button type="button" class="app-calendar-arrow" aria-label="Previous month" [disabled]="prevDisabled()" (click)="showMonth(-1)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <button type="button" class="app-calendar-arrow" aria-label="Next month" [disabled]="nextDisabled()" (click)="showMonth(1)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+  }
+</div>
+
+@switch (mode()) {
+  @case ('days') {
+    <div class="app-calendar-months" (keydown)="onDaysKeydown($event)" (mouseleave)="hovered.set(null)">
+      @for (month of months(); track month.key) {
+        <div class="app-calendar-month">
+          @if (showMonthTitles()) {
+            <div class="app-calendar-month-title">{{ month.title }}</div>
+          }
+          <table class="app-calendar-days" role="grid" [attr.aria-label]="month.title">
+            <thead>
+              <tr>
+                @if (showWeekNumbers()) {
+                  <th class="app-calendar-week-number" aria-hidden="true"></th>
+                }
+                @for (weekday of weekdays; track $index) {
+                  <th scope="col" class="app-calendar-weekday">{{ weekday }}</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (week of month.weeks; track week.key) {
+                <tr>
+                  @if (showWeekNumbers()) {
+                    <th scope="row" class="app-calendar-week-number">{{ week.number }}</th>
+                  }
+                  @for (day of week.days; track day.key) {
+                    @let context = day.context;
+                    <td role="gridcell"
+                        [class.app-calendar-band]="day.band"
+                        [class.app-calendar-band-start]="day.bandStart"
+                        [class.app-calendar-band-end]="day.bandEnd"
+                        [attr.aria-selected]="context.selected || context.rangeStart || context.rangeEnd">
+                      @if (!day.hidden) {
+                        <button type="button" class="app-calendar-day"
+                                [class.app-calendar-day-custom]="!!dayTemplate()"
+                                [class.app-calendar-day-outside]="context.outside"
+                                [class.app-calendar-day-today]="context.today"
+                                [class.app-calendar-day-selected]="context.selected || context.rangeStart || context.rangeEnd"
+                                [class.app-calendar-day-in-range]="day.band"
+                                [attr.tabindex]="context.focused ? 0 : -1"
+                                [attr.aria-label]="day.ariaLabel"
+                                [attr.aria-current]="context.today ? 'date' : null"
+                                [attr.aria-disabled]="context.disabled || null"
+                                (mouseenter)="hover(day)"
+                                (click)="choose(day)">
+                          @if (dayTemplate(); as template) {
+                            <ng-container *ngTemplateOutlet="template; context: context" />
+                          } @else {
+                            {{ context.day }}
+                          }
+                        </button>
+                      }
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+  @case ('years') {
+    <div class="app-calendar-cells app-calendar-years">
+      @for (year of years(); track year.value) {
+        <button type="button" class="app-calendar-cell"
+                [class.app-calendar-cell-selected]="year.selected"
+                [class.app-calendar-cell-current]="year.current"
+                [attr.aria-pressed]="year.selected"
+                (click)="pickYear(year.value)">{{ year.label }}</button>
+      }
+    </div>
+  }
+  @case ('months') {
+    <div class="app-calendar-cells app-calendar-month-cells">
+      @for (month of monthCells(); track month.value) {
+        <button type="button" class="app-calendar-cell"
+                [class.app-calendar-cell-selected]="month.selected"
+                [class.app-calendar-cell-current]="month.current"
+                [attr.aria-pressed]="month.selected"
+                [disabled]="month.disabled"
+                (click)="pickMonth(month)">{{ month.label }}</button>
+      }
+    </div>
+  }
+}

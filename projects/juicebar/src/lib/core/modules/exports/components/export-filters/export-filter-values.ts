@@ -3,7 +3,7 @@ import {CustomMaterialDateAdapter} from '../../../../shared/services/CustomDatep
 
 /**
  * The filter form's values as they are stored on the export template: dates as `{year, month, day}`,
- * the shape the old ngb datepicker gave them. `app-datepicker` holds a `Date`.
+ * the shape the old ngb datepicker gave them and app-datepicker gives by default; a `Date` set from code is converted to it.
  * `raw` also includes disabled filters (`getRawValue()`), as the old async multiselect sent them with its options request.
  */
 export function exportFilterValues(filterForm: FormGroup, raw = false): Record<string, unknown> {

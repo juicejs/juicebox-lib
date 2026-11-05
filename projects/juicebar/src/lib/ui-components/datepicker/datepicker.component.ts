@@ -1,62 +1,34 @@
-import {ChangeDetectionStrategy, Component, computed, forwardRef, input, signal} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {Component, computed, forwardRef, input, output, signal} from '@angular/core';
+import {AbstractControl, ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator} from '@angular/forms';
+import {NgTemplateOutlet} from '@angular/common';
+import {A11yModule} from '@angular/cdk/a11y';
+import {OverlayModule} from '@angular/cdk/overlay';
 import {DISABLEABLE, Disableable} from '../disableable';
+import {CalendarComponent} from './calendar.component';
+import {DateValueFormat, formatDate, parseTypedDate, startOfDay, toDate, toDateValue} from './date-utils';
+import {PickerAutoClose, PickerField} from './picker-field';
 
+/**
+ * A date field with a calendar, as the old ngbDatepicker inputs: the date is typed as DD.MM.YYYY or picked in the
+ * calendar opened from the button. The form gets the day in `valueFormat` (the old adapters' shapes); the control reads
+ * any of them. Typed text that is no date, or a date outside minDate/maxDate, makes the control invalid with ngb's
+ * `ngbDate` error, which old forms check.
+ */
 @Component({
   selector: 'app-datepicker',
-  template: `
-    <input type="date"
-           class="app-datepicker-input"
-           [value]="dateValue()"
-           [disabled]="isDisabled()"
-           [readonly]="readonly()"
-           [attr.placeholder]="placeholder()"
-           (input)="onInput($any($event.target).value)"
-           (blur)="onTouched()">
-  `,
-  styles: [`
-    :host { display: inline-block; width: 100%; }
-    /* Match the outlined look of the standard form-field inputs, since the
-       form-field's own input styles can't reach this encapsulated input. */
-    .app-datepicker-input {
-      width: 100%;
-      height: 32px;
-      padding: 0 10px;
-      font-family: inherit;
-      font-size: 12.5px;
-      color: var(--color-text-primary);
-      background: var(--color-background);
-      border: 1px solid var(--color-border);
-      border-radius: 6px;
-      outline: none;
-      box-sizing: border-box;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
-    }
-    .app-datepicker-input:hover:not(:disabled):not([readonly]) {
-      border-color: var(--color-border-dark);
-    }
-    .app-datepicker-input:focus {
-      border-color: var(--color-secondary);
-      box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.15);
-    }
-    /* Native calendar icon: dark theme is the default, so lighten it.
-       Under the light theme keep it dark so it stays visible. */
-    .app-datepicker-input::-webkit-calendar-picker-indicator {
-      cursor: pointer;
-      opacity: 0.9;
-      filter: invert(1);
-    }
-    :host-context(html.light-theme) .app-datepicker-input::-webkit-calendar-picker-indicator {
-      filter: invert(0);
-    }
-  `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './datepicker.component.html',
+  styleUrl: './picker-field.scss',
+  imports: [OverlayModule, A11yModule, NgTemplateOutlet, CalendarComponent],
   host: {
-    '[class.has-value]': '!!dateValue()',
+    'class': 'app-datepicker',
+    '[class.has-value]': '!!value()',
   },
-  imports: [],
   providers: [{
     provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => DatepickerComponent),
+    multi: true,
+  }, {
+    provide: NG_VALIDATORS,
     useExisting: forwardRef(() => DatepickerComponent),
     multi: true,
   }, {
@@ -64,48 +36,76 @@ import {DISABLEABLE, Disableable} from '../disableable';
     useExisting: forwardRef(() => DatepickerComponent),
   }],
 })
-export class DatepickerComponent implements ControlValueAccessor, Disableable {
-  placeholder = input<string>('');
-  readonly = input<boolean>(false);
+export class DatepickerComponent extends PickerField implements ControlValueAccessor, Validator, Disableable {
+  /** The form value's shape, see `DateValueFormat`; by default ngb's `{year, month, day}`, as the old forms sent it */
+  valueFormat = input<DateValueFormat>('struct');
+  /** Shows a × that empties the field (the old Clear buttons in the calendar footer) */
+  clearable = input(false);
+  clearLabel = input('Clear');
 
-  dateValue = signal<string>('');
-  disabled = signal<boolean>(false);
-  /** Set by a permission directive on the same element */
-  private readonly externallyDisabled = signal(false);
-  protected readonly isDisabled = computed(() => this.disabled() || this.externallyDisabled());
+  /** A day was picked in the calendar (ngb's dateSelect); not emitted for typed dates */
+  dateSelect = output<Date>();
 
-  private onChange: (value: Date | null) => void = () => {};
-  onTouched: () => void = () => {};
+  protected readonly defaultAutoClose: PickerAutoClose = true;
 
-  writeValue(value: Date | string | null): void {
-    if (!value) {
-      this.dateValue.set('');
-      return;
-    }
-    const date = value instanceof Date ? value : new Date(value);
-    if (isNaN(date.getTime())) {
-      this.dateValue.set('');
-      return;
-    }
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    this.dateValue.set(`${yyyy}-${mm}-${dd}`);
+  protected readonly value = signal<Date | null>(null);
+  protected readonly text = signal('');
+  /** Typed text that is no date */
+  private readonly invalidText = signal<string | null>(null);
+  protected readonly showClear = computed(() => this.clearable() && !this.isDisabled() && this.text() !== '');
+
+  private onChange: (value: unknown) => void = () => {};
+
+  protected onType(text: string): void {
+    this.text.set(text);
+    const typed = text.trim() ? parseTypedDate(text) : null;
+    const date = typed && startOfDay(typed);
+    this.invalidText.set(text.trim() && !date ? text : null);
+    this.value.set(date);
+    // As ngb: text that is no date goes to the form as it is (and is invalid), an empty field as null
+    this.onChange(date ? toDateValue(date, this.valueFormat()) : (text === '' ? null : text));
   }
 
-  registerOnChange(fn: (value: Date | null) => void): void { this.onChange = fn; }
-  registerOnTouched(fn: () => void): void { this.onTouched = fn; }
-  setDisabledState(disabled: boolean): void { this.disabled.set(disabled); }
+  /** As ngb on change: a typed date is shown in the full format (5.1.2026 becomes 05.01.2026) */
+  protected onTextCommit(): void {
+    const date = this.value();
+    if (date) this.text.set(formatDate(date));
+  }
 
-  setExternallyDisabled(disabled: boolean): void { this.externallyDisabled.set(disabled); }
+  protected pick(date: Date): void {
+    this.value.set(date);
+    this.text.set(formatDate(date));
+    this.invalidText.set(null);
+    this.onChange(toDateValue(date, this.valueFormat()));
+    this.dateSelect.emit(date);
+    this.closeAfterPick();
+  }
 
-  onInput(value: string): void {
-    this.dateValue.set(value);
-    if (!value) {
-      this.onChange(null);
-      return;
-    }
-    const date = new Date(value);
-    this.onChange(isNaN(date.getTime()) ? null : date);
+  clear(): void {
+    this.value.set(null);
+    this.text.set('');
+    this.invalidText.set(null);
+    this.onChange(null);
+    this.onTouched();
+    this.close();
+  }
+
+  writeValue(value: unknown): void {
+    const date = toDate(value);
+    this.value.set(date);
+    this.text.set(date ? formatDate(date) : '');
+    this.invalidText.set(null);
+  }
+
+  registerOnChange(fn: (value: unknown) => void): void { this.onChange = fn; }
+
+  /** ngb's errors, under the same `ngbDate` key */
+  validate(control: AbstractControl): ValidationErrors | null {
+    const invalid = this.invalidText();
+    if (invalid !== null) return {ngbDate: {invalid}};
+    const value: unknown = control.value;
+    if (value === null || value === undefined || value === '') return null;
+    const date = toDate(value);
+    return date ? this.rangeErrors(date, value) : {ngbDate: {invalid: value}};
   }
 }

@@ -1,0 +1,72 @@
+<div #field class="app-picker-field" cdkOverlayOrigin #origin="cdkOverlayOrigin">
+  <input #textInput
+         type="text"
+         class="app-picker-input"
+         autocomplete="off"
+         [attr.id]="inputId?.()"
+         [attr.aria-haspopup]="readonly() ? 'dialog' : null"
+         [attr.aria-expanded]="readonly() ? isOpen() : null"
+         [value]="text()"
+         [placeholder]="placeholder() || typedFormat()"
+         [disabled]="isDisabled()"
+         [readOnly]="readonly()"
+         (input)="onType(textInput.value)"
+         (change)="onTextCommit()"
+         (blur)="onInputBlur()"
+         (click)="onInputClick()">
+  <button #toggleButton
+          type="button"
+          class="app-picker-toggle"
+          aria-label="Open calendar"
+          aria-haspopup="dialog"
+          [attr.aria-expanded]="isOpen()"
+          [disabled]="isDisabled()"
+          (click)="toggle()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+      <line x1="16" y1="2" x2="16" y2="6"></line>
+      <line x1="8" y1="2" x2="8" y2="6"></line>
+      <line x1="3" y1="10" x2="21" y2="10"></line>
+    </svg>
+  </button>
+</div>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="origin"
+  [cdkConnectedOverlayOpen]="isOpen()"
+  [cdkConnectedOverlayPositions]="positions"
+  (overlayOutsideClick)="onOutsideClick()"
+  (detach)="close(true)">
+  <div class="app-picker-panel" role="dialog" aria-modal="true" aria-label="Choose a date and time" cdkTrapFocus>
+    <app-calendar [selected]="value()"
+                  [minDate]="minDate()"
+                  [maxDate]="maxDate()"
+                  [startDate]="startDate()"
+                  [markDisabled]="markDisabled()"
+                  [displayMonths]="displayMonths()"
+                  [outsideDays]="outsideDays() ?? 'visible'"
+                  [showWeekNumbers]="showWeekNumbers()"
+                  [dayTemplate]="dayTemplate()"
+                  [autoFocus]="true"
+                  (dateSelect)="pickDate($event)" />
+    <div class="app-picker-time">
+      <app-timepicker [ngModel]="time()"
+                      (ngModelChange)="pickTime($event)"
+                      [seconds]="seconds()"
+                      [hourStep]="hourStep()"
+                      [minuteStep]="minuteStep()"
+                      [secondStep]="secondStep()"
+                      size="small" />
+    </div>
+    <div class="app-picker-footer">
+      <button app-button (click)="clear()">{{ clearLabel() }}</button>
+      <button app-button (click)="today()">{{ todayLabel() }}</button>
+      <span class="app-picker-footer-spacer"></span>
+      @if (footerTemplate(); as footer) {
+        <ng-container *ngTemplateOutlet="footer" />
+      }
+      <button app-button color="primary" (click)="close(true)">{{ doneLabel() }}</button>
+    </div>
+  </div>
+</ng-template>

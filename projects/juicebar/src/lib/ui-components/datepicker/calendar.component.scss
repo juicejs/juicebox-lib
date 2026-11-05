@@ -1,0 +1,243 @@
+:host {
+  display: inline-block;
+  width: fit-content;
+  padding: 10px;
+  box-sizing: border-box;
+  font-size: 13px;
+  color: var(--color-text-primary);
+}
+
+:host(.app-calendar-disabled) {
+  opacity: 0.6;
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--color-secondary-rgb), 0.5);
+  }
+
+  &:disabled {
+    color: var(--color-text-disabled);
+    cursor: not-allowed;
+  }
+}
+
+.app-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.app-calendar-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 600;
+
+  &:hover:not(:disabled) {
+    background: var(--color-grey-200);
+  }
+}
+
+.app-calendar-title-chevron {
+  color: var(--color-text-secondary);
+  transition: transform 0.2s ease;
+
+  &.rotated {
+    transform: rotate(180deg);
+  }
+}
+
+.app-calendar-arrows {
+  display: flex;
+  gap: 2px;
+}
+
+.app-calendar-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+
+  &:hover:not(:disabled) {
+    background: var(--color-grey-200);
+    color: var(--color-text-primary);
+  }
+}
+
+.app-calendar-months {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+
+.app-calendar-month {
+  width: 246px;
+
+  &:has(.app-calendar-week-number) {
+    width: 280px;
+  }
+}
+
+.app-calendar-month-title {
+  padding: 2px 0 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.app-calendar-days {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+
+  td {
+    padding: 1px 0;
+    text-align: center;
+    background-clip: content-box;
+  }
+
+  // A range: a light band under the days between its ends, starting and ending in the middle of the end days
+  .app-calendar-band {
+    background-color: rgba(var(--color-secondary-rgb), 0.14);
+  }
+
+  .app-calendar-band-start {
+    background-image: linear-gradient(to right, transparent 50%, rgba(var(--color-secondary-rgb), 0.14) 50%);
+  }
+
+  .app-calendar-band-end {
+    background-image: linear-gradient(to left, transparent 50%, rgba(var(--color-secondary-rgb), 0.14) 50%);
+  }
+}
+
+.app-calendar-weekday,
+.app-calendar-week-number {
+  height: 28px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.app-calendar-week-number {
+  width: 30px;
+  color: var(--color-text-disabled);
+  font-variant-numeric: tabular-nums;
+}
+
+.app-calendar-day {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  transition: background-color 0.1s ease;
+
+  &:hover:not([aria-disabled]) {
+    background: var(--color-grey-200);
+  }
+
+  &.app-calendar-day-outside {
+    color: var(--color-text-secondary);
+  }
+
+  &.app-calendar-day-today {
+    box-shadow: inset 0 0 0 1px var(--color-border-dark);
+  }
+
+  // On the range band the hover shows as a slightly stronger tint
+  &.app-calendar-day-in-range:hover:not([aria-disabled]) {
+    background: rgba(var(--color-secondary-rgb), 0.18);
+  }
+
+  &.app-calendar-day-selected,
+  &.app-calendar-day-selected:hover {
+    background: var(--color-action);
+    color: var(--color-action-contrast);
+    font-weight: 600;
+    box-shadow: none;
+  }
+
+  &[aria-disabled] {
+    color: var(--color-text-disabled);
+    text-decoration: line-through;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px rgba(var(--color-secondary-rgb), 0.5);
+  }
+
+  // A dayTemplate draws the day itself; the button only picks it
+  &.app-calendar-day-custom,
+  &.app-calendar-day-custom:hover {
+    width: 100%;
+    height: auto;
+    min-height: 32px;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font-weight: inherit;
+    text-decoration: none;
+    box-shadow: none;
+  }
+}
+
+.app-calendar-cells {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  width: 246px;
+}
+
+// The years scroll; their count follows ngb's year select (minDate/maxDate or 10 either side)
+.app-calendar-years {
+  position: relative;
+  max-height: 236px;
+  overflow-y: auto;
+}
+
+.app-calendar-month-cells {
+  grid-template-columns: repeat(3, 1fr);
+  padding: 8px 0;
+}
+
+.app-calendar-cell {
+  height: 36px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+
+  &:hover:not(:disabled) {
+    background: var(--color-grey-200);
+  }
+
+  &.app-calendar-cell-current {
+    box-shadow: inset 0 0 0 1px var(--color-border-dark);
+  }
+
+  &.app-calendar-cell-selected,
+  &.app-calendar-cell-selected:hover {
+    background: var(--color-action);
+    color: var(--color-action-contrast);
+    font-weight: 600;
+    box-shadow: none;
+  }
+}

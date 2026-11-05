@@ -5,7 +5,6 @@ import {ExportValidators} from '../../shared/ExportValidators';
 import {AutoLanguagePipe} from '../../../../shared/pipes/auto-language.pipe';
 import {ExportFilter} from '../../types/ExportFilter';
 import {ExportStrategy} from '../../types/ExportStrategy';
-import {CustomMaterialDateAdapter} from '../../../../shared/services/CustomDatepickerI18n';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {SHARED_IMPORTS} from '../../../../shared/shared-imports';
 import {ExportsTranslationPipe} from '../../i18n/exports.translation';
@@ -112,12 +111,7 @@ export class ExportFiltersComponent {
                 : ExportValidators[validator.key]
             ) as Array<ValidatorFn>;
 
-        let initialValue = filter.value;
-        if (filter.type === 'date' && filter.value) {
-            const dateValue = CustomMaterialDateAdapter.parseAppDateValue(filter.value);
-            if (dateValue) initialValue = dateValue;
-        }
-
-        return new FormControl(initialValue, { validators });
+        // As in the old admin: the stored value as it is; app-datepicker reads and gives dates as `{year, month, day}`
+        return new FormControl(filter.value, { validators });
     }
 }
