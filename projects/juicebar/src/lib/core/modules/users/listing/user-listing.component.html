@@ -3,24 +3,11 @@
 <div class="parent">
 
   <div class="listing-toolbar">
-    <div class="status-chips" role="group" [attr.aria-label]="'status' | translate">
-      @for (chip of statusChips; track chip) {
-        <button type="button" class="status-chip"
-                [class.active]="status() === chip"
-                [attr.aria-pressed]="status() === chip"
-                (click)="setStatus(chip)">
-          {{ chip | translate }}
-          @if (statusCounts(); as counts) {
-            <span class="status-chip-count">{{ counts[chip] }}</span>
-          }
-        </button>
-      }
-    </div>
-
     <filter-bar
       [filters]="filterConfigs()"
       (filterChanged)="onFilterChanged($event)"
-      (filterSearched)="onFilterSearched($event)">
+      (filterSearched)="onFilterSearched($event)"
+      (filterScrolledToEnd)="onFilterScrolledToEnd($event)">
     </filter-bar>
   </div>
 

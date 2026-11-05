@@ -3,6 +3,7 @@
         <app-form-field appearance="outline" style="width: 400px; padding-right: 24px">
             <app-label>{{'organisation' | translate}}</app-label>
             <app-select [value]="selectedOrganisation()"
+                        [searchable]="true"
                         (valueChange)="selectedOrganisation.set($event)"
                         (selectionChange)="organisationChanged()">
                 @for (org of organisations(); track org._id) {

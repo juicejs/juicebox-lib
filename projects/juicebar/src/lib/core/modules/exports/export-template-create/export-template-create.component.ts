@@ -153,7 +153,7 @@ export class ExportTemplateCreateComponent {
         if (form.invalid) return;
 
         this.promiseBtn.set((async () => {
-            const result = await this.exports.createExportTemplate(form.value);
+            const result = await this.exports.createExportTemplate(form.getRawValue());
             if (!result) return;
             if (result.success) {
                 this.juicebox.showToast('success', this.i18n.transform('export_template_created'));
@@ -187,7 +187,7 @@ export class ExportTemplateCreateComponent {
         const form = this.templateForm();
         form.get('columns')?.patchValue(this.selectedColumns().length ? this.selectedColumns().map(c => c.id) : null);
         this.sortable.set(this.selectedColumns().filter(column => column.sortable));
-        if (!this.sortable().find(column => column.id === form.value?.sort?.prop)) {
+        if (!this.sortable().find(column => column.id === form.getRawValue().sort?.prop)) {
             form.get('sort')?.reset();
         }
         this.updateSortControlsState();
@@ -221,7 +221,7 @@ export class ExportTemplateCreateComponent {
         const form = this.templateForm();
         form.get('columns')?.patchValue(this.selectedColumns().length ? this.selectedColumns().map(c => c.id) : null);
         this.sortable.set(this.selectedColumns().filter(column => column.sortable));
-        if (!this.sortable().find(column => column.id === form.value?.sort?.prop)) {
+        if (!this.sortable().find(column => column.id === form.getRawValue().sort?.prop)) {
             form.get('sort')?.reset();
         }
         this.updateSortControlsState();
@@ -235,6 +235,7 @@ export class ExportTemplateCreateComponent {
         this.columns.set([]);
         this.templateForm().get('columns')?.patchValue(this.selectedColumns().length ? this.selectedColumns().map(c => c.id) : null);
         this.sortable.set(newGroupSelected.filter(column => column.sortable));
+        this.updateSortControlsState();
     }
 
     deSelectAllGroupColumns(group: string) {
@@ -245,6 +246,7 @@ export class ExportTemplateCreateComponent {
         const form = this.templateForm();
         form.get('columns')?.patchValue(this.selectedColumns().length ? this.selectedColumns().map(c => c.id) : null);
         this.sortable.set(this.selectedColumns().filter(column => column.sortable));
+        this.updateSortControlsState();
     }
 
     onSortField(event: unknown) {
@@ -268,6 +270,7 @@ export class ExportTemplateCreateComponent {
                 const arr = [...this.selectedColumns()];
                 moveItemInArray(arr, event.previousIndex, event.currentIndex);
                 this.selectedColumns.set(arr);
+                this.onColumnSelected();
             } else {
                 const arr = [...this.columns()];
                 moveItemInArray(arr, event.previousIndex, event.currentIndex);
@@ -301,6 +304,7 @@ export class ExportTemplateCreateComponent {
                 const arr = [...sgc[group]];
                 moveItemInArray(arr, event.previousIndex, event.currentIndex);
                 this.selectedGroupColumns.update(prev => ({...prev, [group]: arr}));
+                this.onGroupColumnSelected();
             }
         } else {
             const fromAvailable = event.previousContainer.data === gc[group];
@@ -318,6 +322,7 @@ export class ExportTemplateCreateComponent {
         }
     }
 
+    /** The old readonly sort selects: disabled here, still sent, since create/save use getRawValue() */
     updateSortControlsState() {
         const form = this.templateForm();
         if (!form) return;
@@ -329,7 +334,7 @@ export class ExportTemplateCreateComponent {
             sortDirControl?.disable();
         } else {
             sortPropControl?.enable();
-            if (form.value?.sort?.prop) {
+            if (form.getRawValue().sort?.prop) {
                 sortDirControl?.enable();
             } else {
                 sortDirControl?.disable();

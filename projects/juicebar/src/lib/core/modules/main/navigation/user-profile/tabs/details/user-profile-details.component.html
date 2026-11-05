@@ -33,7 +33,7 @@
       </div>
 
       <div class="card-actions-row">
-        <button app-button appearance="raised" color="primary" type="button" (click)="saveUserDetails()">
+        <button app-button appearance="raised" color="primary" type="button" [promiseBtn]="updatePromise()" (click)="saveUserDetails()">
           {{ 'save' | translate }}
         </button>
       </div>
@@ -91,7 +91,7 @@
           <button app-button appearance="stroked" type="button" (click)="generateRandomPassword()">
             {{ 'generate_random' | translate }}
           </button>
-          <button app-button appearance="raised" color="primary" type="button" (click)="changePassword()">
+          <button app-button appearance="raised" color="primary" type="button" [promiseBtn]="updatePromise()" (click)="changePassword()">
             {{ 'pass_save' | translate }}
           </button>
         </div>
@@ -143,7 +143,7 @@
           <div class="field">
             <app-label class="field-label" for="profile-language">{{ 'default_language' | translate }}</app-label>
             <app-form-field controlId="profile-language" appearance="outline" class="field-control">
-              <app-select formControlName="language">
+              <app-select formControlName="language" [searchable]="true">
                 @for (lang of languages(); track lang.code) {
                   <app-option [value]="lang.code">{{ lang.name | translate }}</app-option>
                 }
@@ -156,7 +156,7 @@
           <div class="field">
             <app-label class="field-label" for="profile-country">{{ 'country_of_origin' | translate }}</app-label>
             <app-form-field controlId="profile-country" appearance="outline" class="field-control">
-              <app-select formControlName="country">
+              <app-select formControlName="country" [searchable]="true">
                 @for (country of countries(); track country.code) {
                   <app-option [value]="country.code">{{ country.name }}</app-option>
                 }
@@ -171,10 +171,11 @@
               {{ 'two_factor_authorisation_type' | translate }}
             </app-label>
             <app-form-field controlId="profile-twoFactor" appearance="outline" class="field-control">
-              <app-select formControlName="twoFactor"
-                          (click)="onOpen2FADropdown()"
+              <app-select #twoFactorSelect
+                          formControlName="twoFactor"
+                          [searchable]="true"
+                          (opened)="onOpen2FADropdown()"
                           (selectionChange)="on2FAChanged($event.value)">
-                <app-option [value]="''">—</app-option>
                 @for (type of twoFactorTypes(); track type.code ?? type) {
                   <app-option [value]="type.code ?? type">{{ (type.name ?? type) | translate }}</app-option>
                 }
@@ -195,7 +196,7 @@
         }
 
         <div class="card-actions-row">
-          <button app-button appearance="raised" color="primary" type="button" (click)="saveSettings()">
+          <button app-button appearance="raised" color="primary" type="button" [promiseBtn]="updatePromise()" (click)="saveSettings()">
             {{ 'save' | translate }}
           </button>
         </div>

@@ -341,7 +341,7 @@ export class LoginComponent implements OnInit {
                 message = this.autoLanguagePipe.transform(result.payload.options.message);
             }
             const dialogRef = this.dialog.open(WelcomeMessageComponent, { 
-                disableClose: true,
+                disableClose: true, closeOnEscape: false,
                 data: { message: message }
             });
             await lastValueFrom(dialogRef.closed, { defaultValue: undefined });

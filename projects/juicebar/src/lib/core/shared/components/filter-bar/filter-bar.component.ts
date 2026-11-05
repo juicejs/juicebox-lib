@@ -1,4 +1,4 @@
-import { Component, input, output, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy, signal, afterRenderEffect, ElementRef, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay';
 import { ButtonComponent, IconComponent } from '../../../../ui-components';
@@ -31,8 +31,34 @@ export class FilterBarComponent {
   filters = input<FilterConfig[]>([]);
   filterChanged = output<{ key: string, value: any }>();
   filterSearched = output<{ key: string, term: string }>();
+  /**
+   * The open filter's options reached their end (scrolled to it, or they don't fill the panel), e.g. to load the
+   * next page, as ng-select's scrollToEnd did. Emits the filter's key.
+   */
+  filterScrolledToEnd = output<string>();
 
   openKey = signal<string | null>(null);
+
+  /** The open filter's options list; only one filter is open at a time */
+  private readonly optionsList = viewChild<ElementRef<HTMLElement>>('optionsList');
+
+  constructor() {
+    // Options that don't fill the panel can't be scrolled, so their end is reported once they are shown
+    afterRenderEffect(() => {
+      this.filters();
+      const key = this.openKey();
+      const list = this.optionsList()?.nativeElement;
+      if (key && list) this.emitIfAtEnd(key, list);
+    });
+  }
+
+  protected onOptionsScroll(key: string, event: Event) {
+    this.emitIfAtEnd(key, event.target as HTMLElement);
+  }
+
+  private emitIfAtEnd(key: string, list: HTMLElement) {
+    if (list.scrollTop + list.clientHeight >= list.scrollHeight - 24) this.filterScrolledToEnd.emit(key);
+  }
 
   isOpen(key: string): boolean {
     return this.openKey() === key;

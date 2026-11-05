@@ -84,6 +84,11 @@ export interface BaseAppConfig {
   authenticator?: string;
   /** Privacy policy link on the login legal agreement: a global translation key or a URL (default 'cse_privacy_policy_link') */
   privacyPolicyLink?: string;
+  /**
+   * Language of the login page, and after login when neither the user, the project (`default_language`) nor the
+   * browser gives one; like `login_language` in the old juicebox setup.json (default 'de_DE')
+   */
+  loginLanguage?: string;
   /** Colours, logo, login picture and favicon of this project */
   theme?: JuicebarTheme;
   modules: ModuleConfig[];

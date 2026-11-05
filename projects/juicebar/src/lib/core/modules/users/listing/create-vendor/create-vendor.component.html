@@ -80,7 +80,7 @@
                 <div class="col-6">
                     <app-form-field appearance="outline" class="full-width">
                         <app-label>{{'country' | translate}}</app-label>
-                        <app-select formControlName="country" placeholder="{{'country' | translate}}">
+                        <app-select formControlName="country" [searchable]="true" [clearable]="true" placeholder="{{'country' | translate}}">
                             @for (country of countries; track country.code) {
                                 <app-option [value]="country.code">
                                     {{country.name}}

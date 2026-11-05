@@ -136,7 +136,7 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
 
     delete(org) {
         const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-            disableClose: true,
+            disableClose: true, closeOnEscape: false,
             data: {
                 subject: this.i18n.transform('organisation') + ": " + org.name,
                 action: this.i18n.transform('delete'),

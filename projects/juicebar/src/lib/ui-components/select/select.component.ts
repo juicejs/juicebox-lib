@@ -71,6 +71,8 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
    * Also when the options don't fill the panel, since a list that can't scroll never reaches its end otherwise.
    */
   scrolledToEnd = output<void>();
+  /** The panel opened, by mouse or keyboard (ng-select's `(open)`) */
+  opened = output<void>();
 
   /** The trigger button gets the form field's control id, so the field's app-label labels it */
   protected readonly triggerId = inject(FormFieldComponent, { optional: true })?.controlId;
@@ -201,6 +203,7 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
     this.setSearchQuery('');
     this.activateSelectedOrFirst();
     setTimeout(() => this.searchInput()?.nativeElement.focus(), 50);
+    this.opened.emit();
   }
 
   protected setSearchQuery(query: string) {

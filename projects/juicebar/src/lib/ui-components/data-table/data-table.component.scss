@@ -104,6 +104,14 @@
       border-bottom: none;
     }
   }
+
+  // No rows: the message ngx-datatable showed
+  td.dt-empty-cell {
+    color: var(--color-text-secondary);
+    text-align: center;
+
+    &:hover { background: transparent; }
+  }
 }
 
 // =============================================================================

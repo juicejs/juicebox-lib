@@ -94,6 +94,9 @@
     <tr cdk-header-row *cdkHeaderRowDef="columnKeys(); sticky: true"></tr>
     <tr cdk-row *cdkRowDef="let row; columns: ['__detail__']; when: isDetailRow" class="detail-row"></tr>
     <tr cdk-row *cdkRowDef="let row; columns: columnKeys(); when: isDataRow" class="clickable-row"></tr>
+    <tr *cdkNoDataRow>
+      <td class="dt-empty-cell" [attr.colspan]="columnKeys().length">{{ emptyMessage() }}</td>
+    </tr>
   </table>
 
   <app-paginator

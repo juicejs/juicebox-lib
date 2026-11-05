@@ -28,6 +28,8 @@
         <app-form-field appearance="outline" class="full-width">
             <app-label>{{'select_organisation' | translate}}</app-label>
             <app-select formControlName="organisation"
+                        [searchable]="true"
+                        [clearable]="true"
                         placeholder="{{'organisation' | translate}}">
                 @for (org of organisations(); track org._id) {
                     <app-option [value]="org._id">{{org.name}}</app-option>

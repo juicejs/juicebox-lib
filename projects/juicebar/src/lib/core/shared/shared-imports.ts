@@ -60,6 +60,7 @@ import { FilterContainerComponent } from './components/filter-container/filter-c
 import { PageSizeSelectorComponent } from './components/page-size-selector/page-size-selector.component';
 import { FilterBarComponent } from './components/filter-bar/filter-bar.component';
 import { TimeAgoPipe } from './pipes/time-ago.pipe';
+import { AutoLanguagePipe } from './pipes/auto-language.pipe';
 
 export const SHARED_IMPORTS = [
   HasPermissionDirective,
@@ -71,6 +72,7 @@ export const SHARED_IMPORTS = [
   DebounceKeyupDirective,
   PageSizeSelectorComponent,
   TimeAgoPipe,
+  AutoLanguagePipe,
   ReactiveFormsModule,
   FormsModule,
   // UI components

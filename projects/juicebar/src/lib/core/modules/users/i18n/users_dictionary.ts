@@ -2249,21 +2249,6 @@ export const usersDictionary = {
     "en_GB": "Must include country",
     "de_DE": "Muss Land enthalten"
   },
-  "all": {
-    "en_GB": "All",
-    "de_DE": "Alle",
-    "hr_HR": "Svi"
-  },
-  "inactive": {
-    "en_GB": "Inactive",
-    "de_DE": "Inaktiv",
-    "hr_HR": "Neaktivni"
-  },
-  "status": {
-    "en_GB": "Status",
-    "de_DE": "Status",
-    "hr_HR": "Status"
-  },
   "users_subtitle": {
     "en_GB": "Manage members, roles and access.",
     "de_DE": "Mitglieder, Rollen und Zugriffe verwalten.",
@@ -2336,5 +2321,13 @@ export const usersDictionary = {
     "en_GB": "You must include a key",
     "de_DE": "Sie müssen einen Schlüssel angeben",
     "hr_HR": "Morate unijeti ključ"
+  },
+  "protected": {
+    "en_GB": "Customer only visible for me",
+    "de_DE": "Kunde nur für mich sichtbar",
+    "ru_RU": "Клиент виден только для меня",
+    "da_DK": "Kunde kun synlig for mig.",
+    "sv_SE": "Kund endast synlig för mig",
+    "fi_FI": "Asiakas näkyy vain minulle"
   }
 }

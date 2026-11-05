@@ -31,6 +31,8 @@ export class GroupsModalComponent implements OnInit {
     protected readonly selectedGroup = signal<any>(null);
     protected readonly selectedRole = signal<string | null>(null);
     protected readonly hasVisibilityFeature = signal<boolean>(false);
+    /** As in the old editor: Add and the role delete buttons show the running request (only the pressed one spins) */
+    protected readonly promiseBtn = signal<Promise<unknown> | null>(null);
 
     protected readonly displayedColumns = computed(() =>
         this.hasVisibilityFeature()
@@ -58,7 +60,7 @@ export class GroupsModalComponent implements OnInit {
     }
 
     createGroup() {
-        const dialogRef = this.dialog.open(GroupsNameEditorComponent, { disableClose: true });
+        const dialogRef = this.dialog.open(GroupsNameEditorComponent, { disableClose: true, closeOnEscape: false });
         dialogRef.closed.subscribe(async res => {
             if (!res?.success) return;
             await this.getGroups();
@@ -67,7 +69,7 @@ export class GroupsModalComponent implements OnInit {
 
     updateSelectedGroup() {
         const dialogRef = this.dialog.open(GroupsNameEditorComponent, {
-            disableClose: true,
+            disableClose: true, closeOnEscape: false,
             data: { group: this.selectedGroup() }
         });
         dialogRef.closed.subscribe(async res => {
@@ -86,22 +88,24 @@ export class GroupsModalComponent implements OnInit {
         await this.refreshRoles(result.payload.roles);
     }
 
-    async addRole(): Promise<void> {
+    addRole(): void {
         const role = this.selectedRole();
         const group = this.selectedGroup();
         if (!role || !group) return;
 
-        const result = await this.userService.addRoleToGroup(group._id, role);
-        if (!result.success) {
-            this.juicebox.showToast('error', result.error);
-            return;
-        }
+        this.promiseBtn.set((async () => {
+            const result = await this.userService.addRoleToGroup(group._id, role);
+            if (!result.success) {
+                this.juicebox.showToast('error', result.error);
+                return;
+            }
 
-        this.juicebox.showToast('success', this.pipe.transform('success'), `${this.pipe.transform('successfully_added')} "${role}"`, { timeOut: 1000 });
-        this.selectedRole.set(null);
-        this.selectedGroup.set(result.payload);
-        this.rows.set(result.payload.roles);
-        await this.refreshRoles(result.payload.roles);
+            this.juicebox.showToast('success', this.pipe.transform('success'), `${this.pipe.transform('successfully_added')} "${role}"`, { timeOut: 1000 });
+            this.selectedRole.set(null);
+            this.selectedGroup.set(result.payload);
+            this.rows.set(result.payload.roles);
+            await this.refreshRoles(result.payload.roles);
+        })());
     }
 
     deleteRole(role: any) {
@@ -113,17 +117,19 @@ export class GroupsModalComponent implements OnInit {
                 destructive: true
             }
         });
-        dialogRef.closed.subscribe(async confirmed => {
+        dialogRef.closed.subscribe(confirmed => {
             if (!confirmed) return;
-            const result = await this.userService.deleteGroupRole(this.selectedGroup()._id, role);
-            if (!result.success) {
-                this.juicebox.showToast('error', result.error);
-                return;
-            }
-            this.selectedGroup.set(result.payload);
-            this.rows.set(result.payload.roles);
-            await this.refreshRoles(result.payload.roles);
-            this.juicebox.showToast('success', this.pipe.transform('success'), this.pipe.transform('successfully_deleted'), { timeOut: 1000 });
+            this.promiseBtn.set((async () => {
+                const result = await this.userService.deleteGroupRole(this.selectedGroup()._id, role);
+                if (!result.success) {
+                    this.juicebox.showToast('error', result.error);
+                    return;
+                }
+                this.selectedGroup.set(result.payload);
+                this.rows.set(result.payload.roles);
+                await this.refreshRoles(result.payload.roles);
+                this.juicebox.showToast('success', this.pipe.transform('success'), this.pipe.transform('successfully_deleted'), { timeOut: 1000 });
+            })());
         });
     }
 

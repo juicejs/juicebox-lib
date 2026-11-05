@@ -43,6 +43,8 @@
                 <div class="section-row">
                     <app-form-field appearance="outline" class="picker">
                         <app-select [value]="selectedRole()"
+                                    [searchable]="true"
+                                    [clearable]="true"
                                     (selectionChange)="selectedRole.set($event.value)"
                                     placeholder="{{ 'select_role' | translate }}…">
                             @for (role of roles(); track role.key) {
@@ -56,6 +58,7 @@
                     <button app-button appearance="raised" color="primary"
                             [disabled]="!selectedRole()"
                             [hasPermissions]="'groups:role#super-admin'"
+                            [promiseBtn]="promiseBtn()"
                             (click)="addRole()">
                         <app-icon [icon]="'add'"></app-icon>
                         {{ 'add_role' | translate }}
@@ -116,6 +119,7 @@
                                         <button [attr.aria-label]="'delete' | translate" app-button appearance="icon"
                                                 class="trash-btn"
                                                 [hasPermissions]="'groups:role#super-admin'"
+                                                [promiseBtn]="promiseBtn()"
                                                 [title]="'delete' | translate"
                                                 (click)="deleteRole(row)">
                                             <app-icon [icon]="'delete'"></app-icon>

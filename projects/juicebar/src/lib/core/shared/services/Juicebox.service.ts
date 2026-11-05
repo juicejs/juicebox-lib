@@ -9,6 +9,7 @@ import { IJuiceboxExtensions } from '../models/searchprovider.interface';
 import { switchMap } from 'rxjs/operators';
 import { ActionButton } from '../types/ActionButton';
 import { Result } from '../types/Result';
+import { BASE_APP_CONFIG } from '../../../config/base-app.config';
 
 export interface PageHeader {
     scope?: string;
@@ -67,6 +68,7 @@ export class JuiceboxService {
     private juice = inject(Juice);
     private document = inject(DOCUMENT);
     private injector = inject(Injector);
+    private appConfig = inject(BASE_APP_CONFIG, { optional: true });
 
     constructor() {
         this.juice.addEventListener((e) => {
@@ -168,33 +170,25 @@ export class JuiceboxService {
         return !!user;
     }
 
+    /**
+     * As in the old juicebox: every load starts in the login language (`loginLanguage`, setup.json's login_language
+     * there, default German). A logged-in user then gets their own language, the project's `default_language` or a
+     * supported browser language, in that order; the result must be one of `options.languages`, otherwise the first.
+     */
     private resolveLanguage(): void {
-        const userLanguage = this.getUserLanguage();
-        if (userLanguage) {
-            this.setLanguage(userLanguage);
-            return;
-        }
+        this.setLanguage(this.appConfig?.loginLanguage || 'de_DE');
+        if (!this.getUser()) return;
 
         const options = this.getOptions();
-        if (options?.default_language) {
-            this.setLanguage(options.default_language);
-            return;
-        }
-
-        const stored = localStorage.getItem('language');
-        if (stored) {
-            this.setLanguage(stored);
-            return;
-        }
-
         const browserLanguage = navigator.language.split('-')[0];
-        const supported = this.getAllSystemLanguages().find(l => l.includes(browserLanguage));
-        if (supported) {
-            this.setLanguage(supported);
-            return;
-        }
+        const supportedBrowserLanguage = this.getAllSystemLanguages().find(l => l.includes(browserLanguage));
+        const language = this.getUserLanguage() || options?.default_language || supportedBrowserLanguage;
+        if (language) this.setLanguage(language);
 
-        this.setLanguage('en_GB');
+        const offered: Array<{ code: string }> = options?.languages ?? [];
+        if (offered.length && !offered.some(offeredLanguage => offeredLanguage.code === this.getLanguage())) {
+            this.setLanguage(offered[0].code);
+        }
     }
 
     public pleaseExtendYourServiceDontDoThis(): Juice {

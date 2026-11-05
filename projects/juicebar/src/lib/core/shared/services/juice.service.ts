@@ -72,10 +72,10 @@ export class Juice {
                     this.eventListener(err.error);
                     resolve(false);
                 } else if (err.status === 413) {
-                    this._snackBar.open(err.message, 'Close', 5000);
+                    this._snackBar.open(err.message, undefined, { type: 'error' });
                     resolve(false);
                 } else if (err.status == 0){
-                    this._snackBar.open(err.message, 'Close', 5000);
+                    this._snackBar.open(err.message, undefined, { type: 'error' });
                     resolve(false);
                 }
                 reject(err);
@@ -105,7 +105,7 @@ export class Juice {
                 resolve(data.body);
             }, err => {
                 if (err.status === 413) {
-                    this._snackBar.open(err.message, 'Close', 5000);
+                    this._snackBar.open(err.message, undefined, { type: 'error' });
                     throw new Error(err.message);
                 }
                 reject(err);

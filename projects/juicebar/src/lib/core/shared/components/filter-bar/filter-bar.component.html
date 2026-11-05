@@ -36,7 +36,7 @@
                    (input)="onFilterSearch(filter.key, $any($event.target).value)" />
           </div>
 
-          <div class="filter-options-list">
+          <div #optionsList class="filter-options-list" (scroll)="onOptionsScroll(filter.key, $event)">
             <button class="filter-option filter-option-clear" type="button"
                     (click)="onFilterSelected(filter.key, null)">
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h10M5 6v7a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V6M6 6V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"/></svg>

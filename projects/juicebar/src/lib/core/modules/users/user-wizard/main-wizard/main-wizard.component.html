@@ -15,7 +15,7 @@
                             <span class="field-opt">Optional</span>
                         </app-label>
                         <app-form-field controlId="new-user-salutation" appearance="outline" class="field-control">
-                            <app-select formControlName="salutation" [clearable]="true" placeholder="{{ 'salutation' | translate }}">
+                            <app-select formControlName="salutation" [clearable]="true" [searchable]="true" placeholder="{{ 'salutation' | translate }}">
                                 @for (salutation of salutations; track salutation.key) {
                                     <app-option [value]="salutation.key">{{ salutation.name }}</app-option>
                                 }
@@ -29,7 +29,7 @@
                     <div class="field">
                         <app-label class="field-label" for="new-user-language">{{ 'language' | translate }}</app-label>
                         <app-form-field controlId="new-user-language" appearance="outline" class="field-control">
-                            <app-select formControlName="language">
+                            <app-select formControlName="language" [searchable]="true">
                                 @for (language of languages; track language.code) {
                                     <app-option [value]="language.code">{{ language.name }}</app-option>
                                 }

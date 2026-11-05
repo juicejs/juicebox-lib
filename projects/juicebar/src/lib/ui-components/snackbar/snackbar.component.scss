@@ -23,6 +23,8 @@
 app-snackbar {
   display: block;
   pointer-events: auto;
+  // A click anywhere on the toast dismisses it, as ngx-toastr's tapToDismiss did
+  cursor: pointer;
   animation: app-snackbar-enter 200ms cubic-bezier(.2, .8, .2, 1);
 
   &.app-snackbar-entered {

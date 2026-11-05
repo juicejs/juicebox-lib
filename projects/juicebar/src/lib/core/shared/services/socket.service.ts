@@ -58,7 +58,7 @@ export class SocketService {
   private registerDefaultEvents() {
     this.on('connect', () => this._connected.next(true));
     this.on('disconnect', () => this._connected.next(false));
-    this.on('message', (msg) => this.snackBar.open(msg, 'Close', 5000));
+    this.on('message', (msg) => this.snackBar.open(msg, undefined, { type: 'info' }));
   }
 
 

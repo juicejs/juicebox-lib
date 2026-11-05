@@ -10,6 +10,9 @@ export interface SnackbarConfig {
 
 /** Length of the leave animation in snackbar.component.scss */
 const LEAVE_MS = 150;
+/** ngx-toastr's defaults in the old juicebox: timeOut 5000, extendedTimeOut 1000 */
+const DEFAULT_DURATION_MS = 5000;
+const AFTER_HOVER_MS = 1000;
 
 @Injectable({
   providedIn: 'root'
@@ -19,9 +22,12 @@ export class SnackbarService {
   private injector = inject(EnvironmentInjector);
   private container?: HTMLElement;
 
-  /** `config` may be a plain duration in milliseconds. */
+  /**
+   * `config` may be a plain duration in milliseconds. As ngx-toastr did: a click on the toast dismisses it, and
+   * hovering keeps it open until a second after the mouse leaves.
+   */
   open(message: string, action?: string, config: number | SnackbarConfig = {}) {
-    const { duration = 3000, type, title } = typeof config === 'number' ? { duration: config } : config;
+    const { duration = DEFAULT_DURATION_MS, type, title } = typeof config === 'number' ? { duration: config } : config;
 
     const componentRef = createComponent(SnackbarComponent, {
       environmentInjector: this.injector
@@ -58,8 +64,14 @@ export class SnackbarService {
     };
 
     componentRef.instance.dismissed.subscribe(close);
+    element.addEventListener('click', close);
     if (duration > 0) {
       timeoutId = setTimeout(close, duration);
+      element.addEventListener('mouseenter', () => clearTimeout(timeoutId));
+      element.addEventListener('mouseleave', () => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(close, AFTER_HOVER_MS);
+      });
     }
 
     return componentRef.instance;

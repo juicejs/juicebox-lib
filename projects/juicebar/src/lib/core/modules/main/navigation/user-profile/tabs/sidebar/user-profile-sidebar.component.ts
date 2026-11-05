@@ -3,7 +3,8 @@ import { SidebarUserComponent } from '../../../../../users/details/sidebar-user/
 
 @Component({
   selector: 'app-user-profile-sidebar',
-  template: `<app-sidebar-user context="user-profile"></app-sidebar-user>`,
+  // As in the old profile: users can reorder their sidebar here, not hide modules
+  template: `<app-sidebar-user context="user-profile" [allowHidden]="false"></app-sidebar-user>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [SidebarUserComponent]
 })

@@ -50,6 +50,9 @@ export class ConfirmationDialogComponent implements OnInit {
         public dialogRef: DialogRef<boolean>,
         @Inject(DIALOG_DATA) public data: ConfirmationDialogData
     ) {
+        // Opened without `data` (the CDK passes null): the default "Are you sure?" question
+        data ??= {};
+        this.data = data;
         // Set properties from injected data
         this.action = data.action;
         this.message = data.message;

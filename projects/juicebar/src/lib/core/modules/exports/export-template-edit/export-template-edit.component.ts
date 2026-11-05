@@ -108,6 +108,8 @@ export class ExportTemplateEditComponent {
                 organisation_id: this.juicebox.getUserOrganisationId()
             })
         }));
+        // As the old readonly bindings: no sort column without sortable columns, no direction without a sort column
+        this.updateSortControlsState();
     }
 
     private async getData() {
@@ -218,7 +220,7 @@ export class ExportTemplateEditComponent {
         if (form.invalid) return;
 
         this.promiseBtn.set((async () => {
-            const result = await this.exports.editExportTemplate(this.exportTemplateId(), form.value);
+            const result = await this.exports.editExportTemplate(this.exportTemplateId(), form.getRawValue());
             if (!result) return;
             if (result.success) {
                 this.juicebox.showToast("success", this.i18n.transform('template_saved'));
@@ -248,7 +250,7 @@ export class ExportTemplateEditComponent {
         const form = this.templateForm();
         form.get('columns').patchValue(this.selectedColumns().length ? this.selectedColumns().map(c => c.id) : null);
         this.sortable.set(this.selectedColumns().filter(column => column.sortable));
-        if (!this.sortable().find(column => column.id === form.value?.sort?.prop)) {
+        if (!this.sortable().find(column => column.id === form.getRawValue().sort?.prop)) {
             form.get('sort').reset();
         }
         this.updateSortControlsState();
@@ -282,7 +284,7 @@ export class ExportTemplateEditComponent {
         const form = this.templateForm();
         form.get('columns').patchValue(this.selectedColumns().length ? this.selectedColumns().map(c => c.id) : null);
         this.sortable.set(this.selectedColumns().filter(column => column.sortable));
-        if (!this.sortable().find(column => column.id === form.value?.sort?.prop)) {
+        if (!this.sortable().find(column => column.id === form.getRawValue().sort?.prop)) {
             form.get('sort').reset();
         }
         this.updateSortControlsState();
@@ -296,6 +298,7 @@ export class ExportTemplateEditComponent {
         this.columns.set([]);
         this.templateForm().get('columns').patchValue(this.selectedColumns().length ? this.selectedColumns().map(c => c.id) : null);
         this.sortable.set(newGroupSelected.filter(column => column.sortable));
+        this.updateSortControlsState();
     }
 
     deSelectAllGroupColumns(group: string) {
@@ -306,6 +309,7 @@ export class ExportTemplateEditComponent {
         const form = this.templateForm();
         form.get('columns').patchValue(this.selectedColumns().length ? this.selectedColumns().map(c => c.id) : null);
         this.sortable.set(this.selectedColumns().filter(column => column.sortable));
+        this.updateSortControlsState();
     }
 
     onSortField(event: unknown) {
@@ -329,6 +333,7 @@ export class ExportTemplateEditComponent {
                 const arr = [...this.selectedColumns()];
                 moveItemInArray(arr, event.previousIndex, event.currentIndex);
                 this.selectedColumns.set(arr);
+                this.onColumnSelected();
             } else {
                 const arr = [...this.columns()];
                 moveItemInArray(arr, event.previousIndex, event.currentIndex);
@@ -362,6 +367,7 @@ export class ExportTemplateEditComponent {
                 const arr = [...sgc[group]];
                 moveItemInArray(arr, event.previousIndex, event.currentIndex);
                 this.selectedGroupColumns.update(prev => ({...prev, [group]: arr}));
+                this.onGroupColumnSelected();
             }
         } else {
             const fromAvailable = event.previousContainer.data === gc[group];
@@ -379,6 +385,7 @@ export class ExportTemplateEditComponent {
         }
     }
 
+    /** The old readonly sort selects: disabled here, still sent, since create/save use getRawValue() */
     updateSortControlsState() {
         const form = this.templateForm();
         const sortPropControl = form.get(['sort', 'prop']);
@@ -389,7 +396,7 @@ export class ExportTemplateEditComponent {
             sortDirControl?.disable();
         } else {
             sortPropControl?.enable();
-            if (form.value?.sort?.prop) {
+            if (form.getRawValue().sort?.prop) {
                 sortDirControl?.enable();
             } else {
                 sortDirControl?.disable();

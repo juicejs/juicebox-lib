@@ -1,8 +1,7 @@
-@if (title) {
-  <app-dialog-title>
-    <span [innerHTML]="title"></span>
-  </app-dialog-title>
-}
+<!-- As in the old juicebox: the header and its × always show, with or without a title -->
+<app-dialog-title>
+  <span [innerHTML]="title || ''"></span>
+</app-dialog-title>
 
 <app-dialog-content>
   <p class="dialog-message" [innerHTML]="(completeMessage ?  (excludeQuestionMark ? completeMessage : completeMessage + '?') :  (message || ('are_you_sure' | translate)) + ' ' + (action || '') + ' ' + (subject || '') + '?')"></p>

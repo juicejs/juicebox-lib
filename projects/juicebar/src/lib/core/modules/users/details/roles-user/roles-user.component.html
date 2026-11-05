@@ -35,6 +35,8 @@
         <div class="toolbar-right">
             <app-form-field appearance="outline" class="role-picker">
                 <app-select [value]="selectedRole()"
+                            [searchable]="true"
+                            [clearable]="true"
                             (selectionChange)="selectedRole.set($event.value)"
                             placeholder="{{ 'add_role' | translate }}…">
                     @for (role of availableRoles(); track role.key) {

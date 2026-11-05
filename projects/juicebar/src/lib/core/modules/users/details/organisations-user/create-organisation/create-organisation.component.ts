@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogRef } from '@angular/cdk/dialog';
 import { UsersService } from '../../../users.service';
@@ -22,7 +22,7 @@ import { SHARED_IMPORTS } from '../../../../../shared/shared-imports';
         UserTranslationPipe
     ]
 })
-export class CreateOrganisationComponent {
+export class CreateOrganisationComponent implements OnInit {
 
     private dialogRef = inject<DialogRef<any>>(DialogRef);
     private usersService = inject(UsersService);
@@ -42,21 +42,32 @@ export class CreateOrganisationComponent {
         street2: new FormControl(''),
         postcode: new FormControl(''),
         city: new FormControl(''),
-        country: new FormControl('')
+        country: new FormControl(''),
+        // The old entity wizard's "protected" switch
+        protected: new FormControl(false)
     });
+
+    /** As in the old entity wizard: entities:juicebox:settings can switch "protected" on by default */
+    async ngOnInit() {
+        const result = await this.configurationService.getByKey('entities:juicebox:settings');
+        const defaultProtected = result?.payload?.options?.default_protected_value;
+        if (defaultProtected !== null && defaultProtected !== undefined) {
+            this.form.controls.protected.setValue(!!defaultProtected);
+        }
+    }
 
     create() {
         this.form.markAllAsTouched();
         if (this.form.invalid) return;
 
         this.promiseBtn = (async () => {
-            const { street, street2, postcode, city, country, ...fields } = this.form.getRawValue();
+            const { street, street2, postcode, city, country, protected: isProtected, ...fields } = this.form.getRawValue();
             const data: any = {
                 ...fields,
                 type: 'organisation',
                 address: { type: 'business', name: fields.name, street, street2, postcode, city, country }
             };
-            if (await this.isProtectedByDefault()) data.protected = true;
+            if (isProtected) data.protected = true;
 
             const result = await this.usersService.createEntity(data);
             if (!result?.success) {
@@ -76,9 +87,4 @@ export class CreateOrganisationComponent {
         this.dialogRef.close();
     }
 
-    /** As in the old entity wizard: entities:juicebox:settings can make new entities protected */
-    private async isProtectedByDefault(): Promise<boolean> {
-        const result = await this.configurationService.getByKey('entities:juicebox:settings');
-        return !!result?.payload?.options?.default_protected_value;
-    }
 }

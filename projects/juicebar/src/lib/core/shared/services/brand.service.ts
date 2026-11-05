@@ -17,9 +17,13 @@ export class BrandService {
   /** Picture behind the login card, if the project has one */
   readonly loginImage = this.theme?.loginImage ?? null;
 
-  /** Sidebar logo: the user's organisation logo when they have one, as in the old juicebox */
+  /**
+   * Sidebar logo: the user's organisation logo when they have one, as in the old juicebox, which stores the path
+   * without its ".png"
+   */
   sidebarLogo(): string {
-    return this.juicebox.getUser()?.attributes?.organisationLogo || this.logo;
+    const organisationLogo = this.juicebox.getUser()?.attributes?.organisationLogo;
+    return organisationLogo ? organisationLogo + '.png' : this.logo;
   }
 
   /** Runs once at startup: the brand colour's shades and the favicon */

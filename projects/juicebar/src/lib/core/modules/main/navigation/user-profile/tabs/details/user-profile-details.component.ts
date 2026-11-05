@@ -1,8 +1,8 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, signal, viewChild } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, Validators, ReactiveFormsModule } from '@angular/forms';
 import { JuiceboxService } from '../../../../../../shared/services/Juicebox.service';
 import { UsersService } from '../../../../../users/users.service';
-import { DialogService } from '../../../../../../../ui-components';
+import { DialogService, SelectComponent } from '../../../../../../../ui-components';
 import { ConfirmationDialogComponent } from '../../../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { TotpTwoFaModalComponent, TotpDialogData } from '../../components/totp-two-fa-modal/totp-two-fa-modal.component';
 import { MainTranslationPipe } from '../../../../i18n/main.translation';
@@ -44,6 +44,9 @@ export class UserProfileDetailsComponent implements OnInit {
   protected readonly countries = signal<Array<any>>([]);
   protected readonly randomPassword = signal<string>('');
   protected readonly twoFactorApproved = signal<boolean>(false);
+  /** As in the old profile: the Details, Password and Settings saves share one running request (only the pressed button spins) */
+  protected readonly updatePromise = signal<Promise<unknown> | null>(null);
+  private readonly twoFactorSelect = viewChild<SelectComponent>('twoFactorSelect');
 
   readonly detailsForm = new FormGroup({
     firstname: new FormControl(''),
@@ -117,52 +120,59 @@ export class UserProfileDetailsComponent implements OnInit {
     this.passwordForm.patchValue({ password: generated, repeatPassword: generated });
   }
 
-  async saveUserDetails() {
+  saveUserDetails() {
     this.detailsForm.markAllAsTouched();
     if (this.detailsForm.invalid) return;
 
-    const result = await this.juicebox.updateUser(this.detailsForm.getRawValue() as any);
-    if (result.success) {
-      this.detailsForm.markAsPristine();
-      this.juicebox.showToast('success', this.i18n.transform('user_details_saved'));
-      window.location.reload();
-    } else if (result.error) {
-      this.juicebox.showToast('error', this.i18n.transform(result.error));
-    }
+    this.updatePromise.set((async () => {
+      // As in the old profile: the form's value, so the (disabled) email is not sent
+      const result = await this.juicebox.updateUser(this.detailsForm.value as any);
+      if (result.success) {
+        this.detailsForm.markAsPristine();
+        this.juicebox.showToast('success', this.i18n.transform('user_details_saved'));
+        window.location.reload();
+      } else if (result.error) {
+        this.juicebox.showToast('error', this.i18n.transform(result.error));
+      }
+    })());
   }
 
-  async changePassword() {
+  changePassword() {
     this.passwordForm.markAllAsTouched();
     if (this.passwordForm.invalid) return;
 
-    const result = await this.juicebox.updatePassword(
-      this.passwordForm.value.password,
-      this.passwordForm.value.currentPassword
-    );
-    if (result.success) {
-      this.passwordForm.reset();
-      this.randomPassword.set('');
-      this.juicebox.showToast('success', this.i18n.transform('password_changed'));
-    } else {
-      this.juicebox.showToast('error', this.i18n.transform('password_change_failed'));
-    }
+    this.updatePromise.set((async () => {
+      const result = await this.juicebox.updatePassword(
+        this.passwordForm.value.password,
+        this.passwordForm.value.currentPassword
+      );
+      if (result.success) {
+        this.passwordForm.reset();
+        this.randomPassword.set('');
+        this.juicebox.showToast('success', this.i18n.transform('password_changed'));
+      } else {
+        this.juicebox.showToast('error', this.i18n.transform('password_change_failed'));
+      }
+    })());
   }
 
-  async saveSettings() {
+  saveSettings() {
     this.settingsForm.markAllAsTouched();
     if (this.settingsForm.invalid) return;
 
-    const u = this.user();
-    const result = await this.juicebox.saveUserSettings(u._id, this.settingsForm.value);
-    if (result.success) {
-      this.settingsForm.markAsPristine();
-      this.juicebox.showToast('success', this.i18n.transform('user_settings_saved'));
-      const fresh = await this.usersService.getUser(u._id);
-      this.user.set(fresh.payload);
-      window.location.reload();
-    } else {
-      this.juicebox.showToast('error', this.i18n.transform('user_settings_not_saved'));
-    }
+    this.updatePromise.set((async () => {
+      const u = this.user();
+      const result = await this.juicebox.saveUserSettings(u._id, this.settingsForm.value);
+      if (result.success) {
+        this.settingsForm.markAsPristine();
+        this.juicebox.showToast('success', this.i18n.transform('user_settings_saved'));
+        const fresh = await this.usersService.getUser(u._id);
+        this.user.set(fresh.payload);
+        window.location.reload();
+      } else {
+        this.juicebox.showToast('error', this.i18n.transform('user_settings_not_saved'));
+      }
+    })());
   }
 
   async setWalletAddress() {
@@ -170,9 +180,14 @@ export class UserProfileDetailsComponent implements OnInit {
     await this.juicebox.updateUser({ wallet: u.wallet } as any);
   }
 
+  /**
+   * As in the old profile (ng-select `(open)`, by mouse or keyboard): a user who already has 2FA confirms its reset
+   * first; the select stays closed until then and opens again afterwards
+   */
   onOpen2FADropdown() {
     if (this.twoFactorApproved()) return;
 
+    this.twoFactorSelect()?.close();
     const u = this.user();
     if (u?.attributes?.settings?.twoFactor) {
       const dialogRef = this.dialog.open<ConfirmationDialogComponent, any, boolean>(ConfirmationDialogComponent, {
@@ -192,6 +207,7 @@ export class UserProfileDetailsComponent implements OnInit {
         const fresh = await this.usersService.getUser(u._id);
         this.user.set(fresh.payload);
         this.twoFactorApproved.set(true);
+        this.twoFactorSelect()?.open();
       });
     }
   }
@@ -200,7 +216,7 @@ export class UserProfileDetailsComponent implements OnInit {
     if (twoFA !== 'totp') return;
 
     const dialogRef = this.dialog.open<TotpTwoFaModalComponent, TotpDialogData, { success: boolean }>(TotpTwoFaModalComponent, {
-      disableClose: true,
+      disableClose: true, closeOnEscape: false,
       data: { user: this.user() }
     });
     dialogRef.closed.subscribe(res => {

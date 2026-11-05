@@ -10,6 +10,7 @@ import {ExportStrategy} from '../../types/ExportStrategy';
 import {ExportsService} from '../../exports.service';
 import {Result} from '../../../../shared/types/Result';
 import {SHARED_IMPORTS} from '../../../../shared/shared-imports';
+import {exportFilterValues} from '../export-filters/export-filter-values';
 
 let nextId = 0;
 
@@ -41,7 +42,8 @@ export class AsyncMultiselectComponent implements OnInit {
     private readonly PAGE_SIZE = 20;
 
     private initialLoad = true;
-    private readonly input$ = new Subject<string>();
+    /** Search terms, as ng-select's typeahead gave them: '' clears the options, null (after a pick) requests them again */
+    private readonly input$ = new Subject<string | null>();
 
     readonly loading = signal(false);
     /** Options of the last request */
@@ -122,8 +124,9 @@ export class AsyncMultiselectComponent implements OnInit {
         return this.formGroup().get(this.filter().id);
     }
 
-    private getFilterOptions(term: string, page: number, initialData = false) {
-        const allValues = Object.entries(this.formGroup().getRawValue())
+    private getFilterOptions(term: string | null, page: number, initialData = false) {
+        // All filter values, disabled ones included, with dates as {year, month, day} (as the old admin sent them)
+        const allValues = Object.entries(exportFilterValues(this.formGroup(), true))
             .map(([id, value]) => ({id, value}));
 
         return this.exportsService.getFilterOptions(
@@ -169,7 +172,7 @@ export class AsyncMultiselectComponent implements OnInit {
         this.clearSearch();
     }
 
-    /** Leaving the field or picking an option clears the search and the options, as the old one did */
+    /** Leaving the field clears the search and the options, as the old one did */
     private clearSearch(): void {
         this.searchTerm.set('');
         this.input$.next('');
@@ -211,13 +214,24 @@ export class AsyncMultiselectComponent implements OnInit {
         }
     }
 
-    /** Clicking an option selects it, or unselects it when it is already selected (as in ng-select) */
+    /**
+     * Clicking an option selects it, or unselects it when it is already selected, as ng-select 8 did:
+     * unselecting keeps the panel open and the search as it is; selecting clears a typed search, which requests
+     * the options again with no term (typeahead null), and closes the panel. Without a typed search the options stay.
+     */
     toggle(item: FilterOptions): void {
         if (this.disabled()) return;
         const ids = this.selectedIds();
-        this.setSelection(ids.includes(item.id) ? ids.filter(id => id !== item.id) : [...ids, item.id]);
+        if (ids.includes(item.id)) {
+            this.setSelection(ids.filter(id => id !== item.id));
+            return;
+        }
+        this.setSelection([...ids, item.id]);
+        if (this.searchTerm()) {
+            this.searchTerm.set('');
+            this.input$.next(null);
+        }
         this.open.set(false);
-        this.clearSearch();
     }
 
     removeItem(id: string): void {

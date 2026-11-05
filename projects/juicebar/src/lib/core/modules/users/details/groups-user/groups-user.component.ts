@@ -301,7 +301,7 @@ export class GroupsUserComponent extends ListingComponent {
         const names = [...new Set(removals.map(({ groupKey }) =>
             this.allGroups().find(group => group.key === groupKey)?.name ?? groupKey))];
         const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-            disableClose: true,
+            disableClose: true, closeOnEscape: false,
             data: {
                 subject: `${this.pipe.transform('groups')}: ${names.join(', ')}`,
                 action: this.pipe.transform('remove'),

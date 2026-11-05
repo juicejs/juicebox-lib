@@ -5,7 +5,6 @@ import {UsersService} from '../../../users.service';
 import {UserTranslationPipe} from '../../../i18n/user.translation';
 import {JuiceboxService} from '../../../../../shared/services/Juicebox.service';
 import {SHARED_IMPORTS} from '../../../../../shared/shared-imports';
-import {SnackbarService} from '../../../../../../ui-components';
 
 @Component({
     selector: 'app-groups-name-editor',
@@ -29,7 +28,6 @@ export class GroupsNameEditorComponent implements OnInit {
     private dialogRef = inject<DialogRef<any>>(DialogRef);
     public data = inject<{ group?: any }>(DIALOG_DATA);
     private userService = inject(UsersService);
-    private snackbar = inject(SnackbarService);
     private pipe = inject(UserTranslationPipe);
     public juicebox = inject(JuiceboxService);
 
@@ -57,10 +55,10 @@ export class GroupsNameEditorComponent implements OnInit {
             if (!this.group) {
                 result = await this.userService.createGroup(data);
                 if (!result.success) {
-                    this.snackbar.open(`Error: ${result.error}`, 'error');
+                    this.juicebox.showToast('error', result.error);
                     return false;
                 }
-                this.snackbar.open(`Success: ${this.pipe.transform('successfully_created')} "${data.name}"`, 'success');
+                this.juicebox.showToast('success', this.pipe.transform('success'), `${this.pipe.transform('successfully_created')} "${data.name}"`, { timeOut: 1000 });
             }
             //Update existing group
             else {
@@ -69,10 +67,10 @@ export class GroupsNameEditorComponent implements OnInit {
                 updateData.superAdmin = !!this.groupForm.controls['superAdmin'].value;
                 result = await this.userService.updateGroup(updateData);
                 if (!result.success) {
-                    this.snackbar.open(`Error: ${result.error}`, 'error');
+                    this.juicebox.showToast('error', result.error);
                     return false;
                 }
-                this.snackbar.open(`Success: ${this.pipe.transform('successfully_updated')} "${data.name}"`, 'success');
+                this.juicebox.showToast('success', this.pipe.transform('success'), `${this.pipe.transform('successfully_updated')} "${data.name}"`, { timeOut: 1000 });
             }
 
             this.dialogRef.close({ success: true });

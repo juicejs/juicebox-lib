@@ -1,5 +1,6 @@
 export interface FilterFetcherOptions {
-    term: string,
+    /** null after an option was picked from a search, as ng-select's typeahead sent it in the old admin */
+    term: string | null,
     language: string,
     page: number,
     pageSize: number,

@@ -107,11 +107,17 @@ export class MainWizardComponent implements OnInit {
         }
 
         this.promiseBtn = (async () => {
-            const result = await this.userService.createUser({ ...this.userForm.value, redirect_url: window.location.protocol + '//' + window.location.host });
+            // As in the old wizard, entity_id is only sent for a user created from a trainee
+            const { entity_id, ...fields } = this.userForm.value;
+            const result = await this.userService.createUser({
+                ...fields,
+                ...(entity_id ? { entity_id } : {}),
+                redirect_url: window.location.protocol + '//' + window.location.host
+            });
             if (result.success) {
                 this.userForm.markAsPristine();
                 this.juicebox.showToast('success', this.i18n.transform('user_profile_created'));
-                await this.router.navigate(['/main/users/details/' + result.payload._id + '/details-user']);
+                await this.router.navigate(['/main/users']);
             } else {
                 this.juicebox.showToast('error', this.i18n.transform(result.error));
             }

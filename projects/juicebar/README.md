@@ -35,6 +35,7 @@ provideJuicebar(
     appName: 'Stoked admin',
     authenticator: 'juicebox:cse:user', // optional login authenticator
     privacyPolicyLink: 'https://…',     // optional; translation key or URL
+    loginLanguage: 'de_DE',             // optional; login page language (setup.json's login_language), default de_DE
     theme: { primary: '#243088' },      // optional; see Theme below
     mainRoutes: [                        // project modules inside the shell
       {

@@ -191,8 +191,10 @@
                     <app-label>{{'sort_column' | translate}}</app-label>
                     <app-select formControlName="prop"
                                 (selectionChange)="onSortField($event.value)"
-                                placeholder="{{ 'sort_column' | translate }}">
-                        <app-option [value]="null">{{'clear_selection' | translate}}</app-option>
+                                [clearable]="true"
+                                [searchable]="true"
+                                placeholder="{{ 'sort_column' | translate }}"
+                                searchPlaceholder="{{ 'search' | translate }}">
                         @for (column of sortable(); track column.id) {
                             <app-option [value]="column.id">{{column.label | autoLanguage}}</app-option>
                         }
@@ -202,7 +204,9 @@
                 <app-form-field appearance="outline" class="sort-direction">
                     <app-label>{{'sort_direction' | translate}}</app-label>
                     <app-select formControlName="dir"
-                                placeholder="{{ 'sort_direction' | translate }}">
+                                [searchable]="true"
+                                placeholder="{{ 'sort_direction' | translate }}"
+                                searchPlaceholder="{{ 'search' | translate }}">
                         <app-option value="asc">{{'ascending' | translate}}</app-option>
                         <app-option value="desc">{{'descending' | translate}}</app-option>
                     </app-select>

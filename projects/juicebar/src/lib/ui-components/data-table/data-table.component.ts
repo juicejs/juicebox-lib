@@ -38,6 +38,8 @@ export class DataTableComponent {
   selectable = input<boolean>(false);
   /** Translated label for the paginator's page size control */
   rowsPerPageLabel = input('Rows per page');
+  /** Shown when there are no rows, as ngx-datatable's "No data to display" was */
+  emptyMessage = input('No data to display');
   idKey = input<string>('_id');
   clearAriaLabel = input<string>('Clear selection');
   /** Translated label of a column's resize handle, followed by the column label */

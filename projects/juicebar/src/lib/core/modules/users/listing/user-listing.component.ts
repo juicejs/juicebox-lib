@@ -22,7 +22,6 @@ export interface Sort {
     direction: 'asc' | 'desc' | '';
 }
 
-type UserStatus = 'all' | 'active' | 'inactive';
 
 @Component({
     selector: 'app-ng-table',
@@ -56,6 +55,14 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
     protected readonly organisations = signal<Array<any>>([]);
     sortOrganisations: ISort = { dir: 'asc', prop: 'name' };
     filterOrganisations: Array<ISearchTerm> = [];
+    /** As in the old filter: organisations are loaded 10 at a time, the next page when the list reaches its end */
+    private readonly ORGANISATIONS_PAGE_SIZE = 10;
+    private organisationsPage = 0;
+    private organisationsCount = 0;
+    private loadingOrganisations = false;
+    /** Counts the requests, so an answer for an older search can't add to a newer list */
+    private organisationsRequest = 0;
+    private organisationSearchTimer?: ReturnType<typeof setTimeout>;
 
     protected readonly groups = signal<Array<any>>([]);
     protected readonly filteredGroups = signal<Array<any>>([]);
@@ -70,14 +77,6 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
 
     // Filter configurations for reusable filter component
     protected readonly filterConfigs = signal<FilterConfig[]>([]);
-
-    /** Status chips above the table (All / Active / Inactive) with counts for the current filters */
-    protected readonly status = signal<UserStatus>('all');
-    protected readonly statusCounts = signal<Record<UserStatus, number> | null>(null);
-    protected readonly statusChips: ReadonlyArray<UserStatus> = ['all', 'active', 'inactive'];
-    private countsKey: string | null = null;
-    /** Counts the status-count requests, so an older answer can't overwrite a newer one */
-    private countsRequest = 0;
 
     actionButtons: Array<ActionButton> = [];
     displayedColumns: string[] = ['firstname', 'lastname', 'email', 'active', 'roles_count', 'groups', 'lastLogin', 'loginCount'];
@@ -162,19 +161,12 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
     }
 
     ngOnDestroy() {
+        clearTimeout(this.organisationSearchTimer);
         this.juicebox.setPageHeader(null);
     }
 
-    /** `refreshCounts` also reloads the status counts when the filters are unchanged (e.g. after a delete) */
-    private async fetchUsers(refreshCounts = false): Promise<any> {
-        // Status counts depend on the other filters only, so they are refreshed when those change
-        const countsKey = JSON.stringify(this.filterSig());
-        if (refreshCounts || countsKey !== this.countsKey) {
-            this.countsKey = countsKey;
-            this.refreshStatusCounts();
-        }
-
-        const result = await this.usersService.fetch(this.loggedInOrganisationId, this.pageSig() - 1, this.itemsPerPageSig(), this.sortSig(), this.withStatus(this.filterSig()));
+    private async fetchUsers(): Promise<any> {
+        const result = await this.usersService.fetch(this.loggedInOrganisationId, this.pageSig() - 1, this.itemsPerPageSig(), this.sortSig(), this.filterSig());
         if (!result.success)
             return false;
 
@@ -182,41 +174,6 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
 
         this.rowsSig.set(result.payload.items);
         this.count.set(result.payload.count);
-    }
-
-    protected async setStatus(status: UserStatus) {
-        if (status === this.status()) return;
-        this.status.set(status);
-        this.pageSig.set(1);
-        await this.fetchUsers();
-    }
-
-    private statusTerm(status: Exclude<UserStatus, 'all'>): ISearchTerm {
-        return { property: 'active', term: status === 'active', fullText: false, language: false };
-    }
-
-    private withStatus(filter: Array<ISearchTerm>): Array<ISearchTerm> {
-        const status = this.status();
-        return status === 'all' ? filter : [...filter, this.statusTerm(status)];
-    }
-
-    /** Only the latest request sets the counts; if one of its requests fails, the counts stay as they were */
-    private async refreshStatusCounts() {
-        const request = ++this.countsRequest;
-        const filter = this.filterSig();
-        const count = async (extra: Array<ISearchTerm>) => {
-            const result = await this.usersService.fetch(this.loggedInOrganisationId, 0, 1, this.sortSig(), [...filter, ...extra]);
-            if (!result?.success) throw new Error(result?.error);
-            return result.payload.count;
-        };
-        try {
-            const [all, active, inactive] = await Promise.all([
-                count([]), count([this.statusTerm('active')]), count([this.statusTerm('inactive')])
-            ]);
-            if (request === this.countsRequest) this.statusCounts.set({ all, active, inactive });
-        } catch {
-            // keep the previous counts
-        }
     }
 
     getLoginData(users: Array<any>) {
@@ -293,7 +250,7 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
                 } else {
                     this.juicebox.showToast('error', this.i18n.transform('error_while_deleting'));
                 }
-                await this.fetchUsers(true);
+                await this.fetchUsers();
             });
         });
     }
@@ -307,7 +264,7 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
         const dialogRef = this.dialog.open(GroupsModalComponent, {
             width: '80%',
             maxWidth: '1200px',
-            disableClose: true
+            disableClose: true, closeOnEscape: false
         });
         dialogRef.closed.subscribe(result => {
             if (result?.success) {
@@ -317,15 +274,30 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
     }
 
     //------ORGANISATIONS FILTER
+    /** The next page of organisations, added to the list */
     private async getOrganisations(): Promise<any> {
-        const organisationResult = await this.juicebox.getAvailableOrganisations(0, 1000, {
-            sort: this.sortOrganisations,
-            filter: this.filterOrganisations
-        });
-        if (!organisationResult || !organisationResult.success)
-            return false;
+        const request = ++this.organisationsRequest;
+        this.loadingOrganisations = true;
+        try {
+            const organisationResult = await this.juicebox.getAvailableOrganisations(this.organisationsPage, this.ORGANISATIONS_PAGE_SIZE, {
+                sort: this.sortOrganisations,
+                filter: this.filterOrganisations
+            });
+            if (request !== this.organisationsRequest || !organisationResult?.success)
+                return false;
 
-        this.organisations.set(organisationResult.payload.items);
+            this.organisations.update(list => [...list, ...organisationResult.payload.items]);
+            this.organisationsCount = organisationResult.payload.count;
+            this.organisationsPage++;
+            this.updateFilterConfigs();
+        } finally {
+            if (request === this.organisationsRequest) this.loadingOrganisations = false;
+        }
+    }
+
+    private async loadMoreOrganisations() {
+        if (this.loadingOrganisations || this.organisations().length >= this.organisationsCount) return;
+        await this.getOrganisations();
     }
 
     async organisationChanged(organisation: any) {
@@ -348,6 +320,7 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
         this.filterOrganisations = result.filter;
 
         if (!result.resolved || this.organisations().length === 0) {
+            this.organisationsPage = 0;
             this.organisations.set([]);
             await this.getOrganisations();
         }
@@ -465,7 +438,7 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
         }
 
         const dialogRef = this.dialog.open(LoginAsAnotherUserComponent, {
-            disableClose: true,
+            disableClose: true, closeOnEscape: false,
             data: { user_id: user._id }
         });
         dialogRef.closed.subscribe(async (result) => {
@@ -554,8 +527,13 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
     async onFilterSearched(event: {key: string, term: string}): Promise<void> {
         switch (event.key) {
             case 'organisation':
-                await this.searchOrganisations({term: event.term});
-                break;
+                // As in the old filter: the server search waits 500 ms after the last keystroke
+                clearTimeout(this.organisationSearchTimer);
+                this.organisationSearchTimer = setTimeout(async () => {
+                    await this.searchOrganisations({term: event.term});
+                    this.updateFilterConfigs();
+                }, 500);
+                return;
             case 'role':
                 this.searchRoles(event.term);
                 break;
@@ -564,6 +542,11 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
                 break;
         }
         this.updateFilterConfigs();
+    }
+
+    /** The organisation filter's next page once its list reaches the end */
+    onFilterScrolledToEnd(key: string): void {
+        if (key === 'organisation') this.loadMoreOrganisations();
     }
 
 }

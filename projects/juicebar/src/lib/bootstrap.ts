@@ -127,9 +127,9 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], fe
     {
       path: 'main',
       component: MainComponent,
-      canActivate: [authGuard],
-      // As in the old juicebox: every page under /main checks the organisation's client route
-      canActivateChild: [clientRouteGuard],
+      // As in the old juicebox: every navigation under /main checks the login (e.g. a logout in another tab)
+      // and the organisation's client route
+      canActivateChild: [authGuard, clientRouteGuard],
       children: mainChildren,
     },
     ...modules.map(module => ({

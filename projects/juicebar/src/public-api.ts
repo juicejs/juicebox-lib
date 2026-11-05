@@ -52,6 +52,9 @@ export * from './lib/core/shared/services/configuration.service';
 // Projects add their own users-listing buttons with UsersService.addCustomActionButton
 export * from './lib/core/modules/users/users.service';
 
+// Guards: projects put `canDeactivate: [unsavedChangesGuard]` on their own routes, as with the old UnsavedChangesGuard
+export * from './lib/core/shared/guards/unsaved-changes.guard';
+
 // Pipes
 export * from './lib/core/shared/i18n/shared-translation.pipe';
 export * from './lib/core/shared/pipes/time-ago.pipe';

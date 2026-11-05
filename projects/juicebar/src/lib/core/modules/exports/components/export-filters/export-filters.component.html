@@ -62,9 +62,9 @@
                     <app-label>{{ filter | filterLabel }}</app-label>
                     <app-select [formControlName]="filter.id"
                                 [searchable]="true"
+                                [clearable]="true"
                                 [placeholder]="filter | filterLabel"
                                 searchPlaceholder="{{ 'search' | translate }}">
-                        <app-option [value]="null">{{ 'clear_selection' | translate }}</app-option>
                         @for (item of filter.items ?? []; track item.id) {
                             <app-option [value]="item.id">{{ item.label | autoLanguage }}</app-option>
                         }

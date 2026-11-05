@@ -18,7 +18,10 @@
             <app-label>{{"file_name" | translate}}</app-label>
             <app-select [value]="selectedFileNameProperty()"
                         (selectionChange)="selectedFileNameProperty.set($event.value)"
-                        [placeholder]="'file_name' | translate">
+                        [clearable]="true"
+                        [searchable]="true"
+                        [placeholder]="'file_name' | translate"
+                        searchPlaceholder="{{ 'search' | translate }}">
                 @for (item of fileNameProperties(); track item.id) {
                     <app-option [value]="item.id">{{ item.label | autoLanguage }}</app-option>
                 }

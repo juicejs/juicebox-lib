@@ -2,6 +2,11 @@
     width: min(560px, 100%);
 }
 
+.create-org-toggle {
+    display: block;
+    margin-top: 4px;
+}
+
 .create-org-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
