@@ -4,7 +4,9 @@
   }
 </app-tabs>
 
-<!-- One outlet per location: the tabs are created anew when another location is opened -->
-@for (id of [locationId()]; track id) {
-  <router-outlet />
-}
+<div class="parent location-tab">
+  <!-- One outlet per location: the tabs are created anew when another location is opened -->
+  @for (id of [locationId()]; track id) {
+    <router-outlet />
+  }
+</div>

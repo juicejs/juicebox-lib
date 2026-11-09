@@ -22,6 +22,7 @@ interface LocationTab {
 @Component({
   selector: 'app-location-details',
   templateUrl: './location-details.component.html',
+  styleUrl: './location-details.component.scss',
   imports: [RouterOutlet, TabsComponent, TabComponent],
   providers: [LocationsTranslationPipe],
 })
