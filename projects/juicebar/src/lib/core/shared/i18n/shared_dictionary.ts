@@ -110,6 +110,10 @@ export const sharedDictionary = {
     "en_GB": "Delete",
     "de_DE": "Löschen"
   },
+  "remove": {
+    "en_GB": "Remove",
+    "de_DE": "Entfernen"
+  },
   "save": {
     "en_GB": "Save",
     "de_DE": "Speichern"

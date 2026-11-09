@@ -1,0 +1,20 @@
+@if (documents) {
+  <app-media
+    [collection]="'locations_documents'"
+    [reference]="locationId"
+    [model]="record()"
+    [acceptedTypes]="['.docx, .pdf, .xlsx, .txt']"
+    (saved)="added($event)"
+    (removed)="removed($event)"
+    (updated)="updated($event)"
+  />
+} @else {
+  <app-media
+    [collection]="'locations'"
+    [reference]="locationId"
+    [model]="record()"
+    (saved)="added($event)"
+    (removed)="removed($event)"
+    (updated)="updated($event)"
+  />
+}

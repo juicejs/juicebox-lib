@@ -128,12 +128,19 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
 
   protected readonly selectedCount = computed(() => this.selectedArray().length);
 
+  /**
+   * Labels of the values picked in the panel. A server search (`externalSearch`) replaces the options, and the
+   * picked values keep their labels, as they did with ng-select.
+   */
+  private readonly pickedLabels = signal<ReadonlyArray<{ value: any; label: string }>>([]);
+
   protected readonly selectedLabels = computed(() => {
     const sel = this.selectedArray();
     const opts = this.options();
+    const picked = this.pickedLabels();
     return sel.map(v => {
       const match = opts.find(o => this.equals(o.value(), v));
-      return match ? match.getLabel() : '';
+      return match ? match.getLabel() : (picked.find(p => this.equals(p.value, v))?.label ?? '');
     }).filter(Boolean);
   });
 
@@ -359,6 +366,7 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
       const next = exists
         ? current.filter(v => !this.equals(v, option.value()))
         : [...current, option.value()];
+      if (!exists) this.rememberLabels([option]);
       this.value.set(next);
       this.onChange(next);
       this.selectionChange.emit({ value: next });
@@ -400,6 +408,7 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
       v => !this.filteredOptions().some(o => this.equals(o.value(), v))
     );
     const merged = [...outside, ...next];
+    this.rememberLabels(this.filteredOptions().filter(o => !o.disabled()));
     this.value.set(merged);
     this.onChange(merged);
     this.selectionChange.emit({ value: merged });
@@ -413,6 +422,14 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
     this.value.set(outside);
     this.onChange(outside);
     this.selectionChange.emit({ value: outside });
+  }
+
+  private rememberLabels(options: readonly OptionComponent[]) {
+    const added = options.map(option => ({ value: option.value(), label: option.getLabel() }));
+    this.pickedLabels.update(known => [
+      ...known.filter(entry => !added.some(item => this.equals(item.value, entry.value))),
+      ...added,
+    ]);
   }
 
   protected equals(a: any, b: any): boolean {

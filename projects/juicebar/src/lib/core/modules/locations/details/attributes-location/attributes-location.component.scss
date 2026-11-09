@@ -1,0 +1,140 @@
+:host {
+  display: block;
+  max-width: 880px;
+  // The patterns are lines on paper, as the availability calendar prints them; they follow the theme
+  --hatch-ink: var(--color-text-primary);
+  --hatch-paper: var(--color-surface);
+}
+
+.attributes-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px;
+}
+
+.hatching {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 4px 0 8px;
+}
+
+.hatching-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.hatching-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.hatching-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  max-width: 320px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.hatching-swatch {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--color-border-dark);
+  background-color: var(--hatch-paper);
+  cursor: pointer;
+
+  &--preview {
+    width: 200px;
+    height: 30px;
+    cursor: default;
+  }
+
+  &.selected {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 2px;
+  }
+}
+
+.attributes-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.pattern-1 {
+  background-image: linear-gradient(0deg, var(--hatch-paper) 50%, var(--hatch-ink) 50%);
+  background-size: 10px 10px;
+}
+
+.pattern-2 {
+  background-image: linear-gradient(to right, var(--hatch-ink), var(--hatch-ink) 5px, var(--hatch-paper) 5px, var(--hatch-paper));
+  background-size: 10px 100%;
+}
+
+.pattern-3 {
+  background-image: repeating-linear-gradient(0deg, var(--hatch-ink), var(--hatch-ink) 1.4px, var(--hatch-paper) 1.4px, var(--hatch-paper));
+  background-size: 8px 8px;
+}
+
+.pattern-4 {
+  background-image: repeating-linear-gradient(to right, var(--hatch-ink), var(--hatch-ink) 1.4px, var(--hatch-paper) 1.4px, var(--hatch-paper));
+  background-size: 8px 8px;
+}
+
+.pattern-5 {
+  background-image: repeating-linear-gradient(45deg, var(--hatch-ink), var(--hatch-ink) 2px, var(--hatch-paper) 2px, var(--hatch-paper) 10px);
+}
+
+.pattern-6 {
+  background-image: repeating-linear-gradient(-45deg, var(--hatch-ink), var(--hatch-ink) 2px, var(--hatch-paper) 2px, var(--hatch-paper) 10px);
+}
+
+.pattern-7 {
+  background-image:
+    repeating-linear-gradient(45deg, var(--hatch-ink) 25%, transparent 25%, transparent 75%, var(--hatch-ink) 75%, var(--hatch-ink)),
+    repeating-linear-gradient(45deg, var(--hatch-ink) 25%, var(--hatch-paper) 25%, var(--hatch-paper) 75%, var(--hatch-ink) 75%, var(--hatch-ink));
+  background-position: 0 0, 10px 10px;
+  background-size: 20px 20px;
+}
+
+.pattern-8,
+.pattern-9 {
+  background-image:
+    linear-gradient(135deg, var(--hatch-ink) 25%, transparent 25%),
+    linear-gradient(225deg, var(--hatch-ink) 25%, transparent 25%),
+    linear-gradient(45deg, var(--hatch-ink) 25%, transparent 25%),
+    linear-gradient(315deg, var(--hatch-ink) 25%, var(--hatch-paper) 25%);
+  background-size: 10px 10px;
+}
+
+.pattern-8 {
+  background-position: 10px 0, 10px 0, 0 0, 0 0;
+}
+
+.pattern-9 {
+  background-position: 5px 0, 5px 0, 0 0, 0 0;
+}
+
+.pattern-10 {
+  background-image: radial-gradient(circle, var(--hatch-ink) 25%, transparent 25%);
+  background-size: 10px 10px;
+}
+
+.pattern-11 {
+  background-image: linear-gradient(45deg, var(--hatch-ink) 50%, var(--hatch-paper) 50%);
+  background-size: 10px 10px;
+}
+
+.pattern-12 {
+  background-image: linear-gradient(-45deg, var(--hatch-paper), var(--hatch-paper) 50%, var(--hatch-ink) 50%, var(--hatch-ink));
+  background-size: 10px 10px;
+}

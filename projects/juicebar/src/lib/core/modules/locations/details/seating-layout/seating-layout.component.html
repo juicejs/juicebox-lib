@@ -1,0 +1,36 @@
+<div class="seating-toolbar">
+  <button app-button appearance="raised" color="primary" type="button"
+          [hasPermissions]="'room-plan:role#update'"
+          (click)="add()">
+    <app-icon [icon]="'add'" />
+    {{ 'add' | translate }}
+  </button>
+</div>
+
+<app-data-table
+  [rows]="rows()"
+  [columns]="columns"
+  [totalCount]="rows().length"
+  [pageSize]="pageSize()"
+  [pageSizeOptions]="pageSizeOptions"
+  [emptyMessage]="'no_data_to_display' | translate"
+>
+  <ng-template [cellDef]="'name'" let-row>{{ row.name }}</ng-template>
+  <ng-template [cellDef]="'preview'" let-row>
+    @if (row.preview) {
+      <!-- Stored files can be on any origin, so NgOptimizedImage does not apply -->
+      <img class="room-plan-preview" [src]="row.preview" alt="" />
+    }
+  </ng-template>
+  <ng-template [cellDef]="'actions'" let-row>
+    <div class="dt-row-actions">
+      <button app-button appearance="icon" type="button" class="danger"
+              [attr.aria-label]="('remove' | translate) + ': ' + row.name"
+              [appTooltip]="'remove' | translate"
+              [hasPermissions]="'room-plan:role#update'"
+              (click)="$event.stopPropagation(); remove(row)">
+        <app-icon [icon]="'delete'" />
+      </button>
+    </div>
+  </ng-template>
+</app-data-table>

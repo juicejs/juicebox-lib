@@ -1,5 +1,5 @@
 import { EnvironmentProviders, inject, makeEnvironmentProviders, provideEnvironmentInitializer } from '@angular/core';
-import { BASE_APP_CONFIG, BaseAppConfig, USERS_CUSTOMIZATION, EXPORTS_CUSTOMIZATION } from '../../../config/base-app.config';
+import { BASE_APP_CONFIG, BaseAppConfig, USERS_CUSTOMIZATION, EXPORTS_CUSTOMIZATION, LOCATIONS_CUSTOMIZATION } from '../../../config/base-app.config';
 import { SidebarService } from '../../shared/services/sidebar.service';
 import { MainTranslationPipe } from './i18n/main.translation';
 
@@ -11,6 +11,7 @@ export function provideMain(): EnvironmentProviders {
       const config = inject<BaseAppConfig>(BASE_APP_CONFIG, { optional: true });
       const usersCustomization = inject(USERS_CUSTOMIZATION, { optional: true });
       const exportsCustomization = inject(EXPORTS_CUSTOMIZATION, { optional: true });
+      const locationsCustomization = inject(LOCATIONS_CUSTOMIZATION, { optional: true });
 
       if (usersCustomization != null) {
         sidebarService.registerSidebarItem('users', 'users', 'users:role', 'fa-users', 'users');
@@ -18,6 +19,11 @@ export function provideMain(): EnvironmentProviders {
 
       if (exportsCustomization != null) {
         sidebarService.registerSidebarItem('exports', 'exports', 'data-export:role', 'fa-table', 'exports');
+      }
+
+      // As the old juicebox registered it: the label 'locations', the route 'location'
+      if (locationsCustomization != null) {
+        sidebarService.registerSidebarItem('location', 'locations', 'locations:role', 'fa-map-marker', 'location');
       }
 
       if (config?.mainRoutes) {

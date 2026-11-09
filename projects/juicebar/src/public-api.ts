@@ -29,6 +29,7 @@ export * from './lib/core/shared/shared.module';
 export * from './lib/core/modules/main/main.providers';
 export * from './lib/core/modules/users/users.providers';
 export * from './lib/core/modules/exports/exports.providers';
+export * from './lib/core/modules/locations/locations.providers';
 
 // Directives
 export * from './lib/core/shared/directives/PromiseButton';
@@ -54,6 +55,9 @@ export * from './lib/core/modules/users/listing/create-vendor/create-vendor.comp
 export * from './lib/core/shared/services/configuration.service';
 // Projects add their own users-listing buttons with UsersService.addCustomActionButton
 export * from './lib/core/modules/users/users.service';
+// Other modules link locations (trainings, offers, events, …) with the old LocationsService
+export * from './lib/core/modules/locations/locations.service';
+export * from './lib/core/modules/locations/locations.types';
 
 // Guards: projects put `canDeactivate: [unsavedChangesGuard]` on their own routes, as with the old UnsavedChangesGuard
 export * from './lib/core/shared/guards/unsaved-changes.guard';

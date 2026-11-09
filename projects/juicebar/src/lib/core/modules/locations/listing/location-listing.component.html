@@ -1,0 +1,96 @@
+<div class="listing-toolbar">
+  @if (options.ownerFilter) {
+    <app-form-field appearance="outline" class="owner-filter">
+      <app-label>{{ 'show_locations' | translate }}</app-label>
+      <app-select [value]="owner()" (selectionChange)="owner.set($event.value)">
+        <app-option value="all">{{ 'all' | translate }}</app-option>
+        <app-option value="mine">{{ 'mine' | translate }}</app-option>
+        <app-option value="public">{{ 'public' | translate }}</app-option>
+      </app-select>
+    </app-form-field>
+  }
+  <app-slide-toggle [checked]="archived()" (toggled)="showArchived($event)">{{ 'show_archived' | translate }}</app-slide-toggle>
+</div>
+
+<app-data-table
+  [rows]="rows()"
+  [columns]="columns"
+  [totalCount]="count()"
+  [pageSize]="pageSize()"
+  [pageIndex]="page() - 1"
+  [pageSizeOptions]="pageSizeOptions"
+  [sort]="sort()"
+  [emptyMessage]="'no_data_to_display' | translate"
+  [rowsPerPageLabel]="'rows_per_page' | translate"
+  (pageChange)="onPage($event)"
+  (sortChange)="onSort($event)"
+  (rowClick)="open($event)"
+>
+  <ng-template [headerDef]="'name'">
+    <div class="header-wrap">
+      <input class="filter-input" type="text"
+             [attr.aria-label]="'name' | translate"
+             [placeholder]="'name' | translate"
+             (input)="onFilter('name', $any($event.target).value)"
+             (click)="$event.stopPropagation()"
+             (keydown)="$event.stopPropagation()">
+    </div>
+  </ng-template>
+  <ng-template [headerDef]="'address.0.city'">
+    <div class="header-wrap">
+      <input class="filter-input" type="text"
+             [attr.aria-label]="'city' | translate"
+             [placeholder]="'city' | translate"
+             (input)="onFilter('address.0.city', $any($event.target).value)"
+             (click)="$event.stopPropagation()"
+             (keydown)="$event.stopPropagation()">
+    </div>
+  </ng-template>
+  <ng-template [headerDef]="'address.0.country'">
+    <div class="header-wrap">
+      <input class="filter-input" type="text"
+             [attr.aria-label]="'country' | translate"
+             [placeholder]="'country' | translate"
+             (input)="onFilter('address.0.country', $any($event.target).value)"
+             (click)="$event.stopPropagation()"
+             (keydown)="$event.stopPropagation()">
+    </div>
+  </ng-template>
+
+  <ng-template [cellDef]="'name'" let-row>
+    <a class="dt-row-link" [routerLink]="['/main/location/details', row._id]" (click)="$event.stopPropagation()">{{ row.name }}</a>
+  </ng-template>
+  <ng-template [cellDef]="'type'" let-row>{{ row.type }}</ng-template>
+  <ng-template [cellDef]="'address.0.city'" let-row>{{ row.city }}</ng-template>
+  <ng-template [cellDef]="'address.0.country'" let-row>{{ row.country }}</ng-template>
+
+  <ng-template [cellDef]="'actions'" let-row>
+    <div class="dt-row-actions">
+      @if (row.archivable) {
+        @if (archived()) {
+          <button app-button appearance="icon" type="button"
+                  [attr.aria-label]="('unarchive' | translate) + ': ' + row.name"
+                  [appTooltip]="'unarchive' | translate"
+                  (click)="$event.stopPropagation(); archive(row, false)">
+            <app-icon [icon]="'unarchive'" />
+          </button>
+        } @else {
+          <button app-button appearance="icon" type="button"
+                  [attr.aria-label]="('archive' | translate) + ': ' + row.name"
+                  [appTooltip]="'archive' | translate"
+                  (click)="$event.stopPropagation(); archive(row, true)">
+            <app-icon [icon]="'archive'" />
+          </button>
+        }
+      }
+      @if (row.deletable) {
+        <button app-button appearance="icon" type="button" class="danger"
+                [attr.aria-label]="('delete' | translate) + ': ' + row.name"
+                [appTooltip]="'delete' | translate"
+                (click)="$event.stopPropagation(); remove(row)">
+          <app-icon [icon]="'delete'" />
+        </button>
+      }
+    </div>
+  </ng-template>
+</app-data-table>

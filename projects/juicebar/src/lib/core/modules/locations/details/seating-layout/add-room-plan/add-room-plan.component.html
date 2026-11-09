@@ -1,0 +1,24 @@
+<app-dialog-title>{{ 'add_room_plan' | translate }}</app-dialog-title>
+
+<app-dialog-content>
+  <app-form-field appearance="outline">
+    <app-label>{{ 'room_plans' | translate }}</app-label>
+    <app-select [formControl]="picked" [multiple]="true" [searchable]="true" [externalSearch]="true"
+                [placeholder]="'room_plans' | translate"
+                (searchChange)="onSearch($event)">
+      @for (plan of options(); track plan._id) {
+        <app-option [value]="plan._id" [disabled]="plan.linked">{{ plan.name | autoLanguage }}</app-option>
+      }
+    </app-select>
+  </app-form-field>
+</app-dialog-content>
+
+<app-dialog-actions align="end">
+  <button app-button type="button" (click)="close()">{{ 'cancel' | translate }}</button>
+  <button app-button appearance="raised" color="primary" type="button"
+          [disabled]="nothingPicked()"
+          [promiseBtn]="addPromise()"
+          (click)="add()">
+    {{ 'add' | translate }}
+  </button>
+</app-dialog-actions>

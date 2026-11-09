@@ -1,0 +1,10 @@
+<app-tabs [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="onTabChange($event)">
+  @for (tab of tabs(); track tab.route) {
+    <app-tab [label]="tab.label" />
+  }
+</app-tabs>
+
+<!-- One outlet per location: the tabs are created anew when another location is opened -->
+@for (id of [locationId()]; track id) {
+  <router-outlet />
+}

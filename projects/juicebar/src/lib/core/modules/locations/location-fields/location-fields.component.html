@@ -1,0 +1,147 @@
+@let locationForm = form();
+<app-card class="location-card">
+  <header class="location-card-head">
+    <h2 class="location-card-title">{{ title() }}</h2>
+    <p class="location-card-legend"><span class="required-mark" aria-hidden="true">*</span> {{ 'indicates_required_field' | translate }}</p>
+  </header>
+
+  <form class="location-card-body" [formGroup]="locationForm" (ngSubmit)="submitted.emit()">
+    <div class="field-row">
+      <app-form-field appearance="outline">
+        <app-label>{{ 'location_type' | translate }} *</app-label>
+        <app-select formControlName="type" [searchable]="true" [placeholder]="'type' | translate">
+          @for (type of types(); track type.value) {
+            <app-option [value]="type.value">{{ type.localised_name | autoLanguage }}</app-option>
+          }
+        </app-select>
+        @if (locationForm.controls.type.touched && locationForm.controls.type.errors?.['required']) {
+          <app-error>{{ 'include_type' | translate }}</app-error>
+        }
+      </app-form-field>
+
+      @if (categories().length) {
+        <app-form-field appearance="outline">
+          <app-label>{{ 'location_category' | translate }}</app-label>
+          <app-select formControlName="location_category" [searchable]="true" [clearable]="true"
+                      [placeholder]="'location_category' | translate">
+            @for (category of categories(); track category.value) {
+              <app-option [value]="category.value">{{ category.localised_name | autoLanguage }}</app-option>
+            }
+          </app-select>
+        </app-form-field>
+      }
+    </div>
+
+    <div class="field-row">
+      <app-form-field appearance="outline">
+        <app-label>{{ 'name' | translate }} *</app-label>
+        <input appInput type="text" formControlName="name" aria-required="true" [placeholder]="namePlaceholder()" />
+        @if (locationForm.controls.name.touched && locationForm.controls.name.errors?.['required']) {
+          <app-error>{{ 'include_name' | translate }}</app-error>
+        }
+      </app-form-field>
+
+      <app-form-field appearance="outline">
+        <app-label>
+          {{ 'short_name' | translate }}
+          @if (shortNameMaxLength(); as maxLength) {
+            ({{ 'max_characters' | translate: {count: maxLength} }})
+          }
+        </app-label>
+        <input appInput type="text" formControlName="short_name" [attr.maxlength]="shortNameMaxLength()" />
+        @if (locationForm.controls.short_name.errors?.['maxlength']; as tooLong) {
+          <app-error>{{ 'short_name_too_long' | translate: {count: tooLong.requiredLength} }}</app-error>
+        }
+      </app-form-field>
+    </div>
+
+    @if (web()) {
+      <app-form-field appearance="outline">
+        <app-label>{{ 'url' | translate }}</app-label>
+        <input appInput type="text" formControlName="url" />
+      </app-form-field>
+    } @else {
+      <app-form-field appearance="outline">
+        <app-label>{{ 'description' | translate }}</app-label>
+        <input appInput type="text" formControlName="description" [placeholder]="descriptionPlaceholder()" />
+      </app-form-field>
+
+      <div class="field-row" formGroupName="address">
+        <app-form-field appearance="outline">
+          <app-label>{{ 'street' | translate }} *</app-label>
+          <input appInput type="text" formControlName="street" aria-required="true" />
+          @if (locationForm.controls.address.controls.street.touched && locationForm.controls.address.controls.street.errors?.['required']) {
+            <app-error>{{ 'include_street' | translate }}</app-error>
+          }
+        </app-form-field>
+
+        <app-form-field appearance="outline">
+          <app-label>{{ 'postcode' | translate }} *</app-label>
+          <input appInput type="text" formControlName="postcode" aria-required="true" />
+          @if (locationForm.controls.address.controls.postcode.touched && locationForm.controls.address.controls.postcode.errors?.['required']) {
+            <app-error>{{ 'include_postcode' | translate }}</app-error>
+          }
+        </app-form-field>
+
+        <app-form-field appearance="outline">
+          <app-label>{{ 'city' | translate }} *</app-label>
+          <input appInput type="text" formControlName="city" aria-required="true" />
+          @if (locationForm.controls.address.controls.city.touched && locationForm.controls.address.controls.city.errors?.['required']) {
+            <app-error>{{ 'include_city' | translate }}</app-error>
+          }
+        </app-form-field>
+
+        <app-form-field appearance="outline">
+          <app-label>{{ 'country' | translate }} *</app-label>
+          <app-select formControlName="country" [searchable]="true" [placeholder]="'country' | translate">
+            @for (country of countries(); track country._id) {
+              <app-option [value]="country._id">{{ country.name }}</app-option>
+            }
+          </app-select>
+          @if (locationForm.controls.address.controls.country.touched && locationForm.controls.address.controls.country.errors?.['required']) {
+            <app-error>{{ 'include_country' | translate }}</app-error>
+          }
+        </app-form-field>
+      </div>
+
+      @if (hasCoordinates()) {
+        <div class="field-row">
+          <app-form-field appearance="outline">
+            <app-label>{{ 'coordinates_latitude' | translate }}</app-label>
+            <input appInput type="number" step="any" min="-90" max="90" formControlName="latitude" />
+          </app-form-field>
+
+          <app-form-field appearance="outline">
+            <app-label>{{ 'coordinates_longitude' | translate }}</app-label>
+            <input appInput type="number" step="any" min="-180" max="180" formControlName="longitude" />
+          </app-form-field>
+        </div>
+        <p class="field-hint">{{ 'coordinates_hint' | translate }}</p>
+      }
+    }
+
+    @if (hasEmail()) {
+      <app-form-field appearance="outline">
+        <app-label>{{ 'email' | translate }}</app-label>
+        <input appInput type="email" formControlName="email" />
+      </app-form-field>
+      @if (emailHint(); as hint) {
+        <p class="field-hint field-hint--notice">{{ hint }}</p>
+      }
+    }
+
+    <div class="switches">
+      @if (archivable()) {
+        <app-slide-toggle formControlName="archived">{{ 'archived' | translate }}</app-slide-toggle>
+      }
+      <app-slide-toggle formControlName="organisation_visibility">{{ 'organisation_visibility' | translate }}</app-slide-toggle>
+      @if (hasAccessibility()) {
+        <app-slide-toggle formControlName="accessibility">{{ 'accessibility' | translate }}</app-slide-toggle>
+      }
+    </div>
+
+    <div class="location-card-actions">
+      <ng-content />
+    </div>
+  </form>
+</app-card>

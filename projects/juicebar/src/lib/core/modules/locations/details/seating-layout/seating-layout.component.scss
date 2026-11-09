@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+.seating-toolbar {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.room-plan-preview {
+  display: block;
+  max-width: 150px;
+  max-height: 48px;
+  object-fit: contain;
+}

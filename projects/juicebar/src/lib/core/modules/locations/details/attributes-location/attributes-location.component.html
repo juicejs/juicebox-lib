@@ -1,0 +1,57 @@
+@if (location()) {
+  <app-card class="attributes-card">
+    <form class="attributes-body" [formGroup]="form" (ngSubmit)="save()">
+      @for (field of fields(); track field.property) {
+        <app-form-field appearance="outline">
+          <app-label>{{ field.name }}{{ field.required ? ' *' : '' }}</app-label>
+          <input appInput [type]="field.datatype || 'text'" [formControlName]="field.property" />
+        </app-form-field>
+      }
+
+      <div class="hatching">
+        <app-slide-toggle [checked]="pattern() === 0" (toggled)="setNoPattern($event)">
+          {{ 'no_hatching_pattern' | translate }}
+        </app-slide-toggle>
+
+        <div class="hatching-row">
+          <span class="hatching-label">{{ 'hatching_pattern' | translate }}</span>
+          <div class="hatching-swatch hatching-swatch--preview pattern-{{ pattern() }}"
+               role="img" [attr.aria-label]="patternLabel() | translate"></div>
+          <button app-button appearance="stroked" type="button"
+                  [attr.aria-controls]="pickerOpen() ? 'hatching-picker' : null"
+                  [attr.aria-expanded]="pickerOpen()"
+                  (click)="pickerOpen.set(!pickerOpen())">
+            <app-icon [icon]="'tune'" />
+            {{ 'select_hatching_pattern' | translate }}
+          </button>
+          <button app-button appearance="stroked" type="button"
+                  [hasPermissions]="'locations:role#updated'"
+                  (click)="reset()">
+            {{ 'reset' | translate }}
+          </button>
+        </div>
+
+        @if (pickerOpen()) {
+          <div class="hatching-picker" id="hatching-picker" role="group" [attr.aria-label]="'select_hatching_pattern' | translate">
+            @for (option of patterns; track option.value) {
+              <button type="button"
+                      class="hatching-swatch pattern-{{ option.value }}"
+                      [class.selected]="option.value === pattern()"
+                      [attr.aria-pressed]="option.value === pattern()"
+                      [attr.aria-label]="'pattern_' + option.name | translate"
+                      (click)="pick(option.value)"></button>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="attributes-actions">
+        <button app-button appearance="raised" color="primary" type="submit"
+                [hasPermissions]="'locations:role#updated'"
+                [promiseBtn]="savePromise()">
+          {{ 'save' | translate }}
+        </button>
+      </div>
+    </form>
+  </app-card>
+}

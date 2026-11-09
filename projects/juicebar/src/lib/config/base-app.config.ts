@@ -61,6 +61,31 @@ export interface UsersCustomization extends ModuleCustomization {
   options?: UsersOptions;
 }
 
+/** Project-specific behaviour of the locations module */
+export interface LocationsOptions {
+  /** Details tabs this project does not use; they show by default */
+  hiddenTabs?: Array<'attributes' | 'documents'>;
+  /**
+   * Fields beyond the standard ones, as Quality Circle has them: the location's email (stored as attributes.email),
+   * accessibility, and coordinates entered by hand (used instead of looking up the address)
+   */
+  fields?: Array<'email' | 'accessibility' | 'coordinates'>;
+  /** Shown under the email field, e.g. what it is used for (a translation key or text) */
+  emailHint?: string;
+  /** Longest short name the project accepts, e.g. 19 */
+  shortNameMaxLength?: number;
+  /** The listing's "Show locations" filter: all of them, the user's organisation's (mine) or the others' (public) */
+  ownerFilter?: boolean;
+  /** Location types (their `value`) that can be archived and unarchived from the listing; none by default */
+  archivableTypes?: string[];
+  /** Location types (their `value`) that can be deleted from the listing; `['region']` by default */
+  deletableTypes?: string[];
+}
+
+export interface LocationsCustomization extends ModuleCustomization {
+  options?: LocationsOptions;
+}
+
 /** A project's look, like the old juicebox themes/<project> folder. Everything is optional: without it the admin is juice orange with the juice logo. */
 export interface JuicebarTheme {
   /**
@@ -99,6 +124,7 @@ export interface BaseAppConfig {
 export const BASE_APP_CONFIG = new InjectionToken<BaseAppConfig>('BASE_APP_CONFIG');
 export const USERS_CUSTOMIZATION = new InjectionToken<UsersCustomization>('USERS_CUSTOMIZATION');
 export const EXPORTS_CUSTOMIZATION = new InjectionToken<ModuleCustomization>('EXPORTS_CUSTOMIZATION');
+export const LOCATIONS_CUSTOMIZATION = new InjectionToken<LocationsCustomization>('LOCATIONS_CUSTOMIZATION');
 
 export interface JuicebarFeature {
   routes: Routes;
