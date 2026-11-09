@@ -1,7 +1,8 @@
+@let form = filterForm();
 @if (filters().length) {
-<div [formGroup]="filterForm">
-    @for (filter of filters(); track filter.id) {
-    @let control = filterForm.controls[filter.id];
+<div [formGroup]="form">
+    @for (filter of visibleFilters(); track filter.id) {
+    @let control = form.controls[filter.id];
     <div class="filter-item">
 
         @switch (filter.type) {
@@ -42,7 +43,7 @@
                                 [placeholder]="filter | filterLabel"
                                 searchPlaceholder="{{ 'search' | translate }}">
                         @for (item of filter.items ?? []; track item.id) {
-                            <app-option [value]="item.id">{{ item.label | autoLanguage }}</app-option>
+                            <app-option [value]="item.id">{{ (item.label || item.id) | autoLanguage }}</app-option>
                         }
                     </app-select>
                     @if ((control.touched && control.errors) | exportFilterError: filter : filterFormTick(); as error) {
@@ -51,7 +52,7 @@
                 </app-form-field>
             }
             @case ('multiselect-async') {
-                <app-export-multiselect-async [formGroup]="filterForm"
+                <app-export-multiselect-async [formGroup]="form"
                                               [selectedDataSourceKey]="selectedDataSourceKey()"
                                               [filter]="filter"></app-export-multiselect-async>
                 @if ((control.touched && control.errors) | exportFilterError: filter : filterFormTick(); as error) {
@@ -67,7 +68,7 @@
                                 [placeholder]="filter | filterLabel"
                                 searchPlaceholder="{{ 'search' | translate }}">
                         @for (item of filter.items ?? []; track item.id) {
-                            <app-option [value]="item.id">{{ item.label | autoLanguage }}</app-option>
+                            <app-option [value]="item.id">{{ (item.label || item.id) | autoLanguage }}</app-option>
                         }
                     </app-select>
                     @if ((control.touched && control.errors) | exportFilterError: filter : filterFormTick(); as error) {

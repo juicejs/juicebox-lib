@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, output, Pipe, PipeTransform, signal, untracked} from '@angular/core';
+import {Component, computed, DestroyRef, effect, inject, input, output, Pipe, PipeTransform, signal, untracked} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn} from '@angular/forms';
 import {ExportValidators} from '../../shared/ExportValidators';
@@ -10,6 +10,7 @@ import {SHARED_IMPORTS} from '../../../../shared/shared-imports';
 import {ExportsTranslationPipe} from '../../i18n/exports.translation';
 import {AsyncMultiselectComponent} from '../async-multiselect/async-multiselect.component';
 import {FilterLabelPipe} from '../../pipes/filter-label.pipe';
+import {hiddenFilterIds, injectExportsOptions} from '../../exports-shared';
 
 /**
  * A filter's error text: the messages of its validators whose errors are set. The input is the control's errors once
@@ -35,7 +36,6 @@ export class ExportFilterErrorPipe implements PipeTransform {
     selector: 'app-export-filters',
     templateUrl: './export-filters.component.html',
     styleUrls: ['./export-filters.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
     ReactiveFormsModule,
     SHARED_IMPORTS,
@@ -49,6 +49,8 @@ export class ExportFilterErrorPipe implements PipeTransform {
 export class ExportFiltersComponent {
 
     private destroyRef = inject(DestroyRef);
+    /** Filters this user doesn't see (ExportsOptions.hiddenFilters), as QC hides `show_modules` from mine-only users */
+    private readonly hidden = hiddenFilterIds(injectExportsOptions(), inject(JuiceboxService));
 
     filters = input<Array<ExportFilter>>([]);
     disabled = input<boolean>(false);
@@ -59,42 +61,44 @@ export class ExportFiltersComponent {
      */
     filtersValueChange = output<FormGroup>();
 
-    filterForm = new FormGroup<Record<string, AbstractControl>>({});
+    /** Rebuilt for other filters; a hidden filter keeps its control and value */
+    readonly filterForm = signal(new FormGroup<Record<string, AbstractControl>>({}));
     readonly filterFormTick = signal(0);
+    protected readonly visibleFilters = computed(() => this.filters().filter(filter => !this.hidden.has(filter.id)));
 
     constructor() {
         // Rebuilt only when the filters change, as in the old admin; `disabled` alone keeps what was typed
         effect(() => {
-            this.filters();
+            const filters = this.filters();
             untracked(() => {
-                this.generateForm();
-                this.filtersValueChange.emit(this.filterForm);
+                const form = this.generateForm(filters);
+                this.filterForm.set(form);
+                this.filtersValueChange.emit(form);
             });
         });
 
         effect(() => {
+            const form = this.filterForm();
             if (this.disabled()) {
-                this.filterForm.disable();
+                form.disable();
             } else {
-                this.filterForm.enable();
+                form.enable();
             }
         });
     }
 
-    private generateForm() {
-        const filters = this.filters();
-        if (!filters.length) return;
-
-        const controls = {};
+    /** Also for no filters: a data source without them must not keep the previous one's values */
+    private generateForm(filters: ExportFilter[]): FormGroup<Record<string, AbstractControl>> {
+        const controls: Record<string, AbstractControl> = {};
         filters.forEach(filter => controls[filter.id] = this.createFilterControl(filter));
-        this.filterForm = new FormGroup(controls);
-        if (this.disabled()) this.filterForm.disable();
+        const form = new FormGroup(controls);
+        if (this.disabled()) form.disable();
 
-        const form = this.filterForm;
         form.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
             this.filterFormTick.update(v => v + 1);
             this.filtersValueChange.emit(form);
         });
+        return form;
     }
 
     private createFilterControl(filter: ExportFilter) {

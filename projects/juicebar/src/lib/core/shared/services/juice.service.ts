@@ -1,5 +1,6 @@
 import {inject, Injectable, Injector} from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { timeout, TimeoutError } from 'rxjs';
 import {SnackbarService, SnackbarType} from "../../../ui-components";
 
 export interface ToastOptions {
@@ -83,13 +84,17 @@ export class Juice {
         });
     }
 
-    requestBinary(service: string, method: string, params?: Array<any>): Promise<any> {
+    /**
+     * A file from the gateway. With `timeoutMs` a request taking longer is cancelled and rejected with
+     * `{name: 'TimeoutError'}`, as Quality Circle's exports do it (QCP-1176).
+     */
+    requestBinary(service: string, method: string, params?: Array<any>, timeoutMs?: number): Promise<any> {
         return new Promise((resolve, reject) => {
 
             let headers = new HttpHeaders();
             headers = headers.append('authorization', this.getToken());
 
-            this.http.post(this.getEndPoint() + '/gateway', {
+            const request = this.http.post(this.getEndPoint() + '/gateway', {
                 'service': service,
                 'method': method,
                 'params': params
@@ -97,18 +102,26 @@ export class Juice {
                 headers: headers,
                 observe: 'response',
                 responseType: 'blob'
-            }).subscribe(data => {
-                const newToken = data.headers.get('juice-token');
-                if (newToken) {
-                    this.setToken(newToken);
-                }
-                resolve(data.body);
-            }, err => {
-                if (err.status === 413) {
-                    this._snackBar.open(err.message, undefined, { type: 'error' });
-                    throw new Error(err.message);
-                }
-                reject(err);
+            });
+            (timeoutMs ? request.pipe(timeout(timeoutMs)) : request).subscribe({
+                next: data => {
+                    const newToken = data.headers.get('juice-token');
+                    if (newToken) {
+                        this.setToken(newToken);
+                    }
+                    resolve(data.body);
+                },
+                error: err => {
+                    if (err instanceof TimeoutError) {
+                        reject({status: 0, name: 'TimeoutError', message: 'Request timed out'});
+                        return;
+                    }
+                    // Told here; it was thrown before, so the request never settled
+                    if (err.status === 413) {
+                        this._snackBar.open(err.message, undefined, { type: 'error' });
+                    }
+                    reject(err);
+                },
             });
         });
     }

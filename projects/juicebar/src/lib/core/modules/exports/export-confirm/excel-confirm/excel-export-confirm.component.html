@@ -1,50 +1,31 @@
-@if (!isLoading()) {
-    <div class="dialog-header">
-        <h2>{{"confirm_export" | translate}}</h2>
-    </div>
+<app-dialog-title>{{ 'confirm_export' | translate }}</app-dialog-title>
 
-    <div class="dialog-content p-3">
-        <app-form-field appearance="outline" class="w-100">
-            <app-label>{{"file_name" | translate}}</app-label>
-            <input appInput
-                   type="text"
-                   [formControl]="fileNameCtrl"
-                   [placeholder]="'file_name' | translate">
+@if (loading()) {
+    <app-dialog-content class="export-loading">
+        <app-progress-spinner [diameter]="32" />
+        <p>{{ 'loading' | translate }}</p>
+    </app-dialog-content>
+    <app-dialog-actions>
+        <button app-button type="button" (click)="cancel()">{{ 'cancel' | translate }}</button>
+    </app-dialog-actions>
+} @else {
+    <app-dialog-content>
+        <app-form-field appearance="outline">
+            <app-label>{{ 'file_name' | translate }}</app-label>
+            <input appInput type="text" [formControl]="fileName" [placeholder]="'file_name' | translate">
         </app-form-field>
 
-        @if (allowFiltersEditOnConfirm() && filters()) {
-            <div class="form-group mt-3">
-                <app-export-filters (filtersValueChange)="onFiltersValueChange($event)"
-                                    [filters]="filters()">
-                </app-export-filters>
-            </div>
+        @if (filters(); as editable) {
+            <app-export-filters [filters]="editable" (filtersValueChange)="onFiltersValueChange($event)" />
         }
-    </div>
+    </app-dialog-content>
 
-    <div class="dialog-actions p-3">
-        <button app-button appearance="flat" (click)="cancel()">
-            {{"cancel" | translate}}
-        </button>
-        <button app-button
-                appearance="raised"
-                color="primary"
-                [promiseBtn]="promiseBtn()"
+    <app-dialog-actions>
+        <button app-button type="button" (click)="cancel()">{{ 'cancel' | translate }}</button>
+        <button app-button appearance="raised" color="primary" type="button"
+                [promiseBtn]="exportPromise()"
                 (click)="export()">
-            {{"download" | translate}}
+            {{ 'download' | translate }}
         </button>
-    </div>
-}
-
-@if (isLoading()) {
-    <div class="loading-container">
-        <div class="dialog-content text-center p-4">
-            <div class="spinner"></div>
-            <p class="mt-2">{{"loading" | translate}}</p>
-        </div>
-        <div class="dialog-actions p-3">
-            <button app-button appearance="flat" (click)="cancel()">
-                {{"cancel" | translate}}
-            </button>
-        </div>
-    </div>
+    </app-dialog-actions>
 }

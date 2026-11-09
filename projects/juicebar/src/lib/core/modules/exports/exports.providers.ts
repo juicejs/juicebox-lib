@@ -1,13 +1,13 @@
 import { inject, provideEnvironmentInitializer, makeEnvironmentProviders } from '@angular/core';
 import { ExportsTranslationPipe } from './i18n/exports.translation';
-import { ModuleCustomization, EXPORTS_CUSTOMIZATION, JuicebarFeature } from '../../../config/base-app.config';
+import { ExportsCustomization, EXPORTS_CUSTOMIZATION, JuicebarFeature } from '../../../config/base-app.config';
 import { ExportsRoute } from './exports.route';
 import { applyComponentOverrides } from '../../../config/route-customization';
 import { JuiceboxService } from '../../shared/services/Juicebox.service';
 import { ExportsService } from './exports.service';
 import { AutoLanguagePipe } from '../../shared/pipes/auto-language.pipe';
 
-export function provideExports(customization?: ModuleCustomization): JuicebarFeature {
+export function provideExports(customization?: ExportsCustomization): JuicebarFeature {
   return {
     routes: applyComponentOverrides(ExportsRoute, customization?.componentOverrides),
     providers: makeEnvironmentProviders([

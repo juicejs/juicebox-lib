@@ -2,15 +2,13 @@ import {inject, Injectable} from '@angular/core';
 import {Result} from '../../shared/types/Result';
 import {JuiceboxService} from '../../shared/services/Juicebox.service';
 import {Juice} from '../../shared/services/juice.service';
-import {ExportTemplate} from './types/ExportTemplate';
+import {ExportTemplate, ExportTemplateFormValue} from './types/ExportTemplate';
 import {ExportFilter, FilterOptions, FilterValue} from './types/ExportFilter';
 import {ExportColumn} from './types/ExportColumn';
 import {ExportStrategy} from './types/ExportStrategy';
 import {ExportDataOptions, FilterFetcherOptions, GetExportTemplateOptions, GetExportTemplatesOptions} from './types/ExportServiceOptions';
 
-@Injectable({
-  providedIn: 'root'}
-)
+@Injectable({providedIn: 'root'})
 export class ExportsService {
     private juice = inject(Juice);
     private juicebox = inject(JuiceboxService);
@@ -34,7 +32,7 @@ export class ExportsService {
         );
     }
 
-    createExportTemplate(data: any): Promise<Result<ExportTemplate>> {
+    createExportTemplate(data: ExportTemplateFormValue): Promise<Result<ExportTemplate>> {
         return this.juice.request(
             'exports:template',
             'createExportTemplate',
@@ -42,7 +40,7 @@ export class ExportsService {
         );
     }
 
-    editExportTemplate(id: string, data: any): Promise<Result<ExportTemplate>> {
+    editExportTemplate(id: string, data: ExportTemplateFormValue): Promise<Result<ExportTemplate>> {
         return this.juice.request(
             'exports:template',
             'editExportTemplate',
@@ -50,7 +48,8 @@ export class ExportsService {
         );
     }
 
-    editExportTemplateFilters(id: string, data: any): Promise<Result> {
+    /** Stores the filters the Excel dialog changed before exporting */
+    editExportTemplateFilters(id: string, data: {filters: Record<string, unknown>}): Promise<Result> {
         return this.juice.request(
             'exports:template',
             'editExportTemplateFilters',
@@ -106,11 +105,13 @@ export class ExportsService {
         );
     }
 
-    exportData(exportTemplateId: string, exportStrategyKey: string, options: ExportDataOptions): Promise<Blob> {
+    /** The exported file; `timeoutMs` cancels a download that takes longer */
+    exportData(exportTemplateId: string, exportStrategyKey: string, options: ExportDataOptions, timeoutMs?: number): Promise<Blob> {
         return this.juice.requestBinary(
             'exports',
             'exportData',
-            [exportTemplateId, exportStrategyKey, options]
+            [exportTemplateId, exportStrategyKey, options],
+            timeoutMs
         );
     }
 

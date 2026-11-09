@@ -260,6 +260,18 @@ export const exportsDictionary = {
     "en_GB": "Select options",
     "de_DE": "Optionen auswählen"
   },
+  "error": {
+    "en_GB": "Error",
+    "de_DE": "Fehler"
+  },
+  "export_timeout": {
+    "en_GB": "Export is taking too long and was cancelled. Try narrowing your filters or contact support.",
+    "de_DE": "Der Export dauert zu lange und wurde abgebrochen. Bitte engen Sie die Filter ein oder wenden Sie sich an den Support."
+  },
+  "filters_not_saved": {
+    "en_GB": "The changed filters could not be saved",
+    "de_DE": "Die geänderten Filter konnten nicht gespeichert werden"
+  },
   "filters_load_failed": {
     "en_GB": "The filters could not be loaded. The export uses the template's saved filters.",
     "de_DE": "Die Filter konnten nicht geladen werden. Der Export verwendet die gespeicherten Filter der Vorlage.",

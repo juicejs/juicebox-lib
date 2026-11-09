@@ -1,7 +1,6 @@
-import {Component, DestroyRef, inject, input, ChangeDetectionStrategy, signal, computed, effect, OnInit} from '@angular/core';
+import {Component, DestroyRef, inject, input, signal, computed, effect, OnInit} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {Subject, of, from, merge} from 'rxjs';
-import {catchError, debounceTime, distinctUntilChanged, startWith, switchMap, tap} from 'rxjs/operators';
+import {catchError, debounceTime, distinctUntilChanged, from, merge, of, startWith, Subject, switchMap, tap} from 'rxjs';
 import {AbstractControl, FormGroup} from '@angular/forms';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {ExportsTranslationPipe} from '../../i18n/exports.translation';
@@ -23,7 +22,6 @@ let nextId = 0;
     selector: 'app-export-multiselect-async',
     templateUrl: './async-multiselect.component.html',
     styleUrls: ['./async-multiselect.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         SHARED_IMPORTS,
         ExportsTranslationPipe
@@ -37,7 +35,7 @@ export class AsyncMultiselectComponent implements OnInit {
     private readonly exportsService = inject(ExportsService);
     private readonly juicebox = inject(JuiceboxService);
     private readonly destroyRef = inject(DestroyRef);
-    private readonly i18n = new ExportsTranslationPipe(this.juicebox);
+    private readonly i18n = inject(ExportsTranslationPipe);
     private readonly language = this.juicebox.getLanguage();
     private readonly PAGE_SIZE = 20;
 

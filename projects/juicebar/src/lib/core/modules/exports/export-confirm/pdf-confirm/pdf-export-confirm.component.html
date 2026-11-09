@@ -1,44 +1,31 @@
-<div class="dialog-header">
-    <h2>{{"confirm_export" | translate}}</h2>
-</div>
+<app-dialog-title>{{ 'confirm_export' | translate }}</app-dialog-title>
 
-<div class="dialog-content p-3">
-    <div class="form-group mb-3">
-        <app-form-field appearance="outline" class="w-100">
-            <app-label>{{"zip_file_name" | translate}}</app-label>
-            <input appInput
-                   type="text"
-                   [formControl]="fileNameCtrl"
-                   [placeholder]="'zip_file_name' | translate">
-        </app-form-field>
-    </div>
+<app-dialog-content>
+    <app-form-field appearance="outline">
+        <app-label>{{ 'zip_file_name' | translate }}</app-label>
+        <input appInput type="text" [formControl]="fileName" [placeholder]="'zip_file_name' | translate">
+    </app-form-field>
 
-    <div class="form-group mb-3">
-        <app-form-field appearance="outline" class="w-100">
-            <app-label>{{"file_name" | translate}}</app-label>
-            <app-select [value]="selectedFileNameProperty()"
-                        (selectionChange)="selectedFileNameProperty.set($event.value)"
-                        [clearable]="true"
-                        [searchable]="true"
-                        [placeholder]="'file_name' | translate"
-                        searchPlaceholder="{{ 'search' | translate }}">
-                @for (item of fileNameProperties(); track item.id) {
-                    <app-option [value]="item.id">{{ item.label | autoLanguage }}</app-option>
-                }
-            </app-select>
-        </app-form-field>
-    </div>
-</div>
+    <app-form-field appearance="outline">
+        <app-label>{{ 'file_name' | translate }}</app-label>
+        <app-select [value]="fileNameColumn()"
+                    (selectionChange)="fileNameColumn.set($event.value)"
+                    [clearable]="true"
+                    [searchable]="true"
+                    [placeholder]="'file_name' | translate"
+                    [searchPlaceholder]="'search' | translate">
+            @for (column of fileNameColumns(); track column.id) {
+                <app-option [value]="column.id">{{ (column.label || column.id) | autoLanguage }}</app-option>
+            }
+        </app-select>
+    </app-form-field>
+</app-dialog-content>
 
-<div class="dialog-actions p-3">
-    <button app-button appearance="flat" (click)="cancel()">
-        {{"cancel" | translate}}
-    </button>
-    <button app-button
-            appearance="raised"
-            color="primary"
-            [promiseBtn]="promiseBtn()"
+<app-dialog-actions>
+    <button app-button type="button" (click)="cancel()">{{ 'cancel' | translate }}</button>
+    <button app-button appearance="raised" color="primary" type="button"
+            [promiseBtn]="exportPromise()"
             (click)="export()">
-        {{"download" | translate}}
+        {{ 'download' | translate }}
     </button>
-</div>
+</app-dialog-actions>

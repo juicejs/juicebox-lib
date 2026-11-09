@@ -6,8 +6,9 @@ import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 export class ColumnLabelsPipe implements PipeTransform {
     private autoLanguage = new AutoLanguagePipe(inject(JuiceboxService));
 
-    transform(columns: any[], newLineSeparator = false): string {
+    /** A column (or filter) without a label shows its id, as in QC */
+    transform(columns: Array<{id: string, label?: unknown}> | undefined, newLineSeparator = false): string {
         if (!columns?.length) return '';
-        return columns.map(c => this.autoLanguage.transform(c.label)).join(newLineSeparator ? ' \n' : ', ');
+        return columns.map(c => this.autoLanguage.transform((c.label || c.id) as string)).join(newLineSeparator ? ' \n' : ', ');
     }
 }

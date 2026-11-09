@@ -1,13 +1,4 @@
 <div class="parent">
-    <div class="text-right mb-3">
-        <button app-button
-                appearance="raised"
-                color="primary"
-                (click)="toWizard()"
-                [NoPermissionDisable]="'data-export:role#create'">{{'create' | translate}}
-        </button>
-    </div>
-
     <app-data-table
         [rows]="rows()"
         [columns]="columns()"

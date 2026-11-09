@@ -61,6 +61,22 @@ export interface UsersCustomization extends ModuleCustomization {
   options?: UsersOptions;
 }
 
+/** Project-specific behaviour of the exports module */
+export interface ExportsOptions {
+  /**
+   * Filters some users don't see, e.g. Quality Circle's mine-only users:
+   * `{filter: 'show_modules', permission: 'modules:role#mine-only', unless: 'modules:role#super-admin'}`.
+   * The filter keeps its value; it is only not shown.
+   */
+  hiddenFilters?: Array<{filter: string; permission: string; unless?: string}>;
+  /** An export taking longer is cancelled with a message (Quality Circle: 90000); without it, a download waits */
+  downloadTimeoutMs?: number;
+}
+
+export interface ExportsCustomization extends ModuleCustomization {
+  options?: ExportsOptions;
+}
+
 /** Project-specific behaviour of the locations module */
 export interface LocationsOptions {
   /** Details tabs this project does not use; they show by default */
@@ -123,7 +139,7 @@ export interface BaseAppConfig {
 
 export const BASE_APP_CONFIG = new InjectionToken<BaseAppConfig>('BASE_APP_CONFIG');
 export const USERS_CUSTOMIZATION = new InjectionToken<UsersCustomization>('USERS_CUSTOMIZATION');
-export const EXPORTS_CUSTOMIZATION = new InjectionToken<ModuleCustomization>('EXPORTS_CUSTOMIZATION');
+export const EXPORTS_CUSTOMIZATION = new InjectionToken<ExportsCustomization>('EXPORTS_CUSTOMIZATION');
 export const LOCATIONS_CUSTOMIZATION = new InjectionToken<LocationsCustomization>('LOCATIONS_CUSTOMIZATION');
 
 export interface JuicebarFeature {
