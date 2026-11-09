@@ -1,0 +1,42 @@
+<app-dialog-title>{{ 'edit_media' | translate }}</app-dialog-title>
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <app-dialog-content>
+    @if (data.mediaTypes.length) {
+      <app-form-field appearance="outline">
+        <app-label>{{ 'media_type' | translate }} *</app-label>
+        <app-select formControlName="mediaType">
+          @for (mediaType of data.mediaTypes; track mediaType.key) {
+            <app-option [value]="mediaType.key">{{ mediaType.title | autoLanguage }}</app-option>
+          }
+        </app-select>
+      </app-form-field>
+    }
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'name' | translate }}</app-label>
+      <input appInput type="text" formControlName="name" />
+    </app-form-field>
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'description' | translate }}</app-label>
+      <input appInput type="text" formControlName="description" />
+    </app-form-field>
+
+    <!-- The text in another language shows until this one has its own, as in the old dialog -->
+    <app-form-field appearance="outline">
+      <app-label>{{ 'title' | translate }}</app-label>
+      <input appInput type="text" formControlName="title" [placeholder]="file.title | autoLanguage" />
+    </app-form-field>
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'alt_text' | translate }}</app-label>
+      <input appInput type="text" formControlName="altText" [placeholder]="file.alt_text | autoLanguage" />
+    </app-form-field>
+  </app-dialog-content>
+
+  <app-dialog-actions align="end">
+    <button app-button type="button" (click)="close()">{{ 'cancel' | translate }}</button>
+    <button app-button appearance="raised" color="primary" type="submit">{{ 'save' | translate }}</button>
+  </app-dialog-actions>
+</form>

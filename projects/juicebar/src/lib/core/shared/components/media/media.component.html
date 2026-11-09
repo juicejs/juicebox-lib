@@ -1,0 +1,132 @@
+<div class="media-toolbar">
+  <button app-button appearance="raised" color="primary" type="button" [disabled]="addDisabled()" (click)="add()">
+    <app-icon [icon]="'add'" />
+    {{ 'add_media' | translate }}
+  </button>
+</div>
+
+<div class="media-content">
+  <app-data-table
+    class="media-table"
+    [rows]="rows()"
+    [columns]="columns()"
+    [totalCount]="rows().length"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="pageSizeOptions"
+    [emptyMessage]="'no_media' | translate"
+    (rowClick)="select($event)"
+  >
+    <ng-template [cellDef]="'order'" let-row>
+      <div class="dt-row-actions">
+        <button
+          app-button
+          appearance="icon"
+          type="button"
+          [attr.aria-label]="'move_up' | translate"
+          [appTooltip]="'move_up' | translate"
+          (click)="$event.stopPropagation(); move(row, -1)"
+        >
+          <app-icon [icon]="'arrow_upward'" />
+        </button>
+        <button
+          app-button
+          appearance="icon"
+          type="button"
+          [attr.aria-label]="'move_down' | translate"
+          [appTooltip]="'move_down' | translate"
+          (click)="$event.stopPropagation(); move(row, 1)"
+        >
+          <app-icon [icon]="'arrow_downward'" />
+        </button>
+      </div>
+    </ng-template>
+
+    <ng-template [cellDef]="'name'" let-row>{{ row.file.name | autoLanguage }}</ng-template>
+    <ng-template [cellDef]="'mediaType'" let-row>{{ row.file.mediaType | autoLanguage }}</ng-template>
+    <ng-template [cellDef]="'type'" let-row>{{ row.file.type }}</ng-template>
+
+    <ng-template [cellDef]="'fileName'" let-row>
+      @if (row.previewable && row.url) {
+        <!-- The row's click previews it too; the button lets the keyboard do the same -->
+        <button
+          type="button"
+          class="media-file-name"
+          [attr.aria-label]="('preview' | translate) + ': ' + row.file.fileName"
+          (click)="$event.stopPropagation(); select(row)"
+        >
+          {{ row.file.fileName }}
+        </button>
+      } @else {
+        {{ row.file.fileName }}
+      }
+    </ng-template>
+
+    <ng-template [cellDef]="'actions'" let-row>
+      <div class="dt-row-actions">
+        @if (!row.previewable && row.url) {
+          <a
+            app-button
+            appearance="icon"
+            target="_blank"
+            rel="noopener"
+            download
+            [href]="row.url"
+            [attr.aria-label]="('download' | translate) + ': ' + row.file.fileName"
+            [appTooltip]="'download' | translate"
+            (click)="$event.stopPropagation()"
+          >
+            <app-icon [icon]="'download'" />
+          </a>
+        }
+        @if (row.file._id && !hideEditButton()) {
+          <button
+            app-button
+            appearance="icon"
+            type="button"
+            [attr.aria-label]="'edit' | translate"
+            [appTooltip]="'edit' | translate"
+            (click)="$event.stopPropagation(); edit(row)"
+          >
+            <app-icon [icon]="'edit'" />
+          </button>
+        }
+        @if (enableCopyUrl() && row.url) {
+          <button
+            app-button
+            appearance="icon"
+            type="button"
+            [attr.aria-label]="'copy_img_url' | translate"
+            [appTooltip]="'copy_img_url' | translate"
+            (click)="$event.stopPropagation(); copyUrl(row)"
+          >
+            <app-icon [icon]="'content_copy'" />
+          </button>
+        }
+        @if (row.file._id && !hideDeleteButton()) {
+          <button
+            app-button
+            appearance="icon"
+            type="button"
+            class="danger"
+            [attr.aria-label]="'delete' | translate"
+            [appTooltip]="'delete' | translate"
+            (click)="$event.stopPropagation(); remove(row)"
+          >
+            <app-icon [icon]="'delete'" />
+          </button>
+        }
+      </div>
+    </ng-template>
+  </app-data-table>
+
+  @if (preview(); as shown) {
+    <!-- Stored files can be on any origin, so NgOptimizedImage does not apply -->
+    <aside class="media-preview" [attr.aria-label]="'preview' | translate">
+      @if (shown.video) {
+        <video [src]="shown.url" controls preload="metadata"></video>
+      } @else {
+        <img [src]="shown.url" [alt]="shown.alt" />
+      }
+    </aside>
+  }
+</div>

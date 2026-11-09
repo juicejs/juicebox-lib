@@ -44,6 +44,9 @@ export * from './lib/core/shared/components/listing/listing.component';
 export * from './lib/core/shared/components/filter-container/filter-container.component';
 export * from './lib/core/shared/components/page-size-selector/page-size-selector.component';
 export * from './lib/core/shared/components/filter-bar/filter-bar.component';
+// A record's files (the old juicebox app-media), for the modules that have media
+export * from './lib/core/shared/components/media/media.component';
+export * from './lib/core/shared/components/media/media.types';
 // Opened by a project's own "Create vendor" listing button, as in the old company-profile module
 export * from './lib/core/modules/users/listing/create-vendor/create-vendor.component';
 

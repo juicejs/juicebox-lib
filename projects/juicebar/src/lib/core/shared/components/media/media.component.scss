@@ -1,0 +1,51 @@
+:host {
+  display: block;
+}
+
+.media-toolbar {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.media-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.media-table {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.media-file-name {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.media-preview {
+  flex: 0 0 160px;
+
+  img,
+  video {
+    display: block;
+    max-width: 100%;
+    border-radius: var(--radius-sm);
+  }
+}
+
+@media (max-width: 768px) {
+  .media-content {
+    flex-direction: column;
+  }
+
+  .media-preview {
+    flex-basis: auto;
+  }
+}

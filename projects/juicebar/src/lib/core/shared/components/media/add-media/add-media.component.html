@@ -1,0 +1,78 @@
+<app-dialog-title [closable]="!uploading()">{{ 'add_media' | translate }}</app-dialog-title>
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <app-dialog-content>
+    <app-form-field appearance="outline">
+      <app-label>{{ 'media_type' | translate }} *</app-label>
+      <app-select formControlName="mediaType" [searchable]="true">
+        @for (mediaType of data.mediaTypes; track mediaType.key) {
+          <app-option [value]="mediaType.key">{{ mediaType.title | autoLanguage }}</app-option>
+        }
+      </app-select>
+    </app-form-field>
+
+    @if (typeDescription(); as description) {
+      <p>{{ description }}</p>
+    }
+
+    @if (types().length) {
+      <app-form-field appearance="outline">
+        <app-label>{{ 'type' | translate }} *</app-label>
+        <app-select formControlName="type">
+          @for (type of types(); track type.name) {
+            <app-option [value]="type.name">{{ type.name }}</app-option>
+          }
+        </app-select>
+      </app-form-field>
+
+      <app-form-field appearance="outline">
+        <app-label>{{ 'file' | translate }} *</app-label>
+        <app-file-input
+          formControlName="file"
+          [accept]="data.accept"
+          [maxSize]="maxSize()"
+          [preview]="true"
+          [busy]="uploading()"
+          [label]="'select_file' | translate"
+          [removeLabel]="'remove_file' | translate"
+          [typeErrorLabel]="'file_type_not_accepted' | translate"
+          [sizeErrorLabel]="'file_too_large' | translate"
+        />
+      </app-form-field>
+
+      <app-form-field appearance="outline">
+        <app-label>{{ 'name' | translate }}</app-label>
+        <input appInput type="text" formControlName="name" />
+      </app-form-field>
+
+      <app-form-field appearance="outline">
+        <app-label>{{ 'description' | translate }}</app-label>
+        <input appInput type="text" formControlName="description" />
+      </app-form-field>
+
+      <app-form-field appearance="outline">
+        <app-label>{{ 'title' | translate }}</app-label>
+        <input appInput type="text" formControlName="title" />
+      </app-form-field>
+
+      <app-form-field appearance="outline">
+        <app-label>{{ 'alt_text' | translate }}</app-label>
+        <input appInput type="text" formControlName="altText" />
+      </app-form-field>
+    }
+  </app-dialog-content>
+
+  <app-dialog-actions align="end">
+    <button app-button type="button" [disabled]="uploading()" (click)="close()">{{ 'cancel' | translate }}</button>
+    <button
+      app-button
+      appearance="raised"
+      color="primary"
+      type="submit"
+      [disabled]="status() !== 'VALID'"
+      [promiseBtn]="savePromise()"
+    >
+      {{ 'save' | translate }}
+    </button>
+  </app-dialog-actions>
+</form>
