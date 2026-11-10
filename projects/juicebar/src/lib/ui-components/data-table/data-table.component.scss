@@ -178,8 +178,10 @@
   th:first-child, td:first-child { padding-left: 20px; }
   th:last-child, td:last-child { padding-right: 20px; }
 
-  // A row under the pointer is tinted with the brand colour
+  // A row under the pointer is tinted with the brand colour. Every listing's rows are at least this tall, whatever
+  // their cells hold (a table row's height is its minimum).
   tbody tr, tr[cdk-row] {
+    height: 50px;
     transition: background 0.08s;
     &:last-child td { border-bottom: none; }
     &:hover { background: rgba(var(--color-secondary-rgb), 0.06); }

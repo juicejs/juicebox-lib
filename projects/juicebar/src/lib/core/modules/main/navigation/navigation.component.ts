@@ -74,6 +74,12 @@ export class NavigationComponent implements OnInit {
   protected sidebarService = inject(SidebarService);
   public theme = this.themeService.theme;
   private readonly brand = inject(BrandService);
+  /** The signed-in user, for the avatar and its menu */
+  private readonly signedIn = this.juicebox.getUser() as UserShape | null;
+  protected readonly userName = [this.signedIn?.firstname, this.signedIn?.lastname].filter(Boolean).join(' ')
+    || this.signedIn?.email || '';
+  /** Under the name in the menu, when the name isn't the address itself */
+  protected readonly userEmail = this.signedIn?.email && this.signedIn.email !== this.userName ? this.signedIn.email : '';
   /** The project's logo, or the user's organisation logo */
   protected readonly logo = signal(this.brand.sidebarLogo());
 
@@ -196,6 +202,14 @@ export class NavigationComponent implements OnInit {
   /** An organisation logo that does not load gives way to the project's */
   protected onLogoError() {
     if (this.logo() !== this.brand.logo) this.logo.set(this.brand.logo);
+  }
+
+  protected goToProfile() {
+    void this.router.navigate(['main/user-profile/details']);
+  }
+
+  protected logout() {
+    this.juicebox.logout();
   }
 
   toggleTheme() {

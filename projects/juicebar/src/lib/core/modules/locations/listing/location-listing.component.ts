@@ -152,7 +152,6 @@ export class LocationListingComponent implements OnInit, OnDestroy {
         subject: this.i18n.transform('location_list'),
         link: 'main/location',
       });
-      this.juicebox.setPageHeader({scope: '/main/location', title: this.i18n.transform('locations')});
       this.juicebox.setActionButtons([{
         title: this.i18n.transform('add_new'),
         type: 'btn-primary',
@@ -173,7 +172,6 @@ export class LocationListingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     clearTimeout(this.filterTimer);
-    if (!this.pane) this.juicebox.setPageHeader(null);
   }
 
   protected onFilter(key: string, value: string): void {

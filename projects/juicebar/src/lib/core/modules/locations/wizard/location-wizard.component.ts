@@ -1,4 +1,4 @@
-import {Component, computed, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
 import {Router} from '@angular/router';
 import {ButtonComponent} from '../../../../ui-components';
 import {HasPermissionDirective} from '../../../shared/directives/HasPermissionDirective';
@@ -20,7 +20,7 @@ import {LocationCategory, LocationType} from '../locations.types';
   imports: [LocationFieldsComponent, ButtonComponent, HasPermissionDirective, PromiseButtonDirective, LocationsTranslationPipe],
   providers: [LocationsTranslationPipe],
 })
-export class LocationWizardComponent implements OnInit, OnDestroy {
+export class LocationWizardComponent implements OnInit {
   private readonly locations = inject(LocationsService);
   private readonly configuration = inject(ConfigurationService);
   private readonly juicebox = inject(JuiceboxService);
@@ -44,7 +44,6 @@ export class LocationWizardComponent implements OnInit, OnDestroy {
       subject: this.i18n.transform('create_location'),
       link: 'main/location',
     });
-    this.juicebox.setPageHeader({scope: '/main/location/location-wizard', title: this.i18n.transform('create_location')});
 
     const [types, categories, countries] = await Promise.all([
       loadLocationTypes(this.configuration, this.juicebox),
@@ -59,10 +58,6 @@ export class LocationWizardComponent implements OnInit, OnDestroy {
     const country = countries.find(option => option.code === this.juicebox.getUserLanguage(true));
     const countryControl = this.form.controls.address.controls.country;
     if (country && !countryControl.value) countryControl.setValue(country._id);
-  }
-
-  ngOnDestroy(): void {
-    this.juicebox.setPageHeader(null);
   }
 
   protected create(): void {

@@ -21,22 +21,29 @@
   font-size: 13px;
 }
 
+// On one line, so every row has the same height; the tooltip lists them all
 .group-chips {
   display: flex;
   gap: 4px;
-  flex-wrap: wrap;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .group-chip {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
   font-size: 11.5px;
   padding: 2px 10px;
   border-radius: 999px;
   background: var(--color-grey-200);
   color: var(--color-text-secondary);
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .group-chip-more {
+  flex-shrink: 0;
   font-size: 11px;
   padding: 1.5px 4px;
   border-radius: 4px;
@@ -73,13 +80,13 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border: 1px solid rgba(var(--color-secondary-rgb), 0.22);
-  border-radius: 12px;
+  border-radius: 9px;
   background: var(--color-avatar-bg);
   color: var(--color-avatar-text);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -97,4 +104,11 @@ a.name-cell:hover {
   .name-text {
     text-decoration: underline;
   }
+}
+
+// Rows as tall as the other listings' (50px), also with the initials tile, so a page of ten fits on the first screen
+// (td[cdk-cell], to outweigh the global table rule)
+:host ::ng-deep .data-table td[cdk-cell] {
+  padding-top: 10px;
+  padding-bottom: 10px;
 }

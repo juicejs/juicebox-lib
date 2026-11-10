@@ -2249,11 +2249,6 @@ export const usersDictionary = {
     "en_GB": "Must include country",
     "de_DE": "Muss Land enthalten"
   },
-  "users_subtitle": {
-    "en_GB": "Manage members, roles and access.",
-    "de_DE": "Mitglieder, Rollen und Zugriffe verwalten.",
-    "hr_HR": "Upravljajte članovima, ulogama i pristupom."
-  },
   "rows_per_page": {
     "en_GB": "Rows per page",
     "de_DE": "Zeilen pro Seite",

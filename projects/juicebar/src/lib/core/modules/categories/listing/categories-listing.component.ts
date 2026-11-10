@@ -129,7 +129,6 @@ export class CategoriesListingComponent implements OnInit, OnDestroy {
         subject: this.i18n.transform('categories_tree'),
         link: '',
       });
-      this.juicebox.setPageHeader({scope: '/main/categories', title: this.i18n.transform('categories')});
       this.juicebox.setActionButtons([{
         title: this.i18n.transform('create'),
         type: 'btn-primary',
@@ -155,7 +154,6 @@ export class CategoriesListingComponent implements OnInit, OnDestroy {
       showInactive: this.showInactive(),
       display: this.display(),
     } satisfies CategoriesListingState);
-    this.juicebox.setPageHeader(null);
   }
 
   protected open(node: TreeNode): void {

@@ -91,6 +91,30 @@
       </button>
     }
 
+    <!-- The user: the way to the profile and out -->
+    <button type="button" class="dropdown-trigger dropdown-trigger--compact user-menu-btn" [cdkMenuTriggerFor]="userMenu">
+      <span class="dropdown-trigger-label">{{ userName }}</span>
+      <app-icon [icon]="'keyboard_arrow_down'" class="dropdown-trigger-arrow"></app-icon>
+    </button>
+
+    <ng-template #userMenu>
+      <div class="dropdown-panel dropdown-panel--compact user-menu" cdkMenu>
+        @if (userEmail) {
+          <div class="user-menu-head">{{ userEmail }}</div>
+        }
+        <div class="dropdown-panel-options">
+          <button class="dropdown-option" cdkMenuItem (click)="goToProfile()">
+            <app-icon [icon]="'person'" class="user-menu-icon"></app-icon>
+            {{ 'view_profile' | translate }}
+          </button>
+          <button class="dropdown-option" cdkMenuItem (click)="logout()">
+            <app-icon [icon]="'logout'" class="user-menu-icon"></app-icon>
+            {{ 'logout' | translate }}
+          </button>
+        </div>
+      </div>
+    </ng-template>
+
     <ng-template #orgMenu>
       <div class="dropdown-panel" cdkMenu>
         <div class="dropdown-panel-search" (click)="$event.stopPropagation()">

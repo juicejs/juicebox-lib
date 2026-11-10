@@ -3,9 +3,9 @@
   display: block;
 }
 
-// Starts under the page's title, as the other create pages; the wizard's steps, when shown, keep their own space
+// As the other create pages; the wizard's steps, when shown, keep their own space above
 .details-page {
-  padding: 0 var(--page-gutter) var(--page-gutter);
+  padding: 24px var(--page-gutter) var(--page-gutter);
   display: grid;
   grid-template-columns: minmax(0, 560px);
   justify-content: start;

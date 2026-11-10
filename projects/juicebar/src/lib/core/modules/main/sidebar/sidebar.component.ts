@@ -1,4 +1,4 @@
-import {Component, inject, OnDestroy, OnInit, TemplateRef, ChangeDetectionStrategy, signal, computed, Pipe, PipeTransform} from '@angular/core';
+import {Component, inject, OnDestroy, OnInit, TemplateRef, ChangeDetectionStrategy, signal, Pipe, PipeTransform} from '@angular/core';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {SidebarItem, SidebarService} from '../../../shared/services/sidebar.service';
 import {SocketService} from '../../../shared/services/socket.service';
@@ -161,22 +161,9 @@ export class SidebarComponent implements OnInit, OnDestroy{
 
     protected readonly menu = signal<Array<any>>([]);
     protected readonly userName = signal<string>('');
-    protected readonly userFirstName = signal<string>('');
-    protected readonly userLastName = signal<string>('');
     protected readonly userID = signal<string>('');
-    protected readonly organisationName = signal<string>('');
 
-    protected readonly userInitials = computed(() => {
-        const first = this.userFirstName();
-        const last = this.userLastName();
-        return ((first[0] ?? '') + (last[0] ?? '')).toUpperCase();
-    });
 
-    protected readonly userDisplayName = computed(() => {
-        const first = this.userFirstName();
-        const last = this.userLastName();
-        return (first && last) ? `${first} ${last}` : this.userName();
-    });
 
     protected readonly userPicture = signal<string | null>(null);
     protected readonly imageChangedEvent = signal<any>('');
@@ -284,15 +271,10 @@ export class SidebarComponent implements OnInit, OnDestroy{
         this.user.set(user);
         if (!user) return;
 
-        this.userFirstName.set(user.firstname ?? '');
-        this.userLastName.set(user.lastname ?? '');
         this.userName.set((user.firstname && user.lastname) ? `${user.firstname} ${user.lastname}` : `${user.email}`);
         this.userID.set(user._id);
         this.userPicture.set(user.attributes && user.attributes.settings && user.attributes.settings.profile_picture ? user.attributes.settings.profile_picture : null);
 
-        this.juicebox.getLoggedInOrganisation().then(res => {
-            this.organisationName.set(res?.name ?? '');
-        });
     }
 
     fileChangeEvent(event: any): void {
@@ -323,11 +305,4 @@ export class SidebarComponent implements OnInit, OnDestroy{
         this.sidebarService.setSidebarCollapsed(this.juicebox.collapsed);
     }
 
-    goToProfile() {
-        this.router.navigate(['main/user-profile/details']);
-    }
-
-    logout() {
-        this.juicebox.logout();
-    }
 }

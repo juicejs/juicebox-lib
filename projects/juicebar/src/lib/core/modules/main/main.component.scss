@@ -15,7 +15,7 @@
     .shell-body {
         display: flex;
         flex: 1;
-        gap: var(--shell-gap);
+        gap: var(--shell-column-gap);
         min-height: 0;
         padding: 0 var(--shell-gap) var(--shell-gap);
     }

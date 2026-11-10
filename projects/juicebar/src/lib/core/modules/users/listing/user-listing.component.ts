@@ -101,7 +101,7 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
         { key: 'email',       label: '', sortable: true },
         { key: 'active',      label: '', width: '100px',  align: 'center', ellipsis: false, sortable: true },
         { key: 'roles_count', label: '', width: '150px', align: 'right', ellipsis: false },
-        { key: 'groups',      label: '', width: '180px' },
+        { key: 'groups',      label: '', width: '220px' },
         { key: 'lastLogin',   label: '', width: '140px', sortable: true },
         { key: 'loginCount',  label: '', width: '140px', align: 'right', sortable: true },
         { key: 'actions',     label: '', width: '96px', align: 'right', ellipsis: false }
@@ -149,11 +149,6 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
             subject: this.i18n.transform('user_list'),
             link: 'main/users'
         });
-        this.juicebox.setPageHeader({
-            scope: '/main/users',
-            title: this.i18n.transform('users'),
-            subtitle: this.i18n.transform('users_subtitle')
-        });
 
         // Main action last and primary; Groups as a secondary (ghost) button, as in the design
         const actionButtons = [{
@@ -189,7 +184,6 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
 
     ngOnDestroy() {
         clearTimeout(this.organisationSearchTimer);
-        if (!this.pane) this.juicebox.setPageHeader(null);
     }
 
     private async fetchUsers(): Promise<any> {

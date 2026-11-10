@@ -171,29 +171,16 @@ export class MainComponent implements OnInit {
         await this.router.navigateByUrl(url);
     }
 
+    /**
+     * Only a record has a header (its name, set by its page with a scope); it stays while its tabs change. Other pages
+     * have none: the breadcrumb already says where you are.
+     */
     private resolvePageHeader(url: string) {
         const current = this.juicebox.pageHeader();
         if (current?.scope && url.startsWith(current.scope)) return;
-
-        const segment = url.split('/')[2]?.split('?')[0];
-        if (!segment || this.pageHeaderOff()) {
-            this.juicebox.setPageHeader(null);
-            return;
-        }
-        const translated = this.globalPipe.transform(segment);
-        const title = (typeof translated === 'string' && !translated.startsWith('@'))
-            ? translated
-            : segment.charAt(0).toUpperCase() + segment.slice(1);
-        this.juicebox.setPageHeader({ title });
+        this.juicebox.setPageHeader(null);
     }
 
-    /** A route with `data: {pageHeader: false}` gets no title from its address (e.g. the user profile) */
-    private pageHeaderOff(): boolean {
-        for (let route: ActivatedRouteSnapshot | null = this.router.routerState.snapshot.root; route; route = route.firstChild) {
-            if (route.routeConfig?.data?.['pageHeader'] === false) return true;
-        }
-        return false;
-    }
 
     /**
      * A record route (`data.splitView`) with a listing route next to it (`data.listingPane`) gets that listing as a

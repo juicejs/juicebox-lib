@@ -1,4 +1,4 @@
-import {Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {Router} from '@angular/router';
 import {ButtonComponent} from '../../../../ui-components';
 import {HasPermissionDirective} from '../../../shared/directives/HasPermissionDirective';
@@ -18,7 +18,7 @@ import {CategoriesTranslationPipe} from '../i18n/categories.translation';
   imports: [CategoryFieldsComponent, ButtonComponent, HasPermissionDirective, PromiseButtonDirective, CategoriesTranslationPipe],
   providers: [CategoriesTranslationPipe],
 })
-export class CategoryWizardComponent implements OnInit, OnDestroy {
+export class CategoryWizardComponent implements OnInit {
   private readonly categories = inject(CategoriesService);
   private readonly configuration = inject(ConfigurationService);
   private readonly juicebox = inject(JuiceboxService);
@@ -36,12 +36,7 @@ export class CategoryWizardComponent implements OnInit, OnDestroy {
       subject: this.i18n.transform('create_category'),
       link: '/main/categories',
     });
-    this.juicebox.setPageHeader({scope: '/main/categories/category-wizard', title: this.i18n.transform('create_category')});
     this.showPublic.set(!!(await loadCategoriesConfiguration(this.configuration)).showPublic);
-  }
-
-  ngOnDestroy(): void {
-    this.juicebox.setPageHeader(null);
   }
 
   protected create(): void {

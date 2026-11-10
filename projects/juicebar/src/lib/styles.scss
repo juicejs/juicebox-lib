@@ -338,6 +338,8 @@
   --sidebar-width: 232px;
   --sidebar-collapsed-width: 64px;
   --shell-gap: 12px;
+  // Between the sidebar and the workspace (and the top bar's columns above them)
+  --shell-column-gap: 8px;
   --shadow-card: none;
   --color-backdrop: rgba(0, 0, 0, 0.6);
 
@@ -1190,7 +1192,7 @@ html, body {
 // =============================================================================
 
 .parent {
-    padding: 0 var(--page-gutter) var(--page-gutter);
+    padding: 24px var(--page-gutter) var(--page-gutter);
     width: 100%;
     max-width: 100%;
     overflow-x: auto;
@@ -1631,6 +1633,12 @@ html, body {
     background: var(--color-grey-200);
   }
 
+  // Reached with the keyboard: the brand colour, not the browser's blue ring
+  &:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: -2px;
+  }
+
   &--selected {
     .dropdown-option-checkbox {
       color: var(--color-secondary);
@@ -1916,6 +1924,6 @@ input.filter-input {
 
 @media (max-width: 768px) {
     .parent {
-        padding: 0 16px 16px;
+        padding: 16px 16px 16px;
     }
 }
