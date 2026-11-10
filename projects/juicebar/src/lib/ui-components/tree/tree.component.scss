@@ -10,12 +10,12 @@
 .tree-filter-input {
   width: 100%;
   height: 36px;
-  padding: 0 36px 0 12px;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
+  padding: 0 36px 0 14px;
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-pill);
   background: var(--color-background);
   color: var(--color-text-primary);
-  font-size: 14px;
+  font-size: 12.5px;
   box-sizing: border-box;
 
   &::placeholder {
@@ -25,14 +25,14 @@
   &:focus {
     outline: none;
     border-color: var(--color-secondary);
-    box-shadow: 0 0 0 2px rgba(var(--color-secondary-rgb), 0.35);
+    box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.15);
   }
 }
 
 .tree-filter-icon {
   position: absolute;
   top: 50%;
-  right: 10px;
+  right: 12px;
   transform: translateY(-50%);
   color: var(--color-text-secondary);
   pointer-events: none;
@@ -68,12 +68,21 @@
   gap: 4px;
   min-height: 36px;
   padding: 2px 8px 2px calc(8px + var(--tree-level, 0) * 24px);
-  border-radius: 4px;
+  border-radius: 10px;
   color: var(--color-text-primary);
+  font-size: 13.5px;
   cursor: pointer;
 
   &:hover {
-    background: var(--color-grey-100);
+    background: rgba(var(--color-secondary-rgb), 0.06);
+  }
+
+  // The current node, e.g. the record that is open
+  &--selected,
+  &--selected:hover {
+    background: var(--color-secondary-active-bg);
+    color: var(--color-secondary-active-text);
+    font-weight: 600;
   }
 
   &:focus-visible {

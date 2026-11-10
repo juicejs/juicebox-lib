@@ -11,6 +11,8 @@ export function buildCategoriesRoute(overrides?: ComponentOverride[]): Routes {
       {
         path: '',
         loadComponent: () => import('./listing/categories-listing.component').then(m => m.CategoriesListingComponent),
+        // The compact list next to an open record (the split view)
+        data: {listingPane: true},
       },
       {
         path: 'category-wizard',
@@ -19,6 +21,7 @@ export function buildCategoriesRoute(overrides?: ComponentOverride[]): Routes {
       },
       {
         path: 'details/:id',
+        data: {splitView: true},
         loadComponent: () => import('./details/category-details.component').then(m => m.CategoryDetailsComponent),
         children: [
           {path: '', redirectTo: 'details-category', pathMatch: 'full'},

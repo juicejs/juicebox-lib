@@ -3,7 +3,7 @@ import { UsersService } from '../users.service';
 import { ListingComponent } from '../../../shared/components/listing/listing.component';
 import { Router, RouterLink } from '@angular/router';
 import { UserTranslationPipe } from '../i18n/user.translation';
-import { DialogService, PageEvent, DataTableComponent, CellDefDirective, HeaderDefDirective, ColumnConfig, SortState } from '../../../../ui-components';
+import { DialogService, PageEvent, DataTableComponent, CellDefDirective, CompactRowDefDirective, HeaderDefDirective, ColumnConfig, SortState } from '../../../../ui-components';
 import { GroupsModalComponent } from './groups-modal/groups-modal.component';
 import { HelperService} from '../../../shared/services/helper.service';
 import { ISearchTerm} from '../../../shared/interfaces/ISearchTerm';
@@ -16,6 +16,15 @@ import { User } from '../models/user.model';
 import { LoginAsAnotherUserComponent } from './login-as-another-user/login-as-another-user.component';
 import { FilterConfig, FilterBarComponent } from '../../../shared/components/filter-bar/filter-bar.component';
 import {SHARED_IMPORTS} from '../../../shared/shared-imports';
+import {injectListingPane, ListingStateService} from '../../../shared/components/listing-pane/listing-pane';
+
+/** What the listing shows, kept for the compact list next to an open user */
+interface UsersListingState {
+    page: number;
+    pageSize: number;
+    sort: ISort;
+    filter: Array<ISearchTerm>;
+}
 
 export interface Sort {
     active: string;
@@ -34,11 +43,16 @@ export interface Sort {
         UserTranslationPipe,
         DataTableComponent,
         CellDefDirective,
+        CompactRowDefDirective,
         HeaderDefDirective,
         RouterLink
     ]
 })
 export class UserListingComponent extends ListingComponent implements OnInit, OnDestroy {
+
+    /** Set when this is the compact list next to an open user (the split view), not the page itself */
+    protected readonly pane = injectListingPane();
+    private readonly listingState = inject(ListingStateService);
 
     protected readonly sortSig = signal<ISort>({ dir: 'asc', prop: 'lastname' });
     protected readonly filterSig = signal<Array<ISearchTerm>>([]);
@@ -86,10 +100,10 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
         { key: 'lastname',    label: '', sortable: true },
         { key: 'email',       label: '', sortable: true },
         { key: 'active',      label: '', width: '100px',  align: 'center', ellipsis: false, sortable: true },
-        { key: 'roles_count', label: '', width: '100px', align: 'right', ellipsis: false },
+        { key: 'roles_count', label: '', width: '150px', align: 'right', ellipsis: false },
         { key: 'groups',      label: '', width: '180px' },
         { key: 'lastLogin',   label: '', width: '140px', sortable: true },
-        { key: 'loginCount',  label: '', width: '100px', align: 'right', sortable: true },
+        { key: 'loginCount',  label: '', width: '140px', align: 'right', sortable: true },
         { key: 'actions',     label: '', width: '96px', align: 'right', ellipsis: false }
     ];
 
@@ -114,6 +128,21 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
             actions: this.i18n.transform('actions')
         };
         this.tableColumns = this.tableColumns.map(c => ({ ...c, label: labels[c.key] || c.label }));
+
+        this.loggedInOrganisationId = this.juicebox.getUser().organisation_id;
+
+        // The compact list: the rows the listing showed last, without the page's title, buttons and filters
+        if (this.pane) {
+            const state = this.listingState.restore<UsersListingState>('users');
+            if (state) {
+                this.pageSig.set(state.page);
+                this.itemsPerPageSig.set(state.pageSize);
+                this.sortSig.set(state.sort);
+                this.filterSig.set(state.filter);
+            }
+            await this.fetchUsers();
+            return;
+        }
 
         this.juicebox.navigationEvent({
             location: this.i18n.transform('users'),
@@ -147,8 +176,6 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
         actionButtons.push(...this.usersService.customActionButtons);
         this.juicebox.setActionButtons(actionButtons);
 
-        this.loggedInOrganisationId = this.juicebox.getUser().organisation_id;
-
         await Promise.all([
             this.fetchUsers(),
             this.getOrganisations(),
@@ -162,10 +189,16 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
 
     ngOnDestroy() {
         clearTimeout(this.organisationSearchTimer);
-        this.juicebox.setPageHeader(null);
+        if (!this.pane) this.juicebox.setPageHeader(null);
     }
 
     private async fetchUsers(): Promise<any> {
+        this.listingState.save('users', {
+            page: this.pageSig(),
+            pageSize: this.itemsPerPageSig(),
+            sort: this.sortSig(),
+            filter: this.filterSig(),
+        } satisfies UsersListingState);
         const result = await this.usersService.fetch(this.loggedInOrganisationId, this.pageSig() - 1, this.itemsPerPageSig(), this.sortSig(), this.filterSig());
         if (!result.success)
             return false;
@@ -457,7 +490,6 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
             {
                 key: 'organisation',
                 label: this.i18n.transform('organisation'),
-                icon: 'business',
                 placeholder: this.i18n.transform('select_organisation'),
                 options: this.organisations(),
                 selectedValue: this.selectedOrganisation(),
@@ -466,7 +498,6 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
             {
                 key: 'role',
                 label: this.i18n.transform('role'),
-                icon: 'admin_panel_settings',
                 placeholder: this.i18n.transform('select_role'),
                 options: this.filteredRoles(),
                 selectedValue: this.selectedRole(),
@@ -479,7 +510,6 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
             configs.push({
                 key: 'group',
                 label: this.i18n.transform('group'),
-                icon: 'group',
                 placeholder: this.i18n.transform('select_group'),
                 options: this.filteredGroups(),
                 selectedValue: this.selectedGroup(),

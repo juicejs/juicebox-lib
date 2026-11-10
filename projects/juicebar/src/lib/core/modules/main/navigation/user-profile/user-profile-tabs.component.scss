@@ -4,19 +4,27 @@
   height: 100%;
 }
 
+// Pills, as app-tabs has them
 .tab-nav {
   display: flex;
-  gap: 0.25rem;
-  padding: 0.5rem 1rem 0;
-  border-bottom: 1px solid var(--color-border, #e0e0e0);
+  gap: 8px;
+  padding: 2px var(--page-gutter) 20px;
+  border-bottom: 1px solid var(--color-border);
 
   button {
-    border-radius: 4px 4px 0 0;
-    border-bottom: 2px solid transparent;
+    height: 32px;
+    padding: 0 16px;
+    background: var(--color-grey-200);
+    color: var(--color-text-secondary);
+
+    &:hover:not(.active) {
+      background: var(--color-grey-300);
+      color: var(--color-text-primary);
+    }
 
     &.active {
-      border-bottom-color: var(--color-secondary);
-      font-weight: 500;
+      background: var(--color-action);
+      color: var(--color-action-contrast);
     }
   }
 }

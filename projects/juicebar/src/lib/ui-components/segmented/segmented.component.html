@@ -1,0 +1,12 @@
+@if (label()) {
+  <span class="app-segmented-label" [id]="labelId">{{ label() }}</span>
+}
+<div class="app-segmented-options" role="radiogroup" [attr.aria-labelledby]="label() ? labelId : null" (keydown)="onKeydown($event)">
+  @for (option of options(); track option.value; let index = $index) {
+    <button #optionButton type="button" role="radio" class="app-segmented-option"
+            [class.app-segmented-option--checked]="option.value === value()"
+            [attr.aria-checked]="option.value === value()"
+            [attr.tabindex]="index === focusIndex() ? 0 : -1"
+            (click)="select(option.value)">{{ option.label }}</button>
+  }
+</div>

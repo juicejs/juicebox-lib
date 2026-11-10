@@ -4,19 +4,17 @@ import {ActivatedRoute, NavigationEnd, Router, RouterOutlet} from '@angular/rout
 import {filter, map, startWith} from 'rxjs/operators';
 import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 import {UserTranslationPipe} from '../i18n/user.translation';
-import {TabsComponent, TabComponent} from "../../../../ui-components";
 import {injectCustomUserTabs} from '../users-customization';
 
 @Component({
     selector: 'app-user-wizard',
     templateUrl: './user-wizard.component.html',
+    styleUrl: './user-wizard.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
     RouterOutlet,
     SHARED_IMPORTS,
-    UserTranslationPipe,
-    TabsComponent,
-    TabComponent
+    UserTranslationPipe
 ]
 })
 export class UserWizardComponent {
@@ -26,7 +24,7 @@ export class UserWizardComponent {
     private readonly route = inject(ActivatedRoute);
     private readonly router = inject(Router);
 
-    /** The current step's tab is highlighted, as routerLinkActive did in the old wizard */
+    /** The current step is marked, as routerLinkActive did in the old wizard */
     protected readonly selectedIndex = toSignal(
         this.router.events.pipe(
             filter(event => event instanceof NavigationEnd),

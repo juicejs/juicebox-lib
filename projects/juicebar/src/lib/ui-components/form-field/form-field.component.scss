@@ -8,14 +8,14 @@
   select,
   textarea {
     width: 100%;
-    height: 32px;
-    padding: 0 10px;
+    height: var(--control-height);
+    padding: 0 14px;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 13.5px;
     color: var(--color-text-primary);
     background: var(--color-background);
     border: 1px solid var(--color-border-input);
-    border-radius: 6px;
+    border-radius: var(--radius-control);
     outline: none;
     box-sizing: border-box;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -25,7 +25,7 @@
     }
 
     &:hover:not(:disabled):not([readonly]) {
-      border-color: var(--color-text-secondary);
+      border-color: var(--color-border-dark);
     }
 
     &:focus {
@@ -43,14 +43,14 @@
 
   textarea {
     height: auto;
-    padding: 7px 10px;
+    padding: 10px 14px;
     resize: vertical;
   }
 
   select {
     appearance: none;
     -webkit-appearance: none;
-    padding-right: 28px;
+    padding-right: 32px;
     cursor: pointer;
   }
 

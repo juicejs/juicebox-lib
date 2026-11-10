@@ -57,6 +57,7 @@ interface TreeRow<T> {
   position: number;
   setSize: number;
   active: boolean;
+  selected: boolean;
 }
 
 interface FilteredTree<T> {
@@ -91,13 +92,18 @@ export class TreeComponent<T = unknown> {
   /** Shown when there are no nodes, or none matches the filter */
   readonly emptyMessage = input('');
   readonly ariaLabel = input('');
+  /** The node to mark as the current one, e.g. the record that is open; the nodes above it are opened */
+  readonly selectedKey = input<string | null>(null);
 
   readonly nodeSelect = output<TreeNode<T>>();
 
   protected readonly nodeDef = contentChild(TreeNodeDefDirective);
   protected readonly term = signal('');
-  /** Open nodes without a filter */
-  private readonly expanded = signal<ReadonlySet<string>>(new Set());
+  /** Open nodes without a filter; the way to the current node opens when the nodes or that node change */
+  private readonly expanded = linkedSignal<string[], ReadonlySet<string>>({
+    source: () => pathTo(this.nodes(), this.selectedKey()),
+    computation: (path, previous) => new Set([...(previous?.value ?? []), ...path]),
+  });
   private readonly filtered = computed(() => filterTree(this.nodes(), normalise(this.term())));
   /** Open nodes while filtering: the ones open before and the parents of the matches, until the filter changes */
   private readonly filterExpanded = linkedSignal<ReadonlySet<string>>(
@@ -107,12 +113,16 @@ export class TreeComponent<T = unknown> {
 
   protected readonly rows = computed<TreeRow<T>[]>(() => {
     const expanded = this.term() ? this.filterExpanded() : this.expanded();
+    const selectedKey = this.selectedKey();
     const rows: TreeRow<T>[] = [];
     const visit = (nodes: TreeNode<T>[], level: number, parentKey: string | null) => {
       nodes.forEach((node, index) => {
         const expandable = !!node.children?.length;
         const open = expandable && expanded.has(node.key);
-        rows.push({node, level, expandable, expanded: open, parentKey, position: index + 1, setSize: nodes.length, active: false});
+        rows.push({
+          node, level, expandable, expanded: open, parentKey, position: index + 1, setSize: nodes.length,
+          active: false, selected: selectedKey != null && node.key === selectedKey,
+        });
         if (open) visit(node.children!, level + 1, node.key);
       });
     };
@@ -204,6 +214,19 @@ export class TreeComponent<T = unknown> {
 
 function normalise(text: string): string {
   return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLocaleLowerCase().trim();
+}
+
+/** The keys of the nodes above `key`, from the root down; empty when it is a root or not in the tree */
+function pathTo<T>(nodes: TreeNode<T>[], key: string | null): string[] {
+  if (key == null) return [];
+  for (const node of nodes) {
+    if (node.key === key) return [];
+    const children = node.children ?? [];
+    if (children.some(child => child.key === key)) return [node.key];
+    const below = pathTo(children, key);
+    if (below.length) return [node.key, ...below];
+  }
+  return [];
 }
 
 /** The nodes that match with all below them, and the nodes on the way to a match */

@@ -42,7 +42,7 @@ export class FormFieldComponent {
   styles: [`
     :host {
       display: block;
-      color: var(--color-text-secondary);
+      color: var(--color-text-primary);
       font-size: 12.5px;
       font-weight: 500;
     }

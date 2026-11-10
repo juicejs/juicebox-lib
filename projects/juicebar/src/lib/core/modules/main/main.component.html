@@ -1,48 +1,32 @@
-<div class="main-container-new-ui">
+<div class="main-container-new-ui" [class.main-container-bare]="!navigationVisible()">
     @if (navigationVisible()) {
-        <app-sidebar [class.mobile-open]="sidebarService.mobileOpen()"></app-sidebar>
-        @if (sidebarService.mobileOpen()) {
-            <div class="mobile-backdrop" (click)="sidebarService.closeMobile()"></div>
-        }
+        <app-navigation (helpTextUpdatedEventEmitter)="helpTextUpdated()"></app-navigation>
     }
 
-    <div class="main-content">
+    <div class="shell-body">
         @if (navigationVisible()) {
-            <app-navigation
-                (helpTextUpdatedEventEmitter)="helpTextUpdated()"
-                [locationTitle]="locationTitle()"
-                [locationSubject]="locationSubject()"
-                [locationLink]="locationLink()">
-            </app-navigation>
+            <app-sidebar [class.mobile-open]="sidebarService.mobileOpen()"></app-sidebar>
+            @if (sidebarService.mobileOpen()) {
+                <div class="mobile-backdrop" (click)="sidebarService.closeMobile()"></div>
+            }
         }
-        <div class="content-container">
-        <div class="flex-column navigation-container next">
-            @if (navigationVisible() && (locationLink() || juicebox.actionButtons().length || juicebox.pageHeader() || text())) {
-                <div class="location-container">
-                    @if (locationLink()) {
-                        <button [attr.aria-label]="backLabel" app-button appearance="icon" class="back-nav-btn" (click)="goTo(locationLink())">
-                            <app-icon [icon]="'keyboard_arrow_left'"></app-icon>
+
+        <div class="workspace">
+            @if (navigationVisible() && (locationTitle() || juicebox.actionButtons().length || text())) {
+                <div class="workspace-bar">
+                    @if (backVisible()) {
+                        <button type="button" class="back-pill" (click)="goTo(locationLink())">
+                            <app-icon [icon]="'chevron_left'"></app-icon>
+                            <span>{{ backLabel }}</span>
                         </button>
                     }
-                    @if (juicebox.pageHeader(); as header) {
-                        <div class="page-header">
-                            @if (header.initials) {
-                                <div class="page-header-avatar">{{ header.initials }}</div>
+                    @if (locationTitle()) {
+                        <div class="breadcrumbs-section">
+                            <button type="button" class="breadcrumb-title" (click)="goTo(locationLink())">{{ locationTitle() }}</button>
+                            @if (locationSubject()) {
+                                <span class="breadcrumb-sep" aria-hidden="true">/</span>
+                                <span class="breadcrumb-subject">{{ locationSubject() }}</span>
                             }
-                            <div class="page-header-text">
-                                @if (header.eyebrow) {
-                                    <div class="page-header-eyebrow">{{ header.eyebrow }}</div>
-                                }
-                                <div class="page-header-title">
-                                    <span class="page-header-name">{{ header.title }}</span>
-                                    @if (header.meta) {
-                                        <span class="page-header-meta">{{ header.meta }}</span>
-                                    }
-                                </div>
-                                @if (header.subtitle) {
-                                    <div class="page-header-subtitle">{{ header.subtitle }}</div>
-                                }
-                            </div>
                         </div>
                     }
                     <div class="button-bar">
@@ -80,12 +64,65 @@
                     </div>
                 </div>
             }
-            <div class="router-container">
-                <router-outlet></router-outlet>
+
+            <div class="workspace-body">
+                <!-- The split view: the module's listing, compact, next to the record that is open -->
+                @if (navigationVisible() && listingPane(); as pane) {
+                    <aside class="listing-pane" [class.listing-pane--collapsed]="listingPaneHidden()" [attr.aria-label]="locationTitle()">
+                        <div class="listing-pane-head">
+                            @if (!listingPaneHidden() && locationTitle()) {
+                                <h2 class="listing-pane-title">{{ locationTitle() }}</h2>
+                            }
+                            <!-- Folds the list away, as the sidebar's button does -->
+                            <button type="button" class="listing-pane-toggle"
+                                    [attr.aria-label]="listingPaneHidden() ? showListLabel : hideListLabel"
+                                    [appTooltip]="listingPaneHidden() ? showListLabel : hideListLabel"
+                                    appTooltipPosition="right"
+                                    [attr.aria-expanded]="!listingPaneHidden()"
+                                    aria-controls="listing-pane-list"
+                                    (click)="toggleListingPane()">
+                                <app-icon class="listing-pane-toggle-icon" [class.flipped]="listingPaneHidden()" [icon]="'chevron_left'"></app-icon>
+                            </button>
+                        </div>
+                        @if (!listingPaneHidden()) {
+                            <div class="listing-pane-list" id="listing-pane-list">
+                                <ng-container *ngComponentOutlet="pane.component; injector: pane.injector" />
+                            </div>
+                        }
+                    </aside>
+                }
+
+                <div class="content-container">
+                    <div class="flex-column navigation-container next">
+                        @if (navigationVisible()) {
+                            @if (juicebox.pageHeader(); as header) {
+                                <div class="page-header">
+                                    @if (header.initials) {
+                                        <div class="page-header-avatar">{{ header.initials }}</div>
+                                    }
+                                    <div class="page-header-text">
+                                        @if (header.eyebrow) {
+                                            <div class="page-header-eyebrow">{{ header.eyebrow }}</div>
+                                        }
+                                        <div class="page-header-title">
+                                            <h1 class="page-header-name">{{ header.title }}</h1>
+                                            @if (header.meta) {
+                                                <span class="page-header-meta">{{ header.meta }}</span>
+                                            }
+                                        </div>
+                                        @if (header.subtitle) {
+                                            <div class="page-header-subtitle">{{ header.subtitle }}</div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                        <div class="router-container">
+                            <router-outlet></router-outlet>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        </div>
-
-
     </div>
 </div>

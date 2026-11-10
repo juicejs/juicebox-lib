@@ -2,7 +2,8 @@ import {Component, inject, signal} from '@angular/core';
 import {ExportsTranslationPipe} from '../i18n/exports.translation';
 import {Router, RouterLink} from '@angular/router';
 import {ExportsService} from '../exports.service';
-import {DialogService, DataTableComponent, CellDefDirective, ColumnConfig, PageEvent, SortState} from '../../../../ui-components';
+import {DialogService, DataTableComponent, CellDefDirective, CompactRowDefDirective, ColumnConfig, PageEvent, SortState} from '../../../../ui-components';
+import {injectListingPane, ListingStateService} from '../../../shared/components/listing-pane/listing-pane';
 import {ConfirmationDialogComponent} from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 import {TableFilter, TableSort} from '../../../shared/services/helper.service';
@@ -13,20 +14,31 @@ import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 import {ColumnLabelsPipe} from '../pipes/column-labels.pipe';
 import {ExportTemplate} from '../types/ExportTemplate';
 
+/** What the listing shows, kept for the compact list next to an open template */
+interface ExportsListingState {
+    page: number;
+    pageSize: number;
+    sort: TableSort;
+}
+
 @Component({
     selector: 'app-export-template-listing',
     templateUrl: './export-template-listing.component.html',
-    styleUrls: ['./export-template-listing.component.scss'],
     imports: [
         SHARED_IMPORTS,
         ExportsTranslationPipe,
         DataTableComponent,
         CellDefDirective,
+        CompactRowDefDirective,
         ColumnLabelsPipe,
         RouterLink
     ]
 })
 export class ExportTemplateListingComponent {
+
+    /** Set when this is the compact list next to an open template (the split view), not the page itself */
+    protected readonly pane = injectListingPane();
+    private readonly listingState = inject(ListingStateService);
 
     readonly page = signal(1);
     readonly pageSize = signal(10);
@@ -44,18 +56,27 @@ export class ExportTemplateListingComponent {
     private readonly autoLanguage = new AutoLanguagePipe(this.juicebox);
 
     constructor() {
-        this.juicebox.navigationEvent({
-            location: this.i18n.transform('exports'),
-            subject: this.i18n.transform('export_templates'),
-            link: '/main/exports'
-        });
-        this.juicebox.setActionButtons([{
-            title: this.i18n.transform('create'),
-            type: 'btn-primary',
-            icon: 'add',
-            permissions: 'data-export:role#create',
-            callback: () => this.router.navigateByUrl('/main/exports/create'),
-        }]);
+        if (this.pane) {
+            const state = this.listingState.restore<ExportsListingState>('exports');
+            if (state) {
+                this.page.set(state.page);
+                this.pageSize.set(state.pageSize);
+                this.sort.set(state.sort);
+            }
+        } else {
+            this.juicebox.navigationEvent({
+                location: this.i18n.transform('exports'),
+                subject: this.i18n.transform('export_templates'),
+                link: '/main/exports'
+            });
+            this.juicebox.setActionButtons([{
+                title: this.i18n.transform('create'),
+                type: 'btn-primary',
+                icon: 'add',
+                permissions: 'data-export:role#create',
+                callback: () => this.router.navigateByUrl('/main/exports/create'),
+            }]);
+        }
 
         this.columns.set([
             { key: 'name', label: this.i18n.transform('name'), width: '200px', sortable: true },
@@ -73,6 +94,11 @@ export class ExportTemplateListingComponent {
     }
 
     fetchExportTemplates() {
+        this.listingState.save('exports', {
+            page: this.page(),
+            pageSize: this.pageSize(),
+            sort: this.sort(),
+        } satisfies ExportsListingState);
         this.exports.getExportTemplates(this.page() - 1, this.pageSize(), {
             sort: this.sort(),
             populateColumns: true,

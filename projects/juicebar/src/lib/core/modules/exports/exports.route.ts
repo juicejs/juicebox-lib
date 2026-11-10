@@ -7,6 +7,8 @@ export const ExportsRoute: Routes = [{
         {
             path: '',
             loadComponent: () => import('./export-template-listing/export-template-listing.component').then(m => m.ExportTemplateListingComponent),
+            // The compact list next to an open template (the split view)
+            data: {listingPane: true},
         },
         {
             path: 'create',
@@ -15,6 +17,7 @@ export const ExportsRoute: Routes = [{
         {
             path: 'edit/:id',
             loadComponent: () => import('./export-template-edit/export-template-edit.component').then(m => m.ExportTemplateEditComponent),
+            data: {splitView: true},
         },
     ],
 }];

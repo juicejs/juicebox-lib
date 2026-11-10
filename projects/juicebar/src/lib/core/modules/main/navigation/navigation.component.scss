@@ -1,107 +1,82 @@
-// Modern Clean Navigation
+// The top bar sits on the canvas, above the floating sidebar and workspace
 .modern-navigation {
   flex-shrink: 0;
-  height: 48px;
+  height: 52px;
   width: 100%;
-  background: var(--color-background);
-  border-bottom: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-primary);
+  box-shadow: none;
 
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  gap: 20px;
+  padding: 0 24px;
+  gap: 24px;
 
-  // Left Section - Breadcrumbs
-  .breadcrumbs-section {
+  .brand-logo {
+    flex-shrink: 0;
+    width: auto;
+    max-width: 140px;
+    height: 26px;
+    object-fit: contain;
+  }
+
+  // The search is part of the canvas until it is used
+  .search-cmd {
     display: flex;
     align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
-    font-size: 13px;
+    gap: 8px;
+    width: 100%;
+    max-width: 320px;
+    height: 32px;
+    padding: 0 12px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    cursor: text;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
 
-    .breadcrumb-title {
-      background: none;
-      border: none;
-      padding: 0;
-      cursor: pointer;
+    &:hover {
+      background: var(--color-grey-200);
+    }
+
+    &:focus-within {
+      background: var(--color-background);
+      border-color: var(--color-border);
+    }
+
+    .search-cmd-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
       color: var(--color-text-secondary);
+    }
+
+    .search-cmd-input {
+      flex: 1;
+      min-width: 0;
+      padding: 0;
+      border: none;
+      background: transparent;
+      outline: none;
+      box-shadow: none;
       font-size: 13px;
-      font-family: inherit;
-      white-space: nowrap;
-      transition: color 150ms ease;
-
-      &:hover {
-        color: var(--color-text-primary);
-      }
-    }
-
-    .breadcrumb-sep {
-      color: var(--color-border-dark);
-    }
-
-    .breadcrumb-subject {
       color: var(--color-text-primary);
-      font-weight: 500;
-      white-space: nowrap;
+      font-family: inherit;
+
+      &::placeholder {
+        color: var(--color-text-secondary);
+      }
     }
   }
 
-  // Right Section - Actions & Profile
+  // Right Section - Actions & organisation
   .nav-right-section {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: 10px;
     flex-shrink: 0;
     margin-left: auto;
-
-    // Compact search command button
-    .search-cmd {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      height: 30px;
-      padding: 0 8px 0 10px;
-      background: var(--color-background-secondary);
-      border: 1px solid var(--color-border);
-      border-radius: 6px;
-      cursor: text;
-      min-width: 240px;
-      outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
-
-      &:hover {
-        border-color: var(--color-border-dark);
-      }
-
-      &:focus-within {
-        border-color: var(--color-secondary);
-        box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.15);
-      }
-
-      .search-cmd-icon {
-        font-size: 14px;
-        width: 14px;
-        height: 14px;
-        flex-shrink: 0;
-        color: var(--color-text-secondary);
-      }
-
-      .search-cmd-input {
-        flex: 1;
-        border: none;
-        background: transparent;
-        outline: none;
-        box-shadow: none;
-        font-size: 12.5px;
-        color: var(--color-text-primary);
-        font-family: inherit;
-
-        &::placeholder {
-          color: var(--color-text-disabled);
-        }
-      }
-    }
 
     // Grouped action icons (help, language, theme)
     .action-cluster {
@@ -110,20 +85,10 @@
       gap: 2px;
     }
 
-    // Vertical divider between action cluster and org/profile
-    .nav-divider {
-      width: 1px;
-      height: 24px;
-      background-color: var(--color-border);
-      margin: 0 var(--spacing-xs);
-      flex-shrink: 0;
-    }
-
-    // Action Buttons (Language, Help, Theme)
     .action-button {
-      width: 30px;
-      height: 30px;
-      border-radius: 6px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
       background-color: transparent;
       border: none;
       color: var(--color-text-secondary);
@@ -140,57 +105,24 @@
       }
     }
 
-  }
-}
-
-
-// Responsive Design
-@media (max-width: 768px) {
-  .modern-navigation {
-    padding: 0 12px;
-    gap: 12px;
-
-    .nav-right-section {
-      gap: var(--spacing-xs);
-
-      .search-cmd {
-        min-width: 140px;
-      }
-
-      .nav-divider {
-        display: none;
-      }
-
-      .org-switcher-btn {
-        padding: 0 10px;
-        min-width: 0;
-
-        .dropdown-trigger-label {
-          display: none;
-        }
-
-        .dropdown-trigger-arrow {
-          display: none;
-        }
-      }
+    // The organisation switcher: a pill with the brand dot
+    .org-switcher-btn {
+      gap: 8px;
+      height: 32px;
+      padding: 0 14px;
+      border-color: var(--color-border);
+      border-radius: var(--radius-pill);
+      background: var(--color-background);
+      font-size: 12.5px;
+      font-weight: 500;
     }
-  }
-}
 
-@media (max-width: 480px) {
-  .modern-navigation {
-
-    .nav-right-section {
-      gap: 2px;
-
-      .search-cmd {
-        min-width: 100px;
-      }
-
-      .action-cluster {
-        gap: 0;
-      }
-
+    .org-switcher-dot {
+      flex-shrink: 0;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-secondary-light);
     }
   }
 }
@@ -201,11 +133,11 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: none;
-  border-radius: 6px;
+  border-radius: 50%;
   background: transparent;
   color: var(--color-text-secondary);
   cursor: pointer;
@@ -221,21 +153,44 @@
   }
 }
 
+// Responsive Design
 @media (max-width: 768px) {
   .mobile-menu-btn {
     display: inline-flex;
   }
 
-  // Long breadcrumbs shrink with an ellipsis instead of pushing the search off screen
-  .modern-navigation .breadcrumbs-section {
-    flex-shrink: 1;
-    min-width: 0;
-    overflow: hidden;
-    white-space: nowrap;
+  .modern-navigation {
+    padding: 0 12px;
+    gap: 12px;
 
-    .breadcrumb-subject {
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .nav-right-section {
+      gap: var(--spacing-xs);
+
+      .org-switcher-btn {
+        padding: 0 10px;
+        min-width: 0;
+
+        .dropdown-trigger-label,
+        .dropdown-trigger-arrow {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .modern-navigation {
+    .brand-logo {
+      display: none;
+    }
+
+    .nav-right-section {
+      gap: 2px;
+
+      .action-cluster {
+        gap: 0;
+      }
     }
   }
 }

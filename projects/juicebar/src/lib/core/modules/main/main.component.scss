@@ -1,44 +1,51 @@
+// The shell: the top bar on the canvas, then the floating sidebar and workspace
 .main-container-new-ui {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     height: 100vh;
     width: 100vw;
     font-family: 'Inter', sans-serif !important;
-    position: relative;
-
-    // A soft canvas: tables and cards stand on it in the background colour
     background-color: var(--color-page);
 
-    > * {
-        position: relative;
-        z-index: 1;
+    app-navigation {
+        flex-shrink: 0;
+        width: 100%;
+    }
+
+    .shell-body {
+        display: flex;
+        flex: 1;
+        gap: 12px;
+        min-height: 0;
+        padding: 0 12px 12px;
     }
 
     app-sidebar {
         flex-shrink: 0;
-        height: 100vh;
-        z-index: 1000;
     }
 
-    .main-content {
+    .workspace {
         display: flex;
         flex-direction: column;
         flex: 1;
         min-width: 0;
         min-height: 0;
-        height: 100vh;
+        overflow: hidden;
+        background: var(--color-panel);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-card);
     }
 
-    app-navigation {
-        flex-shrink: 0;
-        width: 100%;
-        z-index: 100;
+    .workspace-body {
+        display: flex;
+        flex: 1;
+        min-height: 0;
     }
 
     .content-container {
         flex: 1;
+        min-width: 0;
         overflow-y: auto;
-        background: transparent;
 
         .navigation-container {
             position: relative;
@@ -48,38 +55,148 @@
             }
         }
     }
+
+    // Without the navigation (e.g. an embedded page) the workspace is the whole window
+    &.main-container-bare {
+        .shell-body {
+            padding: 0;
+        }
+
+        .workspace {
+            border: none;
+            border-radius: 0;
+        }
+    }
 }
 
-.location-container {
+// The workspace's top bar: the way back, where the page is, and the page's actions
+.workspace-bar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 28px 28px 20px;
-    gap: 16px;
-    min-height: 3.5rem;
-    flex-wrap: wrap;
+    flex-shrink: 0;
+    gap: 12px;
+    min-height: 56px;
+    padding: 10px 24px;
+    border-bottom: 1px solid var(--color-border);
 
-    .page-header {
-        display: flex;
+    .back-pill {
+        display: inline-flex;
         align-items: center;
-        gap: 0.75rem;
-        min-width: 0;
-        flex: 1;
+        flex-shrink: 0;
+        gap: 4px;
+        height: 32px;
+        padding: 0 12px 0 8px;
+        border: 1px solid var(--color-border-input);
+        border-radius: var(--radius-pill);
+        background: var(--color-background);
+        color: var(--color-text-primary);
+        font-family: inherit;
+        font-size: 12.5px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: border-color 0.15s ease, color 0.15s ease;
+
+        app-icon {
+            width: 16px;
+            height: 16px;
+            font-size: 16px;
+            color: var(--color-secondary);
+        }
+
+        &:hover {
+            border-color: var(--color-secondary);
+            color: var(--color-secondary);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-secondary);
+            outline-offset: 2px;
+        }
     }
 
-    .page-header-avatar {
-        width: 40px;
-        height: 40px;
+    .breadcrumbs-section {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        font-size: 13px;
+        white-space: nowrap;
+
+        .breadcrumb-title {
+            padding: 0;
+            border: none;
+            border-radius: 4px;
+            background: none;
+            color: var(--color-text-secondary);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.15s ease;
+
+            &:hover {
+                color: var(--color-secondary);
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--color-secondary);
+                outline-offset: 2px;
+            }
+        }
+
+        .breadcrumb-sep {
+            color: var(--color-border-dark);
+        }
+
+        .breadcrumb-subject {
+            overflow: hidden;
+            color: var(--color-text-primary);
+            font-weight: 500;
+            text-overflow: ellipsis;
+        }
+    }
+
+    .button-bar {
+        display: flex;
+        align-items: center;
         flex-shrink: 0;
-        border-radius: 10px;
+        gap: 10px;
+        margin-left: auto;
+
+        .app-button {
+            height: 32px;
+            padding: 0 14px;
+        }
+
+        app-icon {
+            width: 16px;
+            height: 16px;
+            font-size: 16px;
+        }
+    }
+}
+
+// The page's title: a listing's name and description, or the record that is open
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    padding: 24px var(--page-gutter) 20px;
+
+    .page-header-avatar {
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
+        width: 44px;
+        height: 44px;
+        border: 1px solid rgba(var(--color-secondary-rgb), 0.22);
+        border-radius: 12px;
         background-color: var(--color-avatar-bg);
         color: var(--color-avatar-text);
         font-size: 14px;
         font-weight: 600;
-        letter-spacing: 0.02em;
         text-transform: uppercase;
     }
 
@@ -87,85 +204,154 @@
         display: flex;
         flex-direction: column;
         min-width: 0;
-        line-height: 1.2;
     }
 
     .page-header-eyebrow {
+        color: var(--color-text-secondary);
         font-size: 10.5px;
-        font-weight: 500;
+        font-weight: 600;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: var(--color-text-secondary);
     }
 
     .page-header-title {
         display: flex;
         align-items: baseline;
-        gap: 10px;
+        flex-wrap: wrap;
+        gap: 2px 10px;
         min-width: 0;
-        letter-spacing: -0.02em;
     }
 
     .page-header-name {
-        font-size: 24px;
-        font-weight: 800;
-        color: var(--color-text-primary);
-        white-space: nowrap;
+        margin: 0;
         overflow: hidden;
+        color: var(--color-text-primary);
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1.3;
         text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .page-header-meta {
-        font-size: 13px;
-        font-weight: 400;
-        color: var(--color-text-secondary);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
         min-width: 0;
+        overflow: hidden;
+        color: var(--color-text-secondary);
+        font-size: 13px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .page-header-subtitle {
-        font-size: 13px;
-        font-weight: 500;
+        margin-top: 2px;
         color: var(--color-text-secondary);
-        margin-top: 4px;
-    }
-
-    .button-bar {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-left: auto;
-
-        // The page's actions are a size up from buttons in forms
-        .app-button {
-            height: 36px;
-            padding: 0 14px;
-            border-radius: 10px;
-        }
-
-        app-icon {
-            font-size: 16px;
-            width: 16px;
-            height: 16px;
-        }
+        font-size: 13px;
     }
 }
 
-.back-nav-btn {
-    width: 36px !important;
-    height: 36px !important;
-    color: var(--color-text-secondary);
-    // A tile next to the title
-    background-color: var(--color-background) !important;
-    border: 1px solid var(--color-border) !important;
-    border-radius: 10px !important;
-    box-shadow: var(--shadow-sm);
+// The split view's compact listing, left of the open record; folded, a strip with the button to open it
+.listing-pane {
+    --listing-pane-width: 300px;
 
-    &:hover {
-        color: var(--color-tertiary);
-        background-color: var(--color-grey-100) !important;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    width: var(--listing-pane-width);
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-right: 1px solid var(--color-border);
+    transition: width 250ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    &.listing-pane--collapsed {
+        width: 52px;
+        overflow-y: hidden;
+
+        .listing-pane-head {
+            justify-content: center;
+            padding-inline: 0;
+        }
+    }
+
+    .listing-pane-head {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        gap: 8px;
+        min-height: 58px;
+        padding: 16px 14px 10px 16px;
+    }
+
+    .listing-pane-title {
+        flex: 1;
+        min-width: 0;
+        margin: 0;
+        overflow: hidden;
+        color: var(--color-text-primary);
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    // As the sidebar's collapse button
+    .listing-pane-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        border: 1px solid var(--color-border);
+        border-radius: 50%;
+        background: transparent;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+
+        &:hover {
+            background-color: var(--color-grey-200);
+            border-color: var(--color-border-dark);
+            color: var(--color-text-primary);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-secondary);
+            outline-offset: 2px;
+        }
+    }
+
+    .listing-pane-toggle-icon {
+        width: 16px;
+        height: 16px;
+        font-size: 16px;
+        transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+
+        &.flipped {
+            transform: rotate(180deg);
+        }
+    }
+
+    // Keeps its width while the pane opens, instead of reflowing in the narrow strip (the border is outside it)
+    .listing-pane-list {
+        flex-shrink: 0;
+        width: calc(var(--listing-pane-width) - 1px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .listing-pane,
+    .listing-pane .listing-pane-toggle-icon {
+        transition: none;
+    }
+}
+
+// The record needs the room on narrower screens
+@media (max-width: 1100px) {
+    .listing-pane {
+        display: none;
     }
 }
 
@@ -175,17 +361,21 @@
 }
 
 @media (max-width: 768px) {
-    .location-container {
-        padding: 16px 16px 12px;
+    .main-container-new-ui .shell-body {
+        padding: 0 8px 8px;
+    }
+
+    .workspace-bar {
+        padding: 10px 16px;
     }
 
     .main-container-new-ui app-sidebar {
         position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
+        top: 8px;
+        bottom: 8px;
+        left: 8px;
         z-index: 1001;
-        transform: translateX(-100%);
+        transform: translateX(calc(-100% - 8px));
         transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
 
         &.mobile-open {
@@ -214,7 +404,7 @@
     background: var(--color-action);
     color: var(--color-action-contrast);
     font-family: inherit;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     line-height: 1;
     cursor: pointer;
@@ -228,10 +418,10 @@
 .help-text-popover {
     max-width: min(360px, calc(100vw - 32px));
     padding: 12px 14px;
-    background: var(--color-background-secondary);
+    background: var(--color-surface-raised);
     color: var(--color-text-primary);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-card);
     box-shadow: var(--shadow-xl);
     font-size: 14px;
     line-height: 1.5;

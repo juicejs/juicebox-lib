@@ -3,12 +3,17 @@
 
   <app-sidenav opened mode="side" class="modern-sidebar">
 
-    <!-- Logo Section -->
+    <!-- The organisation the user works in -->
     <div class="sidebar-header">
-      <img [src]="logo()"
-           alt="Logo"
-           class="brand-logo"
-           [class.vertical]="juicebox.collapsed">
+      @if (!juicebox.collapsed) {
+        <div class="org-tile" aria-hidden="true">
+          <app-icon [icon]="'apartment'"></app-icon>
+        </div>
+        <div class="org-text">
+          <div class="org-eyebrow">{{ organisationLabel }}</div>
+          <div class="org-name">{{ organisationName() }}</div>
+        </div>
+      }
       <button [attr.aria-label]="'collapse_sidebar' | translate" class="collapse-btn"
               (click)="collapse()"
               [appTooltip]="juicebox.collapsed ? 'Expand sidebar' : 'Collapse sidebar'"

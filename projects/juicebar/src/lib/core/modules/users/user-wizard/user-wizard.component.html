@@ -1,9 +1,19 @@
-<app-tabs class="p-3" [selectedIndex]="selectedIndex()">
-    <app-tab label="{{'main' | translate}}" [disabled]="true"></app-tab>
-
-    @for (step of steps; track step.route) {
-        <app-tab [label]="step.label" [disabled]="true"></app-tab>
-    }
-</app-tabs>
+<!-- The steps, as the old wizard listed them; only when the project adds steps after 'main'. The list numbers them
+     for screen readers, so the shown numbers are hidden from them. -->
+@if (steps.length) {
+    <ol class="wizard-steps">
+        <li class="wizard-step" [class.wizard-step--current]="selectedIndex() === 0" [attr.aria-current]="selectedIndex() === 0 ? 'step' : null">
+            <span class="wizard-step-number" aria-hidden="true">1</span>
+            <span class="wizard-step-label">{{ 'main' | translate }}</span>
+        </li>
+        @for (step of steps; track step.route; let i = $index) {
+            <li class="wizard-step" [class.wizard-step--current]="selectedIndex() === i + 1" [attr.aria-current]="selectedIndex() === i + 1 ? 'step' : null">
+                <app-icon class="wizard-step-separator" [icon]="'chevron_right'"></app-icon>
+                <span class="wizard-step-number" aria-hidden="true">{{ i + 2 }}</span>
+                <span class="wizard-step-label">{{ step.label }}</span>
+            </li>
+        }
+    </ol>
+}
 
 <router-outlet></router-outlet>

@@ -6,7 +6,6 @@
               cdkOverlayOrigin
               #trigger="cdkOverlayOrigin"
               (click)="toggle(filter.key)">
-        <app-icon [icon]="filter.icon" class="filter-icon"></app-icon>
         <span class="filter-label">{{ filter.label }}</span>
         @if (filter.selectedValue) {
           <span class="filter-value">

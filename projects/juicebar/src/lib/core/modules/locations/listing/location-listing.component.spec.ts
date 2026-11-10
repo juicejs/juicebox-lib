@@ -1,8 +1,10 @@
+import {Provider, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {Location} from '@angular/common';
 import {provideRouter, Router} from '@angular/router';
 import {LOCATIONS_CUSTOMIZATION, LocationsCustomization} from '../../../../config/base-app.config';
 import {provideJuicebarTesting, signInTestUser} from '../../../../../testing/juicebar-testing';
+import {LISTING_PANE, ListingStateService} from '../../../shared/components/listing-pane/listing-pane';
 import {ConfigurationService} from '../../../shared/services/configuration.service';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {LocationsTranslationPipe} from '../i18n/locations.translation';
@@ -18,7 +20,7 @@ const site: StoredLocation = {_id: 'site', name: {en_GB: 'Site'}, type: 'web', o
 const region: StoredLocation = {_id: 'region', name: {en_GB: 'North'}, type: 'region', address: [{}]};
 
 describe('LocationListingComponent', () => {
-  async function setup(customization: LocationsCustomization = {}) {
+  async function setup(customization: LocationsCustomization = {}, providers: Provider[] = [], listingState?: unknown) {
     TestBed.configureTestingModule({
       imports: [LocationListingComponent],
       providers: [
@@ -26,9 +28,11 @@ describe('LocationListingComponent', () => {
         provideRouter([{path: '**', children: []}]),
         LocationsTranslationPipe,
         {provide: LOCATIONS_CUSTOMIZATION, useValue: customization},
+        ...providers,
       ],
     });
     signInTestUser();
+    if (listingState) TestBed.inject(ListingStateService).save('location', listingState);
     vi.spyOn(TestBed.inject(ConfigurationService), 'getBySchema').mockResolvedValue({
       success: true,
       payload: [{value: 'geo', localised_name: {en_GB: 'Geo'}}, {value: 'web'}, {value: 'region'}, {value: 'secret', permissions: ['secret']}],
@@ -100,5 +104,35 @@ describe('LocationListingComponent', () => {
     component.owner.set('public');
     await fixture.whenStable();
     expect(element.querySelectorAll('tbody tr').length).toBe(2);
+  });
+
+  it('next to an open location: the compact list of what the listing showed last, without the page\'s title and address', async () => {
+    const pane = {provide: LISTING_PANE, useValue: {activeId: signal('site')}};
+    const shown = {page: 3, pageSize: 20, sort: {prop: 'name', dir: 'desc'}, archived: true, owner: 'all', typed: []};
+    const {fetch, element, fixture} = await setup({}, [pane], shown);
+    // The compact list sets no title or buttons, so nothing but its own start is pending
+    await new Promise(resolve => setTimeout(resolve));
+    await fixture.whenStable();
+    const juicebox = TestBed.inject(JuiceboxService);
+    expect(fetch).toHaveBeenCalledWith(2, 20, expect.objectContaining({
+      filters: expect.objectContaining({archived: true, sort: {prop: 'name', dir: 'desc'}}),
+    }));
+    expect(juicebox.pageHeader()).toBeNull();
+    expect(element.querySelector('table')).toBeNull();
+    const rows = Array.from(element.querySelectorAll<HTMLButtonElement>('.dt-list-row'));
+    expect(rows.map(row => row.querySelector('.dt-list-title')!.textContent)).toEqual(['Hall', 'Site', 'North']);
+    expect(rows[0].textContent).toContain('Geo · Berlin');
+    expect(rows.map(row => row.getAttribute('aria-current'))).toEqual([null, 'true', null]);
+
+    // Paging the list leaves the open location's address alone
+    element.querySelector<HTMLButtonElement>('button[aria-label="Previous page"]')!.click();
+    await fixture.whenStable();
+    expect(fetch).toHaveBeenLastCalledWith(1, 20, expect.anything());
+    expect(TestBed.inject(Location).path()).toBe('/main/location?page=2');
+
+    const router = TestBed.inject(Router);
+    const navigate = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+    rows[0].click();
+    expect(navigate).toHaveBeenCalledWith(['/main/location/details', 'hall']);
   });
 });

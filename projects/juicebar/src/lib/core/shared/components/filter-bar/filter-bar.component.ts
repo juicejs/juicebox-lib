@@ -6,7 +6,8 @@ import { ButtonComponent, IconComponent } from '../../../../ui-components';
 export interface FilterConfig {
   key: string;
   label: string;
-  icon: string;
+  /** @deprecated Not shown: the filters are plain text, as the other selects */
+  icon?: string;
   placeholder: string;
   options: any[];
   selectedValue: any;

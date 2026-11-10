@@ -1,4 +1,4 @@
-// Top right below the 48px top bar, newest on top, as the old juicebox's toasts were.
+// Top right below the 52px top bar, newest on top, as the old juicebox's toasts were.
 // The container is a manual popover (in the top layer, above dialogs): the browser's popover box is undone.
 .app-snackbar-container {
   position: fixed;
@@ -51,7 +51,7 @@ app-snackbar {
   }
 }
 
-// One width for every toast, so a stack lines up
+// One width for every toast, so a stack lines up. They stand out from the page on the surface tooltips have.
 .app-snackbar {
   display: flex;
   align-items: flex-start;
@@ -59,11 +59,11 @@ app-snackbar {
   box-sizing: border-box;
   width: 360px;
   max-width: calc(100vw - 32px);
-  padding: 12px 12px 12px 14px;
-  background: var(--color-background-secondary);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
+  padding: 14px 12px 14px 14px;
+  background: var(--color-tooltip-background);
+  color: var(--color-tooltip-text);
+  border: 1px solid var(--color-tooltip-border);
+  border-radius: var(--radius-card);
   box-shadow: var(--shadow-lg);
 }
 
@@ -71,11 +71,8 @@ app-snackbar {
   flex-shrink: 0;
   margin-top: 1px;
   font-size: 20px;
-
-  .app-snackbar--success & { color: var(--color-success); }
-  .app-snackbar--error & { color: var(--color-error); }
-  .app-snackbar--warning & { color: var(--color-warning); }
-  .app-snackbar--info & { color: var(--color-info); }
+  // The icon's shape tells the kind of message; the brand colour reads on the dark surface in both themes
+  color: var(--color-secondary-light);
 
   .material-symbols-outlined {
     font-size: 20px;
@@ -89,7 +86,7 @@ app-snackbar {
   gap: 2px;
   min-width: 0;
   padding-top: 2px;
-  font-size: 13.5px;
+  font-size: 12.5px;
   line-height: 1.4;
 }
 
@@ -102,8 +99,8 @@ app-snackbar {
 
   // Under a title the message is the secondary line
   &--secondary {
-    font-size: 13px;
-    color: var(--color-text-secondary);
+    font-size: 11.5px;
+    color: var(--color-tooltip-muted);
   }
 }
 
@@ -123,7 +120,7 @@ app-snackbar {
 
 .app-snackbar__action {
   padding: var(--spacing-xs) var(--spacing-sm);
-  color: var(--color-secondary);
+  color: var(--color-secondary-light);
   font-weight: 500;
   text-transform: uppercase;
 }
@@ -131,10 +128,10 @@ app-snackbar {
 .app-snackbar__close {
   display: inline-flex;
   padding: var(--spacing-xs);
-  color: var(--color-text-secondary);
+  color: var(--color-tooltip-muted);
 
   &:hover {
-    color: var(--color-text-primary);
+    color: var(--color-tooltip-text);
   }
 
   .material-icons,

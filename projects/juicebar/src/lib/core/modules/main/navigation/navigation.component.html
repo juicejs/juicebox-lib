@@ -8,29 +8,21 @@
     <app-icon [icon]="'menu'"></app-icon>
   </button>
 
-  <!-- Left Section - Breadcrumbs -->
-  <div class="breadcrumbs-section">
-    @if (locationTitle()) {
-      <button class="breadcrumb-title" (click)="goTo(locationLink())">{{ locationTitle() }}</button>
-      @if (locationSubject()) {
-        <span class="breadcrumb-sep">/</span>
-        <span class="breadcrumb-subject">{{ locationSubject() }}</span>
-      }
-    }
+  <!-- The project's logo, or the user's organisation logo -->
+  <img [src]="logo" alt="Logo" class="brand-logo">
+
+  <!-- Search -->
+  <div class="search-cmd">
+    <app-icon [icon]="'search'" class="search-cmd-icon"></app-icon>
+    <input aria-label="Search or jump to…" #searchInput
+           type="text"
+           class="search-cmd-input"
+           placeholder="Search or jump to…"
+           (input)="doSearch($event)">
   </div>
 
   <!-- Right Section - User Actions -->
   <div class="nav-right-section">
-
-    <!-- Search -->
-    <div class="search-cmd">
-      <app-icon [icon]="'search'" class="search-cmd-icon"></app-icon>
-      <input aria-label="Search or jump to…" #searchInput
-             type="text"
-             class="search-cmd-input"
-             placeholder="Search or jump to…"
-             (input)="doSearch($event)">
-    </div>
 
     <div class="action-cluster">
 
@@ -79,11 +71,10 @@
 
     </div>
 
-    <div class="nav-divider"></div>
-
     <!-- Organization Switcher -->
     @if (userOrganisations().length > 1) {
       <button class="dropdown-trigger dropdown-trigger--compact org-switcher-btn" [cdkMenuTriggerFor]="orgMenu">
+        <span class="org-switcher-dot" aria-hidden="true"></span>
         <span class="dropdown-trigger-label">{{ organisationName() }}</span>
         <app-icon [icon]="'keyboard_arrow_down'" class="dropdown-trigger-arrow"></app-icon>
       </button>

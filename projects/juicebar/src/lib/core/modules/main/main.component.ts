@@ -1,11 +1,12 @@
 import { Title } from '@angular/platform-browser';
-import { NavigationEnd, NavigationStart, Router, RouterEvent, RouterOutlet } from '@angular/router';
+import { ActivatedRouteSnapshot, NavigationEnd, NavigationStart, Route, Router, RouterEvent, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { JuiceboxService} from '../../shared/services/Juicebox.service';
 import { SocketService} from '../../shared/services/socket.service';
 import { isNumber} from '../../shared/util';
-import {OnInit, Component, ViewEncapsulation, signal, Signal, ChangeDetectionStrategy, inject} from '@angular/core';
-import {Subscription} from 'rxjs';
+import {OnInit, Component, ViewEncapsulation, signal, Signal, ChangeDetectionStrategy, inject, computed, Injector, Type} from '@angular/core';
+import {NgComponentOutlet} from '@angular/common';
+import {firstValueFrom, isObservable, Subscription} from 'rxjs';
 import {SidebarService} from '../../shared/services/sidebar.service';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {NavigationComponent} from './navigation/navigation.component';
@@ -15,6 +16,20 @@ import {GlobalTranslationPipe} from '../../i18n/global.translation';
 import {ButtonComponent, IconComponent} from '../../../ui-components';
 import {ConnectedPosition, OverlayModule} from '@angular/cdk/overlay';
 import {MainTranslationPipe} from './i18n/main.translation';
+import {LISTING_PANE, ListingPane} from '../../shared/components/listing-pane/listing-pane';
+
+/** The listing shown next to an open record */
+interface ListingPaneView {
+  route: Route;
+  component: Type<unknown>;
+  injector: Injector;
+}
+
+/** Remembers in the browser whether the user hid the list next to an open record */
+const LISTING_PANE_HIDDEN_KEY = 'juicebar.listingPaneHidden';
+
+/** A link as the pages give it ('main/users', '/main/users?page=2') without its slashes and query */
+const pathOf = (url: string | null | undefined) => (url ?? '').split('?')[0].replace(/^\/+|\/+$/g, '');
 
 @Component({
   selector: 'app-main',
@@ -30,7 +45,8 @@ import {MainTranslationPipe} from './i18n/main.translation';
     SHARED_IMPORTS,
     ButtonComponent,
     IconComponent,
-    OverlayModule
+    OverlayModule,
+    NgComponentOutlet
 ]
 })
 export class MainComponent implements OnInit {
@@ -47,15 +63,34 @@ export class MainComponent implements OnInit {
 
     private titleService = inject(Title);
     private router = inject(Router);
+    private injector = inject(Injector);
     public juicebox = inject(JuiceboxService);
     public socketService = inject(SocketService);
     public sidebarService = inject(SidebarService);
     private globalPipe = inject(GlobalTranslationPipe);
     protected readonly backLabel = this.globalPipe.transform('back');
 
+    private readonly currentUrl = signal(this.router.url);
+    /** The way back to the module's listing; not on the listing itself */
+    protected readonly backVisible = computed(() => {
+        const link = pathOf(this.locationLink());
+        return !!link && link !== pathOf(this.currentUrl());
+    });
+
+    /** The split view: the module's listing, compact, while one of its records is open */
+    protected readonly listingPane = signal<ListingPaneView | null>(null);
+    private readonly openRecordId = signal<string | null>(null);
+    private readonly pane: ListingPane = { activeId: this.openRecordId.asReadonly() };
+    private listingPaneRequest = 0;
+    /** The record alone, without the list: the user's choice, kept for the next records and visits */
+    protected readonly listingPaneHidden = signal(readListingPaneHidden());
+    private readonly mainPipe = new MainTranslationPipe(this.juicebox);
+    protected readonly hideListLabel = this.mainPipe.transform('hide_list');
+    protected readonly showListLabel = this.mainPipe.transform('show_list');
+
     /** The module's help text, opened from the "?" next to the page's actions (ngbPopover in the old app) */
     protected readonly helpOpen = signal(false);
-    protected readonly helpLabel = new MainTranslationPipe(this.juicebox).transform('help');
+    protected readonly helpLabel = this.mainPipe.transform('help');
     protected readonly helpPositions: ConnectedPosition[] = [
         { originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center', offsetX: -8 },
         { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 8 },
@@ -77,7 +112,9 @@ export class MainComponent implements OnInit {
                     await this.getHelpText();
                 }
                 this.module.set(currentModule);
+                this.currentUrl.set(url);
                 this.resolvePageHeader(url);
+                void this.resolveListingPane();
             }
         })
 
@@ -152,6 +189,47 @@ export class MainComponent implements OnInit {
         this.juicebox.setPageHeader({ title });
     }
 
+    /**
+     * A record route (`data.splitView`) with a listing route next to it (`data.listingPane`) gets that listing as a
+     * compact list beside it. The list stays while another record of the same module is opened.
+     */
+    private async resolveListingPane() {
+        let record: ActivatedRouteSnapshot | null = null;
+        for (let route: ActivatedRouteSnapshot | null = this.router.routerState.snapshot.root; route; route = route.firstChild) {
+            if (route.routeConfig?.data?.['splitView']) record = route;
+        }
+        const listing = record?.parent?.routeConfig?.children
+            ?.find(child => child.path === '' && child.data?.['listingPane']);
+        this.openRecordId.set(record?.params['id'] ?? null);
+
+        const request = ++this.listingPaneRequest;
+        if (!listing) {
+            this.listingPane.set(null);
+            return;
+        }
+        if (this.listingPane()?.route === listing) return;
+
+        const loading = listing.loadComponent?.();
+        const loaded = isObservable(loading) ? await firstValueFrom(loading) : await loading;
+        const component = listing.component ?? (typeof loaded === 'function' ? loaded : loaded?.default);
+        if (request !== this.listingPaneRequest || !component) return;
+        this.listingPane.set({
+            route: listing,
+            component,
+            injector: Injector.create({ providers: [{ provide: LISTING_PANE, useValue: this.pane }], parent: this.injector }),
+        });
+    }
+
+    protected toggleListingPane() {
+        const hidden = !this.listingPaneHidden();
+        this.listingPaneHidden.set(hidden);
+        try {
+            localStorage.setItem(LISTING_PANE_HIDDEN_KEY, String(hidden));
+        } catch {
+            // Storage blocked: the choice lasts until the page is reloaded
+        }
+    }
+
     private verifyConnection(): void {
         const options = this.juicebox.getOptions();
         if (options && options.polling_interval && isNumber(options.polling_interval) && options.polling_interval >= 30000) {
@@ -181,5 +259,13 @@ export class MainComponent implements OnInit {
 
     ngOnDestroy() {
         this.subscription$.unsubscribe();
+    }
+}
+
+function readListingPaneHidden(): boolean {
+    try {
+        return localStorage.getItem(LISTING_PANE_HIDDEN_KEY) === 'true';
+    } catch {
+        return false;
     }
 }

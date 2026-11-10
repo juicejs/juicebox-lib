@@ -2,11 +2,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
+  padding: 12px 20px;
   border-top: 1px solid var(--color-border);
-  background: var(--color-background-secondary);
   font-size: 12px;
   color: var(--color-text-secondary);
+
+  &--compact {
+    padding: 10px 16px;
+  }
 }
 
 .paginator-range {
@@ -16,25 +19,30 @@
 .paginator-pages {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
 }
 
 .pager-arrow {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: 1px solid var(--color-border);
-  border-radius: 5px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border-input);
+  border-radius: 50%;
   color: var(--color-text-secondary);
   cursor: pointer;
-  transition: background-color 0.1s ease, color 0.1s ease;
+  transition: border-color 0.1s ease, color 0.1s ease;
 
   &:hover:not([disabled]) {
-    background: var(--color-grey-200);
-    color: var(--color-text-primary);
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 1px;
   }
 
   &[disabled] {
@@ -44,15 +52,15 @@
 }
 
 .pager-num {
-  min-width: 26px;
-  height: 26px;
-  padding: 0 6px;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 5px;
+  border-radius: var(--radius-pill);
   color: var(--color-text-secondary);
   font-size: 12px;
   font-family: inherit;
@@ -68,10 +76,15 @@
 
   &.active {
     background: var(--color-secondary-active-bg);
-    border-color: rgba(var(--color-secondary-rgb), 0.3);
+    border-color: rgba(var(--color-secondary-rgb), 0.22);
     color: var(--color-secondary-active-text);
     font-weight: 600;
     cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 1px;
   }
 }
 
@@ -82,7 +95,7 @@
   user-select: none;
 }
 
-// Rows per page (design: segmented control)
+// Rows per page: a segmented control, the chosen size filled
 .paginator-size {
   display: flex;
   align-items: center;
@@ -100,15 +113,15 @@
   gap: 2px;
   padding: 2px;
   border: 1px solid var(--color-border);
-  border-radius: 6px;
-  background: var(--color-background);
+  border-radius: var(--radius-pill);
+  background: var(--color-grey-100);
 }
 
 .size-option {
-  height: 22px;
-  padding: 0 8px;
+  height: 24px;
+  padding: 0 10px;
   border: 1px solid transparent;
-  border-radius: 4px;
+  border-radius: var(--radius-pill);
   background: transparent;
   color: var(--color-text-secondary);
   font: inherit;
@@ -122,9 +135,8 @@
   }
 
   &.active {
-    border-color: var(--color-border-dark);
-    background: var(--color-grey-200);
-    color: var(--color-text-primary);
+    background: var(--color-ink);
+    color: var(--color-ink-contrast);
   }
 
   &:focus-visible {

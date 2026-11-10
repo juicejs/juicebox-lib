@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output, model, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, booleanAttribute, input, output, model, computed } from '@angular/core';
 
 export interface PageEvent {
   pageIndex: number;
@@ -21,6 +21,8 @@ export class PaginatorComponent {
   rowsPerPageLabel = input('Rows per page');
   previousLabel = input('Previous page');
   nextLabel = input('Next page');
+  /** For a narrow list: only the range and the previous and next buttons */
+  compact = input(false, { transform: booleanAttribute });
 
   page = output<PageEvent>();
 

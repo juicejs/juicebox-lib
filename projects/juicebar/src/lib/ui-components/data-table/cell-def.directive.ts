@@ -22,3 +22,11 @@ export class HeaderDefDirective {
 export class SelectionDetailDefDirective {
   readonly templateRef = inject(TemplateRef);
 }
+
+/** A row of the compact list (`[compact]`): `<ng-template compactRowDef let-row>…</ng-template>`, with phrasing content only */
+@Directive({
+  selector: '[compactRowDef]'
+})
+export class CompactRowDefDirective {
+  readonly templateRef = inject(TemplateRef);
+}

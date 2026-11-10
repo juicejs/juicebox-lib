@@ -20,6 +20,8 @@
     <ul class="tree" role="tree" [attr.aria-label]="ariaLabel() || null">
       @for (row of rows(); track row.node.key) {
         <li class="tree-item" role="treeitem"
+            [class.tree-item--selected]="row.selected"
+            [attr.aria-current]="row.selected ? 'true' : null"
             [attr.data-key]="row.node.key"
             [attr.aria-level]="row.level + 1"
             [attr.aria-posinset]="row.position"

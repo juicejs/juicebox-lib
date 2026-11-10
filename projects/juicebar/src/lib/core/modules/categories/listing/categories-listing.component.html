@@ -1,16 +1,9 @@
 @let rows = nodes();
-<div class="parent">
-  @if (config().showPublic || options.showInactive) {
+<div [class]="pane ? 'pane-tree' : 'parent'">
+  @if (!pane && (config().showPublic || options.showInactive)) {
     <div class="listing-toolbar">
       @if (config().showPublic) {
-        <app-form-field appearance="outline" class="display-filter">
-          <app-label>{{ 'show_categories' | translate }}</app-label>
-          <app-select [value]="display()" (selectionChange)="display.set($event.value)">
-            <app-option value="mine">{{ 'mine' | translate }}</app-option>
-            <app-option value="organisation">{{ 'organisation' | translate }}</app-option>
-            <app-option value="all">{{ 'all' | translate }}</app-option>
-          </app-select>
-        </app-form-field>
+        <app-segmented [label]="'show_categories' | translate" [options]="displayOptions" [(value)]="display" />
       }
       @if (options.showInactive) {
         <app-slide-toggle [checked]="showInactive()" [disabled]="loading()" (toggled)="toggleInactive($event)">
@@ -27,6 +20,7 @@
     [loading]="loading()"
     [emptyMessage]="'no_data_to_display' | translate"
     [ariaLabel]="'categories_tree' | translate"
+    [selectedKey]="pane?.activeId() ?? null"
     (nodeSelect)="open($event)"
   >
     <ng-template [appTreeNodeDef]="rows" let-node let-active="active">
@@ -37,6 +31,8 @@
           <span class="visually-hidden">({{ 'inactive' | translate }})</span>
         }
       </span>
+      <!-- The compact tree next to an open category only opens categories -->
+      @if (!pane) {
       <span class="category-actions">
         @if (node.data.inMine) {
           <button app-button appearance="icon" type="button"
@@ -67,6 +63,7 @@
           </button>
         }
       </span>
+      }
     </ng-template>
   </app-tree>
 </div>

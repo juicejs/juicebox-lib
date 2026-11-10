@@ -1,4 +1,23 @@
-<div class="parent">
+@if (pane) {
+    <!-- The compact list next to an open template -->
+    <app-data-table compact
+        [rows]="rows()"
+        [columns]="columns()"
+        [activeId]="pane.activeId()"
+        [totalCount]="count()"
+        [pageSize]="pageSize()"
+        [pageIndex]="page() - 1"
+        (pageChange)="onPageChange($event)"
+        (rowClick)="onSelect($event._id)">
+        <ng-template compactRowDef let-row>
+            <span class="dt-list-title">{{ row.name }}</span>
+            @if (row._data_source?.name) {
+                <span class="dt-list-subtitle">{{ row._data_source.name }}</span>
+            }
+        </ng-template>
+    </app-data-table>
+} @else {
+<div class="parent listing-page">
     <app-data-table
         [rows]="rows()"
         [columns]="columns()"
@@ -67,3 +86,4 @@
         </ng-template>
     </app-data-table>
 </div>
+}

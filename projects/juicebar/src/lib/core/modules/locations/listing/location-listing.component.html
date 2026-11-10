@@ -1,14 +1,27 @@
-<div class="parent">
+@if (pane) {
+  <!-- The compact list next to an open location -->
+  <app-data-table compact
+    [rows]="rows()"
+    [columns]="columns"
+    [activeId]="pane.activeId()"
+    [totalCount]="count()"
+    [pageSize]="pageSize()"
+    [pageIndex]="page() - 1"
+    [emptyMessage]="'no_data_to_display' | translate"
+    (pageChange)="onPage($event)"
+    (rowClick)="open($event)">
+    <ng-template compactRowDef let-row>
+      <span class="dt-list-title">{{ row.name }}</span>
+      @if (row.summary) {
+        <span class="dt-list-subtitle">{{ row.summary }}</span>
+      }
+    </ng-template>
+  </app-data-table>
+} @else {
+<div class="parent listing-page">
   <div class="listing-toolbar">
     @if (options.ownerFilter) {
-      <app-form-field appearance="outline" class="owner-filter">
-        <app-label>{{ 'show_locations' | translate }}</app-label>
-        <app-select [value]="owner()" (selectionChange)="owner.set($event.value)">
-          <app-option value="all">{{ 'all' | translate }}</app-option>
-          <app-option value="mine">{{ 'mine' | translate }}</app-option>
-          <app-option value="public">{{ 'public' | translate }}</app-option>
-        </app-select>
-      </app-form-field>
+      <app-segmented [label]="'show_locations' | translate" [options]="ownerOptions" [(value)]="owner" />
     }
     <app-slide-toggle [checked]="archived()" (toggled)="showArchived($event)">{{ 'show_archived' | translate }}</app-slide-toggle>
   </div>
@@ -96,3 +109,4 @@
     </ng-template>
   </app-data-table>
 </div>
+}

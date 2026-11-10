@@ -11,6 +11,8 @@ export function buildLocationsRoute(overrides?: ComponentOverride[]): Routes {
       {
         path: '',
         loadComponent: () => import('./listing/location-listing.component').then(m => m.LocationListingComponent),
+        // The compact list next to an open record (the split view)
+        data: {listingPane: true},
       },
       {
         path: 'location-wizard',
@@ -19,6 +21,7 @@ export function buildLocationsRoute(overrides?: ComponentOverride[]): Routes {
       },
       {
         path: 'details/:id',
+        data: {splitView: true},
         loadComponent: () => import('./details/location-details.component').then(m => m.LocationDetailsComponent),
         children: [
           {path: '', redirectTo: 'details-location', pathMatch: 'full'},

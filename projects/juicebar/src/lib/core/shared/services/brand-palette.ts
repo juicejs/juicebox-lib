@@ -4,6 +4,8 @@ const BLACK: Rgb = [0, 0, 0];
 const WHITE: Rgb = [255, 255, 255];
 /** --color-background in dark mode */
 const DARK_PAGE: Rgb = [10, 10, 11];
+/** --color-panel in light mode: the workspace that accent text stands on */
+const LIGHT_PANEL: Rgb = [250, 248, 245];
 
 function parseHex(hex: string): Rgb | null {
   const match = /^#?([\da-f]{3}|[\da-f]{6})$/i.exec(hex.trim());
@@ -49,8 +51,10 @@ function reach(color: Rgb, background: Rgb, ratio: number, target: Rgb): Rgb {
   return target;
 }
 
-function accentTokens(base: Rgb, darker: Rgb, lighter: Rgb, extraLight: Rgb, contrastText: string, activeBackground: Rgb, activeText: Rgb) {
+function accentTokens(base: Rgb, darker: Rgb, lighter: Rgb, extraLight: Rgb, contrastText: string, activeBackground: Rgb, activeText: Rgb, action: Rgb, actionHover: Rgb) {
   return {
+    '--color-action': toHex(action),
+    '--color-action-hover': toHex(actionHover),
     '--color-secondary': toHex(base),
     '--color-secondary-dark': toHex(darker),
     '--color-secondary-light': toHex(lighter),
@@ -69,8 +73,8 @@ export type BrandTokens = Record<string, string>;
 
 /**
  * The accent tokens of both themes from one brand colour, like the old juicebox `$primary`.
- * Each theme gets the shade that keeps AA contrast: white text on buttons and accent text on white in light mode,
- * dark text on buttons and accent text on the dark page in dark mode.
+ * Each theme gets the shades that keep AA contrast: white text on buttons and accent text on the workspace in light
+ * mode, dark text on buttons and accent text on the dark page in dark mode.
  */
 export function brandTokens(primary: string): { dark: BrandTokens; light: BrandTokens } | null {
   const brand = parseHex(primary);
@@ -79,7 +83,9 @@ export function brandTokens(primary: string): { dark: BrandTokens; light: BrandT
   }
   // A neutral brand becomes monochrome: near-black in light mode, near-white in dark mode (a mid grey would look disabled)
   const neutral = isNeutral(brand);
-  const light = reach(brand, WHITE, neutral ? 12 : 4.5, BLACK);
+  const light = reach(brand, LIGHT_PANEL, neutral ? 12 : 4.5, BLACK);
+  // Solid fills (buttons, active pills) only need white text to be readable on them
+  const lightAction = reach(brand, WHITE, neutral ? 12 : 4.5, BLACK);
   const dark = reach(brand, DARK_PAGE, neutral ? 15 : 5, WHITE);
   // Tinted from each theme's shade, so the tint shows on its page (black on the dark page would not)
   const lightActiveBackground = mix(WHITE, light, 0.12);
@@ -88,10 +94,12 @@ export function brandTokens(primary: string): { dark: BrandTokens; light: BrandT
     light: accentTokens(
       light, mix(light, BLACK, 0.2), mix(light, WHITE, 0.15), mix(brand, WHITE, 0.45), '#ffffff',
       lightActiveBackground, reach(light, lightActiveBackground, 4.5, BLACK),
+      lightAction, mix(lightAction, BLACK, 0.12),
     ),
     dark: accentTokens(
       dark, mix(dark, BLACK, 0.1), mix(dark, WHITE, 0.15), mix(dark, WHITE, 0.4), '#0a0a0b',
       darkActiveBackground, reach(dark, darkActiveBackground, 4.5, WHITE),
+      dark, mix(dark, BLACK, 0.1),
     ),
   };
 }

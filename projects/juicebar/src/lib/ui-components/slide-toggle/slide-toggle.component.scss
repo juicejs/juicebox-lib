@@ -13,7 +13,7 @@
   height: 0;
 
   &:checked + .toggle-slider {
-    background: var(--color-secondary);
+    background: var(--color-action);
 
     &::before {
       transform: translateX(20px);
@@ -44,11 +44,12 @@
     top: 2px;
     background: var(--color-primary);
     border-radius: 50%;
+    box-shadow: var(--shadow-sm);
     transition: transform 0.3s;
   }
 }
 
 .toggle-label {
   color: var(--color-text-primary);
-  font-size: 14px;
+  font-size: 13px;
 }

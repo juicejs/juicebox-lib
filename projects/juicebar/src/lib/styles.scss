@@ -42,21 +42,21 @@
 .app-input {
   display: block;
   width: 100%;
-  height: 32px;
-  padding: 0 10px;
+  height: var(--control-height);
+  padding: 0 14px;
   border: 1px solid var(--color-border-input);
-  border-radius: 6px;
+  border-radius: var(--radius-control);
   background: var(--color-background);
   color: var(--color-text-primary);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 13.5px;
   line-height: 1.5;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   box-sizing: border-box;
   outline: none;
 
   &:hover:not(:disabled):not([readonly]) {
-    border-color: var(--color-text-secondary);
+    border-color: var(--color-border-dark);
   }
 
   &:focus {
@@ -81,7 +81,7 @@
 
   &:is(textarea) {
     height: auto;
-    padding: 7px 10px;
+    padding: 10px 14px;
     resize: vertical;
   }
 }
@@ -107,7 +107,7 @@
 
   &:focus-visible {
     outline: none;
-    box-shadow: var(--shadow-xl), 0 0 0 2px var(--color-tertiary);
+    box-shadow: var(--shadow-xl), 0 0 0 2px var(--color-secondary);
   }
 }
 
@@ -121,8 +121,8 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-sm);
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 17px;
+  font-weight: 600;
   letter-spacing: -0.01em;
   margin: 0 0 var(--spacing-md) 0;
   padding-bottom: var(--spacing-md);
@@ -201,16 +201,16 @@
 
 .app-dialog-panel {
   input, textarea, select {
-    background: var(--color-grey-100);
+    background: var(--color-background);
     border: 1px solid var(--color-border-input);
     color: var(--color-text-primary);
-    border-radius: var(--radius-md);
-    padding: 8px 12px;
+    border-radius: var(--radius-control);
+    padding: 8px 14px;
 
     &:focus {
       outline: none;
-      border-color: var(--color-tertiary);
-      box-shadow: 0 0 0 1px var(--color-tertiary);
+      border-color: var(--color-secondary);
+      box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.15);
     }
 
     &::placeholder {
@@ -318,16 +318,30 @@
   // Background colors
   --color-background: #0a0a0b;
   --color-background-secondary: #131315;
-  // The canvas behind cards and tables, and the surface of dialogs
+  // The canvas behind the floating sidebar and workspace, and the surface of dialogs
   --color-page: #0a0a0b;
   --color-surface-raised: #161618;
-  // Cards and tables on the canvas
-  --color-surface: #111113;
+  // The floating sidebar and workspace on the canvas
+  --color-panel: #111113;
+  // Cards and tables in the workspace
+  --color-surface: #161618;
+  // The band of a table's column headers
+  --color-table-header: #151517;
   --radius-card: 16px;
+  // Inputs and selects; buttons, tabs and chips are pills
+  --radius-control: 12px;
+  --radius-pill: 999px;
+  --control-height: 40px;
+  // Left and right padding of a page in the workspace
+  --page-gutter: 32px;
   --shadow-card: none;
   --color-backdrop: rgba(0, 0, 0, 0.6);
 
-  // Main action buttons: the brand colour (config.theme.primary)
+  // The strongest neutral: the chosen option of a segmented control
+  --color-ink: #e4e4e7;
+  --color-ink-contrast: #0a0a0b;
+
+  // Main action buttons and the active pills: the brand colour (config.theme.primary)
   --color-action: var(--color-secondary);
   --color-action-hover: var(--color-secondary-dark);
   --color-action-contrast: var(--color-secondary-contrast);
@@ -361,33 +375,34 @@
   --color-secondary-active-bg: #1a0f08;
   --color-secondary-active-text: #fbbf24;
   --color-sidebar-item: #a4a4ad;
-  --color-avatar-bg: #26262b;
-  --color-avatar-text: #d4d4d8;
-  // Tooltips: a lighter surface over the dark page
+  // Initials tiles are tinted with the brand colour
+  --color-avatar-bg: var(--color-secondary-active-bg);
+  --color-avatar-text: var(--color-secondary-active-text);
+  // Tooltips and toasts: a lighter surface over the dark page
   --color-tooltip-background: #2a2a2e;
   --color-tooltip-text: #f4f4f5;
   --color-tooltip-border: #3f3f46;
   --color-tooltip-muted: #a1a1aa;
 }
 
-// Light theme (toggled by ThemeService adding html.light-theme)
+// Light theme (toggled by ThemeService adding html.light-theme): warm stone neutrals with a terracotta accent
 html.light-theme {
   // Primary colors
   --color-primary: #ffffff;
   --color-primary-contrast: #000000;
 
-  // Secondary colors
-  --color-secondary: #c2410c;
-  --color-secondary-light: #ea580c;
-  --color-secondary-dark: #9a3412;
-  --color-secondary-extra-light: #ffa06e;
+  // Secondary colors (terracotta accent): AA as text on the canvas, the workspace and white
+  --color-secondary: #b8431f;
+  --color-secondary-light: #d95d39;
+  --color-secondary-dark: #9e3b1e;
+  --color-secondary-extra-light: #f5cfc4;
   --color-secondary-contrast: #ffffff;
 
   // Secondary colors (RGB for rgba gradients)
-  --color-secondary-rgb: 194, 65, 12;
-  --color-secondary-light-rgb: 234, 88, 12;
-  --color-secondary-dark-rgb: 154, 52, 18;
-  --color-secondary-extra-light-rgb: 255, 160, 110;
+  --color-secondary-rgb: 184, 67, 31;
+  --color-secondary-light-rgb: 217, 93, 57;
+  --color-secondary-dark-rgb: 158, 59, 30;
+  --color-secondary-extra-light-rgb: 245, 207, 196;
 
   // Tertiary colors
   --color-tertiary: #004e89;
@@ -395,21 +410,21 @@ html.light-theme {
   --color-tertiary-dark: #003d6b;
   --color-tertiary-contrast: #ffffff;
 
-  // Grey scale (slate)
-  --color-grey-50: #f8fafc;
-  --color-grey-100: #f1f5f9;
-  --color-grey-200: #eaeef3;
-  --color-grey-300: #e2e8f0;
-  --color-grey-400: #cbd5e1;
-  --color-grey-500: #94a3b8;
-  --color-grey-600: #64748b;
-  --color-grey-700: #475569;
-  --color-grey-800: #334155;
-  --color-grey-900: #1e293b;
+  // Grey scale (warm stone)
+  --color-grey-50: #faf8f5;
+  --color-grey-100: #f4f1ea;
+  --color-grey-200: #ede8df;
+  --color-grey-300: #e2ddd3;
+  --color-grey-400: #cfc8bc;
+  --color-grey-500: #9e978c;
+  --color-grey-600: #787166;
+  --color-grey-700: #5c564e;
+  --color-grey-800: #4a4640;
+  --color-grey-900: #2e2c29;
 
-  // Semantic colors
-  --color-success: #15803d;
-  --color-warning: #b45309;
+  // Semantic colors: AA as text on the canvas and the workspace
+  --color-success: #157a3a;
+  --color-warning: #a34b08;
   --color-error: #b91c1c;
   --color-error-contrast: #ffffff;
   --color-success-contrast: #ffffff;
@@ -418,63 +433,56 @@ html.light-theme {
   --color-info: #1d4ed8;
 
   // Text colors
-  --color-text-primary: #0f172a;
-  // 5:1 on white and on the page canvas
-  --color-text-secondary: #5b6b80;
-  --color-text-disabled: #94a3b8;
+  --color-text-primary: #191817;
+  // 5:1 on the canvas, 5.5:1 on the workspace
+  --color-text-secondary: #6b645a;
+  --color-text-disabled: #9e978c;
 
   // Border colors
-  --color-border: var(--color-grey-300);
-  --color-border-light: #eef2f6;
+  --color-border: #e5e0d8;
+  --color-border-light: #efece6;
   --color-border-dark: var(--color-grey-400);
-  // A soft outline: the darker 3:1 grey made long fields and editors heavy; hover and focus still strengthen it
-  --color-border-input: #b4bfcd;
-  --color-warning-bg: rgba(255, 152, 0, 0.1);
-  --color-warning-border: rgba(255, 152, 0, 0.3);
-  --color-success-rgb: 21, 128, 61;
-  --color-success-bg: rgba(21, 128, 61, 0.1);
-  --color-success-border: rgba(21, 128, 61, 0.3);
+  // A soft outline; hover and focus strengthen it
+  --color-border-input: #e0dbd1;
+  --color-warning-bg: rgba(163, 75, 8, 0.1);
+  --color-warning-border: rgba(163, 75, 8, 0.3);
+  --color-success-rgb: 21, 122, 58;
+  --color-success-bg: rgba(21, 122, 58, 0.1);
+  --color-success-border: rgba(21, 122, 58, 0.3);
 
   // Background colors
   --color-background: var(--color-primary);
   --color-background-secondary: var(--color-grey-50);
-  --color-page: #f6f7fb;
-  --color-surface-raised: #ffffff;
+  --color-page: #f1ede6;
+  --color-panel: #faf8f5;
+  --color-surface-raised: #faf8f5;
   --color-surface: #ffffff;
-  --shadow-card: 0 4px 6px rgba(15, 23, 42, 0.02);
+  --color-table-header: #f4f0e8;
+  --shadow-card: none;
+  --color-backdrop: rgba(25, 24, 23, 0.3);
 
+  --color-ink: #191817;
+  --color-ink-contrast: #ffffff;
 
-  // Shadows: soft and cool
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
-  --shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.08);
-  --shadow-xl: 0 20px 48px rgba(15, 23, 42, 0.14);
+  // Solid fills are a shade lighter than the accent text; white on them keeps AA
+  --color-action: #c24e2c;
+  --color-action-hover: #ac4324;
 
-  // Border radius
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
-  --radius-full: 50%;
-
-  // Spacing
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
+  // Shadows: soft and warm
+  --shadow-sm: 0 1px 2px rgba(25, 24, 23, 0.04);
+  --shadow-md: 0 4px 12px rgba(25, 24, 23, 0.06);
+  --shadow-lg: 0 8px 24px rgba(25, 24, 23, 0.08);
+  --shadow-xl: 0 20px 48px rgba(25, 24, 23, 0.14);
 
   // Light values for tokens the design palette does not define
-  --color-secondary-active-bg: #fde8dc;
-  --color-secondary-active-text: #9a3412;
-  --color-sidebar-item: #475569;
-  --color-avatar-bg: #eaeef3;
-  --color-avatar-text: #334155;
-  // Tooltips: dark slate over the light page
-  --color-tooltip-background: #0f172a;
+  --color-secondary-active-bg: #fcebe6;
+  --color-secondary-active-text: #9e3b1e;
+  --color-sidebar-item: #4a4640;
+  // Tooltips and toasts: warm ink over the light page
+  --color-tooltip-background: #191817;
   --color-tooltip-text: #ffffff;
-  --color-tooltip-border: #0f172a;
-  --color-tooltip-muted: #94a3b8;
+  --color-tooltip-border: #2e2c29;
+  --color-tooltip-muted: #c7c1b7;
 }
 
 // =============================================================================
@@ -607,8 +615,8 @@ select {
   line-height: 1.5;
   color: var(--color-text-primary);
   background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-control);
   outline: none;
   box-sizing: border-box;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -1178,11 +1186,22 @@ html, body {
 // =============================================================================
 
 .parent {
-    padding: 0 28px 28px;
+    padding: 0 var(--page-gutter) var(--page-gutter);
     width: 100%;
     max-width: 100%;
     overflow-x: auto;
     box-sizing: border-box;
+}
+
+// A module's listing: its table runs to the edges and the bottom of the workspace (see data-table.component.scss)
+.parent.listing-page {
+    padding-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    :root {
+        --page-gutter: 16px;
+    }
 }
 
 
@@ -1221,21 +1240,21 @@ html, body {
         display: flex;
         align-items: center;
         gap: 6px;
-        padding: 0 10px;
-        height: 34px;
-        font-size: 14px;
+        padding: 0 14px;
+        height: 36px;
+        font-size: 12.5px;
         font-weight: 400;
         text-transform: none;
         width: 100%;
-        // Looks like an app-select trigger
+        // A pill that opens its options
         background: var(--color-background);
         border: 1px solid var(--color-border-input);
-        border-radius: 7px;
+        border-radius: var(--radius-pill);
         color: var(--color-text-primary);
         transition: border-color 0.15s ease;
 
         &:hover {
-            border-color: var(--color-text-secondary);
+            border-color: var(--color-border-dark);
             background: var(--color-background);
             box-shadow: none;
         }
@@ -1244,20 +1263,6 @@ html, body {
             outline: none;
             border-color: var(--color-secondary);
             box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.15);
-        }
-
-        .filter-icon {
-            width: 16px !important;
-            height: 16px !important;
-            color: var(--color-text-secondary) !important;
-            flex-shrink: 0;
-
-            .material-icons, .material-symbols-outlined, i {
-                font-size: 16px !important;
-                width: 16px !important;
-                height: 16px !important;
-                line-height: 1 !important;
-            }
         }
 
         // Like a select's placeholder
@@ -1273,8 +1278,8 @@ html, body {
             align-items: center;
             font-size: 11px;
             font-weight: 500;
-            padding: 2px 6px;
-            border-radius: 4px;
+            padding: 2px 8px;
+            border-radius: var(--radius-pill);
             background: var(--color-grey-200);
             color: var(--color-text-primary);
             border: 1px solid var(--color-border);
@@ -1296,7 +1301,7 @@ html, body {
     // A filter with a value: a darker outline, the value shows as chips
     &.active .filter-btn,
     &.active .gdrive-filter-btn {
-        border-color: var(--color-text-secondary);
+        border-color: var(--color-border-dark);
     }
 
     // Hide the autocomplete input but keep it functional
@@ -1352,7 +1357,7 @@ html, body {
 .filter-panel {
     background: var(--color-background-secondary);
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: var(--radius-control);
     box-shadow: var(--shadow-lg);
     min-width: 300px;
     max-height: 400px;
@@ -1379,7 +1384,7 @@ html, body {
     height: 30px;
     padding: 0 10px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     background: transparent;
     color: var(--color-text-primary);
     font-size: 12.5px;
@@ -1449,8 +1454,8 @@ html, body {
   padding: 0 10px;
   width: 100%;
   background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-control);
   color: var(--color-text-primary);
   font-family: inherit;
   font-size: 13px;
@@ -1475,7 +1480,7 @@ html, body {
 
   &--compact {
     height: 32px;
-    border-radius: 6px;
+    border-radius: var(--radius-pill);
     font-size: 12.5px;
     min-width: 180px;
   }
@@ -1530,7 +1535,7 @@ html, body {
 .dropdown-panel {
   background: var(--color-background-secondary);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-control);
   box-shadow: var(--shadow-xl);
   overflow: hidden;
   display: flex;
@@ -1610,7 +1615,7 @@ html, body {
   gap: 8px;
   background: transparent;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   color: var(--color-text-primary);
   cursor: pointer;
   font-size: 12.5px;
@@ -1683,14 +1688,15 @@ table.data-table {
     overflow: hidden;
 
     th[cdk-header-cell] {
-        height: 44px;
+        height: 40px;
         padding: 0 12px;
         text-align: left;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 600;
-        letter-spacing: 0.01em;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
         color: var(--color-text-secondary);
-        background: var(--color-background-secondary);
+        background: var(--color-table-header);
         border-bottom: 1px solid var(--color-border);
         white-space: nowrap;
 
@@ -1698,11 +1704,11 @@ table.data-table {
     }
 
     td[cdk-cell] {
-        padding: 14px 12px;
-        font-size: 13.5px;
+        padding: 16px 12px;
+        font-size: 13px;
         font-weight: 400;
         color: var(--color-text-primary);
-        border-bottom: 1px solid var(--color-border-light);
+        border-bottom: 1px solid var(--color-border);
 
         &.text-right { text-align: right; }
     }
@@ -1714,7 +1720,7 @@ table.data-table {
     tr[cdk-row] {
         transition: background 0.08s;
         &:last-child td[cdk-cell] { border-bottom: none; }
-        &:hover { background: var(--color-background-secondary); }
+        &:hover { background: rgba(var(--color-secondary-rgb), 0.06); }
     }
 }
 
@@ -1764,21 +1770,26 @@ table.data-table {
 }
 
 
-.filter-input {
-    padding: 4px 8px;
-    border: none;
-    border-radius: 3px;
+// A column's filter in a table header: a small pill (input.…, so the global input[type="text"] rule above doesn't win)
+input.filter-input {
+    padding: 4px 12px;
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-pill);
     font-size: 12px;
+    font-weight: 400;
+    letter-spacing: normal;
+    text-transform: none;
     transition: all 0.15s ease;
     width: calc(100% - 24px);
     max-width: 200px !important;
-    height: 26px;
+    height: 28px;
     box-sizing: border-box;
     vertical-align: middle;
 
     &:focus {
         outline: none;
-        box-shadow: 0 0 0 2px rgba(var(--color-secondary-rgb), 0.35);
+        border-color: var(--color-secondary);
+        box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.15);
     }
 
     &::placeholder {

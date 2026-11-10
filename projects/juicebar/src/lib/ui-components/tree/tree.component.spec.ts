@@ -13,7 +13,8 @@ const NODES: TreeNode<{tag: string}>[] = [
 @Component({
   imports: [TreeComponent, TreeNodeDefDirective],
   template: `
-    <app-tree [nodes]="nodes()" [filter]="true" filterLabel="Search" emptyMessage="Nothing" (nodeSelect)="picked = $event.key">
+    <app-tree [nodes]="nodes()" [filter]="true" filterLabel="Search" emptyMessage="Nothing" [selectedKey]="selected()"
+              (nodeSelect)="picked = $event.key">
       <ng-template [appTreeNodeDef]="nodes()" let-node let-active="active">
         <span class="label">{{ node.label }}</span><button type="button" [attr.tabindex]="active ? 0 : -1">{{ node.data.tag }}</button>
       </ng-template>
@@ -22,6 +23,7 @@ const NODES: TreeNode<{tag: string}>[] = [
 class HostComponent {
   readonly tree = viewChild.required(TreeComponent);
   readonly nodes = signal(NODES);
+  readonly selected = signal<string | null>(null);
   picked: string | null = null;
 }
 
@@ -100,6 +102,19 @@ describe('TreeComponent', () => {
     expect(labels()).toEqual(['Food', 'Fruit']);
     await filter('zzz');
     expect(element.querySelector('.tree-empty')!.textContent).toContain('Nothing');
+  });
+
+  it('marks the current node and opens the way to it, keeping what was open', async () => {
+    const {labels, item, host, fixture} = await setup();
+    host.selected.set('apple');
+    await fixture.whenStable();
+    expect(labels()).toEqual(['Food', 'Fruit', 'Äpfel', 'Bread', 'Tools']);
+    expect(item('apple').getAttribute('aria-current')).toBe('true');
+    expect(item('fruit').hasAttribute('aria-current')).toBe(false);
+    host.selected.set('tools');
+    await fixture.whenStable();
+    expect(labels()).toEqual(['Food', 'Fruit', 'Äpfel', 'Bread', 'Tools']);
+    expect(item('tools').getAttribute('aria-current')).toBe('true');
   });
 
   it('brings back what was open before the filter', async () => {

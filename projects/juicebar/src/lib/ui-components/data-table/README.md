@@ -95,6 +95,8 @@ That's it for a plain-text listing. Default cell renders `row[key]` with ellipsi
 | `pageSize` | `number` | `10` | |
 | `pageSizeOptions` | `number[]` | `[5, 10, 25, 50]` | |
 | `pageIndex` | `number` | `0` | Zero-based. Pass `page - 1` if you store 1-based. |
+| `compact` | `boolean` | `false` | A narrow list instead of the table (see "The split view" below) |
+| `activeId` | `unknown` | `null` | Compact list: the id of the row to mark as the current one |
 
 ### Outputs
 
@@ -263,17 +265,52 @@ Just use a `cellDef`:
 
 ---
 
-## 8. Styling notes
+## 8. The split view — a compact list next to an open record
+
+While a record is open, the main component shows the module's listing as a compact list beside it. A module gets this
+by marking its routes and letting its listing component render the compact list:
+
+```ts
+{ path: '', loadComponent: …ListingComponent, data: { listingPane: true } },   // the listing
+{ path: 'details/:id', loadComponent: …, data: { splitView: true } },          // the record
+```
+
+```ts
+protected readonly pane = injectListingPane();   // set when the listing is the compact list, not the page
+```
+
+```html
+@if (pane) {
+  <app-data-table compact [rows]="rows()" [columns]="columns" [activeId]="pane.activeId()"
+                  [totalCount]="count()" [pageSize]="pageSize()" [pageIndex]="page() - 1"
+                  (pageChange)="onPage($event)" (rowClick)="open($event)">
+    <ng-template compactRowDef let-row>
+      <span class="dt-list-title">{{ row.name }}</span>
+      <span class="dt-list-subtitle">{{ row.city }}</span>
+    </ng-template>
+  </app-data-table>
+} @else {
+  <div class="parent listing-page"> … the page's filters and table … </div>
+}
+```
+
+As the compact list, the listing must not set the page's title, breadcrumb or action buttons, nor change the address;
+it starts from what the listing showed last (`ListingStateService`). `listing-page` lets the page's table run from
+edge to edge of the workspace. See `core/modules/locations/listing/`.
+
+---
+
+## 9. Styling notes
 
 - `table-layout: fixed` — set `width` on every meaningful column. Remaining columns share leftover space.
 - Ellipsis works because the `<td>` has `max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis`. Inline text/spans truncate cleanly. `inline-flex`/`flex` content does not — opt out with `ellipsis: false`.
 - Sticky header is on by default.
 - Below 768px the wrapper switches to horizontal scroll (`min-width: 600px` on the table).
-- CSS variables consumed: `--color-divider`, `--color-surface`, `--color-tertiary`, `--color-secondary`, `--color-row-hover`. Override globally if you need a different palette.
+- CSS variables consumed: `--color-surface`, `--color-table-header`, `--color-border`, `--color-secondary` (and its `-rgb`, for the row under the pointer), `--page-gutter`.
 
 ---
 
-## 9. Real examples in the codebase
+## 10. Real examples in the codebase
 
 - `core/modules/exports/export-template-listing/` — text columns + dot-path + `*cellDef` for inline `cdk-menu` export dropdown + delete button.
 - `core/modules/users/listing/` — bigger one. `*headerDef` for inline filter inputs (firstname/lastname/email), `*cellDef` for status icon, roles count, groups tooltip, lastLogin pipe, conditional 2FA login button, permission-aware delete.
@@ -282,7 +319,7 @@ Read these before adding a new listing.
 
 ---
 
-## 10. Checklist for a new listing
+## 11. Checklist for a new listing
 
 1. [ ] Build column config in the constructor / `ngOnInit` (translate labels there).
 2. [ ] Set `width` on every column you care about; `ellipsis: false` on icon/action/multi-element cells.

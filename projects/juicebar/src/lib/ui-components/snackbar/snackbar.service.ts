@@ -50,6 +50,7 @@ export class SnackbarService {
       this.appRef.detachView(componentRef.hostView);
       componentRef.destroy();
       element.remove();
+      this.lowerContainer();
     };
     const close = () => {
       clearTimeout(timeoutId);
@@ -95,5 +96,16 @@ export class SnackbarService {
     if (!container?.hasAttribute('popover')) return;
     if (container.matches(':popover-open')) container.hidePopover();
     container.showPopover();
+  }
+
+  /**
+   * Without a toast the container leaves the top layer. Its styles are the toast component's, which Angular removes
+   * with the last toast; an open popover without them is the browser's own box, a small bordered square in the
+   * middle of the window.
+   */
+  private lowerContainer() {
+    const container = this.container;
+    if (!container?.hasAttribute('popover') || container.childElementCount) return;
+    if (container.matches(':popover-open')) container.hidePopover();
   }
 }

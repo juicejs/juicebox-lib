@@ -1,4 +1,24 @@
-<div class="data-table-wrapper">
+<div class="data-table-wrapper" [class.data-table-wrapper--compact]="compact()">
+  @if (compact()) {
+    <div class="dt-list" role="list">
+      @for (item of listRows(); track item.id ?? $index) {
+        <div role="listitem">
+          <button type="button" class="dt-list-row"
+                  [class.dt-list-row--active]="item.active"
+                  [attr.aria-current]="item.active ? 'true' : null"
+                  (click)="rowClick.emit(item.row)">
+            @if (compactRowDef(); as def) {
+              <ng-container *ngTemplateOutlet="def.templateRef; context: { $implicit: item.row, row: item.row }"></ng-container>
+            } @else {
+              <span class="dt-list-title">{{ item.label ?? '-' }}</span>
+            }
+          </button>
+        </div>
+      } @empty {
+        <p class="dt-list-empty">{{ emptyMessage() }}</p>
+      }
+    </div>
+  } @else {
   <table cdk-table [dataSource]="renderRows()" [trackBy]="trackRow" class="data-table" [style.min-width.px]="minTableWidth()">
     @for (column of renderColumns(); track column.col.key) {
       @let col = column.col;
@@ -99,8 +119,10 @@
       <td class="dt-empty-cell" [attr.colspan]="columnKeys().length">{{ emptyMessage() }}</td>
     </tr>
   </table>
+  }
 
   <app-paginator
+    [compact]="compact()"
     [length]="totalCount()"
     [pageSize]="pageSize()"
     [pageSizeOptions]="pageSizeOptions()"

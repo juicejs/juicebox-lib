@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   ViewEncapsulation,
   TemplateRef,
+  booleanAttribute,
   computed,
   contentChild,
   contentChildren,
@@ -15,7 +16,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { CdkTableModule } from '@angular/cdk/table';
 import { PaginatorComponent, PageEvent } from '../paginator/paginator.component';
 import { IconComponent } from '../icon/icon.component';
-import { CellDefDirective, HeaderDefDirective, SelectionDetailDefDirective } from './cell-def.directive';
+import { CellDefDirective, CompactRowDefDirective, HeaderDefDirective, SelectionDetailDefDirective } from './cell-def.directive';
 import { ColumnConfig, SortDir, SortState } from './data-table.types';
 
 @Component({
@@ -44,6 +45,13 @@ export class DataTableComponent {
   clearAriaLabel = input<string>('Clear selection');
   /** Translated label of a column's resize handle, followed by the column label */
   resizeAriaLabel = input('Resize column');
+  /**
+   * A narrow list instead of the table, e.g. next to an open record: each row shows the `compactRowDef` template
+   * (or the first column), a click emits `rowClick`, and the paginator only moves a page back and forth
+   */
+  compact = input(false, { transform: booleanAttribute });
+  /** Compact list: the id of the row to mark as the current one */
+  activeId = input<unknown>(null);
 
   pageChange = output<PageEvent>();
   rowClick = output<any>();
@@ -53,6 +61,7 @@ export class DataTableComponent {
   private readonly cellDefs = contentChildren(CellDefDirective);
   private readonly headerDefs = contentChildren(HeaderDefDirective);
   protected readonly selectionDetailDef = contentChild(SelectionDetailDefDirective);
+  protected readonly compactRowDef = contentChild(CompactRowDefDirective);
 
   private static readonly SELECT_COLUMN: ColumnConfig = {
     key: '__select__', label: '', width: '44px', align: 'center', ellipsis: false
@@ -165,6 +174,19 @@ export class DataTableComponent {
       selected: selectable && r?.[idKey] === sid,
       values: Object.fromEntries(keys.map(key => [key, this.value(r, key)])) as Record<string, any>,
     });
+  });
+
+  /** The compact list's rows: which one is current, and what a row shows without a `compactRowDef` */
+  protected readonly listRows = computed(() => {
+    const idKey = this.idKey();
+    const activeId = this.activeId();
+    const firstKey = this.columns()[0]?.key;
+    return this.rows().map(row => ({
+      row,
+      id: row?.[idKey],
+      active: activeId != null && row?.[idKey] === activeId,
+      label: firstKey ? this.value(row, firstKey) : null,
+    }));
   });
 
   isDetailRow = (_: number, r: any) => !!r?.__detail;

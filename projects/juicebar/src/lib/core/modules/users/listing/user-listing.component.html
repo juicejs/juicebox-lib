@@ -1,6 +1,23 @@
 <!-- Action buttons now handled by main component actionButtons system -->
 
-<div class="parent">
+@if (pane) {
+  <!-- The compact list next to an open user -->
+  <app-data-table compact
+    [rows]="rowsSig()"
+    [columns]="tableColumns"
+    [activeId]="pane.activeId()"
+    [totalCount]="count()"
+    [pageSize]="itemsPerPageSig()"
+    [pageIndex]="pageSig() - 1"
+    (pageChange)="onPageChange($event)"
+    (rowClick)="onSelect({type: 'click', row: $event})">
+    <ng-template compactRowDef let-row>
+      <span class="dt-list-title">{{ row.firstname }} {{ row.lastname }}</span>
+      <span class="dt-list-subtitle hidden-email">{{ row.email }}</span>
+    </ng-template>
+  </app-data-table>
+} @else {
+<div class="parent listing-page">
 
   <div class="listing-toolbar">
     <filter-bar
@@ -144,3 +161,4 @@
 
   </div>
 </div>
+}

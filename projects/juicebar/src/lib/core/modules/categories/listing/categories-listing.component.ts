@@ -4,11 +4,9 @@ import {Router} from '@angular/router';
 import {
   ButtonComponent,
   DialogService,
-  FormFieldComponent,
   IconComponent,
-  LabelComponent,
-  OptionComponent,
-  SelectComponent,
+  SegmentedComponent,
+  SegmentedOption,
   SlideToggleComponent,
   TooltipDirective,
   TreeComponent,
@@ -16,6 +14,7 @@ import {
   TreeNodeDefDirective,
 } from '../../../../ui-components';
 import {ConfirmationDialogComponent, ConfirmationDialogData} from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import {injectListingPane, ListingStateService} from '../../../shared/components/listing-pane/listing-pane';
 import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 import {ConfigurationService} from '../../../shared/services/configuration.service';
 import {Juice} from '../../../shared/services/juice.service';
@@ -48,11 +47,18 @@ interface CategoryRowData extends CategoryNodeData {
 
 type CategoryRow = TreeNode<CategoryRowData>;
 
+/** What the listing shows, kept for the compact tree next to an open category */
+interface CategoriesListingState {
+  showInactive: boolean;
+  display: Display;
+}
+
 /**
  * The category tree with a filter. A click opens a category; its buttons add a subcategory and delete it. The tree is
  * updated in place, as in the old listing: after a delete the siblings are renumbered on the backend. Quality
  * Circle's extras come with the backend configuration (showPublic: the Mine / Organisation / All filter and taking
- * categories into Mine) and the options (showInactive).
+ * categories into Mine) and the options (showInactive). Next to an open category (the split view) it is the compact
+ * tree, as the listing showed it last, without the buttons.
  */
 @Component({
   selector: 'app-categories-listing',
@@ -64,16 +70,16 @@ type CategoryRow = TreeNode<CategoryRowData>;
     ButtonComponent,
     IconComponent,
     TooltipDirective,
-    FormFieldComponent,
-    LabelComponent,
-    SelectComponent,
-    OptionComponent,
+    SegmentedComponent,
     SlideToggleComponent,
     CategoriesTranslationPipe,
   ],
   providers: [CategoriesTranslationPipe],
 })
 export class CategoriesListingComponent implements OnInit, OnDestroy {
+  /** Set when this is the compact tree next to an open category, not the page itself */
+  protected readonly pane = injectListingPane();
+  private readonly listingState = inject(ListingStateService);
   private readonly categories = inject(CategoriesService);
   private readonly configuration = inject(ConfigurationService);
   private readonly juice = inject(Juice);
@@ -95,6 +101,8 @@ export class CategoriesListingComponent implements OnInit, OnDestroy {
   protected readonly loading = signal(true);
   protected readonly showInactive = signal(false);
   protected readonly display = signal<Display>('mine');
+  protected readonly displayOptions: SegmentedOption<Display>[] = (['mine', 'organisation', 'all'] as const)
+    .map(value => ({value, label: this.i18n.transform(value)}));
   protected readonly config = signal<CategoriesConfiguration>({});
   private readonly categoryTree = signal<Category[]>([]);
   private readonly organisationId = signal<string | null>(null);
@@ -109,19 +117,27 @@ export class CategoriesListingComponent implements OnInit, OnDestroy {
   });
 
   async ngOnInit(): Promise<void> {
-    this.juicebox.navigationEvent({
-      location: this.i18n.transform('categories'),
-      subject: this.i18n.transform('categories_tree'),
-      link: '',
-    });
-    this.juicebox.setPageHeader({scope: '/main/categories', title: this.i18n.transform('categories')});
-    this.juicebox.setActionButtons([{
-      title: this.i18n.transform('create'),
-      type: 'btn-primary',
-      icon: 'add',
-      permissions: 'categories:role#create',
-      callback: () => this.router.navigate(['/main/categories/category-wizard']),
-    }]);
+    if (this.pane) {
+      const state = this.listingState.restore<CategoriesListingState>('categories');
+      if (state) {
+        this.showInactive.set(state.showInactive);
+        this.display.set(state.display);
+      }
+    } else {
+      this.juicebox.navigationEvent({
+        location: this.i18n.transform('categories'),
+        subject: this.i18n.transform('categories_tree'),
+        link: '',
+      });
+      this.juicebox.setPageHeader({scope: '/main/categories', title: this.i18n.transform('categories')});
+      this.juicebox.setActionButtons([{
+        title: this.i18n.transform('create'),
+        type: 'btn-primary',
+        icon: 'add',
+        permissions: 'categories:role#create',
+        callback: () => this.router.navigate(['/main/categories/category-wizard']),
+      }]);
+    }
 
     const [config, organisation] = await Promise.all([
       loadCategoriesConfiguration(this.configuration),
@@ -134,6 +150,11 @@ export class CategoriesListingComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.pane) return;
+    this.listingState.save('categories', {
+      showInactive: this.showInactive(),
+      display: this.display(),
+    } satisfies CategoriesListingState);
     this.juicebox.setPageHeader(null);
   }
 

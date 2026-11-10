@@ -1473,5 +1473,15 @@ export const mainDictionary = {
     "en_GB": "Open menu",
     "de_DE": "Menü öffnen",
     "hr_HR": "Otvori izbornik"
+  },
+  "hide_list": {
+    "en_GB": "Hide list",
+    "de_DE": "Liste ausblenden",
+    "hr_HR": "Sakrij popis"
+  },
+  "show_list": {
+    "en_GB": "Show list",
+    "de_DE": "Liste einblenden",
+    "hr_HR": "Prikaži popis"
   }
 }

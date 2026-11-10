@@ -4,7 +4,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 20px;
-    padding: 20px 28px 28px;
+    padding: 24px var(--page-gutter) var(--page-gutter);
 }
 
 // Overrides the global .filter-bar spacing, which is meant for listings

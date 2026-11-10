@@ -11,6 +11,8 @@ export function buildUsersRoute(overrides?: ComponentOverride[]): Routes {
       {
         path: '',
         loadComponent: () => import('./listing/user-listing.component').then(m => m.UserListingComponent),
+        // The compact list next to an open record (the split view)
+        data: {listingPane: true},
       },
       {
         path: 'user-wizard',
@@ -25,6 +27,7 @@ export function buildUsersRoute(overrides?: ComponentOverride[]): Routes {
       },
       {
         path: 'details/:id',
+        data: {splitView: true},
         loadComponent: () => import('./details/details.component').then(m => m.DetailsUsersComponent),
         children: [
           { path: '', redirectTo: 'details-user', pathMatch: 'full' },

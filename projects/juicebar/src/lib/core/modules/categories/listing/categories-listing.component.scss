@@ -7,12 +7,14 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 24px;
-  margin-bottom: 12px;
+  margin-bottom: 20px;
 }
 
-.display-filter {
-  width: 220px;
+// The compact tree next to an open category
+.pane-tree {
+  padding: 0 12px 12px;
 }
+
 
 .status-dot {
   flex: none;

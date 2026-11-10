@@ -58,6 +58,7 @@ export * from './autocomplete/autocomplete.component';
 
 // Other components
 export * from './slide-toggle/slide-toggle.component';
+export * from './segmented/segmented.component';
 export * from './paginator/paginator.component';
 export * from './tabs/tabs.component';
 export * from './snackbar/snackbar.service';

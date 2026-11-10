@@ -3,8 +3,9 @@
   display: block;
 }
 
+// Starts under the page's title, as the other create pages; the wizard's steps, when shown, keep their own space
 .details-page {
-  padding: 20px 28px 28px;
+  padding: 0 var(--page-gutter) var(--page-gutter);
   display: grid;
   grid-template-columns: minmax(0, 560px);
   justify-content: start;
@@ -19,35 +20,37 @@
   overflow: hidden;
 }
 
+// As the user details cards
 .card-head {
-  padding: 16px 20px 14px;
-  border-bottom: 1px solid var(--color-border);
+  margin: 0 24px;
+  padding: 24px 0 16px;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .card-title {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--color-text-primary);
   letter-spacing: -0.01em;
 }
 
 .card-sub {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--color-text-secondary);
   margin-top: 2px;
 }
 
 .card-body {
-  padding: 16px;
+  padding: 20px 24px 24px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
 }
 
 .field-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 16px;
 }
 
 .field {
@@ -60,10 +63,11 @@
 .field-label {
   font-size: 12.5px;
   font-weight: 500;
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
   display: flex;
   align-items: center;
   gap: 6px;
+  margin: 0;
 }
 
 .field-req {
@@ -73,7 +77,7 @@
 
 .field-opt {
   font-size: 11px;
-  color: var(--color-text-disabled, var(--color-text-secondary));
+  color: var(--color-text-secondary);
   font-weight: 400;
   margin-left: auto;
 }
@@ -82,8 +86,21 @@
   width: 100%;
 }
 
+// The card spaces its fields
+:host ::ng-deep .field-control .app-form-field {
+  margin-bottom: 0;
+}
+
+// app-label's own label holds the text and its marks: "Optional" to the right, a space before "*"
+:host ::ng-deep .field-label .app-label-text {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 6px;
+}
+
 .field-hint {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--color-text-secondary);
 }
 
@@ -91,8 +108,8 @@
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  border-top: 1px solid var(--color-border);
-  padding-top: 12px;
+  border-top: 1px solid var(--color-border-light);
+  padding-top: 16px;
   margin-top: 2px;
 }
 

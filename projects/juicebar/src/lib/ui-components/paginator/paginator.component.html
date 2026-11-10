@@ -1,9 +1,9 @@
-<div class="app-paginator">
+<div class="app-paginator" [class.app-paginator--compact]="compact()">
   <span class="paginator-range">
     {{ rangeStart() }}–{{ rangeEnd() }} of {{ length() }}
   </span>
 
-  @if (pageSizeOptions().length > 1) {
+  @if (!compact() && pageSizeOptions().length > 1) {
     <div class="paginator-size" role="group" [attr.aria-label]="rowsPerPageLabel()">
       <span class="paginator-size-label" aria-hidden="true">{{ rowsPerPageLabel() }}</span>
       <div class="paginator-size-options">
@@ -22,12 +22,14 @@
       <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m10 3-5 5 5 5"/></svg>
     </button>
 
-    @for (p of pages(); track $index) {
-      @if (p === '…') {
-        <span class="pager-dots">…</span>
-      } @else {
-        <button type="button" class="pager-num" [class.active]="p === pageIndex() + 1"
-                [attr.aria-current]="p === pageIndex() + 1 ? 'page' : null" (click)="goToPage(p)">{{ p }}</button>
+    @if (!compact()) {
+      @for (p of pages(); track $index) {
+        @if (p === '…') {
+          <span class="pager-dots">…</span>
+        } @else {
+          <button type="button" class="pager-num" [class.active]="p === pageIndex() + 1"
+                  [attr.aria-current]="p === pageIndex() + 1 ? 'page' : null" (click)="goToPage(p)">{{ p }}</button>
+        }
       }
     }
 

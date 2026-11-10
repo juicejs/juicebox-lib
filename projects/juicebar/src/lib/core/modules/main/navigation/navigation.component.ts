@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, output, input, ChangeDetectionStrategy, signal, computed, viewChild, ElementRef} from '@angular/core';
+import {Component, inject, OnInit, output, ChangeDetectionStrategy, signal, computed, viewChild, ElementRef} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {NavigationEnd, Router} from '@angular/router';
@@ -10,6 +10,7 @@ import {SidebarService} from '../../../shared/services/sidebar.service';
 import {CdkMenuModule} from '@angular/cdk/menu';
 import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 import {ThemeService, Theme} from '../../../shared/services/theme.service';
+import {BrandService} from '../../../shared/services/brand.service';
 
 export interface Language {
   name: string;
@@ -44,10 +45,6 @@ interface FileInfo {
 })
 export class NavigationComponent implements OnInit {
 
-  readonly locationTitle = input<string>(null);
-  readonly locationSubject = input<string>(null);
-  readonly locationLink = input<any>(null);
-
   private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
   private searchReturnUrl: string | null = null;
 
@@ -76,6 +73,8 @@ export class NavigationComponent implements OnInit {
   private themeService = inject(ThemeService);
   protected sidebarService = inject(SidebarService);
   public theme = this.themeService.theme;
+  /** The project's logo, or the user's organisation logo */
+  protected readonly logo = inject(BrandService).sidebarLogo();
 
   constructor() {
     this.router.events.pipe(
@@ -195,10 +194,6 @@ export class NavigationComponent implements OnInit {
 
   toggleTheme() {
     this.themeService.toggle();
-  }
-
-  async goTo(url: string) {
-    if (url) await this.router.navigateByUrl(url);
   }
 
 }

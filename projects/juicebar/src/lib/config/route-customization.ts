@@ -39,6 +39,8 @@ export function applyComponentOverrides(moduleRoutes: Routes, overrides: Compone
     if (existing) {
       delete existing.component;
       existing.loadComponent = () => Promise.resolve(component);
+      // A project's own listing doesn't know the split view: no compact list next to the module's records
+      if (existing.data?.['listingPane']) existing.data = {...existing.data, listingPane: false};
     } else {
       parent.children = [...(parent.children ?? []), { path, component }];
     }

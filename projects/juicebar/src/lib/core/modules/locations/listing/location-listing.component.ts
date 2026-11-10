@@ -5,20 +5,20 @@ import {
   ButtonComponent,
   CellDefDirective,
   ColumnConfig,
+  CompactRowDefDirective,
   DataTableComponent,
   DialogService,
-  FormFieldComponent,
   HeaderDefDirective,
   IconComponent,
-  LabelComponent,
-  OptionComponent,
   PageEvent,
-  SelectComponent,
+  SegmentedComponent,
+  SegmentedOption,
   SlideToggleComponent,
   SortState,
   TooltipDirective,
 } from '../../../../ui-components';
 import {ConfirmationDialogComponent, ConfirmationDialogData} from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import {injectListingPane, ListingStateService} from '../../../shared/components/listing-pane/listing-pane';
 import {escapeHtml} from '../../../shared/components/media/media-files';
 import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 import {ConfigurationService} from '../../../shared/services/configuration.service';
@@ -38,8 +38,20 @@ interface LocationRow {
   type: string;
   city: string;
   country: string;
+  /** Type and city, the line under the name in the compact list */
+  summary: string;
   archivable: boolean;
   deletable: boolean;
+}
+
+/** What the listing shows, kept for the compact list next to an open location */
+interface LocationsListingState {
+  page: number;
+  pageSize: number;
+  sort: SortState;
+  archived: boolean;
+  owner: Owner;
+  typed: Array<{key: string; value: string}>;
 }
 
 /** Text filters wait for typing to pause, as in the QC listing */
@@ -48,7 +60,8 @@ const FILTER_DELAY_MS = 300;
 /**
  * The locations of the types the user may see, filtered by name, city and country in the table header, sorted on
  * the server, with archived ones on request. The page is kept in the URL, so going back from a location returns to
- * it. A response that arrives after a newer request is dropped.
+ * it. A response that arrives after a newer request is dropped. Next to an open location (the split view) it is the
+ * compact list of the rows it showed last.
  */
 @Component({
   selector: 'app-location-listing',
@@ -58,20 +71,21 @@ const FILTER_DELAY_MS = 300;
     RouterLink,
     DataTableComponent,
     CellDefDirective,
+    CompactRowDefDirective,
     HeaderDefDirective,
     ButtonComponent,
     IconComponent,
     TooltipDirective,
-    FormFieldComponent,
-    LabelComponent,
-    SelectComponent,
-    OptionComponent,
+    SegmentedComponent,
     SlideToggleComponent,
     LocationsTranslationPipe,
   ],
   providers: [LocationsTranslationPipe],
 })
 export class LocationListingComponent implements OnInit, OnDestroy {
+  /** Set when this is the compact list next to an open location, not the page itself */
+  protected readonly pane = injectListingPane();
+  private readonly listingState = inject(ListingStateService);
   private readonly locations = inject(LocationsService);
   private readonly configuration = inject(ConfigurationService);
   private readonly juicebox = inject(JuiceboxService);
@@ -93,6 +107,8 @@ export class LocationListingComponent implements OnInit, OnDestroy {
   protected readonly sort = signal<SortState>({prop: '', dir: ''});
   protected readonly archived = signal(false);
   protected readonly owner = signal<Owner>('all');
+  protected readonly ownerOptions: SegmentedOption<Owner>[] = (['all', 'mine', 'public'] as const)
+    .map(value => ({value, label: this.i18n.transform(value)}));
   protected readonly count = signal(0);
   private readonly fetched = signal<StoredLocation[]>([]);
   private readonly types = signal<LocationType[]>([]);
@@ -120,19 +136,31 @@ export class LocationListingComponent implements OnInit, OnDestroy {
   ];
 
   async ngOnInit(): Promise<void> {
-    this.juicebox.navigationEvent({
-      location: this.i18n.transform('location'),
-      subject: this.i18n.transform('location_list'),
-      link: 'main/location',
-    });
-    this.juicebox.setPageHeader({scope: '/main/location', title: this.i18n.transform('locations')});
-    this.juicebox.setActionButtons([{
-      title: this.i18n.transform('add_new'),
-      type: 'btn-primary',
-      icon: 'add',
-      permissions: 'locations:role#create',
-      callback: () => this.router.navigate(['/main/location/location-wizard']),
-    }]);
+    if (this.pane) {
+      const state = this.listingState.restore<LocationsListingState>('location');
+      if (state) {
+        this.page.set(state.page);
+        this.pageSize.set(state.pageSize);
+        this.sort.set(state.sort);
+        this.archived.set(state.archived);
+        this.owner.set(state.owner);
+        this.typed = state.typed;
+      }
+    } else {
+      this.juicebox.navigationEvent({
+        location: this.i18n.transform('location'),
+        subject: this.i18n.transform('location_list'),
+        link: 'main/location',
+      });
+      this.juicebox.setPageHeader({scope: '/main/location', title: this.i18n.transform('locations')});
+      this.juicebox.setActionButtons([{
+        title: this.i18n.transform('add_new'),
+        type: 'btn-primary',
+        icon: 'add',
+        permissions: 'locations:role#create',
+        callback: () => this.router.navigate(['/main/location/location-wizard']),
+      }]);
+    }
 
     const [types, organisation] = await Promise.all([
       loadLocationTypes(this.configuration, this.juicebox),
@@ -145,7 +173,7 @@ export class LocationListingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     clearTimeout(this.filterTimer);
-    this.juicebox.setPageHeader(null);
+    if (!this.pane) this.juicebox.setPageHeader(null);
   }
 
   protected onFilter(key: string, value: string): void {
@@ -219,6 +247,14 @@ export class LocationListingComponent implements OnInit, OnDestroy {
   private async fetch(): Promise<void> {
     const request = ++this.request;
     const sort = this.sort();
+    this.listingState.save('location', {
+      page: this.page(),
+      pageSize: this.pageSize(),
+      sort,
+      archived: this.archived(),
+      owner: this.owner(),
+      typed: this.typed,
+    } satisfies LocationsListingState);
     const result = await this.locations.fetch(this.page() - 1, this.pageSize(), {
       filters: {
         archived: this.archived(),
@@ -240,6 +276,8 @@ export class LocationListingComponent implements OnInit, OnDestroy {
    */
   private setPage(page: number): void {
     this.page.set(page);
+    // The compact list isn't the page: the address is the open location's
+    if (this.pane) return;
     const url = this.router.createUrlTree([], {
       relativeTo: this.route,
       queryParams: {page: page > 1 ? page : null},
@@ -253,12 +291,14 @@ export class LocationListingComponent implements OnInit, OnDestroy {
     const country = address?.country;
     const type = types.find(option => option.value === location.type);
     const archivable = this.archivableTypes.includes(location.type ?? '');
+    const typeName = type?.localised_name ? this.autoLanguage.transform(type.localised_name) : (location.type ?? '-');
     return {
       _id: location._id,
       location,
       name: this.autoLanguage.transform(location.name ?? '', this.language, this.systemLanguages),
-      type: type?.localised_name ? this.autoLanguage.transform(type.localised_name) : (location.type ?? '-'),
+      type: typeName,
       city: address?.city || '-',
+      summary: [typeName, address?.city].filter(part => part && part !== '-').join(' · '),
       country: country && typeof country === 'object' ? countryName(country, this.language) : '-',
       archivable,
       deletable: this.deletableTypes.includes(location.type ?? ''),

@@ -1,57 +1,92 @@
-// Modern Sidebar Container
+// A floating card on the canvas, next to the workspace
+:host {
+  display: flex;
+  min-height: 0;
+}
+
 .modern-sidebar-container {
   display: flex;
   flex-shrink: 0;
-  width: 220px;
-  height: 100vh;
+  width: 232px;
   transition: width 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
-  border-right: 1px solid var(--color-border);
 
   &.collapsed {
-    width: 56px;
+    width: 64px;
   }
 }
 
-// Modern Sidebar
 .modern-sidebar {
   display: flex;
   flex-direction: column;
-  height: 100%;
   width: 100%;
-  background: var(--color-grey-50);
+  min-height: 0;
+  padding: 12px;
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
 
-  // Header Section with Logo
+  // The organisation, and the button that collapses the sidebar
   .sidebar-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--color-border);
+    gap: 12px;
     flex-shrink: 0;
+    min-height: 38px;
+    padding: 4px 4px 0;
+    margin-bottom: 16px;
 
-    .brand-logo {
-      width: 120px;
-      height: auto;
-      transition: width 250ms cubic-bezier(0.4, 0.0, 0.2, 1),
-                  transform 250ms cubic-bezier(0.4, 0.0, 0.2, 1);
+    .org-tile {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      background: var(--color-background);
+      color: var(--color-secondary);
 
-      &.vertical {
-        width: 36px;
-        transform: rotate(90deg);
-        padding: 4px 0;
+      app-icon {
+        width: 18px;
+        height: 18px;
+        font-size: 18px;
       }
+    }
+
+    .org-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .org-eyebrow {
+      color: var(--color-text-secondary);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .org-name {
+      overflow: hidden;
+      color: var(--color-text-primary);
+      font-size: 14px;
+      font-weight: 600;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .collapse-btn {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       flex-shrink: 0;
+      margin-left: auto;
       background: transparent;
-      border: 1px solid var(--color-border-dark);
-      border-radius: 5px;
+      border: 1px solid var(--color-border);
+      border-radius: 50%;
       color: var(--color-text-secondary);
       cursor: pointer;
       padding: 0;
@@ -59,8 +94,13 @@
 
       &:hover {
         background-color: var(--color-grey-200);
-        border-color: var(--color-tertiary);
+        border-color: var(--color-border-dark);
         color: var(--color-text-primary);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-secondary);
+        outline-offset: 2px;
       }
 
       .collapse-icon {
@@ -102,35 +142,34 @@
     .menu-section {
       display: flex;
       flex-direction: column;
-      gap: 2px;
-      padding: 8px 0;
+      gap: 4px;
     }
 
     .menu-item-container {
-      margin: 0 8px;
-      border-radius: 8px;
+      border-radius: var(--radius-pill);
 
+      // Each module is a pill; the one that is open is filled with the brand colour
       .menu-item {
         position: relative;
         display: block;
-        border-radius: 8px;
+        border-radius: var(--radius-pill);
         cursor: pointer;
         user-select: none;
         color: var(--color-sidebar-item);
         text-decoration: none;
+        transition: background-color 150ms ease, color 150ms ease;
 
         &:focus-visible {
           outline: 2px solid var(--color-secondary);
-          outline-offset: -2px;
+          outline-offset: 2px;
         }
-        transition: background-color 150ms ease, color 150ms ease;
 
         .menu-item-content {
           display: flex;
           align-items: center;
-          padding: 0 10px;
-          height: 30px;
-          gap: 10px;
+          padding: 0 14px;
+          height: 40px;
+          gap: 12px;
 
           .menu-icon-container {
             display: flex;
@@ -158,7 +197,7 @@
 
           .menu-label {
             flex: 1;
-            font-size: 13px;
+            font-size: 13.5px;
             font-weight: 400;
             color: inherit;
             overflow: hidden;
@@ -171,28 +210,18 @@
           }
         }
 
-        // Hover state
         &:hover:not(.active):not(.dragging) {
           background-color: var(--color-grey-200);
           color: var(--color-text-primary);
         }
 
-        // Active state
-        // Active: tinted with the brand colour, its icon in the brand colour
         &.active {
-          background: var(--color-secondary-active-bg);
-          color: var(--color-secondary-active-text);
-
-          &:hover {
-            background: var(--color-secondary-active-bg);
-          }
-
-          app-icon {
-            color: var(--color-secondary);
-          }
+          background: var(--color-action);
+          color: var(--color-action-contrast);
+          box-shadow: var(--shadow-sm);
 
           .menu-label {
-            font-weight: 600;
+            font-weight: 500;
           }
         }
 
@@ -206,24 +235,28 @@
     }
   }
 
-  // Footer Section
+  // The user, with the way to the profile and out
   .sidebar-footer {
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 8px;
-    border-top: 1px solid var(--color-border);
+    flex-shrink: 0;
+    margin-top: 12px;
+    padding: 6px;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: var(--color-grey-100);
 
     &.collapsed {
       flex-direction: column;
-      gap: 0;
+      padding: 4px;
     }
 
     .user-section {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 6px 8px;
+      padding: 2px;
       border-radius: 8px;
       min-width: 0;
       flex: 1;
@@ -233,32 +266,34 @@
       font-family: inherit;
       cursor: pointer;
       text-align: left;
-      transition: background-color 150ms ease;
 
-      &:hover {
-        background-color: var(--color-grey-200);
+      &:focus-visible {
+        outline: 2px solid var(--color-secondary);
+        outline-offset: 2px;
+      }
+
+      &:hover .user-full-name {
+        color: var(--color-secondary);
       }
 
       &.collapsed {
         flex: none;
         justify-content: center;
-        padding: 6px 0;
-        width: 100%;
       }
 
       .user-avatar-initials {
         width: 28px;
         height: 28px;
-        border-radius: 7px;
-        background-color: var(--color-avatar-bg);
-        color: var(--color-avatar-text);
+        border: 1px solid var(--color-border);
+        border-radius: 50%;
+        background-color: var(--color-background);
+        color: var(--color-text-primary);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 600;
         flex-shrink: 0;
-        letter-spacing: 0.02em;
       }
 
       .user-info {
@@ -266,13 +301,14 @@
         flex: 1;
 
         .user-full-name {
-          font-size: 13px;
-          font-weight: 500;
+          font-size: 12.5px;
+          font-weight: 600;
           color: var(--color-text-primary);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
           line-height: 1.3;
+          transition: color 150ms ease;
         }
 
         .user-org {
@@ -281,7 +317,6 @@
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          margin-top: 1px;
           line-height: 1.3;
         }
       }
@@ -291,41 +326,54 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       flex-shrink: 0;
       background: transparent;
       border: none;
-      border-radius: 7px;
+      border-radius: 8px;
       color: var(--color-text-secondary);
       cursor: pointer;
       padding: 0;
       transition: background-color 150ms ease, color 150ms ease;
 
       app-icon {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
+        font-size: 15px;
+        width: 15px;
+        height: 15px;
       }
 
       &:hover {
-        background-color: var(--color-grey-200);
-        color: var(--color-error);
+        background-color: var(--color-background);
+        color: var(--color-secondary);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-secondary);
+        outline-offset: 2px;
       }
     }
-
   }
 }
 
-// Collapsed state adjustments
+// Collapsed: only the icons, each in a round pill
 .modern-sidebar-container.collapsed {
   .modern-sidebar {
-    .sidebar-menu {
-      .menu-item-container .menu-item .menu-item-content {
-        justify-content: center;
-        padding: 0;
-        gap: 0;
+    padding: 12px 11px;
+
+    .sidebar-header {
+      justify-content: center;
+      padding: 4px 0 0;
+
+      .collapse-btn {
+        margin: 0;
       }
+    }
+
+    .sidebar-menu .menu-item-container .menu-item .menu-item-content {
+      justify-content: center;
+      padding: 0;
+      gap: 0;
     }
   }
 }
@@ -337,7 +385,7 @@
 
 .cdk-drag-preview {
   box-sizing: border-box;
-  border-radius: 8px;
+  border-radius: var(--radius-pill);
   box-shadow: var(--shadow-xl);
   background: var(--color-background);
   border: 1px solid var(--color-border);
@@ -347,44 +395,12 @@
 .cdk-drag-placeholder {
   opacity: 0.3;
   background: var(--color-grey-200);
-  border: 2px dashed var(--color-tertiary);
-  border-radius: 8px;
+  border: 1px dashed var(--color-border-dark);
+  border-radius: var(--radius-pill);
 }
 
 .cdk-drag-animating {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-// Responsive Design
-@media (max-width: 768px) {
-  .modern-sidebar-container {
-    width: 220px;
-
-    &.collapsed {
-      width: 56px;
-    }
-
-    .modern-sidebar {
-      .sidebar-header {
-        padding: 16px 12px;
-      }
-
-      .sidebar-menu {
-        .menu-item-container .menu-item .menu-item-content {
-          padding: 10px 12px;
-          height: 40px;
-
-          .menu-label {
-            font-size: 13px;
-          }
-        }
-      }
-
-      .sidebar-footer {
-        padding: 8px;
-      }
-    }
-  }
 }
 
 // Profile Picture Dialog Styles
@@ -433,25 +449,3 @@
     }
   }
 }
-
-// Responsive Design
-@media (max-width: 767px) {
-  .sidebar-container {
-    width: 200px;
-
-    &.collapsed {
-      width: 56px;
-    }
-
-    .company-section {
-      padding: var(--spacing-md);
-      min-height: 64px;
-
-      &.collapsed {
-        padding: var(--spacing-sm);
-        min-height: 56px;
-      }
-    }
-  }
-}
-
