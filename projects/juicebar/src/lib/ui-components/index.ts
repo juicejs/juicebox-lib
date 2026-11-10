@@ -38,6 +38,7 @@ export * from './tooltip/tooltip.component';
 export * from './toolbar/toolbar.component';
 export * from './sidenav/sidenav.component';
 export * from './list/list.component';
+export * from './tree/tree.component';
 export * from './divider/divider.component';
 
 // Progress

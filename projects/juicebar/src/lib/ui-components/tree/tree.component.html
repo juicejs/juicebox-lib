@@ -1,0 +1,52 @@
+@if (filter()) {
+  <div class="tree-filter">
+    <input class="tree-filter-input" type="search" autocomplete="off"
+           [attr.aria-label]="filterLabel() || null"
+           [placeholder]="filterLabel()"
+           [value]="term()"
+           (input)="onFilter($any($event.target).value)">
+    <app-icon class="tree-filter-icon" [icon]="'search'" />
+  </div>
+}
+
+<div class="tree-body" [attr.aria-busy]="loading()">
+  @if (loading()) {
+    <div class="tree-loading">
+      <app-progress-spinner [diameter]="32" />
+    </div>
+  }
+
+  @if (rows().length) {
+    <ul class="tree" role="tree" [attr.aria-label]="ariaLabel() || null">
+      @for (row of rows(); track row.node.key) {
+        <li class="tree-item" role="treeitem"
+            [attr.data-key]="row.node.key"
+            [attr.aria-level]="row.level + 1"
+            [attr.aria-posinset]="row.position"
+            [attr.aria-setsize]="row.setSize"
+            [attr.aria-expanded]="row.expandable ? row.expanded : null"
+            [attr.tabindex]="row.active ? 0 : -1"
+            [style.--tree-level]="row.level"
+            (click)="select(row)"
+            (focus)="onFocus(row)"
+            (keydown)="onKeydown($event, row)">
+          <!-- Opening with the mouse; the keyboard uses the arrow keys -->
+          <span class="tree-toggle" aria-hidden="true" (click)="$event.stopPropagation(); toggle(row)">
+            @if (row.expandable) {
+              <app-icon [icon]="row.expanded ? 'expand_more' : 'chevron_right'" />
+            }
+          </span>
+          <span class="tree-content">
+            @if (nodeDef(); as def) {
+              <ng-container *ngTemplateOutlet="def.template; context: {$implicit: row.node, active: row.active, level: row.level}" />
+            } @else {
+              {{ row.node.label }}
+            }
+          </span>
+        </li>
+      }
+    </ul>
+  } @else if (!loading()) {
+    <p class="tree-empty">{{ emptyMessage() }}</p>
+  }
+</div>

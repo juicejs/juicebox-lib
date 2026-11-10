@@ -1,0 +1,60 @@
+<h2 class="included-articles-title">{{ 'included_articles' | translate }}</h2>
+
+<app-data-table
+  [rows]="rows()"
+  [columns]="columns()"
+  [totalCount]="count()"
+  [pageSize]="pageSize()"
+  [pageIndex]="page() - 1"
+  [pageSizeOptions]="pageSizeOptions"
+  [sort]="sort()"
+  [emptyMessage]="'no_data_to_display' | translate"
+  [rowsPerPageLabel]="'rows_per_page' | translate"
+  (pageChange)="onPage($event)"
+  (sortChange)="onSort($event)"
+  (rowClick)="open($event)"
+>
+  <ng-template [headerDef]="'name'">
+    <div class="header-wrap">
+      <input class="filter-input" type="text"
+             [attr.aria-label]="'name' | translate"
+             [placeholder]="'name' | translate"
+             (input)="onFilter('name', $any($event.target).value)"
+             (click)="$event.stopPropagation()"
+             (keydown)="$event.stopPropagation()">
+    </div>
+  </ng-template>
+  <ng-template [headerDef]="'attributes.sapId'">
+    <div class="header-wrap">
+      <input class="filter-input" type="text" aria-label="SAP-ID" placeholder="SAP-ID"
+             (input)="onFilter('attributes.sapId', $any($event.target).value)"
+             (click)="$event.stopPropagation()"
+             (keydown)="$event.stopPropagation()">
+    </div>
+  </ng-template>
+
+  <ng-template [cellDef]="'name'" let-row>
+    @if (linked) {
+      <a class="dt-row-link" [routerLink]="['/main/article/details', row._id, 'details-article']" (click)="$event.stopPropagation()">{{ row.name }}</a>
+    } @else {
+      {{ row.name }}
+    }
+  </ng-template>
+  <ng-template [cellDef]="'attributes.sapId'" let-row>{{ row.sapId }}</ng-template>
+  <ng-template [cellDef]="'active'" let-row>
+    <app-icon class="state" [class.state--off]="!row.active" [icon]="row.active ? 'check_circle' : 'block'" />
+    <span class="visually-hidden">{{ (row.active ? 'active' : 'inactive') | translate }}</span>
+  </ng-template>
+  <ng-template [cellDef]="'public'" let-row>
+    <app-icon class="state" [class.state--off]="!row.public" [icon]="row.public ? 'check_circle' : 'block'" />
+    <span class="visually-hidden">{{ (row.public ? 'public' : 'private') | translate }}</span>
+  </ng-template>
+  <ng-template [cellDef]="'type'" let-row>
+    {{ row.type }}
+    @if (row.privacyWarning) {
+      <span class="privacy-warning" tabindex="0" [attr.aria-label]="'missing_translation' | translate" [appTooltip]="'missing_translation' | translate">
+        <app-icon [icon]="'warning'" />
+      </span>
+    }
+  </ng-template>
+</app-data-table>

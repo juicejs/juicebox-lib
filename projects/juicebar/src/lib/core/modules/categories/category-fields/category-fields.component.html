@@ -1,0 +1,42 @@
+@let categoryForm = form();
+<app-card class="category-card">
+  <header class="category-card-head">
+    <h2 class="category-card-title">{{ title() }}</h2>
+    <p class="category-card-legend"><span class="required-mark" aria-hidden="true">*</span> {{ 'indicates_required_field' | translate }}</p>
+  </header>
+
+  <form class="category-card-body" [formGroup]="categoryForm" (ngSubmit)="submitted.emit()">
+    <app-form-field appearance="outline">
+      <app-label>{{ 'name' | translate }} *</app-label>
+      <input appInput type="text" formControlName="name" aria-required="true" />
+      @if (categoryForm.controls.name.touched && categoryForm.controls.name.errors?.['required']) {
+        <app-error>{{ 'include_name' | translate }}</app-error>
+      }
+    </app-form-field>
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'description' | translate }}</app-label>
+      <textarea appInput formControlName="description" rows="3"></textarea>
+    </app-form-field>
+
+    <app-form-field appearance="outline" class="order-field">
+      <app-label>{{ 'order' | translate }}</app-label>
+      <input appInput type="text" formControlName="order" />
+    </app-form-field>
+
+    @if (showActive() || showPublic()) {
+      <div class="switches">
+        @if (showActive()) {
+          <app-slide-toggle formControlName="active">{{ 'active' | translate }}</app-slide-toggle>
+        }
+        @if (showPublic()) {
+          <app-slide-toggle formControlName="public">{{ 'public' | translate }}</app-slide-toggle>
+        }
+      </div>
+    }
+
+    <div class="category-card-actions">
+      <ng-content />
+    </div>
+  </form>
+</app-card>

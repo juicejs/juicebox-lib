@@ -102,6 +102,23 @@ export interface LocationsCustomization extends ModuleCustomization {
   options?: LocationsOptions;
 }
 
+/**
+ * Project-specific behaviour of the categories module. As in the old juicebox, the backend's `juicecommerce:categories`
+ * configuration also has a say: `allowDelete`, `allowRootDelete`, `showPublic` and `openCategoriesInNewTab`.
+ */
+export interface CategoriesOptions {
+  /** The listing's "Show inactive" switch, as Quality Circle has it: the tree then also has the inactive categories */
+  showInactive?: boolean;
+  /** Ask before deactivating a category and tell what still uses it (Quality Circle's `category:usage:service`) */
+  confirmDeactivation?: boolean;
+  /** New subcategories are active unless switched off, as in Quality Circle; the old juicebox made them inactive */
+  subcategoriesActive?: boolean;
+}
+
+export interface CategoriesCustomization extends ModuleCustomization {
+  options?: CategoriesOptions;
+}
+
 /** A project's look, like the old juicebox themes/<project> folder. Everything is optional: without it the admin is juice orange with the juice logo. */
 export interface JuicebarTheme {
   /**
@@ -141,6 +158,7 @@ export const BASE_APP_CONFIG = new InjectionToken<BaseAppConfig>('BASE_APP_CONFI
 export const USERS_CUSTOMIZATION = new InjectionToken<UsersCustomization>('USERS_CUSTOMIZATION');
 export const EXPORTS_CUSTOMIZATION = new InjectionToken<ExportsCustomization>('EXPORTS_CUSTOMIZATION');
 export const LOCATIONS_CUSTOMIZATION = new InjectionToken<LocationsCustomization>('LOCATIONS_CUSTOMIZATION');
+export const CATEGORIES_CUSTOMIZATION = new InjectionToken<CategoriesCustomization>('CATEGORIES_CUSTOMIZATION');
 
 export interface JuicebarFeature {
   routes: Routes;

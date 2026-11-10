@@ -1,0 +1,72 @@
+@let rows = nodes();
+<div class="parent">
+  @if (config().showPublic || options.showInactive) {
+    <div class="listing-toolbar">
+      @if (config().showPublic) {
+        <app-form-field appearance="outline" class="display-filter">
+          <app-label>{{ 'show_categories' | translate }}</app-label>
+          <app-select [value]="display()" (selectionChange)="display.set($event.value)">
+            <app-option value="mine">{{ 'mine' | translate }}</app-option>
+            <app-option value="organisation">{{ 'organisation' | translate }}</app-option>
+            <app-option value="all">{{ 'all' | translate }}</app-option>
+          </app-select>
+        </app-form-field>
+      }
+      @if (options.showInactive) {
+        <app-slide-toggle [checked]="showInactive()" [disabled]="loading()" (toggled)="toggleInactive($event)">
+          {{ 'show_inactive' | translate }}
+        </app-slide-toggle>
+      }
+    </div>
+  }
+
+  <app-tree
+    [nodes]="rows"
+    [filter]="true"
+    [filterLabel]="'search' | translate"
+    [loading]="loading()"
+    [emptyMessage]="'no_data_to_display' | translate"
+    [ariaLabel]="'categories_tree' | translate"
+    (nodeSelect)="open($event)"
+  >
+    <ng-template [appTreeNodeDef]="rows" let-node let-active="active">
+      <span class="status-dot" [class.status-dot--inactive]="!node.data.active" aria-hidden="true"></span>
+      <span class="category-name" [class.category-name--inactive]="!node.data.active">
+        {{ node.label }}
+        @if (!node.data.active) {
+          <span class="visually-hidden">({{ 'inactive' | translate }})</span>
+        }
+      </span>
+      <span class="category-actions">
+        @if (node.data.inMine) {
+          <button app-button appearance="icon" type="button"
+                  [attr.tabindex]="active ? 0 : -1"
+                  [attr.aria-label]="('remove_from_mine' | translate) + ': ' + node.label"
+                  [appTooltip]="'remove_from_mine' | translate"
+                  (click)="$event.stopPropagation(); removeFromMine(node)">
+            <app-icon [icon]="'indeterminate_check_box'" />
+          </button>
+        }
+        @if (node.data.deletable) {
+          <button app-button appearance="icon" type="button" class="danger"
+                  [attr.tabindex]="active ? 0 : -1"
+                  [attr.aria-label]="('delete' | translate) + ': ' + node.label"
+                  [appTooltip]="'delete' | translate"
+                  (click)="$event.stopPropagation(); remove(node)">
+            <app-icon [icon]="'delete'" />
+          </button>
+        }
+        @if (node.data.addable) {
+          <button app-button appearance="icon" type="button"
+                  [disabled]="node.data.addDisabled"
+                  [attr.tabindex]="active ? 0 : -1"
+                  [attr.aria-label]="('add_subcategory' | translate) + ': ' + node.label"
+                  [appTooltip]="'add_subcategory' | translate"
+                  (click)="$event.stopPropagation(); addChild(node)">
+            <app-icon [icon]="'add'" />
+          </button>
+        }
+      </span>
+    </ng-template>
+  </app-tree>
+</div>

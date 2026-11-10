@@ -1,0 +1,14 @@
+<div class="parent">
+  <app-category-fields
+    [form]="form"
+    [title]="'create_category' | translate"
+    [showPublic]="showPublic()"
+    (submitted)="create()"
+  >
+    <button app-button appearance="raised" color="primary" type="submit"
+            [hasPermissions]="'categories:role#create'"
+            [promiseBtn]="createPromise()">
+      {{ 'create' | translate }}
+    </button>
+  </app-category-fields>
+</div>

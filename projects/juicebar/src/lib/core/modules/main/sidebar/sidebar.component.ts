@@ -115,7 +115,8 @@ const FA_TO_MATERIAL_ICONS: Record<string, string> = {
   'fa-map-marker-alt': 'location_on',
   'fa-map-pin': 'location_on',
   'fa-location': 'location_on',
-  'fa-map': 'map'
+  'fa-map': 'map',
+  'fa-th-list': 'view_list'
 };
 
 /** A sidebar item's icon: a Font Awesome name (fa-…) becomes its Material icon, anything else stays as it is */

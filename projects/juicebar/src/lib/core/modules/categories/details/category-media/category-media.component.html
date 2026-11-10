@@ -1,0 +1,11 @@
+<app-media
+  [collection]="'categories'"
+  [reference]="categoryId"
+  [model]="record()"
+  [hideAddButton]="locked()"
+  [hideEditButton]="locked()"
+  [hideDeleteButton]="locked()"
+  (saved)="added($event)"
+  (removed)="removed($event)"
+  (updated)="updated($event)"
+/>

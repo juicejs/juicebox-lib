@@ -30,6 +30,7 @@ export * from './lib/core/modules/main/main.providers';
 export * from './lib/core/modules/users/users.providers';
 export * from './lib/core/modules/exports/exports.providers';
 export * from './lib/core/modules/locations/locations.providers';
+export * from './lib/core/modules/categories/categories.providers';
 
 // Directives
 export * from './lib/core/shared/directives/PromiseButton';
@@ -58,6 +59,9 @@ export * from './lib/core/modules/users/users.service';
 // Other modules link locations (trainings, offers, events, …) with the old LocationsService
 export * from './lib/core/modules/locations/locations.service';
 export * from './lib/core/modules/locations/locations.types';
+// Other modules pick categories with the old CategoriesService; a project replaces it with its own (e.g. Carl Stahl)
+export * from './lib/core/modules/categories/categories.service';
+export * from './lib/core/modules/categories/categories.types';
 
 // Guards: projects put `canDeactivate: [unsavedChangesGuard]` on their own routes, as with the old UnsavedChangesGuard
 export * from './lib/core/shared/guards/unsaved-changes.guard';

@@ -1,0 +1,23 @@
+@if (category()) {
+  <app-category-fields
+    [form]="form"
+    [title]="'details' | translate"
+    [showPublic]="!!config().showPublic"
+    [showActive]="showActive()"
+    (submitted)="save()"
+  >
+    @if (showTransfer()) {
+      <button app-button appearance="stroked" color="primary" type="button"
+              [disabled]="transferDisabled()"
+              [promiseBtn]="transferPromise()"
+              (click)="transfer()">
+        {{ 'add_to_custom_categories' | translate }}
+      </button>
+    }
+    <button app-button appearance="raised" color="primary" type="submit"
+            [disabled]="saveDisabled()"
+            [promiseBtn]="savePromise()">
+      {{ 'save' | translate }}
+    </button>
+  </app-category-fields>
+}

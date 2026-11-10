@@ -1,0 +1,12 @@
+<app-tabs [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="onTabChange($event)">
+  @for (tab of tabs(); track tab.route) {
+    <app-tab [label]="tab.label" />
+  }
+</app-tabs>
+
+<div class="parent category-tab">
+  <!-- One outlet per category: the tabs are created anew when another category is opened -->
+  @for (id of [categoryId()]; track id) {
+    <router-outlet />
+  }
+</div>

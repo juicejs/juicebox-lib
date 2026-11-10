@@ -1,5 +1,5 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
-import { provideExports, provideJuicebar, provideUsers } from '@juicejs/juicebar';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { provideCategories, provideExports, provideJuicebar, provideLocations, provideUsers } from '@juicejs/juicebar';
 import { environment } from '../environments/environment';
 
 /**
@@ -9,7 +9,6 @@ import { environment } from '../environments/environment';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
     provideJuicebar(
       {
         apiUrl: environment.apiUrl,
@@ -19,6 +18,19 @@ export const appConfig: ApplicationConfig = {
       },
       provideUsers(),
       provideExports(),
+      // Quality Circle's locations (staging.quality-circle.com is the default backend)
+      provideLocations({
+        options: {
+          fields: ['email', 'accessibility', 'coordinates'],
+          emailHint: '14 Tage vor Veranstaltungsbeginn wird Anzahl Teilnehmer verschickt',
+          shortNameMaxLength: 19,
+          ownerFilter: true,
+          archivableTypes: ['web', 'geo'],
+          deletableTypes: ['region', 'web', 'geo'],
+        },
+      }),
+      // Quality Circle's categories
+      provideCategories({options: {showInactive: true, confirmDeactivation: true, subcategoriesActive: true}}),
     ),
   ],
 };
