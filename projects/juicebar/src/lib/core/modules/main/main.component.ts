@@ -17,6 +17,7 @@ import {ButtonComponent, IconComponent} from '../../../ui-components';
 import {ConnectedPosition, OverlayModule} from '@angular/cdk/overlay';
 import {MainTranslationPipe} from './i18n/main.translation';
 import {LISTING_PANE, ListingPane} from '../../shared/components/listing-pane/listing-pane';
+import {backLinkShown} from './back-link';
 
 /** The listing shown next to an open record */
 interface ListingPaneView {
@@ -28,8 +29,6 @@ interface ListingPaneView {
 /** Remembers in the browser whether the user hid the list next to an open record */
 const LISTING_PANE_HIDDEN_KEY = 'juicebar.listingPaneHidden';
 
-/** A link as the pages give it ('main/users', '/main/users?page=2') without its slashes and query */
-const pathOf = (url: string | null | undefined) => (url ?? '').split('?')[0].replace(/^\/+|\/+$/g, '');
 
 @Component({
   selector: 'app-main',
@@ -71,11 +70,8 @@ export class MainComponent implements OnInit {
     protected readonly backLabel = this.globalPipe.transform('back');
 
     private readonly currentUrl = signal(this.router.url);
-    /** The way back to the module's listing; not on the listing itself */
-    protected readonly backVisible = computed(() => {
-        const link = pathOf(this.locationLink());
-        return !!link && link !== pathOf(this.currentUrl());
-    });
+    /** The way back to the module's listing, on the pages under it */
+    protected readonly backVisible = computed(() => backLinkShown(this.currentUrl(), this.locationLink()));
 
     /** The split view: the module's listing, compact, while one of its records is open */
     protected readonly listingPane = signal<ListingPaneView | null>(null);
@@ -107,14 +103,16 @@ export class MainComponent implements OnInit {
                 const url = (event as any).urlAfterRedirects ?? event.url;
                 const splitUrl = url.split('/');
                 const currentModule = splitUrl[2];
-                if(currentModule != this.module()) {
-                    this.helpOpen.set(false);
-                    await this.getHelpText();
-                }
+                const moduleChanged = currentModule != this.module();
+                // The page's own parts first; the module's help text comes from the backend and may take a while
                 this.module.set(currentModule);
                 this.currentUrl.set(url);
                 this.resolvePageHeader(url);
                 void this.resolveListingPane();
+                if (moduleChanged) {
+                    this.helpOpen.set(false);
+                    await this.getHelpText();
+                }
             }
         })
 
@@ -178,7 +176,7 @@ export class MainComponent implements OnInit {
         if (current?.scope && url.startsWith(current.scope)) return;
 
         const segment = url.split('/')[2]?.split('?')[0];
-        if (!segment) {
+        if (!segment || this.pageHeaderOff()) {
             this.juicebox.setPageHeader(null);
             return;
         }
@@ -187,6 +185,14 @@ export class MainComponent implements OnInit {
             ? translated
             : segment.charAt(0).toUpperCase() + segment.slice(1);
         this.juicebox.setPageHeader({ title });
+    }
+
+    /** A route with `data: {pageHeader: false}` gets no title from its address (e.g. the user profile) */
+    private pageHeaderOff(): boolean {
+        for (let route: ActivatedRouteSnapshot | null = this.router.routerState.snapshot.root; route; route = route.firstChild) {
+            if (route.routeConfig?.data?.['pageHeader'] === false) return true;
+        }
+        return false;
     }
 
     /**

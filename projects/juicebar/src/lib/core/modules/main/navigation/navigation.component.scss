@@ -9,39 +9,100 @@
 
   display: flex;
   align-items: center;
-  padding: 0 24px;
-  gap: 24px;
+  // Columns as the page below: the logo over the sidebar, then the search where the workspace starts
+  padding: 0 24px 0 var(--shell-gap);
+  gap: var(--shell-gap);
+
+  .brand {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 12px;
+    width: var(--sidebar-width);
+    padding: 0 12px;
+    transition: width 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &.sidebar-collapsed .brand {
+    justify-content: center;
+    width: var(--sidebar-collapsed-width);
+  }
 
   .brand-logo {
-    flex-shrink: 0;
+    display: block;
     width: auto;
-    max-width: 140px;
-    height: 26px;
+    max-width: 150px;
+    height: auto;
+    max-height: 36px;
     object-fit: contain;
   }
 
-  // The search is part of the canvas until it is used
+  // At the sidebar's right edge
+  .collapse-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    margin-left: auto;
+    padding: 0;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+
+    &:hover {
+      background-color: var(--color-grey-200);
+      border-color: var(--color-border-dark);
+      color: var(--color-text-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-secondary);
+      outline-offset: 2px;
+    }
+
+    .collapse-icon {
+      width: 16px;
+      height: 16px;
+      font-size: 16px;
+      transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+
+      &.flipped {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  &.sidebar-collapsed .collapse-btn {
+    margin-left: 0;
+  }
+
+  // An outlined pill, as the fields
   .search-cmd {
     display: flex;
     align-items: center;
     gap: 8px;
     width: 100%;
-    max-width: 320px;
-    height: 32px;
-    padding: 0 12px;
-    border: 1px solid transparent;
+    max-width: 360px;
+    height: 34px;
+    padding: 0 14px;
+    border: 1px solid var(--color-border-input);
     border-radius: var(--radius-pill);
-    background: transparent;
+    background: var(--color-background);
     cursor: text;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
     &:hover {
-      background: var(--color-grey-200);
+      border-color: var(--color-border-dark);
     }
 
     &:focus-within {
-      background: var(--color-background);
-      border-color: var(--color-border);
+      border-color: var(--color-secondary);
+      box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.15);
     }
 
     .search-cmd-icon {
@@ -159,9 +220,23 @@
     display: inline-flex;
   }
 
+  // The sidebar is a drawer: the menu button, the logo and the search start at the edge; nothing to collapse
   .modern-navigation {
     padding: 0 12px;
     gap: 12px;
+
+    .brand,
+    &.sidebar-collapsed .brand {
+      width: auto;
+      padding: 0;
+    }
+
+    .collapse-btn {
+      display: none;
+    }
+  }
+
+  .modern-navigation {
 
     .nav-right-section {
       gap: var(--spacing-xs);
@@ -181,10 +256,6 @@
 
 @media (max-width: 480px) {
   .modern-navigation {
-    .brand-logo {
-      display: none;
-    }
-
     .nav-right-section {
       gap: 2px;
 

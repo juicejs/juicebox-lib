@@ -11,7 +11,6 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/ro
 import { filter } from 'rxjs/operators';
 import {Subscription} from 'rxjs/internal/Subscription';
 import {SHARED_IMPORTS} from '../../../shared/shared-imports';
-import {GlobalTranslationPipe} from '../../../i18n/global.translation';
 
 /** Font Awesome names of the old juicebox (fa-…) and the Material icons they become in the sidebar */
 const FA_TO_MATERIAL_ICONS: Record<string, string> = {
@@ -193,10 +192,11 @@ export class SidebarComponent implements OnInit, OnDestroy{
     subs = new Subscription();
 
     private sidebarService = inject(SidebarService);
+    /** Collapsed by the top bar's button; a signal, so the sidebar shows it however it was changed */
+    protected readonly collapsed = this.sidebarService.sidebarCollapsed;
     private socketService = inject(SocketService);
     private router = inject(Router);
     public juicebox = inject(JuiceboxService);
-    protected readonly organisationLabel = new GlobalTranslationPipe(this.juicebox).transform('organisation');
     private dialog = inject(DialogService);
 
     constructor() {

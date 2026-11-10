@@ -1,13 +1,14 @@
 <div class="user-profile-tabs">
-  <nav class="tab-nav" role="tablist">
-    <button app-button
-            appearance="flat"
-            [routerLink]="['details']"
-            routerLinkActive="active"
-            role="tab">
-      {{ 'details' | translate }}
-    </button>
-    @if (!sidebarTabHidden()) {
+  <!-- Tabs only when there is more than the details to choose from -->
+  @if (!sidebarTabHidden()) {
+    <nav class="tab-nav" role="tablist">
+      <button app-button
+              appearance="flat"
+              [routerLink]="['details']"
+              routerLinkActive="active"
+              role="tab">
+        {{ 'details' | translate }}
+      </button>
       <button app-button
               appearance="flat"
               [routerLink]="['sidebar']"
@@ -15,8 +16,8 @@
               role="tab">
         {{ 'sidebar' | translate }}
       </button>
-    }
-  </nav>
+    </nav>
+  }
 
   <div class="tab-content">
     <router-outlet></router-outlet>

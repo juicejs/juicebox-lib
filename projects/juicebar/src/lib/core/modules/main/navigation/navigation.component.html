@@ -1,4 +1,4 @@
-<app-toolbar class="modern-navigation">
+<app-toolbar class="modern-navigation" [class.sidebar-collapsed]="sidebarService.sidebarCollapsed()">
 
   <!-- Small screens: opens the sidebar drawer -->
   <button type="button" class="mobile-menu-btn"
@@ -8,8 +8,19 @@
     <app-icon [icon]="'menu'"></app-icon>
   </button>
 
-  <!-- The project's logo, or the user's organisation logo -->
-  <img [src]="logo" alt="Logo" class="brand-logo">
+  <!-- Above the sidebar: the logo, and the button that collapses the sidebar -->
+  <div class="brand">
+    @if (!sidebarService.sidebarCollapsed()) {
+      <img [src]="logo()" alt="Logo" class="brand-logo" (error)="onLogoError()">
+    }
+    <button type="button" class="collapse-btn"
+            [attr.aria-label]="'collapse_sidebar' | translate"
+            [attr.aria-expanded]="!sidebarService.sidebarCollapsed()"
+            [appTooltip]="sidebarService.sidebarCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+            (click)="sidebarService.toggleSidebar()">
+      <app-icon class="collapse-icon" [class.flipped]="sidebarService.sidebarCollapsed()" [icon]="'chevron_left'"></app-icon>
+    </button>
+  </div>
 
   <!-- Search -->
   <div class="search-cmd">

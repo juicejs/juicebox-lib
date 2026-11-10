@@ -18,12 +18,15 @@ export class BrandService {
   readonly loginImage = this.theme?.loginImage ?? null;
 
   /**
-   * Sidebar logo: the user's organisation logo when they have one, as in the old juicebox, which stores the path
-   * without its ".png"
+   * The admin's logo: the user's organisation logo when they have one, as in the old juicebox. It stores a path
+   * without its ".png"; a full URL or a path with an image extension is used as it is (as Quality Circle's admin
+   * does; the old juicebox added ".png" anyway, and such a logo did not load).
    */
   sidebarLogo(): string {
-    const organisationLogo = this.juicebox.getUser()?.attributes?.organisationLogo;
-    return organisationLogo ? organisationLogo + '.png' : this.logo;
+    const organisationLogo: string | undefined = this.juicebox.getUser()?.attributes?.organisationLogo;
+    if (!organisationLogo) return this.logo;
+    const complete = /^https?:\/\//.test(organisationLogo) || /\.(png|jpe?g|gif|svg|webp)$/i.test(organisationLogo);
+    return complete ? organisationLogo : organisationLogo + '.png';
   }
 
   /** Runs once at startup: the brand colour's shades and the favicon */

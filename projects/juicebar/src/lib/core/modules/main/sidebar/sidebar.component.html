@@ -1,28 +1,7 @@
 <app-sidenav-container class="modern-sidebar-container"
-                       [class.collapsed]="juicebox.collapsed">
+                       [class.collapsed]="collapsed()">
 
   <app-sidenav opened mode="side" class="modern-sidebar">
-
-    <!-- The organisation the user works in -->
-    <div class="sidebar-header">
-      @if (!juicebox.collapsed) {
-        <div class="org-tile" aria-hidden="true">
-          <app-icon [icon]="'apartment'"></app-icon>
-        </div>
-        <div class="org-text">
-          <div class="org-eyebrow">{{ organisationLabel }}</div>
-          <div class="org-name">{{ organisationName() }}</div>
-        </div>
-      }
-      <button [attr.aria-label]="'collapse_sidebar' | translate" class="collapse-btn"
-              (click)="collapse()"
-              [appTooltip]="juicebox.collapsed ? 'Expand sidebar' : 'Collapse sidebar'"
-              appTooltipPosition="right">
-        <app-icon class="collapse-icon"
-                  [class.flipped]="juicebox.collapsed"
-                  [icon]="'chevron_left'"></app-icon>
-      </button>
-    </div>
 
     <!-- Navigation Menu with Drag & Drop -->
     <div class="sidebar-menu" 
@@ -42,7 +21,7 @@
              routerLinkActive="active"
              ariaCurrentWhenActive="page"
              [class.dragging]="isDragging()"
-             [appTooltip]="juicebox.collapsed ? menuItem.label : ''"
+             [appTooltip]="collapsed() ? menuItem.label : ''"
              appTooltipPosition="right">
 
             <div class="menu-item-content">
@@ -55,7 +34,7 @@
                 }
               </div>
 
-              <span class="menu-label" [class.collapsed]="juicebox.collapsed">
+              <span class="menu-label" [class.collapsed]="collapsed()">
                 {{menuItem.label}}
               </span>
             </div>
@@ -66,14 +45,14 @@
     </div>
 
     <!-- Sidebar Footer -->
-    <div class="sidebar-footer" [class.collapsed]="juicebox.collapsed">
+    <div class="sidebar-footer" [class.collapsed]="collapsed()">
       <button class="user-section"
-              [class.collapsed]="juicebox.collapsed"
+              [class.collapsed]="collapsed()"
               (click)="goToProfile()"
               [appTooltip]="'view_profile' | translate"
               appTooltipPosition="right">
         <div class="user-avatar-initials">{{ userInitials() }}</div>
-        @if (!juicebox.collapsed) {
+        @if (!collapsed()) {
           <div class="user-info">
             <div class="user-full-name">{{ userDisplayName() }}</div>
             <div class="user-org">{{ organisationName() }}</div>

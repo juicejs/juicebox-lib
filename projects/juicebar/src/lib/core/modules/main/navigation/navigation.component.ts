@@ -73,8 +73,9 @@ export class NavigationComponent implements OnInit {
   private themeService = inject(ThemeService);
   protected sidebarService = inject(SidebarService);
   public theme = this.themeService.theme;
+  private readonly brand = inject(BrandService);
   /** The project's logo, or the user's organisation logo */
-  protected readonly logo = inject(BrandService).sidebarLogo();
+  protected readonly logo = signal(this.brand.sidebarLogo());
 
   constructor() {
     this.router.events.pipe(
@@ -190,6 +191,11 @@ export class NavigationComponent implements OnInit {
       this.searchReturnUrl = this.router.url;
       this.router.navigate(['/main/search'], { queryParams: { q: value } });
     }
+  }
+
+  /** An organisation logo that does not load gives way to the project's */
+  protected onLogoError() {
+    if (this.logo() !== this.brand.logo) this.logo.set(this.brand.logo);
   }
 
   toggleTheme() {

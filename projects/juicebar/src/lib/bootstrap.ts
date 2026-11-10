@@ -58,6 +58,8 @@ function generateRoutes(modules: ModuleConfig[], mainRoutes?: ModuleConfig[], fe
           m => m.UserProfileTabsComponent
         ),
       canDeactivate: [unsavedChangesGuard],
+      // No title in the workspace: the breadcrumb already says "User profile"
+      data: { pageHeader: false },
       children: [
         { path: '', redirectTo: 'details', pathMatch: 'full' as const },
         {

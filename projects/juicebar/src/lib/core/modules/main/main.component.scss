@@ -15,9 +15,9 @@
     .shell-body {
         display: flex;
         flex: 1;
-        gap: 12px;
+        gap: var(--shell-gap);
         min-height: 0;
-        padding: 0 12px 12px;
+        padding: 0 var(--shell-gap) var(--shell-gap);
     }
 
     app-sidebar {

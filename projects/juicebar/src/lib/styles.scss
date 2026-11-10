@@ -334,6 +334,10 @@
   --control-height: 40px;
   // Left and right padding of a page in the workspace
   --page-gutter: 32px;
+  // The sidebar, and the room around the floating sidebar and workspace (the top bar's search lines up with them)
+  --sidebar-width: 232px;
+  --sidebar-collapsed-width: 64px;
+  --shell-gap: 12px;
   --shadow-card: none;
   --color-backdrop: rgba(0, 0, 0, 0.6);
 
