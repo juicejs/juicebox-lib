@@ -1,12 +1,8 @@
 <main class="login-page" [class.has-image]="brand.loginImage" [style.background-image]="loginBackground">
   <app-card class="login-card">
     <header class="login-header">
-      <div class="logo-container">
-        <img [src]="brand.logo" alt="" class="logo">
-      </div>
-      <app-card-header>
-        <app-card-title>{{ 'sign_in' | translate }}</app-card-title>
-      </app-card-header>
+      <img [src]="brand.logo" alt="" class="logo">
+      <h1 class="login-title">{{ 'sign_in' | translate }}</h1>
     </header>
 
     <app-card-content>
@@ -107,7 +103,6 @@
         form="login-form"
         class="login-button"
         [promiseBtn]="promiseBtn">
-        <app-icon [icon]="'login'"></app-icon>
         {{ 'sign_in' | translate }}
       </button>
 

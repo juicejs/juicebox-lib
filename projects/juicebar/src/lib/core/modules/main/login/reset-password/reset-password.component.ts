@@ -8,6 +8,7 @@ import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {GlobalTranslationPipe} from '../../../../i18n/global.translation';
 import {SHARED_IMPORTS} from '../../../../shared/shared-imports';
 import {ButtonComponent} from '../../../../../ui-components';
+import {ThemeService} from '../../../../shared/services/theme.service';
 
 @Component({
     selector: 'app-reset-password',
@@ -35,6 +36,7 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     private juicebox = inject(JuiceboxService);
     private helper = inject(HelperService);
     private router = inject(Router);
+    private themeService = inject(ThemeService);
 
     i18n: GlobalTranslationPipe = new GlobalTranslationPipe(this.juicebox);
 
@@ -44,6 +46,7 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.themeService.initFromBrowser();
         this.subscription$ = this.route.queryParams.subscribe(async params => {
             this.token = params['token'];
 

@@ -15,6 +15,7 @@ import { Location } from '@angular/common';
 import { lastValueFrom } from 'rxjs';
 import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 import { BrandService } from '../../../shared/services/brand.service';
+import { ThemeService } from '../../../shared/services/theme.service';
 
 @Component({
     selector: 'app-login',
@@ -57,6 +58,7 @@ export class LoginComponent implements OnInit {
     private baseConfig = inject(BASE_APP_CONFIG, { optional: true });
     public juicebox = inject(JuiceboxService);
     protected readonly brand = inject(BrandService);
+    private themeService = inject(ThemeService);
     /** The project's login picture behind the card (config.theme.loginImage) */
     protected readonly loginBackground = this.brand.loginImage ? `url("${this.brand.loginImage}")` : null;
 
@@ -66,6 +68,7 @@ export class LoginComponent implements OnInit {
     }
 
     async ngOnInit() {
+        this.themeService.initFromBrowser();
         this.loginForm = new FormGroup({
             email: new FormControl(null, Validators.required),
             password: new FormControl(null, Validators.required),

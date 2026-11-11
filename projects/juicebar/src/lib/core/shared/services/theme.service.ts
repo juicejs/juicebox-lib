@@ -3,6 +3,9 @@ import { JuiceboxService } from './Juicebox.service';
 
 export type Theme = 'light' | 'dark';
 
+/** The theme last shown in this browser, for the pages before sign-in, where no user's setting is known yet */
+const BROWSER_THEME_KEY = 'juicebox_theme';
+
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private juicebox = inject(JuiceboxService);
@@ -11,6 +14,11 @@ export class ThemeService {
   init(initial: Theme = 'dark') {
     this.theme.set(initial);
     this.apply(initial);
+  }
+
+  /** Before sign-in (login, reset password): the theme last used in this browser, light the first time */
+  initFromBrowser() {
+    this.init(localStorage.getItem(BROWSER_THEME_KEY) === 'dark' ? 'dark' : 'light');
   }
 
   async toggle() {
@@ -30,5 +38,6 @@ export class ThemeService {
     } else {
       html.classList.remove('light-theme');
     }
+    localStorage.setItem(BROWSER_THEME_KEY, t);
   }
 }
