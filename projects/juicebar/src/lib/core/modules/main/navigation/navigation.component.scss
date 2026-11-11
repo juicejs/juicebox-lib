@@ -28,6 +28,21 @@
     width: var(--sidebar-collapsed-width);
   }
 
+  // The logo opens the main page
+  .brand-home {
+    display: flex;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-control);
+    background: none;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--color-secondary);
+      outline-offset: 2px;
+    }
+  }
+
   .brand-logo {
     display: block;
     width: auto;

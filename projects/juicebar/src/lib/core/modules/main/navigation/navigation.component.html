@@ -11,7 +11,9 @@
   <!-- Above the sidebar: the logo, and the button that collapses the sidebar -->
   <div class="brand">
     @if (!sidebarService.sidebarCollapsed()) {
-      <img [src]="logo()" alt="Logo" class="brand-logo" (error)="onLogoError()">
+      <button type="button" class="brand-home" (click)="goHome()">
+        <img [src]="logo()" alt="Logo" class="brand-logo" (error)="onLogoError()">
+      </button>
     }
     <button type="button" class="collapse-btn"
             [attr.aria-label]="'collapse_sidebar' | translate"

@@ -204,6 +204,12 @@ export class NavigationComponent implements OnInit {
     if (this.logo() !== this.brand.logo) this.logo.set(this.brand.logo);
   }
 
+  /** The logo opens the main page: the first module of the user's sidebar, where /main itself leads */
+  protected async goHome() {
+    const route = await this.sidebarService.getFirstAccessibleRoute();
+    if (route) await this.router.navigateByUrl('/main/' + route);
+  }
+
   protected goToProfile() {
     void this.router.navigate(['main/user-profile/details']);
   }
