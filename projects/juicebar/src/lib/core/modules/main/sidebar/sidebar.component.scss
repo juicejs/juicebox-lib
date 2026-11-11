@@ -54,8 +54,38 @@
       gap: 4px;
     }
 
+    // Moving an item: the others make room for it
+    &.cdk-drop-list-dragging .menu-item-container:not(.cdk-drag-placeholder) {
+      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    &:not(.cdk-drop-list-dragging) .menu-item:hover:not(.active) {
+      background-color: var(--color-grey-200);
+      color: var(--color-text-primary);
+    }
+
     .menu-item-container {
       border-radius: var(--radius-pill);
+
+      // The item moved, lifted off the list
+      &.cdk-drag-preview {
+        background: var(--color-panel);
+        box-shadow: var(--shadow-lg);
+      }
+
+      &.cdk-drag-animating {
+        transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+      }
+
+      // Where it will land: an empty slot
+      &.cdk-drag-placeholder {
+        outline: 1px dashed var(--color-border-dark);
+        outline-offset: -1px;
+
+        .menu-item {
+          visibility: hidden;
+        }
+      }
 
       // Each module is a pill; the one that is open is filled with the brand colour
       .menu-item {
@@ -94,14 +124,6 @@
               height: 16px;
               color: inherit;
             }
-
-            .drag-handle {
-              font-size: 14px;
-              width: 14px;
-              height: 14px;
-              color: var(--color-grey-500);
-              cursor: grab;
-            }
           }
 
           .menu-label {
@@ -119,11 +141,6 @@
           }
         }
 
-        &:hover:not(.active):not(.dragging) {
-          background-color: var(--color-grey-200);
-          color: var(--color-text-primary);
-        }
-
         &.active {
           background: var(--color-nav-active-bg);
           color: var(--color-nav-active-text);
@@ -131,13 +148,6 @@
           .menu-label {
             font-weight: 500;
           }
-        }
-
-        // Dragging state
-        &.dragging {
-          background-color: var(--color-grey-200);
-          box-shadow: var(--shadow-md);
-          transform: rotate(2deg);
         }
       }
     }
@@ -155,31 +165,6 @@
       gap: 0;
     }
   }
-}
-
-// CDK Drag & Drop Styles
-.cdk-drop-list {
-  min-height: 40px;
-}
-
-.cdk-drag-preview {
-  box-sizing: border-box;
-  border-radius: var(--radius-pill);
-  box-shadow: var(--shadow-xl);
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  transform: rotate(2deg);
-}
-
-.cdk-drag-placeholder {
-  opacity: 0.3;
-  background: var(--color-grey-200);
-  border: 1px dashed var(--color-border-dark);
-  border-radius: var(--radius-pill);
-}
-
-.cdk-drag-animating {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
 // Profile Picture Dialog Styles

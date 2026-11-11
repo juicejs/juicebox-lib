@@ -174,8 +174,6 @@ export class SidebarComponent implements OnInit, OnDestroy{
     public hasAvatars: boolean = false;
 
 
-    // -- Dragging & Ordering of sidebar
-    protected readonly isDragging = signal<boolean>(false);
     subs = new Subscription();
 
     private sidebarService = inject(SidebarService);
@@ -219,11 +217,6 @@ export class SidebarComponent implements OnInit, OnDestroy{
             this.menu().forEach(item => { orderMapping[item.role] = i++; });
             this.juicebox.saveSidebarSettings(orderMapping);
         }
-        this.isDragging.set(false);
-    }
-
-    onMenuDragStarted() {
-        this.isDragging.set(true);
     }
 
     trackByRole(index: number, item: any): any {

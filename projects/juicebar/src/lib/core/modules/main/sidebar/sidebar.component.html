@@ -11,27 +11,22 @@
          
       <div class="menu-section">
         @for (menuItem of menu(); track trackByRole($index, menuItem)) {
+          <!-- The item moved stays in the sidebar, so it keeps the sidebar's look -->
           <div class="menu-item-container"
              cdkDrag
-             [cdkDragDisabled]="!juicebox.getOptions().sidebarPermissions"
-             (cdkDragStarted)="onMenuDragStarted()">
+             cdkDragPreviewContainer="parent"
+             [cdkDragDisabled]="!juicebox.getOptions().sidebarPermissions">
 
           <a class="menu-item"
              [routerLink]="'/main/' + menuItem.router"
              routerLinkActive="active"
              ariaCurrentWhenActive="page"
-             [class.dragging]="isDragging()"
              [appTooltip]="collapsed() ? menuItem.label : ''"
              appTooltipPosition="right">
 
             <div class="menu-item-content">
               <div class="menu-icon-container">
-                @if (!isDragging()) {
-                  <app-icon class="menu-icon" [icon]="menuItem.icon | matIcon"></app-icon>
-                }
-                @if (isDragging()) {
-                  <app-icon class="drag-handle" [icon]="'drag_indicator'"></app-icon>
-                }
+                <app-icon class="menu-icon" [icon]="menuItem.icon | matIcon"></app-icon>
               </div>
 
               <span class="menu-label" [class.collapsed]="collapsed()">
