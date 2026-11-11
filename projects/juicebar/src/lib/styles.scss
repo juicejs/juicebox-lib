@@ -398,6 +398,11 @@
   --color-tooltip-text: #f4f1ea;
   --color-tooltip-border: #45413b;
   --color-tooltip-muted: #b7b0a5;
+  // A toast's kind, on the toast's dark surface: the status colours of the dark theme
+  --color-toast-success: var(--color-success);
+  --color-toast-error: var(--color-error);
+  --color-toast-warning: var(--color-warning);
+  --color-toast-info: var(--color-info);
 }
 
 // Light theme (toggled by ThemeService adding html.light-theme): warm stone neutrals with a terracotta accent
@@ -502,6 +507,11 @@ html.light-theme {
   --color-tooltip-text: #ffffff;
   --color-tooltip-border: #2e2c29;
   --color-tooltip-muted: #c7c1b7;
+  // The toast stays dark here too, so it keeps the dark theme's light status colours
+  --color-toast-success: #79c08f;
+  --color-toast-error: #f27575;
+  --color-toast-warning: #ddaa4e;
+  --color-toast-info: #60a5fa;
 }
 
 // =============================================================================

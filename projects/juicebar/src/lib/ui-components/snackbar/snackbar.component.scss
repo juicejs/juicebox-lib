@@ -67,12 +67,25 @@ app-snackbar {
   box-shadow: var(--shadow-lg);
 }
 
+// Each kind in its own colour: the icon, and a tint of it on the toast
+.app-snackbar--success { --app-snackbar-accent: var(--color-toast-success); }
+.app-snackbar--error { --app-snackbar-accent: var(--color-toast-error); }
+.app-snackbar--warning { --app-snackbar-accent: var(--color-toast-warning); }
+.app-snackbar--info { --app-snackbar-accent: var(--color-toast-info); }
+
+.app-snackbar--success,
+.app-snackbar--error,
+.app-snackbar--warning,
+.app-snackbar--info {
+  background: color-mix(in srgb, var(--app-snackbar-accent) 14%, var(--color-tooltip-background));
+  border-color: color-mix(in srgb, var(--app-snackbar-accent) 40%, var(--color-tooltip-background));
+}
+
 .app-snackbar__icon {
   flex-shrink: 0;
   margin-top: 1px;
   font-size: 20px;
-  // The icon's shape tells the kind of message; the brand colour reads on the dark surface in both themes
-  color: var(--color-secondary-light);
+  color: var(--app-snackbar-accent);
 
   .material-symbols-outlined {
     font-size: 20px;
