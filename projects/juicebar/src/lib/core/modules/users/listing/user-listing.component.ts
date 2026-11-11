@@ -100,10 +100,10 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
         { key: 'lastname',    label: '', sortable: true },
         { key: 'email',       label: '', sortable: true },
         { key: 'active',      label: '', width: '100px',  align: 'center', ellipsis: false, sortable: true },
-        { key: 'roles_count', label: '', width: '150px', align: 'right', ellipsis: false },
+        { key: 'roles_count', label: '', width: '135px', align: 'right', ellipsis: false },
         { key: 'groups',      label: '', width: '220px' },
         { key: 'lastLogin',   label: '', width: '140px', sortable: true },
-        { key: 'loginCount',  label: '', width: '140px', align: 'right', sortable: true },
+        { key: 'loginCount',  label: '', width: '125px', align: 'right', sortable: true },
         { key: 'actions',     label: '', width: '96px', align: 'right', ellipsis: false }
     ];
 

@@ -121,7 +121,7 @@ export class DataTableComponent {
       return total + (Number.isNaN(px) ? DataTableComponent.MIN_FLEX_COLUMN_WIDTH : px);
     }, 0)
   );
-  private static readonly MIN_FLEX_COLUMN_WIDTH = 140;
+  private static readonly MIN_FLEX_COLUMN_WIDTH = 120;
 
   displayedRows = computed(() => {
     const userPredicate = this.detailRowFor();

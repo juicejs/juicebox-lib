@@ -151,12 +151,16 @@
     min-width: 0;
   }
 
+  // A long label wraps onto a second line (the header has room for two) instead of being cut off
   .th-label {
     flex: 1 1 auto;
     min-width: 0;
+    display: -webkit-box;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.25;
+    white-space: normal;
   }
 
   .sort-icon {
