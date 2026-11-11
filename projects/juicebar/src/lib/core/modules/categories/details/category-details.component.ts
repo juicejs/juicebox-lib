@@ -85,7 +85,6 @@ export class CategoryDetailsComponent implements OnDestroy {
     const name = this.autoLanguage.transform(category.name);
     this.juicebox.setPageHeader({
       scope: `/main/categories/details/${id}`,
-      eyebrow: this.i18n.transform('category'),
       title: name,
     });
     this.juicebox.navigationEvent({location: this.i18n.transform('categories'), subject: name, link: '/main/categories'});

@@ -79,7 +79,6 @@ export class LocationDetailsComponent implements OnDestroy {
     const name = this.autoLanguage.transform(location.name ?? '');
     this.juicebox.setPageHeader({
       scope: `/main/location/details/${id}`,
-      eyebrow: this.i18n.transform('location'),
       title: name,
     });
     this.juicebox.navigationEvent({location: this.i18n.transform('location'), subject: name, link: '/main/location'});

@@ -113,14 +113,11 @@ export class DetailsUsersComponent implements OnInit, OnDestroy {
         const u = result?.payload;
         if (!u) return;
         this.user = u;
-        const initials = ((u.firstname?.[0] ?? '') + (u.lastname?.[0] ?? '')).toUpperCase();
+        // The email is already in the breadcrumb, so the header shows only the name
         const fullName = [u.firstname, u.lastname].filter(Boolean).join(' ') || u.email || '';
         this.juicebox.setPageHeader({
             scope: `/main/users/details/${this.id}`,
-            eyebrow: this.userPipe.transform('user'),
             title: fullName,
-            initials,
-            meta: u.email || undefined,
         });
         this.updateBreadcrumb();
     }
