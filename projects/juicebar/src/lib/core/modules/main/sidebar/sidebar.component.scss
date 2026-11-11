@@ -125,9 +125,8 @@
         }
 
         &.active {
-          background: var(--color-action);
-          color: var(--color-action-contrast);
-          box-shadow: var(--shadow-sm);
+          background: var(--color-nav-active-bg);
+          color: var(--color-nav-active-text);
 
           .menu-label {
             font-weight: 500;

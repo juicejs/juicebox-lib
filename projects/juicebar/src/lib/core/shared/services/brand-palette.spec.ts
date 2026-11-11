@@ -11,9 +11,10 @@ const contrast = (first: string, second: string) => {
   return Math.round((lighter + 0.05) / (darker + 0.05) * 100) / 100;
 };
 
-/** --color-panel and --color-background of the themes in styles.scss */
+/** Surfaces of the themes in styles.scss: the light workspace, the dark workspace and the dark menus */
 const LIGHT_PANEL = '#faf8f5';
-const DARK_PAGE = '#0a0a0b';
+const DARK_PANEL = '#1c1a18';
+const DARK_RAISED = '#2a2826';
 
 describe('brandTokens', () => {
   it('a project\'s colour becomes the accent and the action colour of both themes', () => {
@@ -22,12 +23,14 @@ describe('brandTokens', () => {
     expect(tokens.light['--color-secondary']).toBe('#1d4ed8');
     expect(tokens.light['--color-action']).toBe('#1d4ed8');
     expect(tokens.light['--color-secondary-rgb']).toBe('29, 78, 216');
-    // The dark theme takes a lighter shade of it, with dark text on buttons
-    expect(tokens.dark['--color-action']).toBe(tokens.dark['--color-secondary']);
-    expect(tokens.dark['--color-secondary-contrast']).toBe('#0a0a0b');
+    // The dark theme's buttons are the same colour with white text, lightening on hover; its accent text is lighter
+    expect(tokens.dark['--color-action']).toBe('#1d4ed8');
+    expect(tokens.dark['--color-action-contrast']).toBe('#ffffff');
+    expect(luminance(tokens.dark['--color-action-hover'])).toBeGreaterThan(luminance(tokens.dark['--color-action']));
+    expect(luminance(tokens.dark['--color-secondary'])).toBeGreaterThan(luminance('#1d4ed8'));
     for (const theme of [tokens.light, tokens.dark]) {
       expect(Object.keys(theme)).toEqual(expect.arrayContaining([
-        '--color-action', '--color-action-hover', '--color-secondary', '--color-secondary-dark',
+        '--color-action', '--color-action-hover', '--color-action-contrast', '--color-secondary', '--color-secondary-dark',
         '--color-secondary-light', '--color-secondary-active-bg', '--color-secondary-active-text',
       ]));
     }
@@ -39,8 +42,10 @@ describe('brandTokens', () => {
     expect(contrast('#ffffff', light['--color-action'])).toBeGreaterThanOrEqual(4.5);
     expect(contrast('#ffffff', light['--color-action-hover'])).toBeGreaterThanOrEqual(4.5);
     expect(contrast(light['--color-secondary-active-text'], light['--color-secondary-active-bg'])).toBeGreaterThanOrEqual(4.5);
-    expect(contrast(dark['--color-secondary'], DARK_PAGE)).toBeGreaterThanOrEqual(4.5);
-    expect(contrast('#0a0a0b', dark['--color-action'])).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(dark['--color-secondary'], DARK_PANEL)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(dark['--color-secondary'], DARK_RAISED)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(dark['--color-action-contrast'], dark['--color-action'])).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(dark['--color-action-contrast'], dark['--color-action-hover'])).toBeGreaterThanOrEqual(4.5);
     expect(contrast(dark['--color-secondary-active-text'], dark['--color-secondary-active-bg'])).toBeGreaterThanOrEqual(4.5);
   });
 
@@ -48,6 +53,12 @@ describe('brandTokens', () => {
     const {light} = brandTokens('#f97316')!;
     expect(light['--color-secondary']).not.toBe('#f97316');
     expect(luminance(light['--color-action'])).toBeGreaterThanOrEqual(luminance(light['--color-secondary']));
+  });
+
+  it('a black brand has near-white buttons with dark text in the dark theme', () => {
+    const {dark} = brandTokens('#000000')!;
+    expect(luminance(dark['--color-action'])).toBeGreaterThan(0.6);
+    expect(dark['--color-action-contrast']).toBe('#1c1a18');
   });
 
   it('is null for a colour that is not hex, so the default colours stay', () => {

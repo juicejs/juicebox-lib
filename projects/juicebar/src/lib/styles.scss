@@ -251,23 +251,24 @@
 
 // Dark theme (GitHub-inspired) is now default
 :root {
-  // Text and accent colours meet WCAG AA (4.5:1) on every background below
+  // Dark theme: the light theme's warm stone neutrals and terracotta, dark. Text and accent colours meet WCAG AA
+  // (4.5:1) on every background below.
   // Primary colors
-  --color-primary: #0a0a0b;
-  --color-primary-contrast: #fafafa;
+  --color-primary: #100f0e;
+  --color-primary-contrast: #f4f1ea;
 
-  // Secondary colors (orange accent)
-  --color-secondary: #f97316;
-  --color-secondary-light: #fb923c;
-  --color-secondary-dark: #ea6a0a;
-  --color-secondary-extra-light: #fdba74;
-  --color-secondary-contrast: #0a0a0b;
+  // Secondary colors (terracotta, lightened to read on the dark surfaces; dark text on its fills)
+  --color-secondary: #ec8a63;
+  --color-secondary-light: #f2a07f;
+  --color-secondary-dark: #e2754c;
+  --color-secondary-extra-light: #f6bfa7;
+  --color-secondary-contrast: #1c1a18;
 
   // Secondary colors (RGB for rgba gradients)
-  --color-secondary-rgb: 249, 115, 22;
-  --color-secondary-light-rgb: 251, 146, 60;
-  --color-secondary-dark-rgb: 234, 106, 10;
-  --color-secondary-extra-light-rgb: 253, 186, 116;
+  --color-secondary-rgb: 236, 138, 99;
+  --color-secondary-light-rgb: 242, 160, 127;
+  --color-secondary-dark-rgb: 226, 117, 76;
+  --color-secondary-extra-light-rgb: 246, 191, 167;
 
   // Tertiary colors
   --color-tertiary: #60a5fa;
@@ -275,58 +276,60 @@
   --color-tertiary-dark: #3b82f6;
   --color-tertiary-contrast: #0a0a0b;
 
-  // Grey scale (design spec palette)
-  --color-grey-50: #0c0c0d;
-  --color-grey-100: #0f0f10;
-  --color-grey-200: #161618;
-  --color-grey-300: #1f1f23;
-  --color-grey-400: #27272a;
-  --color-grey-500: #3f3f46;
-  --color-grey-600: #52525b;
-  --color-grey-700: #71717a;
-  --color-grey-800: #a1a1aa;
-  --color-grey-900: #e4e4e7;
+  // Grey scale (warm stone, dark)
+  --color-grey-50: #161513;
+  --color-grey-100: #201e1c;
+  --color-grey-200: #2a2724;
+  --color-grey-300: #34312d;
+  --color-grey-400: #45413b;
+  --color-grey-500: #5c574f;
+  --color-grey-600: #6f685e;
+  --color-grey-700: #8a8379;
+  --color-grey-800: #b7b0a5;
+  --color-grey-900: #ece8e1;
 
-  // Semantic colors
-  --color-success: #4ade80;
-  --color-warning: #fbbf24;
-  --color-error: #f87171;
-  --color-error-contrast: #0a0a0b;
-  --color-success-contrast: #0a0a0b;
-  --color-warning-contrast: #0a0a0b;
-  --color-info-contrast: #0a0a0b;
+  // Semantic colors: softened to sit with the warm palette, still AA on every dark surface
+  --color-success: #79c08f;
+  --color-warning: #ddaa4e;
+  --color-error: #f27575;
+  --color-error-contrast: #1c1a18;
+  --color-success-contrast: #1c1a18;
+  --color-warning-contrast: #1c1a18;
+  --color-info-contrast: #1c1a18;
   --color-info: #60a5fa;
 
   // Text colors
-  --color-text-primary: #e4e4e7;
-  --color-text-secondary: #8b8b94;
-  --color-text-disabled: #52525b;
+  --color-text-primary: #ece8e1;
+  --color-text-secondary: #a8a196;
+  --color-text-disabled: #6f685e;
 
   // Border colors
-  // Page, card and border are visibly different steps
-  --color-border: #27272c;
-  --color-border-light: #1c1c20;
-  --color-border-dark: #34343a;
-  // Outline of inputs, selects and checkboxes: at least 3:1 against page and card backgrounds (WCAG 1.4.11)
-  --color-border-input: #63636d;
-  --color-warning-bg: rgba(251, 191, 36, 0.12);
-  --color-warning-border: rgba(251, 191, 36, 0.3);
-  --color-success-rgb: 74, 222, 128;
-  --color-success-bg: rgba(74, 222, 128, 0.12);
-  --color-success-border: rgba(74, 222, 128, 0.3);
+  --color-border: #302d29;
+  --color-border-light: #282522;
+  --color-border-dark: #45413b;
+  // A soft outline, as in the light theme; hover and focus strengthen it
+  --color-border-input: #45413b;
+  --color-warning-bg: rgba(221, 170, 78, 0.12);
+  --color-warning-border: rgba(221, 170, 78, 0.3);
+  --color-success-rgb: 121, 192, 143;
+  --color-success-bg: rgba(121, 192, 143, 0.12);
+  --color-success-border: rgba(121, 192, 143, 0.3);
 
-  // Background colors
-  --color-background: #0a0a0b;
-  --color-background-secondary: #131315;
-  // The canvas behind the floating sidebar and workspace, and the surface of dialogs
-  --color-page: #0a0a0b;
-  --color-surface-raised: #161618;
+  // Background colors: each layer a step lighter than the one it stands on
+  // Inputs, selects and outlined buttons
+  --color-background: #252320;
+  // Menus and the panels of selects and pickers
+  --color-background-secondary: #2a2826;
+  // The canvas behind the floating sidebar and workspace
+  --color-page: #100f0e;
+  // Dialogs
+  --color-surface-raised: #2a2826;
   // The floating sidebar and workspace on the canvas
-  --color-panel: #111113;
+  --color-panel: #1c1a18;
   // Cards and tables in the workspace
-  --color-surface: #161618;
+  --color-surface: #232120;
   // The band of a table's column headers
-  --color-table-header: #151517;
+  --color-table-header: #211f1d;
   --radius-card: 16px;
   // Inputs and selects; buttons, tabs and chips are pills
   --radius-control: 12px;
@@ -343,14 +346,20 @@
   --shadow-card: none;
   --color-backdrop: rgba(0, 0, 0, 0.6);
 
-  // The strongest neutral: the chosen option of a segmented control
-  --color-ink: #e4e4e7;
-  --color-ink-contrast: #0a0a0b;
+  // The chosen option of a segmented control: a raised grey, as dark interfaces show it
+  --color-ink: #4a4640;
+  --color-ink-contrast: #f4f1ea;
+  // The knob of a slide toggle
+  --color-toggle-knob: #f4f1ea;
 
-  // Main action buttons and the active pills: the brand colour (config.theme.primary)
-  --color-action: var(--color-secondary);
-  --color-action-hover: var(--color-secondary-dark);
-  --color-action-contrast: var(--color-secondary-contrast);
+  // Main action buttons and the active tabs: terracotta with white text, as in the light theme (config.theme.primary).
+  // On a dark page hover lightens (darkening reads as pressed); both keep white text AA.
+  --color-action: #b8431f;
+  --color-action-hover: #c24e2c;
+  --color-action-contrast: #ffffff;
+  // The open module in the sidebar: a tint, so it doesn't outshine the page's main button
+  --color-nav-active-bg: var(--color-secondary-active-bg);
+  --color-nav-active-text: var(--color-secondary-active-text);
 
   // Rich-text content: a light page in both themes, because stored HTML carries the website's own inline colors (mostly black text)
   --color-rich-text-background: #ffffff;
@@ -378,17 +387,17 @@
   --spacing-xl: 2rem;
 
   // Tokens used by the lib that the design palette does not define
-  --color-secondary-active-bg: #1a0f08;
-  --color-secondary-active-text: #fbbf24;
-  --color-sidebar-item: #a4a4ad;
+  --color-secondary-active-bg: #3a2620;
+  --color-secondary-active-text: #f2a07f;
+  --color-sidebar-item: #b7b0a5;
   // Initials tiles are tinted with the brand colour
   --color-avatar-bg: var(--color-secondary-active-bg);
   --color-avatar-text: var(--color-secondary-active-text);
   // Tooltips and toasts: a lighter surface over the dark page
-  --color-tooltip-background: #2a2a2e;
-  --color-tooltip-text: #f4f4f5;
-  --color-tooltip-border: #3f3f46;
-  --color-tooltip-muted: #a1a1aa;
+  --color-tooltip-background: #34312d;
+  --color-tooltip-text: #f4f1ea;
+  --color-tooltip-border: #45413b;
+  --color-tooltip-muted: #b7b0a5;
 }
 
 // Light theme (toggled by ThemeService adding html.light-theme): warm stone neutrals with a terracotta accent
@@ -469,6 +478,10 @@ html.light-theme {
 
   --color-ink: #191817;
   --color-ink-contrast: #ffffff;
+  --color-toggle-knob: #ffffff;
+  // The open module in the sidebar: the solid pill of the design
+  --color-nav-active-bg: var(--color-action);
+  --color-nav-active-text: var(--color-action-contrast);
 
   // Solid fills are a shade lighter than the accent text; white on them keeps AA
   --color-action: #c24e2c;
