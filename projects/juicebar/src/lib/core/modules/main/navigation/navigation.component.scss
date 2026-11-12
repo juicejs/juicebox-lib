@@ -1,3 +1,5 @@
+@use '../../../../breakpoints' as *;
+
 // The top bar sits on the canvas, above the floating sidebar and workspace
 .modern-navigation {
   flex-shrink: 0;
@@ -331,7 +333,7 @@
 }
 
 // A phone: the menu button, the logo, then the search as an icon, the organisation and the user
-@media (max-width: 768px) {
+@include phone {
   .mobile-menu-btn {
     display: inline-flex;
     width: 40px;

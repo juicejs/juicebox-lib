@@ -10,7 +10,6 @@ export const locationsDictionary = {
   "actions": {"en_GB": "Actions", "de_DE": "Aktionen"},
   "no_data_to_display": {"en_GB": "No data to display", "de_DE": "Keine Daten vorhanden"},
   "rows_per_page": {"en_GB": "Rows per page", "de_DE": "Zeilen pro Seite"},
-  "sort": {"en_GB": "Sort", "de_DE": "Sortieren", "hr_HR": "Sortiraj"},
   "show_archived": {"en_GB": "Show archived", "de_DE": "Archiv anzeigen", "hr_HR": "Pokaži arhivirano"},
   "show_locations": {"en_GB": "Show locations", "de_DE": "Standorte anzeigen"},
   "all": {"en_GB": "All", "de_DE": "Alle"},

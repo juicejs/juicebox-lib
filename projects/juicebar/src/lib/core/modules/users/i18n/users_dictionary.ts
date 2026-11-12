@@ -2254,17 +2254,6 @@ export const usersDictionary = {
     "de_DE": "Zeilen pro Seite",
     "hr_HR": "Redaka po stranici"
   },
-  "sort": {
-    "en_GB": "Sort",
-    "de_DE": "Sortieren",
-    "hr_HR": "Sortiraj",
-    "da_DK": "Sortér",
-    "sv_SE": "Sortera",
-    "fi_FI": "Lajittele",
-    "cs_CZ": "Seřadit",
-    "sk_SK": "Zoradiť",
-    "ru_RU": "Сортировать"
-  },
   "create_organisation": {
     "en_GB": "Create organisation",
     "de_DE": "Organisation erstellen",

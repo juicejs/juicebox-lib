@@ -1,4 +1,5 @@
-import { Component, ChangeDetectionStrategy, booleanAttribute, input, output, model, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, booleanAttribute, input, output, model, computed, inject } from '@angular/core';
+import { DATA_TABLE_LABELS } from '../data-table/data-table.labels';
 
 export interface PageEvent {
   pageIndex: number;
@@ -17,10 +18,13 @@ export class PaginatorComponent {
   pageSize = input<number>(10);
   pageSizeOptions = input<number[]>([5, 10, 25, 50]);
   pageIndex = model<number>(0);
-  /** Labels (the lib's ui-components have no dictionary; pass translated text) */
-  rowsPerPageLabel = input('Rows per page');
-  previousLabel = input('Previous page');
-  nextLabel = input('Next page');
+  private readonly labels = inject(DATA_TABLE_LABELS);
+  /** Labels: as provided for every table (DATA_TABLE_LABELS), unless passed here */
+  rowsPerPageLabel = input(this.labels.rowsPerPage);
+  previousLabel = input(this.labels.previousPage);
+  nextLabel = input(this.labels.nextPage);
+  /** Between the range and the total: "1–10 of 185" */
+  ofLabel = input(this.labels.of);
   /** For a narrow list: only the range and the previous and next buttons */
   compact = input(false, { transform: booleanAttribute });
 

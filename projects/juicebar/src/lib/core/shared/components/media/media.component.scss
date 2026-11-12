@@ -1,3 +1,5 @@
+@use '../../../../breakpoints' as *;
+
 :host {
   display: block;
 }
@@ -40,7 +42,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@include phone {
   .media-content {
     flex-direction: column;
     // The list takes the whole width

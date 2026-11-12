@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ProgressSpinnerComponent } from './ui-components';
+import { revealHiddenEmailsOnTap } from './core/shared/hidden-email';
 
 @Component({
   selector: 'juicebox-lib',
@@ -23,6 +24,10 @@ import { ProgressSpinnerComponent } from './ui-components';
 })
 export class JuicebarComponent implements OnInit {
   protected readonly isLoading = signal(true);
+
+  constructor() {
+    revealHiddenEmailsOnTap();
+  }
 
   ngOnInit() {
     this.isLoading.set(false);

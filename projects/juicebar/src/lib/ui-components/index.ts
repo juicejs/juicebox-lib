@@ -32,6 +32,7 @@ export * from './data-table/data-table.component';
 export * from './data-table/cell-def.directive';
 
 export * from './data-table/data-table.types';
+export * from './data-table/data-table.labels';
 
 // Tooltip
 export * from './tooltip/tooltip.directive';

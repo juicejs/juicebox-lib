@@ -1,3 +1,5 @@
+@use './breakpoints' as *;
+
 // =============================================================================
 // JUICEBOX LIBRARY GLOBAL STYLES
 // =============================================================================
@@ -256,8 +258,8 @@
     overflow-y: auto;
   }
 
-  // A question (the confirmation dialog) stays a card
-  .app-dialog-panel:has(app-confirmation-dialog) {
+  // A dialog that asked to stay a card: `phone: 'card'` or DIALOG_CARD_CLASS (the confirmation dialog)
+  .app-dialog-panel.app-dialog-panel--card {
     width: calc(100vw - 32px) !important;
     height: auto !important;
     max-height: calc(100dvh - 32px) !important;
@@ -1279,7 +1281,7 @@ html, body {
     padding-bottom: 0;
 }
 
-@media (max-width: 768px) {
+@include phone {
     :root {
         --page-gutter: 16px;
     }
@@ -1447,6 +1449,8 @@ html, body {
     border: 1px solid var(--color-border);
     border-radius: var(--radius-control);
     box-shadow: var(--shadow-lg);
+    // As wide as its overlay, which is at least as wide as the filter's pill (filter-bar: cdkConnectedOverlayMinWidth)
+    flex: 1 1 auto;
     min-width: 300px;
     max-height: 400px;
     overflow: hidden;
@@ -1849,7 +1853,7 @@ table.data-table {
     filter: blur(4px);
     transition: filter 0.2s ease;
 
-    // --shown: tapped on a touch screen, which has no pointer to hold over it
+    // --shown: tapped on a touch screen, which has no pointer to hold over it (core/shared/hidden-email.ts)
     &:hover,
     &.hidden-email--shown {
         filter: none;
@@ -2006,7 +2010,7 @@ input.filter-input {
     border-radius: var(--radius-md);
 }
 
-@media (max-width: 768px) {
+@include phone {
     .parent {
         padding: 16px 16px 16px;
     }
@@ -2016,7 +2020,7 @@ input.filter-input {
 // A PHONE (768px and below; after the rules it changes)
 // =============================================================================
 
-@media (max-width: 768px) {
+@include phone {
     // A filter takes the whole line
     .filter-bar,
     .gdrive-filters {
@@ -2034,10 +2038,5 @@ input.filter-input {
             height: 40px;
             font-size: 14px;
         }
-    }
-
-    // As wide as its filter: the screen less the shell's and the page's edges
-    .filter-panel {
-        width: calc(100vw - 50px);
     }
 }

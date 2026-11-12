@@ -30,5 +30,10 @@
   "ng-add": {
     "save": "dependencies"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "exports": {
+    "./breakpoints": {
+      "sass": "./_breakpoints.scss"
+    }
+  }
 }

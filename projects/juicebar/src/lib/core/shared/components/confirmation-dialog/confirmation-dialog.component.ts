@@ -2,7 +2,7 @@ import {Component, Inject, OnInit, ChangeDetectionStrategy} from '@angular/core'
 import {DialogRef, DIALOG_DATA} from '@angular/cdk/dialog';
 import {JuiceboxService} from '../../services/Juicebox.service';
 import { SharedTranslationPipe} from '../../i18n/shared-translation.pipe';
-import {ButtonComponent, DialogTitleComponent, DialogContentComponent, DialogActionsComponent} from "../../../../ui-components";
+import {ButtonComponent, DialogTitleComponent, DialogContentComponent, DialogActionsComponent, DIALOG_CARD_CLASS} from "../../../../ui-components";
 
 export interface ConfirmationDialogData {
   action?: string;
@@ -50,6 +50,8 @@ export class ConfirmationDialogComponent implements OnInit {
         public dialogRef: DialogRef<boolean>,
         @Inject(DIALOG_DATA) public data: ConfirmationDialogData
     ) {
+        // A question stays a card on a phone, however it was opened (?.: a test's stand-in may not have it)
+        this.dialogRef.addPanelClass?.(DIALOG_CARD_CLASS);
         // Opened without `data` (the CDK passes null): the default "Are you sure?" question
         data ??= {};
         this.data = data;

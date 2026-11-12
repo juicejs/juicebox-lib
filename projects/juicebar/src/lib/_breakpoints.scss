@@ -1,0 +1,15 @@
+// The widths at which the admin's layout changes, for the lib's styles and for a project's own:
+//
+//   @use '@juicejs/juicebar/breakpoints' as juicebar;
+//   @include juicebar.phone { .my-page { padding: 16px; } }
+//
+// In a template or a component's code the same is `ViewportService.phone`; its PHONE_MAX_WIDTH is this number.
+
+// At this width and below the admin is laid out for a phone
+$phone-max-width: 768px;
+
+@mixin phone {
+  @media (max-width: $phone-max-width) {
+    @content;
+  }
+}

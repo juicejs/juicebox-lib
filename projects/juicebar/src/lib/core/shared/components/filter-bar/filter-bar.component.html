@@ -5,7 +5,7 @@
               class="filter-btn"
               cdkOverlayOrigin
               #trigger="cdkOverlayOrigin"
-              (click)="toggle(filter.key)">
+              (click)="toggle(filter.key, trigger)">
         <span class="filter-label">{{ filter.label }}</span>
         @if (filter.selectedValue) {
           <span class="filter-value">
@@ -24,6 +24,7 @@
       <ng-template cdkConnectedOverlay
                    [cdkConnectedOverlayOrigin]="trigger"
                    [cdkConnectedOverlayOpen]="openKey() === filter.key"
+                   [cdkConnectedOverlayMinWidth]="panelMinWidth()"
                    [cdkConnectedOverlayHasBackdrop]="false"
                    (overlayOutsideClick)="onOutsideClick($event, filter.key, trigger)"
                    (detach)="closeFilter(filter.key)">

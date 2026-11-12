@@ -39,6 +39,8 @@ export class FilterBarComponent {
   filterScrolledToEnd = output<string>();
 
   openKey = signal<string | null>(null);
+  /** The open filter's options are at least as wide as its pill (px), wherever the bar stands */
+  protected readonly panelMinWidth = signal(0);
 
   /** The open filter's options list; only one filter is open at a time */
   private readonly optionsList = viewChild<ElementRef<HTMLElement>>('optionsList');
@@ -65,7 +67,8 @@ export class FilterBarComponent {
     return this.openKey() === key;
   }
 
-  toggle(key: string) {
+  toggle(key: string, origin?: CdkOverlayOrigin) {
+    if (origin) this.panelMinWidth.set(origin.elementRef.nativeElement.offsetWidth);
     this.openKey.update(k => (k === key ? null : key));
     if (this.openKey() === key) {
       this.filterSearched.emit({ key, term: '' });

@@ -9,6 +9,7 @@
   "assets": [
     { "input": "src/lib/assets", "glob": "**/*", "output": "assets" },
     { "input": "src/lib/editor-icons", "glob": "**/*", "output": "ae-icons" },
-    { "input": "src/lib", "glob": "styles.scss", "output": "." }
+    { "input": "src/lib", "glob": "styles.scss", "output": "." },
+    { "input": "src/lib", "glob": "_breakpoints.scss", "output": "." }
   ]
 }

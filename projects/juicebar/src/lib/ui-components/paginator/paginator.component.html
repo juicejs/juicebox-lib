@@ -1,6 +1,6 @@
 <div class="app-paginator" [class.app-paginator--compact]="compact()">
   <span class="paginator-range">
-    {{ rangeStart() }}–{{ rangeEnd() }} of {{ length() }}
+    {{ rangeStart() }}–{{ rangeEnd() }} {{ ofLabel() }} {{ length() }}
   </span>
 
   @if (!compact() && pageSizeOptions().length > 1) {

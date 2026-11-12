@@ -24,7 +24,6 @@ export const categoriesDictionary = {
   "search": {"en_GB": "Search", "de_DE": "Suchen"},
   "no_data_to_display": {"en_GB": "No data to display", "de_DE": "Keine Daten verfügbar", "da_DK": "Der er ingen data at vise", "sv_SE": "Inga data att visa", "fi_FI": "Ei näytettävää dataa"},
   "rows_per_page": {"en_GB": "Rows per page", "de_DE": "Zeilen pro Seite"},
-  "sort": {"en_GB": "Sort", "de_DE": "Sortieren", "hr_HR": "Sortiraj", "da_DK": "Sortér", "sv_SE": "Sortera", "fi_FI": "Lajittele"},
   "category_deleted": {"en_GB": "Category deleted", "de_DE": "Kategorie gelöscht", "da_DK": "Kategori slettet", "sv_SE": "Kategori borttagen", "fi_FI": "Kategoria poistettu"},
   "category_delete_failed": {"en_GB": "Category delete failed", "de_DE": "Kategorie löschen fehlgeschlagen", "da_DK": "Sletning af kategori fejlede", "sv_SE": "Radering av kategori misslyckades", "fi_FI": "Kategorian poisto epäonnistui"},
   "reorder_failed": {"en_GB": "Failed moving category", "de_DE": "Die Kategorie konnte nicht verschoben werden", "sv_SE": "Misslyckad flyttning av kategori", "fi_FI": "Epäonnistunut liikkuva luokka", "da_DK": "Fejl af flytning af kategori"},

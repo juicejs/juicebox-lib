@@ -4,6 +4,7 @@ import { DataTableComponent } from './data-table.component';
 import { CellDefDirective, CompactRowDefDirective, HeaderDefDirective } from './cell-def.directive';
 import { ColumnConfig, SortState } from './data-table.types';
 import { ViewportService } from '../viewport/viewport.service';
+import { DATA_TABLE_LABELS, DEFAULT_DATA_TABLE_LABELS, DataTableLabels } from './data-table.labels';
 
 interface Person {
   _id: string;
@@ -263,5 +264,69 @@ describe('DataTableComponent', () => {
       fixture.detectChanges();
       expect(host.sorted).toEqual({ prop: 'city', dir: 'desc' });
     });
+  });
+});
+
+@Component({
+  imports: [DataTableComponent],
+  template: `
+    <app-data-table [rows]="rows()" [columns]="columns" [totalCount]="rows().length" [selectable]="true"
+                    [sortLabel]="sortLabel()" />
+  `,
+})
+class PlainHostComponent {
+  rows = signal([{ _id: '1', name: 'Ana' }]);
+  columns: ColumnConfig[] = [{ key: 'name', label: 'Name', sortable: true }];
+  sortLabel = signal<string | undefined>(undefined);
+}
+
+describe('DataTableComponent labels', () => {
+  const phone = signal(false);
+  const labels: DataTableLabels = {
+    ...DEFAULT_DATA_TABLE_LABELS,
+    rowsPerPage: 'Zeilen pro Seite',
+    of: 'von',
+    noData: 'Keine Daten vorhanden',
+    sort: 'Sortieren',
+    selectRow: 'Zeile auswählen',
+    resizeColumn: 'Spaltenbreite ändern',
+  };
+  let fixture: ComponentFixture<PlainHostComponent>;
+  let element: HTMLElement;
+
+  beforeEach(() => {
+    phone.set(false);
+    TestBed.configureTestingModule({
+      imports: [PlainHostComponent],
+      providers: [
+        { provide: ViewportService, useValue: { phone } },
+        { provide: DATA_TABLE_LABELS, useValue: labels },
+      ],
+    });
+    fixture = TestBed.createComponent(PlainHostComponent);
+    element = fixture.nativeElement;
+  });
+
+  it('takes its texts from the labels provided for every table', () => {
+    fixture.detectChanges();
+
+    expect(element.querySelector('.paginator-range')?.textContent?.trim()).toBe('1–1 von 1');
+    expect(element.querySelector('.paginator-size-label')?.textContent?.trim()).toBe('Zeilen pro Seite');
+    expect(element.querySelector('[role="checkbox"]')?.getAttribute('aria-label')).toBe('Zeile auswählen');
+    expect(element.querySelector('.dt-resize-handle')?.getAttribute('aria-label')).toBe('Spaltenbreite ändern: Name');
+
+    fixture.componentInstance.rows.set([]);
+    fixture.detectChanges();
+    expect(element.querySelector('.dt-empty-cell')?.textContent?.trim()).toBe('Keine Daten vorhanden');
+  });
+
+  it('shows the sort control with the provided label, or with the one a table passes', () => {
+    phone.set(true);
+    fixture.detectChanges();
+    expect(element.querySelector('.dt-cards-sort')?.textContent).toContain('Sortieren');
+
+    fixture.componentInstance.sortLabel.set('Order by');
+    fixture.detectChanges();
+    expect(element.querySelector('.dt-cards-sort')?.textContent).toContain('Order by');
   });
 });

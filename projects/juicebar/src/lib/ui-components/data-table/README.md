@@ -99,8 +99,15 @@ That's it for a plain-text listing. Default cell renders `row[key]` with ellipsi
 | `pageIndex` | `number` | `0` | Zero-based. Pass `page - 1` if you store 1-based. |
 | `compact` | `boolean` | `false` | A narrow list instead of the table (see "The split view" below) |
 | `activeId` | `unknown` | `null` | Compact list: the id of the row to mark as the current one |
-| `sortLabel` | `string` | `'Sort'` | Phone list: the translated label of the control that sorts the rows |
-| `selectAriaLabel` | `string` | `'Select row'` | The translated label of a row's checkbox (`selectable`) |
+| `sortLabel` | `string` | provided | Phone list: the label of the control that sorts the rows |
+| `selectAriaLabel` | `string` | provided | The label of a row's checkbox (`selectable`) |
+
+**The table's own texts** (rows per page, "of", previous and next page, no data, sort, select row, clear selection,
+resize column) are provided once for every table and its paginator: `provideJuicebar` translates them from the lib's
+shared dictionary (`DATA_TABLE_LABELS`), so a listing passes none of them. A label input (`rowsPerPageLabel`,
+`emptyMessage`, `sortLabel`, `selectAriaLabel`, `clearAriaLabel`, `resizeAriaLabel`) is only for a table that says
+something else, e.g. `[emptyMessage]="'no_media' | translate"`. A project that wants other words everywhere provides
+`DATA_TABLE_LABELS` in its `providers`.
 
 ### Outputs
 
@@ -320,7 +327,7 @@ At 768px and below the table shows its rows as a list, with nothing for a listin
   a second line before it is cut.
 - **Above the rows**, in place of the header: the `*headerDef` templates (the in-header filters) and a control that
   sorts by any `sortable` column. Choosing the column the rows are sorted by turns the direction, as a click on its
-  header does. Pass the control's label with `[sortLabel]`.
+  header does.
 - A click on a row emits `rowClick`; `selectable` and detail rows work as in the table.
 - When the screen crosses the phone's width (a tablet is turned), what is typed in the in-header filters goes over
   to the other layout's fields.
@@ -331,7 +338,7 @@ At 768px and below the table shows its rows as a list, with nothing for a listin
 ```
 
 ```html
-<app-data-table [rows]="rows()" [columns]="columns" [sortLabel]="'sort' | translate" …>
+<app-data-table [rows]="rows()" [columns]="columns" …>
   <ng-template compactRowDef let-row>
     <span class="dt-list-title">{{ row.firstname }} {{ row.lastname }}</span>
     <span class="dt-list-subtitle">{{ row.email }}</span>

@@ -63,17 +63,6 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
     protected readonly rowsSig = signal<Array<any>>([]);
     protected readonly pageSig = signal<number>(1);
     protected readonly itemsPerPageSig = signal<number>(10);
-    /**
-     * The e-mail is hidden until the pointer is over it. A touch screen has no pointer: there the first tap on a hidden
-     * e-mail shows it instead of opening the user, and the next tap opens the user as one anywhere else in the row does.
-     */
-    protected revealEmail(event: Event): void {
-        const email = event.currentTarget as HTMLElement;
-        if (email.classList.contains('hidden-email--shown') || matchMedia('(hover: hover)').matches) return;
-        email.classList.add('hidden-email--shown');
-        event.stopPropagation();
-    }
-
     protected readonly canLoginAsOther = computed(() =>
         this.juicebox.getUser().attributes?.settings?.twoFactor === 'totp'
     );

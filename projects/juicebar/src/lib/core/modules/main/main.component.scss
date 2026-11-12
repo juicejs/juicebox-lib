@@ -1,3 +1,5 @@
+@use '../../../breakpoints' as *;
+
 // The shell: the top bar on the canvas, then the floating sidebar and workspace
 .main-container-new-ui {
     display: flex;
@@ -327,7 +329,7 @@
     display: none;
 }
 
-@media (max-width: 768px) {
+@include phone {
     // Clear of a phone's notch and home bar, where the project's viewport covers them (viewport-fit=cover)
     .main-container-new-ui {
         padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);

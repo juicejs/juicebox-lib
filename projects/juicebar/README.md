@@ -112,6 +112,17 @@ theme: {
 
 See `COMPONENT_CUSTOMIZATION_GUIDE.md` in the repository.
 
+**Phones.** At 768px and below the admin is laid out for a phone, and a project's own modules follow without code: an `app-data-table` shows its rows as a list, a dialog takes the whole screen, a filter takes the whole line. Where a project's code has a say:
+
+- In a template or a component, `inject(ViewportService).phone()` says whether the screen is a phone's (a signal).
+- In the project's styles: `@use '@juicejs/juicebar/breakpoints' as juicebar;`, then `@include juicebar.phone { … }`.
+- A small dialog (a question, a notice) stays a card: `dialog.open(Component, { phone: 'card' })`.
+- A table whose first column is not the row's name, or whose actions column has another key than `actions`, says so with `listRole` on the column.
+- The data table's own texts (rows per page, sort, no data…) are translated by the lib; a project that wants other words provides `DATA_TABLE_LABELS`.
+- An e-mail with `class="hidden-email"` is shown by a tap on a touch screen, as it is by the pointer elsewhere.
+
+The project's `index.html` needs `<meta name="viewport" content="width=device-width, initial-scale=1">`, which the Angular CLI writes by default.
+
 ## Development (in this repository)
 
 Use Node 24: the Angular 22 CLI needs Node 22.22.3+ or 24.15+.

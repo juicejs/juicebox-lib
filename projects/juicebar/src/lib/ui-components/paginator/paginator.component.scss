@@ -1,3 +1,5 @@
+@use '../../breakpoints' as *;
+
 .app-paginator {
   display: flex;
   align-items: center;
@@ -147,7 +149,7 @@
 }
 
 // On a phone: the range and the page sizes on one line, the pages on the next
-@media (max-width: 768px) {
+@include phone {
   .app-paginator {
     flex-wrap: wrap;
     gap: 10px 12px;

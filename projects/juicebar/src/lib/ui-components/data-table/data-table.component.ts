@@ -24,6 +24,7 @@ import { PaginatorComponent, PageEvent } from '../paginator/paginator.component'
 import { IconComponent } from '../icon/icon.component';
 import { CellDefDirective, CompactRowDefDirective, HeaderDefDirective, SelectionDetailDefDirective } from './cell-def.directive';
 import { ColumnConfig, SortDir, SortState } from './data-table.types';
+import { DATA_TABLE_LABELS, DataTableLabels } from './data-table.labels';
 import { ViewportService } from '../viewport/viewport.service';
 
 @Component({
@@ -35,6 +36,12 @@ import { ViewportService } from '../viewport/viewport.service';
   imports: [NgTemplateOutlet, CdkTableModule, CdkMenu, CdkMenuItem, CdkMenuTrigger, PaginatorComponent, IconComponent]
 })
 export class DataTableComponent {
+  /** The table's texts as provided for every table (DATA_TABLE_LABELS) */
+  private readonly labels = inject(DATA_TABLE_LABELS);
+  /** For a label input: what the table passes, and the provided text when it passes none (or null) */
+  private readonly orProvided = (key: keyof DataTableLabels) =>
+    (label: string | null | undefined) => label ?? this.labels[key];
+
   rows = input<any[]>([]);
   columns = input.required<ColumnConfig[]>();
   totalCount = input<number>(0);
@@ -44,16 +51,16 @@ export class DataTableComponent {
   sort = input<SortState>({ prop: '', dir: '' });
   detailRowFor = input<(row: any) => boolean>(() => false);
   selectable = input<boolean>(false);
-  /** Translated label for the paginator's page size control */
-  rowsPerPageLabel = input('Rows per page');
+  /** Label of the paginator's page size control */
+  rowsPerPageLabel = input(this.labels.rowsPerPage, { transform: this.orProvided('rowsPerPage') });
   /** Shown when there are no rows, as ngx-datatable's "No data to display" was */
-  emptyMessage = input('No data to display');
+  emptyMessage = input(this.labels.noData, { transform: this.orProvided('noData') });
   idKey = input<string>('_id');
-  clearAriaLabel = input<string>('Clear selection');
-  /** Translated label of a row's checkbox (`selectable`) */
-  selectAriaLabel = input('Select row');
-  /** Translated label of a column's resize handle, followed by the column label */
-  resizeAriaLabel = input('Resize column');
+  clearAriaLabel = input(this.labels.clearSelection, { transform: this.orProvided('clearSelection') });
+  /** Label of a row's checkbox (`selectable`) */
+  selectAriaLabel = input(this.labels.selectRow, { transform: this.orProvided('selectRow') });
+  /** Label of a column's resize handle, followed by the column label */
+  resizeAriaLabel = input(this.labels.resizeColumn, { transform: this.orProvided('resizeColumn') });
   /**
    * A narrow list instead of the table, e.g. next to an open record: each row shows the `compactRowDef` template
    * (or the first column), a click emits `rowClick`, and the paginator only moves a page back and forth
@@ -61,8 +68,8 @@ export class DataTableComponent {
   compact = input(false, { transform: booleanAttribute });
   /** Compact list: the id of the row to mark as the current one */
   activeId = input<unknown>(null);
-  /** Phone list: the translated label of the control that sorts the rows */
-  sortLabel = input('Sort');
+  /** Phone list: the label of the control that sorts the rows */
+  sortLabel = input(this.labels.sort, { transform: this.orProvided('sort') });
 
   pageChange = output<PageEvent>();
   rowClick = output<any>();
