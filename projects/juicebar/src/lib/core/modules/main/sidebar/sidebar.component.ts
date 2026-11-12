@@ -180,6 +180,8 @@ export class SidebarComponent implements OnInit, OnDestroy{
     private sidebarService = inject(SidebarService);
     /** Collapsed by the top bar's button; a signal, so the sidebar shows it however it was changed */
     protected readonly collapsed = this.sidebarService.sidebarCollapsed;
+    /** The project's number for each module (`sidebarCount`), by sidebar id */
+    protected readonly counts = this.sidebarService.counts;
     private socketService = inject(SocketService);
     private router = inject(Router);
     public juicebox = inject(JuiceboxService);
@@ -233,10 +235,13 @@ export class SidebarComponent implements OnInit, OnDestroy{
     }
 
     ngOnInit() {
-        // Small screens: close the drawer after navigating
+        // Small screens: close the drawer after navigating. The numbers follow the page changes, unless the project reads them once
         this.subscription.add(
             this.router.events.pipe(filter(e => e instanceof NavigationEnd))
-                .subscribe(() => this.sidebarService.closeMobile())
+                .subscribe(() => {
+                    this.sidebarService.closeMobile();
+                    if (this.sidebarService.countsFollowNavigation) void this.sidebarService.refreshCounts();
+                })
         );
         this.subscription.add(
             this.sidebarService.toggleSidebar$.subscribe(() => {
@@ -253,6 +258,7 @@ export class SidebarComponent implements OnInit, OnDestroy{
         const visible = await this.sidebarService.getVisibleSidebarItems();
         // stores the visible sidebar items
         this.menu.set(visible);
+        void this.sidebarService.refreshCounts();
     }
 
     ngOnDestroy() {

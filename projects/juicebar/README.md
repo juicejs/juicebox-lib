@@ -37,6 +37,9 @@ provideJuicebar(
     privacyPolicyLink: 'https://…',     // optional; translation key or URL
     loginLanguage: 'de_DE',             // optional; login page language (setup.json's login_language), default de_DE
     theme: { primary: '#243088' },      // optional; see Theme below
+    sidebarCount: {                     // optional; see Sidebar numbers below
+      getSidebarCount: () => inject(Juice).request('myproject', 'getSidebarCount', []),
+    },
     mainRoutes: [                        // project modules inside the shell
       {
         path: 'pages',
@@ -60,6 +63,18 @@ provideJuicebar(
 
 - `"url": "auto"` means the API is on the same origin as the admin.
 - `config.json` can also set `authenticator`.
+
+**Sidebar numbers.** `sidebarCount` puts a number next to the modules' names in the sidebar. The project answers it; the lib only shows it:
+
+```ts
+sidebarCount: {
+  // Gets the sidebar ids of the modules the user sees; may use inject(); answers a map, a Promise or an Observable of it
+  getSidebarCount: (moduleIds) => inject(Juice).request('myproject', 'getSidebarCount', [moduleIds]),
+  refresh: 'navigation',  // default: read again after every page change; 'load' reads them only when the sidebar loads
+}
+```
+
+The answer is `{ <sidebar id>: number }`: `users`, `exports`, `location`, `categories`, `communications`, or a project module's `path`. A module that is left out (or gets `null`) shows no number, and without `sidebarCount` the sidebar has none. `inject(SidebarService).refreshCounts()` reads them again at any time, e.g. after the project's own screen changed something.
 
 **Modules.** Leaving out `provideUsers()` or `provideExports()` removes that module completely: no routes, no menu entry, no code in the bundle.
 

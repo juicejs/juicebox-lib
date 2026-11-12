@@ -1,11 +1,21 @@
-import {inject, Injectable, OnDestroy, signal, Signal} from '@angular/core';
+import {EnvironmentInjector, inject, Injectable, OnDestroy, runInInjectionContext, signal, Signal} from '@angular/core';
 // import setup from '../../generator/setup.json';
 import {Juice} from './juice.service';
 import {Result} from '../types/Result';
-import {BehaviorSubject, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, firstValueFrom, isObservable, Subject, Subscription} from 'rxjs';
 import {MainTranslationPipe} from '../../modules/main/i18n/main.translation';
 import {JuiceboxService} from './Juicebox.service';
 import {toObservable} from '@angular/core/rxjs-interop';
+import {BASE_APP_CONFIG, SidebarCounts} from '../../../config/base-app.config';
+
+/** Only the numbers of what a project answered */
+function numbersOf(counts: SidebarCounts | null | undefined): Record<string, number> {
+    const numbers: Record<string, number> = {};
+    for (const [id, count] of Object.entries(counts ?? {})) {
+        if (typeof count === 'number' && Number.isFinite(count)) numbers[id] = count;
+    }
+    return numbers;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +24,8 @@ export class SidebarService implements OnDestroy {
 
     private juice = inject(Juice);
     private juicebox = inject(JuiceboxService);
+    private injector = inject(EnvironmentInjector);
+    private sidebarCount = inject(BASE_APP_CONFIG, {optional: true})?.sidebarCount;
 
     sidebarChange: Subject<any> = new Subject<any>();
     private allRegisteredSidebarItems: SidebarItem[] = [];
@@ -29,6 +41,14 @@ export class SidebarService implements OnDestroy {
     /** Small screens: the sidebar is a drawer over the page, opened from the top bar */
     readonly mobileOpen = signal(false);
 
+    private countsSignal = signal<Record<string, number>>({});
+    /** The number next to each module's name, by sidebar id, as the project's `sidebarCount.getSidebarCount` answered */
+    readonly counts = this.countsSignal.asReadonly();
+    /** The numbers are read again after every page change, unless the project chose `refresh: 'load'` */
+    readonly countsFollowNavigation = !!this.sidebarCount && this.sidebarCount.refresh !== 'load';
+    /** Counts the readings, so a slower older answer can't replace a newer one */
+    private countsRequest = 0;
+
     // Expose signals as readonly
     navigationVisible = this.navigationVisibleSignal.asReadonly();
     sidebarCollapsed = this.sidebarCollapsedSignal.asReadonly();
@@ -40,6 +60,22 @@ export class SidebarService implements OnDestroy {
 
     ngOnDestroy(): void {
         this.$sub.unsubscribe();
+    }
+
+    /** Reads the sidebar's numbers (again); a project without `sidebarCount` has none */
+    async refreshCounts(): Promise<void> {
+        const getSidebarCount = this.sidebarCount?.getSidebarCount;
+        if (!getSidebarCount) return;
+        const request = ++this.countsRequest;
+        try {
+            const moduleIds = (await this.getVisibleSidebarItems()).map(item => item.id);
+            const answer = runInInjectionContext(this.injector, () => getSidebarCount(moduleIds));
+            const counts = await (isObservable(answer) ? firstValueFrom(answer) : answer);
+            if (request === this.countsRequest) this.countsSignal.set(numbersOf(counts));
+        } catch (error) {
+            // The sidebar works without its numbers; the ones read last stay
+            console.error('sidebarCount.getSidebarCount failed', error);
+        }
     }
 
     // register sidebar module so it can be visible in the sidebar

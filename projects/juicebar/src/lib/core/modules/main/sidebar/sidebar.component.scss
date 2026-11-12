@@ -139,6 +139,14 @@
               display: none;
             }
           }
+
+          // The project's number for the module, at the right end of its row
+          .menu-count {
+            flex-shrink: 0;
+            font-size: 12px;
+            font-variant-numeric: tabular-nums;
+            color: var(--color-text-secondary);
+          }
         }
 
         &.active {
@@ -147,6 +155,11 @@
 
           .menu-label {
             font-weight: 500;
+          }
+
+          // In the filled pill the number takes the pill's text colour
+          .menu-item-content .menu-count {
+            color: inherit;
           }
         }
       }

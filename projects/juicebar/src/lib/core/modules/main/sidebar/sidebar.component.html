@@ -32,6 +32,12 @@
               <span class="menu-label" [class.collapsed]="collapsed()">
                 {{menuItem.label}}
               </span>
+
+              <!-- The project's number for the module, where it gives one -->
+              @let count = counts()[menuItem.id];
+              @if (count !== undefined && !collapsed()) {
+                <span class="menu-count">{{ count }}</span>
+              }
             </div>
           </a>
           </div>

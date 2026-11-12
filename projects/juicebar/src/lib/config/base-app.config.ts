@@ -1,5 +1,6 @@
 import { Provider, EnvironmentProviders, Type, InjectionToken } from '@angular/core';
 import { CanActivateFn, Routes } from '@angular/router';
+import type { Observable } from 'rxjs';
 
 export interface ModuleConfig {
   path: string;
@@ -137,6 +138,27 @@ export interface JuicebarTheme {
   favicon?: string;
 }
 
+/**
+ * The numbers in the sidebar, by the module's sidebar id: 'users', 'exports', 'location', 'categories',
+ * 'communications', or a project module's `path`. A module left out, or given null, shows no number.
+ */
+export type SidebarCounts = Record<string, number | null | undefined>;
+
+/**
+ * A project's answer to "which number stands next to each module in the sidebar". It gets the sidebar ids of the
+ * modules the user sees and runs in an injection context, so it can `inject()` what it needs to call the project's API.
+ */
+export type GetSidebarCount = (moduleIds: readonly string[]) => SidebarCounts | Promise<SidebarCounts> | Observable<SidebarCounts>;
+
+export interface SidebarCountConfig {
+  getSidebarCount: GetSidebarCount;
+  /**
+   * When the numbers are read again after the sidebar loaded: after every page change ('navigation', the default),
+   * or not at all ('load'); `SidebarService.refreshCounts()` reads them again either way.
+   */
+  refresh?: 'navigation' | 'load';
+}
+
 export interface BaseAppConfig {
   /** API used in development (`ng serve`). Production reads `url` from config.json instead. */
   apiUrl: string;
@@ -152,6 +174,8 @@ export interface BaseAppConfig {
   loginLanguage?: string;
   /** Colours, logo, login picture and favicon of this project */
   theme?: JuicebarTheme;
+  /** A number next to the modules' names in the sidebar, answered by the project; without it the sidebar shows none */
+  sidebarCount?: SidebarCountConfig;
   modules: ModuleConfig[];
   mainRoutes?: ModuleConfig[];
   providers?: (Provider | EnvironmentProviders)[];
