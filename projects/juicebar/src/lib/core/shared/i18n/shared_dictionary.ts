@@ -12,7 +12,10 @@ export const sharedDictionary = {
   "cancel": {
     "en_GB": "Cancel",
     "de_DE": "Abbrechen",
-    "hr_HR": ""
+    "hr_HR": "Odustani",
+    "da_DK": "Afbryd",
+    "sv_SE": "Avbryt",
+    "fi_FI": "Peruuta"
   },
   "yes": {
     "en_GB": "Yes",
