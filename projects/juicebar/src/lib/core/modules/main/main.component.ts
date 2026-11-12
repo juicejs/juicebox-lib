@@ -4,7 +4,7 @@ import { filter } from 'rxjs/operators';
 import { JuiceboxService} from '../../shared/services/Juicebox.service';
 import { SocketService} from '../../shared/services/socket.service';
 import { isNumber} from '../../shared/util';
-import {OnInit, Component, ViewEncapsulation, signal, Signal, ChangeDetectionStrategy, inject, computed, Injector, Type} from '@angular/core';
+import {OnInit, Component, ViewEncapsulation, signal, Signal, ChangeDetectionStrategy, inject, Injector, Type} from '@angular/core';
 import {NgComponentOutlet} from '@angular/common';
 import {firstValueFrom, isObservable, Subscription} from 'rxjs';
 import {SidebarService} from '../../shared/services/sidebar.service';
@@ -12,12 +12,10 @@ import {toSignal} from '@angular/core/rxjs-interop';
 import {NavigationComponent} from './navigation/navigation.component';
 import {SidebarComponent} from './sidebar/sidebar.component';
 import {SHARED_IMPORTS} from '../../shared/shared-imports';
-import {GlobalTranslationPipe} from '../../i18n/global.translation';
 import {ButtonComponent, IconComponent} from '../../../ui-components';
 import {ConnectedPosition, OverlayModule} from '@angular/cdk/overlay';
 import {MainTranslationPipe} from './i18n/main.translation';
 import {LISTING_PANE, ListingPane} from '../../shared/components/listing-pane/listing-pane';
-import {backLinkShown} from './back-link';
 
 /** The listing shown next to an open record */
 interface ListingPaneView {
@@ -36,7 +34,6 @@ const LISTING_PANE_HIDDEN_KEY = 'juicebar.listingPaneHidden';
   styleUrls: ['./main.component.scss'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [GlobalTranslationPipe],
   imports: [
     RouterOutlet,
     NavigationComponent,
@@ -66,12 +63,6 @@ export class MainComponent implements OnInit {
     public juicebox = inject(JuiceboxService);
     public socketService = inject(SocketService);
     public sidebarService = inject(SidebarService);
-    private globalPipe = inject(GlobalTranslationPipe);
-    protected readonly backLabel = this.globalPipe.transform('back');
-
-    private readonly currentUrl = signal(this.router.url);
-    /** The way back to the module's listing, on the pages under it */
-    protected readonly backVisible = computed(() => backLinkShown(this.currentUrl(), this.locationLink()));
 
     /** The split view: the module's listing, compact, while one of its records is open */
     protected readonly listingPane = signal<ListingPaneView | null>(null);
@@ -106,7 +97,6 @@ export class MainComponent implements OnInit {
                 const moduleChanged = currentModule != this.module();
                 // The page's own parts first; the module's help text comes from the backend and may take a while
                 this.module.set(currentModule);
-                this.currentUrl.set(url);
                 this.resolvePageHeader(url);
                 void this.resolveListingPane();
                 if (moduleChanged) {

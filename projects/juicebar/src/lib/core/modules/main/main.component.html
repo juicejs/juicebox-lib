@@ -14,12 +14,6 @@
         <div class="workspace">
             @if (navigationVisible() && (locationTitle() || juicebox.actionButtons().length || text())) {
                 <div class="workspace-bar">
-                    @if (backVisible()) {
-                        <button type="button" class="back-pill" (click)="goTo(locationLink())">
-                            <app-icon [icon]="'chevron_left'"></app-icon>
-                            <span>{{ backLabel }}</span>
-                        </button>
-                    }
                     @if (locationTitle()) {
                         <div class="breadcrumbs-section">
                             <button type="button" class="breadcrumb-title" (click)="goTo(locationLink())">{{ locationTitle() }}</button>
