@@ -1,0 +1,42 @@
+---
+aim: juicebar.communications.history
+kind: intent
+parent: juicebar.communications
+approved_by: Mario
+approved_at: 2026-11-11
+---
+
+# History
+
+## Summary
+
+The History tab: every run of the organisation's communications — quick sends, automations run by hand or at a scheduled time, and automations run by an event — newest first, with what ran, when, how and who started it.
+
+## Requirements
+
+- **HISTLIST** — The tab lists the runs of the staff member's organisation, newest first, 10 to a page. A run can't be opened.
+- **HISTCOLUMNS** — Each run shows the automation's name, or "Custom communication" for a quick send or an automation deleted since; the date and time it started; the name of the system event that started it; the channel's name, or its key when no channel has it; and who started it: the staff member's name, or else a scheduled process for an automation that has scheduled times, or else an automated process.
+
+## Tests
+
+- A quick send shows as "Custom communication" with the name of the staff member who sent it.
+- A run of an automation at its scheduled time shows that it was started by a scheduled process.
+- A staff member signed in to organisation A does not see the runs of organisation B.
+- A staff member without `communication:role` cannot read the history on the backend.
+
+## View: History
+
+### Summary
+
+The History tab: the runs page by page.
+
+### Display
+
+- Each run's name, date, event, channel and who started it, newest first, page by page — [reads](aim:juicebar.communications#Record:HistoryEntry), [reads](aim:juicebar.communications#Record:Communication), [invokes](aim:juicebar.communications#Capability:MessageDelivery), [satisfies](aim:juicebar.communications.history#Requirements[HISTLIST]), [satisfies](aim:juicebar.communications.history#Requirements[HISTCOLUMNS])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/history/history.component.ts#HistoryComponent` — as: component
+- binds: `service:communication-service#getCommunicationsHistory` — as: handler
+- binds: `service:communication-service#searchChannel` — as: handler
+- provenance: inferred

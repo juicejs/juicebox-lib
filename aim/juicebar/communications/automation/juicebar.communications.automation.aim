@@ -1,0 +1,272 @@
+---
+aim: juicebar.communications.automation
+kind: intent
+parent: juicebar.communications
+approved_by: Mario
+approved_at: 2026-11-11
+---
+
+# Automation
+
+## Summary
+
+The Automation tab: communications kept to run again, each with a name, an event, a channel, a content and its recipients. Staff list them, create one, switch it on and off, delete it, run a manual one at once, and open one to change its name and content beside its recipients and send it from there.
+
+## Requirements
+
+- **AUTOLIST** — The tab lists the automations 10 to a page, in the order the backend keeps them, each with its status (Enabled or Disabled), its name, the number of times it ran ("Requests sent"), its event's key ("Event request"), the progress of a run and its actions. Typing in the name filter in the table's header lists, half a second after typing pauses, the automations whose name contains the text in any case, from the first page.
+- **AUTOOPEN** — Clicking an automation opens it for staff with `updated` and does nothing for others; a click with Ctrl opens it in a new browser tab.
+- **EVENTS** — The events are those of the `communications` configuration: Manual communication (`static-communication-event`), Scheduled communications (`schedule-communication-event`) and those other modules and the project add, each naming the system event it listens to.
+- **AUTONEW** — Create opens "Create communication" with Communication name (required, "You must include a name."), Event (optional, every event) and Channel (required, "You must select a channel."; every channel); it closes only with its close button or Create. Create makes the automation in the staff member's organisation, run 0 times, active for the events Manual communication and Scheduled communications and inactive otherwise, and the list is read again. When the backend answers nothing, the error notice "error" shows.
+- **STARTSTOP** — An inactive automation has Start and an active one Stop; both are disabled for a manual automation. Switching shows the new status without a notice.
+- **AUTODELETE** — Delete asks "Are you sure you want to delete this?" in the admin's confirmation dialog and, once the staff member confirms, deletes the automation; the list is read again.
+- **RUNNOW** — A manual automation has Run, which runs it at once, without asking, started by the staff member. Its row shows a progress bar, read every 2.5 seconds, until 2 seconds after the run ends, and Run is disabled meanwhile. A run that was already going when the list opened shows its progress the same way. An automation with the event Scheduled communications has Schedule instead.
+- **AUTODETAILS** — An opened automation shows its details on the left and its recipients on the right. The details are Name, Event (its key, not editable; "MANUAL TRIGGERED" when it has none), Channel (its key, not editable) and Content, chosen among the organisation's contents of the module: the first 10 whose name contains what is typed, with the chosen one added. Save stores the name and the content, and the rest as loaded, without a notice either way.
+- **SENDNOW** — Send above an automation's recipients runs it, whatever its event, started by the staff member, once they confirm sending the communication; cancelling the question reads the recipients again. A progress bar, read every 2 seconds, shows until 2 seconds after the run ends, and Send is disabled meanwhile.
+
+## Tests
+
+- A new automation with the event Manual communication is listed as Enabled, with Run, and with Start and Stop disabled.
+- A new automation with any other event is listed as Disabled, with Start.
+- Run on a manual automation shows a progress bar; once the list is read again, its "Requests sent" is one higher.
+- Delete asks "Are you sure you want to delete this?" before the automation leaves the list.
+- A staff member without `updated` who clicks an automation stays on the list.
+- A staff member without `communication:role` cannot switch an automation off on the backend.
+
+## View: AutomationList
+
+### Summary
+
+The Automation tab: the automations page by page, with Create above them.
+
+### Display
+
+- Each automation's status, name, runs, event and the progress of a run going, page by page — [reads](aim:juicebar.communications#Record:Communication), [reads](aim:juicebar.communications#Record:TaskQueue), [satisfies](aim:juicebar.communications.automation#Requirements[AUTOLIST])
+- The automations of the staff member's organisation, or of every organisation for a super admin of communications — [satisfies](aim:juicebar.communications#Requirements[COMMORG])
+- Start or Stop, Delete, and Run or Schedule on each row, as its status and event allow — [satisfies](aim:juicebar.communications.automation#Requirements[STARTSTOP]), [satisfies](aim:juicebar.communications.automation#Requirements[RUNNOW])
+- An automation opens only for staff with `updated` — [satisfies](aim:juicebar.communications.automation#Requirements[AUTOOPEN]), [satisfies](aim:juicebar.communications#Requirements[COMMROLE])
+
+### Actions
+
+- Create — [navigates](aim:juicebar.communications.automation#View:CreateAutomationDialog)
+- Open an automation — [navigates](aim:juicebar.communications.automation#View:AutomationDetails)
+- Start — [exposes](aim:juicebar.communications.automation#Operation:SwitchCommunication)
+- Stop — [exposes](aim:juicebar.communications.automation#Operation:SwitchCommunication)
+- Delete — [exposes](aim:juicebar.communications.automation#Operation:DeleteCommunication)
+- Run — [exposes](aim:juicebar.communications.automation#Operation:SendCommunication)
+- Schedule — [navigates](aim:juicebar.communications.schedule#View:ScheduleDialog)
+
+### Layout
+
+- Create is the page's action; the others are buttons on each automation's row.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/automation/automation-list/automation-list.component.ts#AutomationListComponent` — as: component
+- binds: `service:communication-service#getQueueByParam` — as: handler
+- binds: `service:communication-service#fetchCommunications` — as: handler
+- provenance: inferred
+
+## View: CreateAutomationDialog
+
+### Summary
+
+The dialog that creates an automation.
+
+### Display
+
+- Communication name, Event and Channel, the events and channels read for any signed-in staff member — [invokes](aim:juicebar.communications#Capability:MessageDelivery), [satisfies](aim:juicebar.communications.automation#Requirements[AUTONEW]), [satisfies](aim:juicebar.communications.automation#Requirements[EVENTS]), [satisfies](aim:juicebar.communications#Requirements[SESSIONONLY])
+
+### Actions
+
+- Create — [exposes](aim:juicebar.communications.automation#Operation:CreateCommunication)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/automation/automation-create-dialog/automation-create-dialog.component.ts#AutomationCreateDialogComponent` — as: component
+- binds: `service:communication-service#searchEvents` — as: handler
+- binds: `service:communication-service#searchChannel` — as: handler
+- provenance: inferred
+
+## View: AutomationDetails
+
+### Summary
+
+An opened automation: its details on the left, its recipients on the right.
+
+### Display
+
+- Name, Event, Channel and Content, read for any signed-in staff member — [reads](aim:juicebar.communications#Record:Communication), [reads](aim:juicebar.communications#Record:Content), [satisfies](aim:juicebar.communications.automation#Requirements[AUTODETAILS]), [satisfies](aim:juicebar.communications#Requirements[SESSIONONLY])
+- The content choice offers only the organisation's contents — [satisfies](aim:juicebar.communications#Requirements[COMMORG])
+
+### Actions
+
+- Save — [exposes](aim:juicebar.communications.automation#Operation:UpdateCommunication)
+- Recipients — [navigates](aim:juicebar.communications.recipients#View:AutomationRecipients)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/automation/automation-details/automation-details.component.ts#AutomationDetailsComponent` — as: component
+- binds: `service:communication-service#getCommunication` — as: handler
+- binds: `service:communication-service#searchContents` — as: handler
+- binds: `service:communication-service#getContent` — as: handler
+- provenance: inferred
+
+## Operation: CreateCommunication
+
+### Summary
+
+A staff member creates an automation with its name, event and channel.
+
+### Input
+
+```schema
+name: string required
+event: string
+channel: string required
+```
+
+### Authz
+
+- `juicebar.core#Persona:Staff`
+
+### Ensures
+
+- An automation exists in the staff member's organisation with the name, the event and the channel, run 0 times, active only for the events Manual communication and Scheduled communications — [mutates](aim:juicebar.communications#Record:Communication), [satisfies](aim:juicebar.communications.automation#Requirements[AUTONEW]), [satisfies](aim:juicebar.communications.automation#Requirements[EVENTS]), [satisfies](aim:juicebar.communications#Requirements[COMMORG])
+- The backend asks only for a signed-in staff member — [satisfies](aim:juicebar.communications#Requirements[SESSIONONLY])
+
+### Returns
+
+- The new automation's id.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/automation/automation-create-dialog/automation-create-dialog.component.ts#AutomationCreateDialogComponent.create` — as: component
+- binds: `service:communication-service#createCommunication` — as: handler
+- provenance: inferred
+
+## Operation: SwitchCommunication
+
+### Summary
+
+A staff member switches an automation on (Start) or off (Stop).
+
+### Input
+
+```schema
+communicationId: string required ref(juicebar.communications#Communication.id)
+active: boolean required
+```
+
+### Authz
+
+- `juicebar.communications#Persona:CommunicationStaff`
+- `juicebar.communications#Persona:CommunicationSuperAdmin`
+
+### Ensures
+
+- The automation is active or inactive as given — [mutates](aim:juicebar.communications#Record:Communication), [satisfies](aim:juicebar.communications.automation#Requirements[STARTSTOP])
+- The operation is refused without `communication:role`; another organisation's automation is changed all the same — [satisfies](aim:juicebar.communications#Requirements[COMMROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.communications#Requirements[COMMORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/automation/automation-list/automation-list.component.ts#AutomationListComponent.switchState` — as: component
+- binds: `service:communication-service#switchState` — as: handler
+- provenance: inferred
+
+## Operation: DeleteCommunication
+
+### Summary
+
+A staff member deletes an automation from the list.
+
+### Input
+
+```schema
+communicationId: string required ref(juicebar.communications#Communication.id)
+```
+
+### Authz
+
+- `juicebar.communications#Persona:CommunicationStaff`
+- `juicebar.communications#Persona:CommunicationSuperAdmin`
+
+### Expects
+
+- The staff member confirmed the deletion.
+
+### Ensures
+
+- The automation is gone — [mutates](aim:juicebar.communications#Record:Communication), [satisfies](aim:juicebar.communications.automation#Requirements[AUTODELETE])
+- The operation is refused without `communication:role`; another organisation's automation is deleted all the same — [satisfies](aim:juicebar.communications#Requirements[COMMROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.communications#Requirements[COMMORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/automation/automation-list/automation-list.component.ts#AutomationListComponent.remove` — as: component
+- binds: `service:communication-service#deleteCommunication` — as: handler
+- provenance: inferred
+
+## Operation: SendCommunication
+
+### Summary
+
+A staff member runs an automation at once: Run in the list, or Send on the opened automation.
+
+### Input
+
+```schema
+communicationId: string required ref(juicebar.communications#Communication.id)
+```
+
+### Authz
+
+- `juicebar.communications#Persona:CommunicationStaff`
+- `juicebar.communications#Persona:CommunicationSuperAdmin`
+
+### Ensures
+
+- The automation runs with its content, started by the staff member — [invokes](aim:juicebar.communications#Operation:RunCommunication), [satisfies](aim:juicebar.communications.automation#Requirements[RUNNOW]), [satisfies](aim:juicebar.communications.automation#Requirements[SENDNOW]), [satisfies](aim:juicebar.communications#Requirements[RUN])
+- The staff member follows the run's progress, which the backend gives to any signed-in staff member — [reads](aim:juicebar.communications#Record:TaskQueue), [satisfies](aim:juicebar.communications#Requirements[SESSIONONLY])
+- The operation is refused without `communication:role`, its `send` permission is not asked, and another organisation's automation runs all the same — [satisfies](aim:juicebar.communications#Requirements[COMMROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.communications#Requirements[COMMORG])
+
+### Returns
+
+- The id of the task that carries out the run.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/automation/automation-list/automation-list.component.ts#AutomationListComponent.run` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/automation-recipients/automation-recipients.component.ts#AutomationRecipientsComponent.send` — as: component
+- binds: `service:communication-service#sendCommunication` — as: handler
+- binds: `service:communication-service#getQueue` — as: handler
+- provenance: inferred
+
+## Operation: UpdateCommunication
+
+### Summary
+
+A staff member changes an automation's name and content.
+
+### Input
+
+```schema
+communicationId: string required ref(juicebar.communications#Communication.id)
+name: string
+content: string ref(juicebar.communications#Content.id)
+```
+
+### Authz
+
+- `juicebar.communications#Persona:CommunicationStaff`
+- `juicebar.communications#Persona:CommunicationSuperAdmin`
+
+### Ensures
+
+- The automation takes the name and the content, and every other detail as the page loaded it; its recipients stay — [mutates](aim:juicebar.communications#Record:Communication), [satisfies](aim:juicebar.communications.automation#Requirements[AUTODETAILS])
+- The operation is refused without `communication:role`; another organisation's automation is changed all the same — [satisfies](aim:juicebar.communications#Requirements[COMMROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.communications#Requirements[COMMORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/automation/automation-details/automation-details.component.ts#AutomationDetailsComponent.save` — as: component
+- binds: `service:communication-service#updateCommunication` — as: handler
+- provenance: inferred

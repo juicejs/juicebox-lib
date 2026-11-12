@@ -1,0 +1,206 @@
+---
+aim: juicebar.communications.contents
+kind: intent
+parent: juicebar.communications
+approved_by: Mario
+approved_at: 2026-11-11
+---
+
+# Contents
+
+## Summary
+
+The Contents tab: the contents automations send, each a name, a subject and a text with placeholders. Staff list them page by page, filter them by name (and, for AMG, by tag), create one with its name and subject, change one on its own page beside a reference of the placeholders, and delete one.
+
+## Requirements
+
+- **CONTENTLIST** — The tab lists the contents whose type begins with `communications`, with their name and subject, 10 to a page (10, 20, 30 or 50 can be chosen), in the order the backend keeps them. Typing in the name filter in the table's header lists, half a second after typing pauses, the contents whose name contains the text in any case, from the first page.
+- **CONTENTTAGS** — Where the backend configuration has the `amgshop` entry, contents have a tag: a Tags column, a Tags filter above the list that chooses one of the tags of every organisation's contents and keeps the contents whose tag contains it, and a Tag field when creating and changing a content. The name filter and the tag filter each replace the other.
+- **CONTENTOPEN** — Clicking a content opens its page for staff with `updated` and does nothing for others; a click with Ctrl opens it in a new browser tab.
+- **CONTENTNEW** — "Create content" opens a dialog with Content name and Content subject, both required ("You must include a name.", "You must include a subject."); a click outside it does not close it. Add creates the content without a text, of type `communications:default`, and the list is read again; Cancel closes the dialog. When the backend answers nothing, the error notice "Error" shows.
+- **CONTENTDELETE** — The bin on a content's row deletes it at once, without asking, and the list is read again. Automations using it keep pointing at it.
+- **CONTENTEDIT** — A content's page has Name, Subject, the Tag where `amgshop` is set, and Content: the text in the admin's rich-text editor, with the placeholder reference beside it. Save stores them as they are, empty ones too, without a notice; when the backend refuses, "Can not update Content at the moment" shows. A project may refuse a change on the backend through its communications middleware (`communications:middleware`).
+- **CONTENTLEAVE** — Leaving a content's page with unsaved changes asks before they are lost.
+- **PLACEHOLDERS** — The Placeholder choice beside the text shows, for the kind of data chosen, each placeholder with its label, to copy by hand. Applied state: `{{course_leader}}`, `{{end_date}}`, `{{end_time}}`, `{{location}}`, `{{street}}`, `{{city}}`, `{{postcode}}`. Asset: `{{asset.name}}`, `{{asset.amount}}`, `{{asset.description}}`. Customer: `{{entity.firstname}}`, `{{entity.lastname}}`, `{{entity.email}}`, `{{entity.phone}}`. Seating: `{{matchday.name.en_GB}}`, `{{matchday.name.de_DE}}`. Lottery: `{{lottery.name}}`. Enquiry: `{{enquiry.name}}`, `{{enquiry.wallet}}`. Player: `{{player.attributes.salutation}}`, `{{player.attributes.firstname}}`, `{{player.attributes.lastname}}`, `{{player.attributes.email}}`. User: `{{firstname}}`, `{{lastname}}`, `{{email}}`. Commerce: `{{commerce.attributes.invoiceNumber}}`, `{{commerce.number}}`, `{{commerce.items.length}}`. Organisation: `{{organisation.email}}`, `{{organisation.phone}}`, `{{organisation.address.street}}`, `{{organisation.address.postcode}}`, `{{organisation.address.city}}`, `{{organisation.address.country}}`. Canceled Training: `{{name}}`, `{{cancellation_reason}}`, `{{date_from}}`, `{{date_to}}`, `{{trainee_emails}}`. Forgot Password: `{{userId}}`, `{{firstname}}`, `{{lastname}}`, `{{email}}`, `{{token}}`, `{{timestamp}}`, `{{ip}}`. Member status: `{{name}}`, `{{firstname}}`, `{{lastname}}`, `{{date}}`, `{{time}}`, `{{location}}`, `{{registrator_firstname}}`, `{{registrator_lastname}}`, `{{postcode}}`, `{{city}}`, `{{member_count}}`, `{{members}}`, `{{cost}}`, `{{invoice_name}}`, `{{invoice_address}}`, `{{invoice_postcode}}`, `{{invoice_city}}`. AMG Customer: `{{customer.salutation}}`, `{{customer.title}}`, `{{customer.firstname}}`, `{{customer.lastname}}`, `{{customer.email}}`, `{{event.name}}`, `{{event.date}}`.
+
+## Tests
+
+- 25 contents show 10 on the first page and 3 pages in all.
+- Typing "news" in the name filter leaves "Newsletter", starting again from page 1.
+- Without the `amgshop` entry, no Tags column, filter or field appears.
+- A staff member without `updated` who clicks a content stays on the list.
+- Deleting a content asks nothing and removes it from the list.
+- Choosing the placeholder kind Customer shows `{{entity.firstname}}`.
+
+## View: ContentList
+
+### Summary
+
+The Contents tab: the contents page by page, with Create content above them.
+
+### Display
+
+- Each content's name and subject, page by page, read for any signed-in staff member — [reads](aim:juicebar.communications#Record:Content), [satisfies](aim:juicebar.communications.contents#Requirements[CONTENTLIST]), [satisfies](aim:juicebar.communications#Requirements[SESSIONONLY])
+- The contents of the staff member's organisation, or of every organisation for a super admin of communications — [satisfies](aim:juicebar.communications#Requirements[COMMORG])
+- The name filter in the table's header — [satisfies](aim:juicebar.communications.contents#Requirements[CONTENTLIST])
+- Where `amgshop` is set, the Tags column and the Tags filter — [reads](aim:juicebar.communications#Record:Content), [satisfies](aim:juicebar.communications.contents#Requirements[CONTENTTAGS]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- A content opens on its page only for staff with `updated` — [satisfies](aim:juicebar.communications.contents#Requirements[CONTENTOPEN]), [satisfies](aim:juicebar.communications#Requirements[COMMROLE])
+
+### Actions
+
+- Create content — [navigates](aim:juicebar.communications.contents#View:CreateContentDialog)
+- Open a content — [navigates](aim:juicebar.communications.contents#View:ContentPage)
+- Delete — [exposes](aim:juicebar.communications.contents#Operation:DeleteContent)
+
+### Layout
+
+- Create content is the page's action, with the Tags filter beside it; delete is a button on each content's row.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/contents/content-list/content-list.component.ts#ContentListComponent` — as: component
+- binds: `service:communication-service#fetchContents` — as: handler
+- binds: `service:communication-service#getContentTags` — as: handler
+- binds: `service:juicebox:configuration:service#getByKey` — as: handler
+- provenance: inferred
+
+## View: CreateContentDialog
+
+### Summary
+
+The dialog that creates a content.
+
+### Display
+
+- Content name and Content subject, both required, and the Tag where `amgshop` is set; a click outside does not close it — [satisfies](aim:juicebar.communications.contents#Requirements[CONTENTNEW]), [satisfies](aim:juicebar.communications.contents#Requirements[CONTENTTAGS])
+
+### Actions
+
+- Add — [exposes](aim:juicebar.communications.contents#Operation:CreateContent)
+- Cancel — [navigates](aim:juicebar.communications.contents#View:ContentList)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/contents/content-create/content-create-dialog.component.ts#ContentCreateDialogComponent` — as: component
+- provenance: inferred
+
+## View: ContentPage
+
+### Summary
+
+An opened content: its fields, its text and the placeholder reference.
+
+### Display
+
+- Name, Subject, the Tag where `amgshop` is set, and the text in the rich-text editor, read for any signed-in staff member — [reads](aim:juicebar.communications#Record:Content), [satisfies](aim:juicebar.communications.contents#Requirements[CONTENTEDIT]), [satisfies](aim:juicebar.communications#Requirements[SESSIONONLY])
+- The Placeholder choice and the placeholders of the kind chosen — [satisfies](aim:juicebar.communications.contents#Requirements[PLACEHOLDERS])
+- Asks before unsaved changes are left — [satisfies](aim:juicebar.communications.contents#Requirements[CONTENTLEAVE])
+
+### Actions
+
+- Save — [exposes](aim:juicebar.communications.contents#Operation:UpdateContent)
+
+### Layout
+
+- The text takes three quarters of the width, the placeholder reference the last quarter.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/contents/content-edit/content-edit.component.ts#ContentEditComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/contents/content-edit/content-placeholders/content-placeholders.component.ts#ContentPlaceholdersComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/contents/content-edit/content-placeholders/content-placeholders.ts#PLACEHOLDER_KINDS` — as: component
+- binds: `projects/juicebar/src/lib/core/shared/guards/unsaved-changes.guard.ts#unsavedChangesGuard` — as: component
+- binds: `service:communication-service#getContent` — as: handler
+- provenance: inferred
+
+## Operation: CreateContent
+
+### Summary
+
+A staff member creates a content with its name and subject.
+
+### Input
+
+```schema
+name: string required
+subject: string required
+tag: string
+```
+
+### Authz
+
+- `juicebar.core#Persona:Staff`
+
+### Ensures
+
+- A content of type `communications:default` exists with the name, the subject and, where `amgshop` is set, the tag, in the staff member's organisation — [mutates](aim:juicebar.communications#Record:Content), [satisfies](aim:juicebar.communications.contents#Requirements[CONTENTNEW]), [satisfies](aim:juicebar.communications.contents#Requirements[CONTENTTAGS]), [satisfies](aim:juicebar.communications#Requirements[COMMORG])
+- The backend asks only for a signed-in staff member — [satisfies](aim:juicebar.communications#Requirements[SESSIONONLY])
+
+### Returns
+
+- The new content's id.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/contents/content-create/content-create-dialog.component.ts#ContentCreateDialogComponent.create` — as: component
+- binds: `service:communication-service#createContent` — as: handler
+- provenance: inferred
+
+## Operation: UpdateContent
+
+### Summary
+
+A staff member changes a content's name, subject, text and tag.
+
+### Input
+
+```schema
+contentId: string required ref(juicebar.communications#Content.id)
+name: string
+subject: string
+template: string
+tag: string
+```
+
+### Authz
+
+- `juicebar.core#Persona:Staff`
+
+### Ensures
+
+- The fields given replace the stored ones as they are; the organisation stays — [mutates](aim:juicebar.communications#Record:Content), [satisfies](aim:juicebar.communications.contents#Requirements[CONTENTEDIT])
+- A project's communications middleware may refuse the change, and then nothing is stored and the notice shows — [satisfies](aim:juicebar.communications.contents#Requirements[CONTENTEDIT])
+- The backend asks only for a signed-in staff member, whichever organisation the content belongs to — [satisfies](aim:juicebar.communications#Requirements[SESSIONONLY]), [satisfies](aim:juicebar.communications#Requirements[COMMORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/contents/content-edit/content-edit.component.ts#ContentEditComponent.save` — as: component
+- binds: `service:communication-service#updateContent` — as: handler
+- provenance: inferred
+
+## Operation: DeleteContent
+
+### Summary
+
+A staff member deletes a content from the list.
+
+### Input
+
+```schema
+contentId: string required ref(juicebar.communications#Content.id)
+```
+
+### Authz
+
+- `juicebar.core#Persona:Staff`
+
+### Ensures
+
+- The content is gone; automations that use it are not changed — [mutates](aim:juicebar.communications#Record:Content), [satisfies](aim:juicebar.communications.contents#Requirements[CONTENTDELETE])
+- The backend asks only for a signed-in staff member, whichever organisation the content belongs to — [satisfies](aim:juicebar.communications#Requirements[SESSIONONLY]), [satisfies](aim:juicebar.communications#Requirements[COMMORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/contents/content-list/content-list.component.ts#ContentListComponent.remove` — as: component
+- binds: `service:communication-service#deleteContent` — as: handler
+- provenance: inferred

@@ -1,0 +1,90 @@
+---
+aim: juicebar.exports.pdf
+kind: intent
+parent: juicebar.exports
+provenance: inferred
+---
+
+# PDF download
+
+## Summary
+
+Downloading a template as PDFs, with a format whose key begins with `pdf`, chosen from the template's download button: one PDF per record, made from the format's own HTML template, in a zip file. A dialog asks for the zip file's name and the column each PDF is named after.
+
+## Requirements
+
+- **PDFDIALOG** — The dialog "Confirm export" asks for the zip file's name, empty at first, and, optionally, the column each PDF is named after, chosen with a search among the template's columns that its data source allows for file names. "Download" downloads the zip as `<name>.zip`, or under the template's name and the day without one; "Cancel" closes the dialog. A click outside the dialog does not close it. When the columns can't be loaded, the backend's error shows.
+- **PDFFILES** — The zip holds one PDF per record, the format's HTML template filled in with the record's values. Each PDF is named after the record's value in the chosen column, made safe for a file name, or "export-1" without one; a name already in the zip gets the next number ("-1", "-2", …).
+
+## Tests
+
+- Downloading 3 invoices with the column "Invoice number" chosen gives a zip with "R-100.pdf", "R-101.pdf" and "R-102.pdf".
+- Two records whose chosen column holds "Müller" give "Müller.pdf" and "Müller-1.pdf".
+- Downloading the template "Invoices" on 11.11.2026 without a zip name saves "Invoices_11.11.2026.zip".
+
+## View: PdfExportDialog
+
+### Summary
+
+The dialog that downloads a template as a zip of PDFs.
+
+### Display
+
+- The zip file's name, empty at first, and the choice of the column each PDF is named after — [satisfies](aim:juicebar.exports.pdf#Requirements[PDFDIALOG]), [satisfies](aim:juicebar.exports#Requirements[DOWNLOAD])
+- A click outside the dialog does not close it — [satisfies](aim:juicebar.exports.pdf#Requirements[PDFDIALOG])
+
+### Actions
+
+- Download — [exposes](aim:juicebar.exports.pdf#Operation:ExportPdf)
+- Cancel — [navigates](aim:juicebar.exports.templates#View:TemplateList)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/export-confirm/pdf-confirm/pdf-export-confirm.component.ts#PdfExportConfirmComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/exports/export-template-listing/export-template-listing.component.ts#ExportTemplateListingComponent.openExportConfirmationModal` — as: component
+- binds: `service:exports:column#getDataSourceFileNameColumns` — as: handler
+- provenance: inferred
+
+## Operation: ExportPdf
+
+### Summary
+
+A staff member downloads a template as a zip of PDFs, in one of the PDF formats its data source offers.
+
+### Input
+
+```schema
+templateId: string required ref(juicebar.exports#ExportTemplate.id)
+formatKey: string required
+fileName: string
+fileNameColumn: string
+language: string required
+```
+
+### Authz
+
+- `juicebar.exports#Persona:ExportStaff`
+
+### Expects
+
+- The format's key begins with `pdf`.
+
+### Ensures
+
+- The data source's records for the template's columns, sort and filters, in the given language, are made into one PDF each by the format and put in a zip, each named after the chosen column — [invokes](aim:juicebar.exports#Capability:DataSources), [invokes](aim:juicebar.exports#Capability:ExportFormats), [satisfies](aim:juicebar.exports.pdf#Requirements[PDFFILES]), [satisfies](aim:juicebar.exports#Requirements[DOWNLOAD])
+- The zip is saved as `<fileName>.zip`, or `<template>_<DD.MM.YYYY>.zip` without a name, and the dialog closes with "File exported" — [satisfies](aim:juicebar.exports.pdf#Requirements[PDFDIALOG]), [satisfies](aim:juicebar.exports#Requirements[DOWNLOAD])
+- An error instead of a file, a failed download, or one cancelled after the project's time limit, shows its message and keeps the dialog open — [satisfies](aim:juicebar.exports#Requirements[DOWNLOAD]), [satisfies](aim:juicebar.exports#Requirements[DOWNLOADTIME]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- A format the template's data source does not offer is refused — [satisfies](aim:juicebar.exports#Requirements[FORMATS])
+- Only staff with `admin` reach the download of a SAP template in the admin; the backend asks for `export` alone — [satisfies](aim:juicebar.exports#Requirements[SAPADMIN])
+- The operation is refused without the `export` permission, or for a template the project's backend rules keep from the staff member — [satisfies](aim:juicebar.exports#Requirements[EXPROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.exports#Requirements[TPLSCOPE])
+
+### Returns
+
+- The zip file.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/export-confirm/pdf-confirm/pdf-export-confirm.component.ts#PdfExportConfirmComponent.export` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/exports/exports-shared.ts#isFailedExport` — as: component
+- binds: `service:exports#exportData` — as: handler
+- provenance: inferred

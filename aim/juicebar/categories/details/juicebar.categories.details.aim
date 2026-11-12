@@ -1,0 +1,103 @@
+---
+aim: juicebar.categories.details
+kind: intent
+parent: juicebar.categories
+provenance: inferred
+---
+
+# Category details
+
+## Summary
+
+An opened category: its name over tabs for its details, its files and, for a subcategory without subcategories of its own, the articles filed under it. On the details tab staff with the `update` permission change the name, description, order and switches in the admin's language.
+
+## Requirements
+
+- **TABS** — A category shows the tabs Details and Media; Included articles is added only for a subcategory that has no subcategories. Tabs a project adds through the library's customization come after them.
+- **SAVEWHO** — Saving is open to staff with the `update` permission, except for the `no_category` category and, where `showPublic` is set, a category of an organisation outside the organisation tree. Where `allowDelete` is off, a super admin of categories saves any category, and other staff don't see the active switch of a category without an organisation.
+- **DEACTIVATE** — Where the project sets the `confirmDeactivation` option, switching an active category off and saving first asks "Are you sure you want to deactivate this category?", naming the features that still use it with their counts, or saying that this could not be told. Cancelling switches the category back on and saves nothing.
+- **UPDATEDONE** — A saved category shows "Category updated"; a failure shows "Category update failed", followed by the backend's error when it is about a permission or role.
+- **UPDATELEAVE** — Leaving the details tab with unsaved changes asks before the changes are lost.
+- **KEEPDESC** — A description left empty when saving leaves the stored description of that language as it was.
+
+## Tests
+
+- Switching off a category used by 3 trainings, with `confirmDeactivation`, asks first and names "3 trainings".
+- Cancelling that question leaves the category active.
+- Renaming a category in German changes its German slug and leaves its English name and slug unchanged.
+- A staff member without the `update` permission sees the details with Save disabled.
+
+## View: CategoryDetails
+
+### Summary
+
+An opened category, with its tabs, and the details tab's fields.
+
+### Display
+
+- The category's name above the tabs Details, Media and, for a subcategory without subcategories, Included articles — [reads](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.categories.details#Requirements[TABS])
+- Name (required), description, order, the active switch and, where `showPublic` is set, the public switch, in the admin's language — [reads](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.categories#Requirements[CATPUBLIC])
+- Save is disabled where the staff member may not save this category — [satisfies](aim:juicebar.categories.details#Requirements[SAVEWHO]), [satisfies](aim:juicebar.categories#Requirements[NOCATEGORY]), [satisfies](aim:juicebar.categories#Requirements[ORGTREE])
+- Asks before unsaved changes are left — [satisfies](aim:juicebar.categories.details#Requirements[UPDATELEAVE])
+
+### Actions
+
+- Save — [exposes](aim:juicebar.categories.details#Operation:UpdateCategory)
+- Transfer to Mine — [exposes](aim:juicebar.categories.mine#Operation:AddToMine)
+- Media — [navigates](aim:juicebar.categories.media#View:CategoryMedia)
+- Included articles — [navigates](aim:juicebar.categories.articles#View:IncludedArticles)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/categories/details/category-details.component.ts#CategoryDetailsComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/categories/details/details-category/details-category.component.ts#DetailsCategoryComponent` — as: component
+- binds: `service:juicecommerce:categories#fetchById` — as: handler
+- binds: `service:juicecommerce:categories#getTreeFromNode` — as: handler
+- provenance: inferred
+
+## Operation: UpdateCategory
+
+### Summary
+
+A staff member changes a category's name, description, order and switches in the admin's language.
+
+### Input
+
+```schema
+categoryId: string required ref(juicebar.categories#Category.id)
+name: string required
+description: string
+order: integer
+active: boolean
+public: boolean
+language: string required
+deactivationConfirmed: boolean
+```
+
+### Authz
+
+- `juicebar.categories#Persona:CategoryEditor`
+- `juicebar.categories#Persona:CategorySuperAdmin`
+
+### Expects
+
+- The category is not the `no_category` category.
+
+### Ensures
+
+- The name in the given language is replaced; when it changed, the category gets a new unique slug in that language — [mutates](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.categories#Requirements[CATNAME]), [satisfies](aim:juicebar.categories#Requirements[CATSLUG]), [satisfies](aim:juicebar#Requirements[LANG])
+- The description in the given language is replaced when one is given, and left as it was when it is empty — [mutates](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.categories.details#Requirements[KEEPDESC])
+- The order is replaced when it is a number; the active switch, and the public switch where `showPublic` is set, are replaced, and the staff member who changed the active switch is recorded — [mutates](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.categories#Requirements[CATORDER]), [satisfies](aim:juicebar.categories#Requirements[CATPUBLIC])
+- Where `confirmDeactivation` is set and an active category is switched off, nothing is saved until the staff member confirmed it after seeing what still uses the category — [invokes](aim:juicebar.categories#Capability:CategoryUsage), [satisfies](aim:juicebar.categories.details#Requirements[DEACTIVATE])
+- A notice tells whether it worked — [satisfies](aim:juicebar.categories.details#Requirements[UPDATEDONE])
+- The operation is refused without the `update` permission, or for a category of another organisation — [satisfies](aim:juicebar.categories#Requirements[CATROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.categories#Requirements[CATORG])
+
+### Returns
+
+- The stored category.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/categories/details/details-category/details-category.component.ts#DetailsCategoryComponent.save` — as: component
+- binds: `service:juicecommerce:categories#updateCategory` — as: handler
+- provenance: inferred

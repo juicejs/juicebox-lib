@@ -1,0 +1,136 @@
+---
+aim: juicebar.locations.list
+kind: intent
+parent: juicebar.locations
+provenance: inferred
+---
+
+# Location listing
+
+## Summary
+
+The locations page by page, with filters on name, city and country, the archived ones on request and, for Quality Circle, the "Show locations" choice. From here staff open a location, create one, and archive, unarchive or delete the locations of the types the project names.
+
+## Requirements
+
+- **LISTPAGE** — The listing shows the locations that are not archived, 10 to a page (10, 20, 30 or 50 can be chosen), newest first until a column is sorted. The name, the city and the country can be sorted, the type can't; sorting keeps the page. Sorting, paging and filtering happen on the backend. The page shown is kept in the address, so going back to the listing returns to it.
+- **LISTCOLUMNS** — Each location shows its name in the admin's language (or else in another), its type's name, its city and its country's name, with "-" where one is missing.
+- **LISTFILTER** — The name, the city and the country can be filtered by typing; the listing follows once typing pauses, from its first page. The name is searched in the admin's language, the country in its English and German names.
+- **SHOWARCHIVED** — A "Show archived" switch lists the archived locations instead, from the first page.
+- **SHOWOWNER** — Where the project sets the `ownerFilter` option, a "Show locations" choice keeps, of the page shown, all its locations (All), those of the staff member's organisation (Mine) or all the others, those without an organisation included (Public). All is chosen at first.
+- **ARCHIVE** — The locations of the types the project's `archivableTypes` option names (none by default) can be archived from the listing, and unarchived while the archived ones are shown. The rest of the location is sent back as it is stored, its name as the listing shows it, under the admin's language. Archiving shows "Location archived" and unarchiving "Location unarchived"; a failure shows "The location could not be archived" or "The location could not be unarchived".
+- **DELETE** — The locations of the types the project's `deletableTypes` option names (`region` by default) can be deleted from the listing, after the staff member confirms "Delete the location" with its name. A location the project still uses is not deleted, and the backend's reason is shown (in Quality Circle: "Location is assigned to training" or "Location is assigned to shift"). A deleted location leaves the listing with "Location deleted"; any other failure shows "The location could not be deleted".
+- **OPENLOC** — A location opens on its details.
+
+## Tests
+
+- 25 locations show 10 on the first page and 3 pages in all.
+- Typing "Ber" in the city filter leaves only locations whose city contains "ber", starting again from page 1.
+- With "Show archived" on, only archived locations are listed.
+- Without the `ownerFilter` option no "Show locations" choice is shown; with it, Mine leaves only the page's locations of the staff member's organisation.
+- Without `deletableTypes`, a region has a delete button and a venue has none.
+- Deleting a location assigned to an open training in Quality Circle shows "Location is assigned to training" and keeps it.
+
+## View: LocationList
+
+### Summary
+
+The page of the locations module: the locations, their filters, and Quality Circle's "Show locations" choice above them.
+
+### Display
+
+- Each location's name, type, city and country, page by page — [reads](aim:juicebar.locations#Record:Location), [reads](aim:juicebar.locations#Record:LocationType), [reads](aim:juicebar.locations#Record:Country), [satisfies](aim:juicebar.locations.list#Requirements[LISTPAGE]), [satisfies](aim:juicebar.locations.list#Requirements[LISTCOLUMNS])
+- Only the locations of the types offered to the staff member, and only the venues of their organisation or without one — [satisfies](aim:juicebar.locations#Requirements[LOCTYPES]), [satisfies](aim:juicebar.locations#Requirements[LOCSEE])
+- Filters on name, city and country in the table's header — [satisfies](aim:juicebar.locations.list#Requirements[LISTFILTER])
+- A "Show archived" switch, and the "Show locations" choice where the project sets `ownerFilter` — [satisfies](aim:juicebar.locations.list#Requirements[SHOWARCHIVED]), [satisfies](aim:juicebar.locations.list#Requirements[SHOWOWNER]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- Archive or unarchive, and delete, on the rows of the types the project's options name — [satisfies](aim:juicebar.locations.list#Requirements[ARCHIVE]), [satisfies](aim:juicebar.locations.list#Requirements[DELETE]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- "Add new" is shown only to staff with the `create` permission — [satisfies](aim:juicebar.locations#Requirements[LOCROLE])
+- A location opens on its details — [satisfies](aim:juicebar.locations.list#Requirements[OPENLOC])
+- Every label on the module's screens comes from the locations label dictionary, in the admin's language, with every language's texts the old admin had — [satisfies](aim:juicebar#Requirements[UILABELS])
+
+### Actions
+
+- Add new — [navigates](aim:juicebar.locations.create#View:CreateLocationPage)
+- Open a location — [navigates](aim:juicebar.locations.details#View:LocationDetails)
+- Archive — [exposes](aim:juicebar.locations.list#Operation:ArchiveLocation)
+- Unarchive — [exposes](aim:juicebar.locations.list#Operation:ArchiveLocation)
+- Delete — [exposes](aim:juicebar.locations.list#Operation:DeleteLocation)
+
+### Layout
+
+- Add new is the page's action; archive, unarchive and delete are buttons on each location's row.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/listing/location-listing.component.ts#LocationListingComponent` — as: component
+- binds: `service:locations:service#fetch` — as: handler
+- provenance: inferred
+
+## Operation: ArchiveLocation
+
+### Summary
+
+A staff member archives a location from the listing, or unarchives an archived one.
+
+### Input
+
+```schema
+locationId: string required ref(juicebar.locations#Location.id)
+archived: boolean required
+language: string required
+```
+
+### Authz
+
+- `juicebar.locations#Persona:LocationEditor`
+- `juicebar.locations#Persona:LocationAdmin`
+- `juicebar.locations#Persona:LocationSuperAdmin`
+
+### Ensures
+
+- Only a location of a type the project's `archivableTypes` option names is offered for it — [satisfies](aim:juicebar.locations.list#Requirements[ARCHIVE]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- The location is archived or unarchived; its other details are stored again as they were, its name as the listing shows it under the given language, and its slug in that language is made again — [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations.list#Requirements[ARCHIVE]), [satisfies](aim:juicebar.locations#Requirements[LOCSLUG])
+- The listing is fetched again, and a notice tells whether it worked — [satisfies](aim:juicebar.locations.list#Requirements[ARCHIVE])
+- The operation is refused without the `updated` permission, or for a location of another organisation — [satisfies](aim:juicebar.locations#Requirements[LOCROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.locations#Requirements[LOCORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/listing/location-listing.component.ts#LocationListingComponent.archive` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/locations/location-form.ts#storedLocationUpdate` — as: component
+- binds: `service:locations:service#updateLocation` — as: handler
+- provenance: inferred
+
+## Operation: DeleteLocation
+
+### Summary
+
+A staff member deletes a location from the listing.
+
+### Input
+
+```schema
+locationId: string required ref(juicebar.locations#Location.id)
+```
+
+### Authz
+
+- `juicebar.locations#Persona:LocationEditor`
+- `juicebar.locations#Persona:LocationAdmin`
+- `juicebar.locations#Persona:LocationSuperAdmin`
+
+### Expects
+
+- The staff member confirmed the deletion.
+
+### Ensures
+
+- Only a location of a type the project's `deletableTypes` option names (`region` by default) is offered for it — [satisfies](aim:juicebar.locations.list#Requirements[DELETE]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- Nothing is deleted while the project still uses the location; the reason is shown — [invokes](aim:juicebar.locations#Capability:LocationUsage), [satisfies](aim:juicebar.locations.list#Requirements[DELETE])
+- Otherwise the location is gone and the listing is fetched again — [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations.list#Requirements[DELETE])
+- The operation is refused without the `delete` permission, or for a location of another organisation — [satisfies](aim:juicebar.locations#Requirements[LOCROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.locations#Requirements[LOCORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/listing/location-listing.component.ts#LocationListingComponent.remove` — as: component
+- binds: `service:locations:service#deleteLocation` — as: handler
+- provenance: inferred

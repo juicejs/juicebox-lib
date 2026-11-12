@@ -1,0 +1,119 @@
+---
+aim: juicebar.locations.details
+kind: intent
+parent: juicebar.locations
+provenance: inferred
+---
+
+# Location details
+
+## Summary
+
+An opened location: its name over the tabs for its details, attributes, media, documents and, for a venue, its seating layout. On the details tab staff change the location's fields in the admin's language, archive it and change its switches; a region is saved only by an admin of locations.
+
+## Requirements
+
+- **TABS** — An opened location shows its name above the tabs Details, Attributes, Media, Documents and, for a venue, Seating layout, and opens on Details. Where the project's `hiddenTabs` option names them, Attributes and Documents are left out.
+- **OTHERLANG** — Where the location has no name or no description in the admin's language, the field is empty and shows the text of another language as its hint.
+- **ARCHIVESWITCH** — The details have an "Archived" switch, except for a location the backend marks as one that must stay active.
+- **REGIONSAVE** — A region is saved only by staff with `locations:role#admin`; for anyone else its Save is disabled.
+- **KEEPATTRS** — Saving the details keeps the location's other attributes: its hatching pattern, a venue's room plans and a stadium's or hall's attribute values.
+- **UPDATEDONE** — A saved location shows "Location updated"; a failure shows "Location update failed". Typed coordinates that are not a pair or out of range show their message and save nothing.
+- **UPDATELEAVE** — Leaving the details tab with unsaved changes asks before the changes are lost.
+
+## Tests
+
+- A staff member without `locations:role#admin` sees Save disabled on a region, and enabled on a venue.
+- Saving a location's German name leaves its English name and slug unchanged.
+- Saving the details of a stadium leaves its attribute values and hatching pattern as they were.
+- A venue shows the Seating layout tab; a region does not.
+- With `hiddenTabs` holding `documents`, no Documents tab is shown.
+- A location without a German name shows its English name as the hint of the empty name field in German.
+
+## View: LocationDetails
+
+### Summary
+
+An opened location, with its tabs, and the details tab's fields.
+
+### Display
+
+- The location's name above its tabs, Seating layout only for a venue, Attributes and Documents unless the project's `hiddenTabs` option hides them — [reads](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations.details#Requirements[TABS]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- A location is shown when the staff member may see it — [satisfies](aim:juicebar.locations#Requirements[LOCSEE])
+- The fields of the create page in the admin's language, another language's name and description as hints where this one has none — [reads](aim:juicebar.locations#Record:LocationType), [reads](aim:juicebar.locations#Record:LocationCategory), [reads](aim:juicebar.locations#Record:Country), [satisfies](aim:juicebar.locations.details#Requirements[OTHERLANG]), [satisfies](aim:juicebar.locations#Requirements[LOCNAME]), [satisfies](aim:juicebar.locations#Requirements[WEB])
+- The "Archived" switch, unless the location must stay active — [satisfies](aim:juicebar.locations.details#Requirements[ARCHIVESWITCH])
+- Save is disabled on a region for staff without `locations:role#admin` — [satisfies](aim:juicebar.locations.details#Requirements[REGIONSAVE])
+- Asks before unsaved changes are left — [satisfies](aim:juicebar.locations.details#Requirements[UPDATELEAVE])
+
+### Actions
+
+- Save — [exposes](aim:juicebar.locations.details#Operation:UpdateLocation)
+- Attributes — [navigates](aim:juicebar.locations.attributes#View:AttributesTab)
+- Media — [navigates](aim:juicebar.locations.media#View:LocationMedia)
+- Documents — [navigates](aim:juicebar.locations.media#View:LocationDocuments)
+- Seating layout — [navigates](aim:juicebar.locations.seating#View:SeatingLayout)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/location-details.component.ts#LocationDetailsComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/details-location/details-location.component.ts#DetailsLocationComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/locations/location-fields/location-fields.component.ts#LocationFieldsComponent` — as: component
+- binds: `service:locations:service#getLocation` — as: handler
+- provenance: inferred
+
+## Operation: UpdateLocation
+
+### Summary
+
+A staff member changes a location's fields and switches in the admin's language.
+
+### Input
+
+```schema
+locationId: string required ref(juicebar.locations#Location.id)
+type: string required ref(juicebar.locations#LocationType.value)
+location_category: string ref(juicebar.locations#LocationCategory.value)
+name: string required
+short_name: string
+description: string
+street: string
+postcode: string
+city: string
+country: string ref(juicebar.locations#Country.id)
+url: string
+archived: boolean
+organisation_visibility: boolean
+accessibility: boolean
+email: string
+latitude: number
+longitude: number
+language: string required
+```
+
+### Authz
+
+- `juicebar.locations#Persona:LocationEditor`
+- `juicebar.locations#Persona:LocationAdmin`
+- `juicebar.locations#Persona:LocationSuperAdmin`
+
+### Ensures
+
+- The name and the description in the given language are replaced, and the slug in that language is made again from the name — [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations#Requirements[LOCNAME]), [satisfies](aim:juicebar.locations#Requirements[LOCSLUG]), [satisfies](aim:juicebar#Requirements[LANG])
+- The type, the category, the short name, the address or the URL, the archived switch and the organisation-wide visibility are replaced — [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations#Requirements[WEB])
+- The coordinates are the ones typed in where the project has the field, or else the address lookup's first match; when neither gives any, the stored ones stay — [invokes](aim:juicebar.locations#Capability:Geocoding), [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations#Requirements[COORDS])
+- The location's other attributes stay; where the project's `fields` option names them, the email is set or, when emptied, removed, and the accessibility switch is replaced — [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations.details#Requirements[KEEPATTRS]), [satisfies](aim:juicebar.locations#Requirements[EXTRAS]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- A region reaches it only from staff with `locations:role#admin`; the backend makes no such check — [satisfies](aim:juicebar.locations.details#Requirements[REGIONSAVE])
+- A notice tells whether it worked — [satisfies](aim:juicebar.locations.details#Requirements[UPDATEDONE])
+- The operation is refused without the `updated` permission, or for a location of another organisation — [satisfies](aim:juicebar.locations#Requirements[LOCROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.locations#Requirements[LOCORG])
+
+### Returns
+
+- The stored location.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/details-location/details-location.component.ts#DetailsLocationComponent.save` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/locations/location-form.ts#toLocationUpdate` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/locations/location-form.ts#resolveCoordinates` — as: component
+- binds: `service:locations:service#updateLocation` — as: handler
+- provenance: inferred

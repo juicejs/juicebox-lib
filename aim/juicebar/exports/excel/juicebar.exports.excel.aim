@@ -1,0 +1,125 @@
+---
+aim: juicebar.exports.excel
+kind: intent
+parent: juicebar.exports
+provenance: inferred
+---
+
+# Excel download
+
+## Summary
+
+Downloading a template as an Excel spreadsheet, chosen from its download button. A dialog asks for the file's name and, where the project allows it, lets staff change the template's filters before the download.
+
+## Requirements
+
+- **EXCELDIALOG** — The dialog "Confirm export" asks for the file name, empty at first. "Download" downloads the spreadsheet as `<name>.xlsx`, or under the template's name and the day without one; "Cancel" closes the dialog. A click outside the dialog does not close it.
+- **EXCELFILTERS** — Where the backend configuration `excel:export:strategies` sets `allowFiltersEditOnConfirm` (Quality Circle), the dialog loads the template's filters with their stored values, and they can be changed. Changed filters are stored on the template before the download, which uses them; when they can't be stored, "The changed filters could not be saved" shows and nothing is downloaded. When the filters can't be loaded, a warning says "The filters could not be loaded. The export uses the template's saved filters."
+- **EXCELSHEET** — The Excel format the backend brings makes one sheet named after the template (its first 31 characters). Its first row holds the selected columns' labels in the download's language, in capitals, a label missing in that language taken from another and marked with that language's code (such as `[DE]`); each further row is one record, in the template's column order, and a value that is empty, 0 or false leaves its cell empty. A project may register its own Excel format under the same key.
+
+## Tests
+
+- Downloading the template "Customers" on 11.11.2026 without a file name saves "Customers_11.11.2026.xlsx".
+- With `allowFiltersEditOnConfirm`, changing a filter in the dialog and downloading stores the new value on the template, and the file follows it.
+- A download the backend answers with an error shows "Unable to complete download. Try again." and the dialog stays open.
+- A template with the columns Name and City gives a sheet whose first row is "NAME", "CITY".
+
+## View: ExcelExportDialog
+
+### Summary
+
+The dialog that downloads a template as a spreadsheet.
+
+### Display
+
+- The file name, empty at first — [satisfies](aim:juicebar.exports.excel#Requirements[EXCELDIALOG]), [satisfies](aim:juicebar.exports#Requirements[DOWNLOAD])
+- The template's filters with their stored values, where the `excel:export:strategies` configuration allows changing them — [reads](aim:juicebar.exports#Record:ExportTemplate), [satisfies](aim:juicebar.exports.excel#Requirements[EXCELFILTERS]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- A click outside the dialog does not close it — [satisfies](aim:juicebar.exports.excel#Requirements[EXCELDIALOG])
+
+### Actions
+
+- Download — [exposes](aim:juicebar.exports.excel#Operation:ExportExcel)
+- Cancel — [navigates](aim:juicebar.exports.templates#View:TemplateList)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/export-confirm/excel-confirm/excel-export-confirm.component.ts#ExcelExportConfirmComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/exports/export-template-listing/export-template-listing.component.ts#ExportTemplateListingComponent.openExportConfirmationModal` — as: component
+- binds: `service:exports:filter#getDataSourceFilters` — as: handler
+- provenance: inferred
+
+## Operation: ExportExcel
+
+### Summary
+
+A staff member downloads a template as an Excel spreadsheet.
+
+### Input
+
+```schema
+templateId: string required ref(juicebar.exports#ExportTemplate.id)
+fileName: string
+language: string required
+filters: list(part(juicebar.exports#FilterValue))
+```
+
+### Authz
+
+- `juicebar.exports#Persona:ExportStaff`
+
+### Expects
+
+- The template's data source offers the Excel format.
+
+### Ensures
+
+- Where the dialog shows the filters and they were changed, they are stored on the template first — [invokes](aim:juicebar.exports.excel#Operation:StoreTemplateFilters), [satisfies](aim:juicebar.exports.excel#Requirements[EXCELFILTERS]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- The data source's records for the template's columns, sort and filters, in the given language, are made into a spreadsheet — [invokes](aim:juicebar.exports#Capability:DataSources), [invokes](aim:juicebar.exports#Capability:ExportFormats), [satisfies](aim:juicebar.exports.excel#Requirements[EXCELSHEET]), [satisfies](aim:juicebar.exports#Requirements[DOWNLOAD])
+- The file is saved as `<fileName>.xlsx`, or `<template>_<DD.MM.YYYY>.xlsx` without a name, and the dialog closes with "File exported" — [satisfies](aim:juicebar.exports.excel#Requirements[EXCELDIALOG]), [satisfies](aim:juicebar.exports#Requirements[DOWNLOAD])
+- An error instead of a file, a failed download, or one cancelled after the project's time limit, shows its message and keeps the dialog open — [satisfies](aim:juicebar.exports#Requirements[DOWNLOAD]), [satisfies](aim:juicebar.exports#Requirements[DOWNLOADTIME]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- A format the template's data source does not offer is refused — [satisfies](aim:juicebar.exports#Requirements[FORMATS])
+- Only staff with `admin` reach the download of a SAP template in the admin; the backend asks for `export` alone — [satisfies](aim:juicebar.exports#Requirements[SAPADMIN])
+- The operation is refused without the `export` permission, or for a template the project's backend rules keep from the staff member — [satisfies](aim:juicebar.exports#Requirements[EXPROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.exports#Requirements[TPLSCOPE])
+
+### Returns
+
+- The spreadsheet file.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/export-confirm/excel-confirm/excel-export-confirm.component.ts#ExcelExportConfirmComponent.export` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/exports/exports-shared.ts#isFailedExport` — as: component
+- binds: `service:exports#exportData` — as: handler
+- provenance: inferred
+
+## Operation: StoreTemplateFilters
+
+### Summary
+
+Before an Excel download, the filters a staff member changed in the dialog are stored on the template.
+
+### Input
+
+```schema
+templateId: string required ref(juicebar.exports#ExportTemplate.id)
+filters: list(part(juicebar.exports#FilterValue))
+```
+
+### Authz
+
+- `juicebar.exports#Persona:ExportStaff`
+
+### Expects
+
+- The project allows changing the filters before an Excel download, and the staff member changed them.
+
+### Ensures
+
+- The template's filters are replaced by the given ones its data source declares and that have a value — [invokes](aim:juicebar.exports#Capability:DataSources), [mutates](aim:juicebar.exports#Record:ExportTemplate), [satisfies](aim:juicebar.exports.excel#Requirements[EXCELFILTERS]), [satisfies](aim:juicebar.exports#Requirements[KEEPKNOWN])
+- The operation is refused without the `export` permission, or for a template the project's backend rules keep from the staff member — [satisfies](aim:juicebar.exports#Requirements[EXPROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.exports#Requirements[TPLSCOPE])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/export-confirm/excel-confirm/excel-export-confirm.component.ts#ExcelExportConfirmComponent` — as: component
+- binds: `service:exports:template#editExportTemplateFilters` — as: handler
+- provenance: inferred

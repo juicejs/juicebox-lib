@@ -1,0 +1,174 @@
+---
+aim: juicebar.locations.media
+kind: intent
+parent: juicebar.locations
+provenance: inferred
+---
+
+# Location files
+
+## Summary
+
+A location's files, on two tabs: Media, for its images under the media collection `locations`, and Documents, for its documents under `locations_documents`. Staff upload files, change their details and remove them.
+
+## Requirements
+
+- **LOCFILES** — The Media tab takes PNG, JPG, JPEG and SVG files, under the media types of the `locations` collection. The Documents tab takes DOCX, PDF, XLSX and TXT files, under the media types of the `locations_documents` collection.
+- **DOCKEY** — A file whose media type key is `standard:document` is a document: it is listed on Documents, and every other file on Media.
+- **FILESDONE** — An added image shows "Image was added", an added document "Document was added", and a changed file "Media was updated"; a failure shows the backend's error, or "Saving failed" when it gives none. A removed file leaves the list without a notice.
+
+## Tests
+
+- Uploading a PDF on the Media tab is refused by the file picker.
+- A document uploaded under the media type `standard:document` is listed on Documents and not on Media.
+- A file added by a staff member without the `updated` permission is refused by the backend and not added.
+
+## View: LocationMedia
+
+### Summary
+
+The Media tab of an opened location.
+
+### Display
+
+- The location's files that are not documents, with their title and media type; images and videos previewed, other files downloaded — [reads](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.core#Requirements[MEDIALIST]), [satisfies](aim:juicebar.locations.media#Requirements[DOCKEY])
+- The file picker takes images only — [satisfies](aim:juicebar.locations.media#Requirements[LOCFILES])
+
+### Actions
+
+- Add — [exposes](aim:juicebar.locations.media#Operation:AddLocationFile)
+- Edit — [exposes](aim:juicebar.locations.media#Operation:UpdateLocationFile)
+- Delete — [exposes](aim:juicebar.locations.media#Operation:RemoveLocationFile)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/location-media/location-media.component.ts#LocationMediaComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/shared/components/media/media.component.ts#MediaComponent` — as: component
+- provenance: inferred
+
+## View: LocationDocuments
+
+### Summary
+
+The Documents tab of an opened location.
+
+### Display
+
+- The location's documents, with their title and media type, to download — [reads](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.core#Requirements[MEDIALIST]), [satisfies](aim:juicebar.locations.media#Requirements[DOCKEY])
+- The file picker takes DOCX, PDF, XLSX and TXT files — [satisfies](aim:juicebar.locations.media#Requirements[LOCFILES])
+
+### Actions
+
+- Add — [exposes](aim:juicebar.locations.media#Operation:AddLocationFile)
+- Edit — [exposes](aim:juicebar.locations.media#Operation:UpdateLocationFile)
+- Delete — [exposes](aim:juicebar.locations.media#Operation:RemoveLocationFile)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/location-media/location-media.component.ts#LocationMediaComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/locations/locations.route.ts#buildLocationsRoute` — as: route
+- provenance: inferred
+
+## Operation: AddLocationFile
+
+### Summary
+
+A staff member uploads an image or a document to a location under one of its collection's media types.
+
+### Input
+
+```schema
+locationId: string required ref(juicebar.locations#Location.id)
+document: boolean required
+mediaTypeKey: string required
+file: file required
+```
+
+### Authz
+
+- `juicebar.locations#Persona:LocationEditor`
+- `juicebar.locations#Persona:LocationAdmin`
+- `juicebar.locations#Persona:LocationSuperAdmin`
+
+### Ensures
+
+- The file is kept in the file store under the location, in `locations_documents` for a document and `locations` otherwise, and added to the location's files — [invokes](aim:juicebar#Capability:MediaStorage), [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations.media#Requirements[LOCFILES]), [satisfies](aim:juicebar.core#Requirements[MEDIATYPES]), [satisfies](aim:juicebar.core#Requirements[MEDIASIZE])
+- A notice tells whether it worked — [satisfies](aim:juicebar.locations.media#Requirements[FILESDONE])
+- The operation is refused without the `updated` permission, or for a location of another organisation — [satisfies](aim:juicebar.locations#Requirements[LOCROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.locations#Requirements[LOCORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/location-media/location-media.component.ts#LocationMediaComponent.added` — as: component
+- binds: `service:locations:service#addMedia` — as: handler
+- provenance: inferred
+
+## Operation: UpdateLocationFile
+
+### Summary
+
+A staff member changes a file's details: its name, title, description, alternative text and media type.
+
+### Input
+
+```schema
+locationId: string required ref(juicebar.locations#Location.id)
+mediaId: string required
+key: string
+mediaType: map(string)
+name: map(string)
+title: map(string)
+description: map(string)
+alt_text: map(string)
+```
+
+### Authz
+
+- `juicebar.locations#Persona:LocationEditor`
+- `juicebar.locations#Persona:LocationAdmin`
+- `juicebar.locations#Persona:LocationSuperAdmin`
+
+### Ensures
+
+- The file's details are replaced with the ones given — [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.core#Requirements[MEDIALIST])
+- A notice tells whether it worked — [satisfies](aim:juicebar.locations.media#Requirements[FILESDONE])
+- The operation is refused without the `updated` permission, or for a location of another organisation — [satisfies](aim:juicebar.locations#Requirements[LOCROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.locations#Requirements[LOCORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/location-media/location-media.component.ts#LocationMediaComponent.updated` — as: component
+- binds: `service:locations:service#updateMedia` — as: handler
+- provenance: inferred
+
+## Operation: RemoveLocationFile
+
+### Summary
+
+A staff member removes a file from a location.
+
+### Input
+
+```schema
+locationId: string required ref(juicebar.locations#Location.id)
+mediaId: string required
+```
+
+### Authz
+
+- `juicebar.locations#Persona:LocationEditor`
+- `juicebar.locations#Persona:LocationAdmin`
+- `juicebar.locations#Persona:LocationSuperAdmin`
+
+### Expects
+
+- The staff member confirmed the removal.
+
+### Ensures
+
+- The file is no longer among the location's files — [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.core#Requirements[MEDIALIST]), [satisfies](aim:juicebar.locations.media#Requirements[FILESDONE])
+- The operation is refused without the `updated` permission, or for a location of another organisation — [satisfies](aim:juicebar.locations#Requirements[LOCROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.locations#Requirements[LOCORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/location-media/location-media.component.ts#LocationMediaComponent.removed` — as: component
+- binds: `service:locations:service#removeMedia` — as: handler
+- provenance: inferred

@@ -1,0 +1,111 @@
+---
+aim: juicebar.categories.create
+kind: intent
+parent: juicebar.categories
+provenance: inferred
+---
+
+# Creating a category
+
+## Summary
+
+Staff with the `create` permission create a first-level category on its own page, or a subcategory in a dialog opened from its parent in the tree. Both take a name, a description, an order, the active switch and, where `showPublic` is set, the public switch, in the admin's language.
+
+## Requirements
+
+- **NEWDEFAULTS** — On the create page a new category is active and not public, and its order is empty. In the subcategory dialog its order is the parent's last place, shown counted from 1 and not editable; the active switch follows CATACTIVE.
+- **NEWDONE** — A created first-level category shows "Category created" and returns to the tree; a failure shows "Category creation failed". A created subcategory shows "Subcategory created" and appears under its parent, which is opened; a failure shows the backend's error.
+- **NEWLEAVE** — Leaving the create page with unsaved changes asks before the changes are lost.
+- **NEWDIALOG** — The subcategory dialog closes only with Add or Cancel; a click outside it leaves it open.
+- **NEWEMPTY** — A description left empty is stored as an empty text in that language.
+
+## Tests
+
+- Saving the create page without a name shows "You must include a name" and creates nothing.
+- Adding a subcategory to a category with three subcategories shows the order 4 and stores the order 3.
+- A new subcategory is inactive unless switched on, without the `subcategoriesActive` option.
+
+## View: CreateCategoryPage
+
+### Summary
+
+The page for a new first-level category.
+
+### Display
+
+- Name (required), description, order, the active switch and, where `showPublic` is set, the public switch — [satisfies](aim:juicebar.categories.create#Requirements[NEWDEFAULTS]), [satisfies](aim:juicebar.categories#Requirements[CATPUBLIC]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- Asks before unsaved changes are left — [satisfies](aim:juicebar.categories.create#Requirements[NEWLEAVE])
+
+### Actions
+
+- Save — [exposes](aim:juicebar.categories.create#Operation:CreateCategory)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/categories/wizard/category-wizard.component.ts#CategoryWizardComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/categories/category-fields/category-fields.component.ts#CategoryFieldsComponent` — as: component
+- provenance: inferred
+
+## View: AddSubcategory
+
+### Summary
+
+A dialog that adds a subcategory under the category it was opened from.
+
+### Display
+
+- Name (required), description, the order (the parent's last place, not editable), the active switch and, where `showPublic` is set, the public switch — [satisfies](aim:juicebar.categories.create#Requirements[NEWDEFAULTS]), [satisfies](aim:juicebar.categories#Requirements[CATACTIVE])
+- A click outside the dialog does not close it — [satisfies](aim:juicebar.categories.create#Requirements[NEWDIALOG])
+
+### Actions
+
+- Add — [exposes](aim:juicebar.categories.create#Operation:CreateCategory)
+- Cancel — [navigates](aim:juicebar.categories.tree#View:CategoryTree)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/categories/child-category-dialog/child-category-dialog.component.ts#ChildCategoryDialogComponent` — as: component
+- provenance: inferred
+
+## Operation: CreateCategory
+
+### Summary
+
+A staff member creates a category in the admin's language: a first-level category, or a subcategory of a given parent.
+
+### Input
+
+```schema
+name: string required
+description: string
+order: integer
+active: boolean
+public: boolean
+parent_id: string ref(juicebar.categories#Category.id)
+language: string required
+```
+
+### Authz
+
+- `juicebar.categories#Persona:CategoryEditor`
+- `juicebar.categories#Persona:CategorySuperAdmin`
+
+### Ensures
+
+- A category exists with the name and description in the given language, the order (or none when it is not a number), the active switch and the parent — [mutates](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.categories#Requirements[CATNAME]), [satisfies](aim:juicebar.categories#Requirements[CATORDER]), [satisfies](aim:juicebar.categories.create#Requirements[NEWEMPTY]), [satisfies](aim:juicebar#Requirements[LANG])
+- It has a unique slug made from the name in that language — [mutates](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.categories#Requirements[CATSLUG])
+- It belongs to the staff member's organisation — [mutates](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.categories#Requirements[CATORG])
+- Where `showPublic` is set, it is public as given — [mutates](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.categories#Requirements[CATPUBLIC]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- A notice tells whether it worked — [satisfies](aim:juicebar.categories.create#Requirements[NEWDONE])
+- The operation is refused without the `create` permission — [satisfies](aim:juicebar.categories#Requirements[CATROLE]), [satisfies](aim:juicebar#Requirements[ROLES])
+
+### Returns
+
+- The new category's id.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/categories/wizard/category-wizard.component.ts#CategoryWizardComponent.create` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/categories/child-category-dialog/child-category-dialog.component.ts#ChildCategoryDialogComponent.create` — as: component
+- binds: `service:juicecommerce:categories#createCategory` — as: handler
+- provenance: inferred

@@ -1,0 +1,95 @@
+---
+aim: juicebar.exports.filters
+kind: intent
+parent: juicebar.exports
+provenance: inferred
+---
+
+# Template filters
+
+## Summary
+
+The filters a template's data source declares, as the template editor shows them and, where the project allows it, the Excel download: one control per filter by its type, with its rules and its stored value. Some filters search their options on the backend, and a project may hide a filter from some staff.
+
+## Requirements
+
+- **FILTERTYPES** — Each of the data source's filters is shown by its type: a text, a number, a date (typed as DD.MM.YYYY or picked from a calendar), a single choice that can be cleared, a multiple choice, or a multiple choice whose options are searched on the backend. Its label is in the admin's language, with a * where the filter is required. A data source without filters shows "No filters available".
+- **FILTERRULES** — A filter's rules come from its data source, by the names of the admin's form rules (such as `required`, or `maxLength` with its argument); a rule the admin does not know is left out. Once a filter was touched, the messages of its broken rules, in the admin's language, show under it.
+- **FILTERDATE** — A date filter's value is kept as `{year, month, day}`.
+- **FILTERSEARCH** — A searched filter loads its first options when it is shown, with the labels of the values already chosen, then the options matching what is typed, half a second after typing pauses, 20 at a time. The search sends the values of all the filters, so one filter's options can depend on another's. Clicking an option chooses it, or unchooses it when it is already chosen; a chosen option keeps its label, and Backspace in an empty search removes the last one. Leaving the field clears the search and its options. A failed search shows "Error".
+- **FILTERHIDE** — Where the project sets the `hiddenFilters` option, a filter is hidden from staff with the permission given for it, unless they also have its `unless` permission (Quality Circle hides `show_modules` from staff with `modules:role#mine-only` who are not `modules:role#super-admin`). A hidden filter keeps its value.
+- **BOOKINGCATS** — Where the backend configuration has the `amgshop` entry (AMG), the options of the filter `category` are the booking categories (the booking service's `getExportCategories`).
+
+## Tests
+
+- A required date filter left empty shows its rule's message once touched, and the template can't be stored.
+- Typing "Mü" in a searched filter lists, half a second later, the options its search finds for "Mü".
+- With `hiddenFilters` hiding `show_modules` from mine-only staff, such a staff member does not see the filter, and saving the template keeps its stored value.
+- A date picked as 3 March 2026 is stored as `{year: 2026, month: 3, day: 3}`.
+
+## View: FilterControls
+
+### Summary
+
+A template's filters, in the template editor and in the Excel download dialog.
+
+### Display
+
+- One control per filter, by its type, with its label, its * where it is required, and its stored value — [reads](aim:juicebar.exports#Record:ExportTemplate), [satisfies](aim:juicebar.exports.filters#Requirements[FILTERTYPES]), [satisfies](aim:juicebar.exports.filters#Requirements[FILTERDATE])
+- The messages of a touched filter's broken rules — [satisfies](aim:juicebar.exports.filters#Requirements[FILTERRULES])
+- The searched filters, with their options — [satisfies](aim:juicebar.exports.filters#Requirements[FILTERSEARCH])
+- No control for a filter the project hides from the staff member — [satisfies](aim:juicebar.exports.filters#Requirements[FILTERHIDE]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- The booking categories as the options of the filter `category`, where the `amgshop` configuration is present — [satisfies](aim:juicebar.exports.filters#Requirements[BOOKINGCATS]), [satisfies](aim:juicebar#Requirements[CONFIG])
+
+### Actions
+
+- Search a filter's options — [exposes](aim:juicebar.exports.filters#Operation:SearchFilterOptions)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/components/export-filters/export-filters.component.ts#ExportFiltersComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/exports/components/export-filters/export-filter-values.ts#exportFilterValues` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/exports/pipes/filter-label.pipe.ts#FilterLabelPipe` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/exports/exports-shared.ts#hiddenFilterIds` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/exports/export-template-editor/export-template-editor.component.ts#ExportTemplateEditorComponent` — as: component
+- binds: `service:booking-service#getExportCategories` — as: handler
+- provenance: inferred
+
+## Operation: SearchFilterOptions
+
+### Summary
+
+The admin asks for a searched filter's options: the first ones when the filter is shown, then the ones matching what is typed.
+
+### Input
+
+```schema
+filterId: string required
+data_source_key: string required
+filterValues: list(part(juicebar.exports#FilterValue))
+term: string
+page: integer
+pageSize: integer
+language: string required
+initial: boolean
+```
+
+### Authz
+
+- `juicebar.exports#Persona:ExportStaff`
+
+### Ensures
+
+- The options come from the option search registered for the filter, given the values of all the filters, the typed text, the staff member and the organisation they are signed in to — [invokes](aim:juicebar.exports#Capability:FilterOptions), [satisfies](aim:juicebar.exports.filters#Requirements[FILTERSEARCH])
+- A filter the data source does not declare, or one whose option search is not registered, is refused — [satisfies](aim:juicebar.exports#Requirements[SOURCES])
+- The operation is refused without the exports role — [satisfies](aim:juicebar.exports#Requirements[EXPROLE]), [satisfies](aim:juicebar#Requirements[ROLES])
+
+### Returns
+
+- The options, each with an id and a label.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/components/async-multiselect/async-multiselect.component.ts#AsyncMultiselectComponent` — as: component
+- binds: `service:exports:filter#getAsyncFilterItems` — as: handler
+- provenance: inferred

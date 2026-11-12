@@ -1,0 +1,449 @@
+---
+aim: juicebar.communications
+kind: intent
+parent: juicebar
+approved_by: Mario
+approved_at: 2026-11-11
+---
+
+# Communications
+
+## Summary
+
+The messages a project sends to its customers: e-mails, push notifications and SMS. Staff with the communications role send a message at once from the quick send tool, keep contents (a named subject and text with placeholders), set up automations — a communication with a channel, a content and its recipients that runs by hand, at scheduled times or whenever a system event happens — and see the history of the runs.
+
+The channels, the recipient providers and the events are registered on the backend by its modules and the project, and the module offers what is registered. The parts only some projects use are switched by the backend configuration: the quick send's tabs (`communications:tabs`), content tags (AMG: the `amgshop` entry) and searching customers by full name (the `communications` configuration's `amg_communications` option).
+
+## Requirements
+
+- **COMMROLE** — The module needs `communication:role`, whose permissions are `create`, `updated`, `delete`, `send`, `contents`, `automation` and `history`. The tabs Send, Contents, Automation and History show only with the permission of the same name, and the module opens on Send; a tab opened without its permission moves to the first of Contents, Automation, Send and History the staff member has. Opening a content or an automation needs `updated`; `create` and `delete` are checked nowhere. On the backend the role is needed by the operations that say so, and `send` only for previewing recipients and reading a provider's selection types — from [juicebar#Requirements[ROLES]]
+- **SESSIONONLY** — The backend asks only for a signed-in staff member, without the role, to read the events and the channels, to create and read an automation, to read a run's progress, and to list, search, read, create, change and delete contents; also to switch a content on or off and to list an automation's tasks, which the admin does not do. Staff without the role or the tab's permission are kept from these only by the admin hiding the tabs.
+- **COMMORG** — An automation and a content belong to the organisation the staff member was signed in to when creating them. The automation and content lists show that organisation's, and every organisation's to a super admin of communications (`communication:role#super-admin`); an automation's content choice offers only the organisation's own, and the tag filter the tags of every organisation's contents. An automation or a content reached by its id is read, changed, run and deleted whichever organisation it belongs to.
+- **CHANNELS** — A channel is an entry of the `communications:channel` configuration with a key, a name and the kind of delivery it uses: e-mail (`email-communication-channel`), push notification (`push-communication-channel`) or SMS (`sms-communication-channel`). An e-mail goes through the channel's mailing provider, or the one the message's data names; a push notification goes, as text without HTML, to the app of the customer or user whose wallet has the address, and fails where that app is not registered; an SMS goes to a phone number.
+- **PROVIDERS** — A recipient is a recipient provider with its parameters. The providers are registered on the backend (`communications:recipients`); each has a key and a name, delivers through some kinds of channel and takes its parameters in one or more selection types. At a run the provider turns the parameters into addresses, looking only among the customers of the communication's organisation where it looks customers up, and gives the data the placeholders are filled from.
+- **RUN** — A run sends a communication's content to its recipients through its channel; an inactive communication does not run. For each address the subject and the text have their placeholders (`{{…}}`) filled from the provider's data, the event's data and the communication's own, the later winning, and are delivered; each delivery's result is kept. The run's progress is the share of addresses done. Each run leaves a history entry with the staff member who started it (none for an event or a scheduled time), the organisation, the recipients, the channel, the subject, the text and the event, marked done, or failed with the error. A failed delivery announces `email_send_failed`. A stored communication counts its runs.
+- **EVENTRUN** — When a system event happens that an event of the `communications` configuration names, every automation with that event runs: those of the event's organisation where the event names one, else those of every organisation.
+
+## Tests
+
+- A staff member whose role lacks `history` sees no History tab.
+- A staff member without `communication:role` cannot list the automations on the backend, but can read a content by its id.
+- An automation switched off does not run when its event happens.
+- A run of an automation with two addresses adds one history entry and raises the automation's count by one.
+- A content "Hello {{entity.firstname}}" sent from a customer list to Anna reads "Hello Anna".
+
+## Dependencies
+
+### Requires
+
+- MessageDelivery as Channels
+- RecipientProviders as Providers
+- CustomerDirectory as Customers
+- FormCustomers as Forms
+
+## Persona: CommunicationStaff
+
+### Summary
+
+A staff member whose role has the communications role, `communication:role`.
+
+### Role
+
+- Sends the organisation's messages and keeps its contents and automations — [plays](aim:juicebar.core#Persona:Staff)
+
+### Access
+
+- The communications module — [accesses](aim:juicebar.communications)
+
+## Persona: CommunicationSuperAdmin
+
+### Summary
+
+A staff member whose role has `communication:role#super-admin`: the automation and content lists show every organisation's.
+
+### Role
+
+- Keeps the communications of every organisation — [plays](aim:juicebar.core#Persona:Staff)
+
+### Access
+
+- The communications module — [accesses](aim:juicebar.communications)
+
+## View: CommunicationsPage
+
+### Summary
+
+The page of the module: its tabs over the open tab.
+
+### Display
+
+- The tabs Send, Contents, Automation and History, each only with its permission; the module opens on Send, and a tab opened without its permission moves to one the staff member has — [satisfies](aim:juicebar.communications#Requirements[COMMROLE])
+- Every label on the module's screens comes from the communications label dictionary, in the admin's language, with every language's texts the old admin had — [satisfies](aim:juicebar#Requirements[UILABELS])
+
+### Actions
+
+- Send — [navigates](aim:juicebar.communications.send#View:QuickSend)
+- Contents — [navigates](aim:juicebar.communications.contents#View:ContentList)
+- Automation — [navigates](aim:juicebar.communications.automation#View:AutomationList)
+- History — [navigates](aim:juicebar.communications.history#View:History)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/communications.component.ts#CommunicationsComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/communications.route.ts#buildCommunicationsRoute` — as: route
+- binds: `projects/juicebar/src/lib/core/shared/guards/tab-permission.guard.ts#tabPermissionGuard` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/i18n/communications_dictionary.ts#communicationsDictionary` — as: component
+- binds: `service:juicebox:configuration:service#getByKey` — as: handler
+- provenance: inferred
+
+## Operation: RunCommunication
+
+### Summary
+
+The backend runs a communication: a quick send, an automation run by hand or at a scheduled time, or the automations of a system event that happened.
+
+### Input
+
+```schema
+communicationId: string ref(juicebar.communications#Communication.id)
+channel: string required
+recipients: list(part(juicebar.communications#Recipient))
+subject: string
+template: string
+active: boolean required
+organisationId: string ref(juicebar.core#Organisation.id)
+userId: string
+event: string
+```
+
+### Ensures
+
+- An inactive communication is not run; otherwise a task carries out the run and keeps its progress — [mutates](aim:juicebar.communications#Record:TaskQueue), [satisfies](aim:juicebar.communications#Requirements[RUN])
+- Each recipient's provider gives its addresses and the data for the placeholders, among the organisation's customers — [invokes](aim:juicebar.communications#Capability:RecipientProviders), [satisfies](aim:juicebar.communications#Requirements[PROVIDERS])
+- Each address gets the subject and text with their placeholders filled, through the channel, and the result is kept — [invokes](aim:juicebar.communications#Capability:MessageDelivery), [mutates](aim:juicebar.communications#Record:DeliveryResult), [satisfies](aim:juicebar.communications#Requirements[RUN]), [satisfies](aim:juicebar.communications#Requirements[CHANNELS])
+- A history entry records the run and whether it was done or failed — [mutates](aim:juicebar.communications#Record:HistoryEntry), [satisfies](aim:juicebar.communications#Requirements[RUN])
+- A failed delivery, or a failed run started by an event, is announced unless that event was itself a failed delivery — [emits](aim:juicebar.communications#Event:EmailSendFailed), [satisfies](aim:juicebar.communications#Requirements[RUN])
+- A stored communication's count goes up by one — [mutates](aim:juicebar.communications#Record:Communication), [satisfies](aim:juicebar.communications#Requirements[RUN])
+- The automations whose event names a system event that happened run with that event's data — [reads](aim:juicebar.communications#Record:Communication), [satisfies](aim:juicebar.communications#Requirements[EVENTRUN])
+
+### Returns
+
+- The id of the task that carries out the run.
+
+### Bindings
+
+- binds: `juice-modules:packages/juice/src/modules/communications/components/SendingCommunicationProcess.ts#SendingCommunicationProcess` — as: handler
+- binds: `juice-modules:packages/juice/src/modules/communications/modules/Communications.ts#Communications.processCommunicationEvent` — as: handler
+- provenance: inferred
+
+## Event: EmailSendFailed
+
+### Summary
+
+A delivery of a run failed, or a run started by an event failed, with the data the message was filled from and the reason, "Sending mail failed." followed by the error.
+
+### Payload
+
+```schema
+failMessage: string required
+```
+
+### Routing
+
+- Channel: email_send_failed
+
+### Bindings
+
+- binds: `juice-modules:packages/juice/src/modules/communications/components/SendingCommunicationProcess.ts#SendingCommunicationProcess` — as: topic
+- provenance: inferred
+
+## Record: Communication
+
+### Summary
+
+One automation: a communication kept to run again.
+
+### Schema
+
+```schema
+id: string required unique
+name: string
+key: string
+active: boolean
+event: string
+channel: string
+content: string
+subject: string
+recipients: list(part(juicebar.communications#Recipient))
+count: integer
+scheduledTimestamps: list(part(juicebar.communications#ScheduledTime))
+organisation_id: string ref(juicebar.core#Organisation.id)
+```
+
+### Constraints
+
+- `event` is the key of an event of the `communications` configuration, and `channel` the key of a channel.
+- `content` holds a content's id; nothing stops that content being deleted. A communication another module makes for itself may hold its text there instead, with its subject in `subject` and a `key` naming it.
+- `active` is on from the start for the events Manual communication and Scheduled communications, and off for any other event or none.
+- `count` is the number of times it ran.
+
+### Bindings
+
+- binds: `juice-modules:packages/juice/src/modules/communications/models/Communication.ts#Communication` — as: model
+- provenance: inferred
+
+## Record: Recipient
+
+### Summary
+
+One recipient of a communication: a recipient provider with its parameters.
+
+### Schema
+
+```schema
+id: string
+ref: string required
+params: string
+inputType: enum(customer_list, customer_group, event_params, attributes_filter, form_customers, firebase_customer_list)
+parameter: enum(email, wallet, phone)
+customerIDs: list(string)
+```
+
+### Constraints
+
+- `ref` is a provider's key and `params` the text its selection type (`inputType`) builds. A quick send's recipient holds `ref` and `params` alone.
+- `customerIDs` holds the ids of the customers chosen in a customer list or form customers. Customers are not modelled, so they name no Record.
+
+### Bindings
+
+- binds: `juice-modules:packages/juice/src/modules/communications/types/CommunicationProcessParameters.ts#CommunicationRecipient` — as: model
+- provenance: inferred
+
+## Record: ScheduledTime
+
+### Summary
+
+A time an automation was scheduled to run at.
+
+### Schema
+
+```schema
+ref: string required
+time: datetime required
+status: enum(pending, started, failed, cancelled, done) required
+q: string
+```
+
+### Constraints
+
+- `q` is the task of the run once the time started it. The pending times are also kept apart, in the `communications` configuration's `schedule`; cancelling a time takes it off there and leaves its status here as it was.
+
+### Bindings
+
+- binds: `juice-modules:packages/juice/src/modules/communications/models/Communication.ts#Communication` — as: model
+- provenance: inferred
+
+## Record: Content
+
+### Summary
+
+A content: a named subject and text that automations send.
+
+### Schema
+
+```schema
+id: string required unique
+name: string
+type: string
+subject: string
+template: string
+tag: string
+key: string
+organisation_id: string ref(juicebar.core#Organisation.id)
+```
+
+### Constraints
+
+- The module's contents have a type beginning with `communications`; those it creates are `communications:default`.
+- `template` is the text, HTML with placeholders. `tag` is AMG's. `key` names a content another module made for itself.
+
+### Immutable
+
+- `organisation_id`
+
+### Bindings
+
+- binds: `juice-modules:packages/juice/src/modules/communications/models/Content.ts#Content` — as: model
+- provenance: inferred
+
+## Record: HistoryEntry
+
+### Summary
+
+The record of one run.
+
+### Schema
+
+```schema
+id: string required unique
+communication_id: string
+date: datetime required
+user_id: string
+organisation_id: string ref(juicebar.core#Organisation.id)
+channel: string
+subject: string
+template: string
+recipients: list(part(juicebar.communications#Recipient))
+event: string
+started: boolean
+done: boolean
+failed: boolean
+error: string
+```
+
+### Constraints
+
+- `communication_id` is the automation's id, none for a quick send; the automation may since have been deleted. `user_id` is the staff member's user id; users are not modelled, so it names no Record.
+- `event` holds the system event that started the run, with its name and data.
+
+### Bindings
+
+- binds: `juice-modules:packages/juice/src/modules/communications/models/CommunicationHistory.ts#CommunicationHistory` — as: model
+- provenance: inferred
+
+## Record: TaskQueue
+
+### Summary
+
+The backend's task that carries out one run, with its progress.
+
+### Schema
+
+```schema
+id: string required unique
+progress: integer min(0) max(100)
+done: boolean
+failed: boolean
+communicationId: string
+```
+
+### Bindings
+
+- binds: `juice-modules:packages/juice/src/modules/tasking/models/Queue.ts#Queue` — as: model
+- provenance: inferred
+
+## Record: DeliveryResult
+
+### Summary
+
+What the channel answered for one address of a run.
+
+### Schema
+
+```schema
+history_id: string required ref(juicebar.communications#HistoryEntry.id)
+recipient: string required
+subject: string
+result: string
+timestamp: datetime required
+```
+
+### Bindings
+
+- binds: `juice-modules:packages/juice/src/modules/communications/models/CommunicationResult.ts#CommunicationResult` — as: model
+- provenance: inferred
+
+## Capability: MessageDelivery
+
+### Summary
+
+The channels configured on the backend, and delivering one message to one address through one of them: by e-mail, push notification or SMS. The e-mail kind is the communications module's own; the others are registered by other modules and the project.
+
+### Operations
+
+- `Channels(name, kind) -> channels`
+- `Deliver(channel, address, subject, text, attachments) -> result`
+
+### Bindings
+
+- binds: `service:communication-service#searchChannel` — as: Channels
+- binds: `juice-modules:packages/juice/src/modules/communications/channels/EmailCommunictionChannel.ts#EmailCommunictionChannel.send` — as: Deliver
+- binds: `juice-modules:packages/juice/src/modules/communications/channels/PushCommunicationChannel.ts#PushCommunicationChannel.send` — as: Deliver
+- binds: `juice-modules:packages/juice/src/modules/communications/channels/SMSCommunicationChannel.ts#SMSCommunicationChannel.send` — as: Deliver
+- provenance: inferred
+
+## Capability: RecipientProviders
+
+### Summary
+
+The recipient providers registered on the backend under `communications:recipients`: the ones that deliver through a kind of channel, the selection types a provider takes, the customers its parameters reach, and, at a run, the addresses and the placeholder data.
+
+### Operations
+
+- `Providers(kind) -> providers`
+- `SelectionTypes(provider) -> selectionTypes`
+- `Customers(provider, params, organisation) -> customerIds`
+- `Addresses(provider, params, event, organisation) -> addresses`
+- `Payload(provider, address, organisation) -> data`
+
+### Bindings
+
+- binds: `service:communication-service#searchRecipients` — as: Providers
+- binds: `service:communication-service#getReceiverSupportedSelectionTypes` — as: SelectionTypes
+- binds: `service:communication-service#prerenderRecipients` — as: Customers
+- binds: `juice-modules:packages/juice/src/modules/communications/ICommunicationRecipientProvider.ts#ICommunicationRecipientProvider.getRecipients` — as: Addresses
+- binds: `juice-modules:packages/juice/src/modules/communications/ICommunicationRecipientProvider.ts#ICommunicationRecipientProvider.getPayload` — as: Payload
+- provenance: inferred
+
+## Capability: CustomerDirectory
+
+### Summary
+
+The customers the entities module keeps: searching them, fetching them by id, their groups, the customer attributes the `juicecommerce:entity:attribute` configurations declare, and an attribute's distinct values among the organisation's customers. The entities service answers it and asks for `entities:role`.
+
+### Operations
+
+- `Customers(search, filter, page, pageSize) -> customers`
+- `CustomersById(ids, page, pageSize) -> customers`
+- `Groups(name, pageSize) -> groups`
+- `Attributes() -> attributes`
+- `AttributeValues(attribute) -> values`
+
+### Bindings
+
+- binds: `service:entities#fetchEntities` — as: Customers
+- binds: `service:entities#fetchEntities` — as: CustomersById
+- binds: `service:entities#fetchEntityGroups` — as: Groups
+- binds: `service:juicebox:configuration:service#getBySchema` — as: Attributes
+- binds: `service:entities#searchAttributeValues` — as: AttributeValues
+- provenance: inferred
+
+## Capability: FormCustomers
+
+### Summary
+
+The forms of the forms module and the customers who filled one in, answered by its backend services `ticketing:forms` and `forms:entities`, which ask for `forms:role`.
+
+### Operations
+
+- `Forms(page, pageSize) -> forms`
+- `SearchForms(page, pageSize) -> forms`
+- `Form(form) -> form`
+- `Customers(form, search, page, pageSize) -> customers`
+
+### Bindings
+
+- binds: `service:ticketing:forms#fetch` — as: Forms
+- binds: `service:ticketing:forms#search` — as: SearchForms
+- binds: `service:ticketing:forms#getForm` — as: Form
+- binds: `service:forms:entities#fetch` — as: Customers
+- provenance: inferred
+
+## Children
+
+- [send](./send/juicebar.communications.send.aim) — the quick send tool: a message sent at once by e-mail or push notification
+- [recipients](./recipients/juicebar.communications.recipients.aim) — choosing recipients by selection type, and an automation's recipients
+- [contents](./contents/juicebar.communications.contents.aim) — the contents, creating them and changing their text with placeholders
+- [automation](./automation/juicebar.communications.automation.aim) — the automations: listing, creating, switching on and off, running and changing them
+- [schedule](./schedule/juicebar.communications.schedule.aim) — scheduling an automation's runs, and the backend running them on time
+- [history](./history/juicebar.communications.history.aim) — the runs of the organisation's communications

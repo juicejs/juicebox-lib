@@ -1,0 +1,147 @@
+---
+aim: juicebar.categories
+kind: intent
+parent: juicebar
+provenance: inferred
+---
+
+# Categories
+
+## Summary
+
+The tree of categories that articles and other records are filed under. A category has a name and a description in each language, an order among its siblings and an active switch, and it belongs to the organisation of the staff member who created it. Staff with the categories role see the tree, create first-level categories and subcategories, change a category's details and files, see the articles filed under it, and delete it.
+
+Quality Circle's parts are switched by the backend configuration and the options: public categories that other organisations see, taking another organisation's category into one's own ("Mine"), showing the inactive categories, and a warning before a category in use is switched off.
+
+## Requirements
+
+- **CATROLE** — The module needs `categories:role`. Creating a category needs its `create` permission; changing a category, its files or the order of its siblings needs `update`; deleting needs `delete`. The backend refuses each operation without its permission — from [juicebar#Requirements[ROLES]]
+- **CATORG** — A category belongs to the organisation the staff member who created it was signed in to. Staff see the first-level categories of their own organisation and those without one, with everything below them, and change or delete only those; a super admin of categories (`categories:role#super-admin`) reaches every organisation's. A project may replace this rule on the backend (the categories service's `accessStrategy` option).
+- **CATNAME** — A category needs a name; its description is optional. Both are kept per language, and the name is stored without leading or trailing spaces — from [juicebar#Requirements[LANG]]
+- **CATSLUG** — A category gets a web address (slug) made from its name in the language it is created in, unique among the categories. Renaming it in a language gives it a new slug in that language.
+- **CATORDER** — Siblings are shown in their order, the ones without an order last; when none has one they stay in the order the backend gives. An order that is not a number is not stored.
+- **CATACTIVE** — A category is active or inactive. A new first-level category is active unless switched off. A new subcategory is inactive unless switched on, or active unless switched off where the project sets the `subcategoriesActive` option.
+- **NOCATEGORY** — The category of type `no_category` stands for "no category" and cannot be changed.
+- **CATPUBLIC** — Where the backend configuration of `juicecommerce:categories` sets `showPublic`, a category can be public: shown to the other organisations. Without it the public switch is neither shown nor sent.
+- **ORGTREE** — Where `showPublic` is set, the organisations related to the staff member's own (its organisation tree, four levels deep) count as theirs: a category of an organisation outside the tree can't be changed, gets no subcategories and has its files locked, except for a super admin of categories.
+
+## Tests
+
+- A staff member without `categories:role` cannot read the tree from the backend.
+- A category created without a name is refused.
+- Creating "Rope" and then another "Rope" gives them two different slugs.
+- A staff member of organisation A cannot change a first-level category of organisation B.
+- Without `showPublic` in the backend configuration, no public switch appears anywhere in the module.
+
+## Dependencies
+
+### Requires
+
+- CategoryUsage as Usage
+- OrganisationTree as RelatedOrganisations
+
+## Persona: CategoryEditor
+
+### Summary
+
+A staff member whose role has the categories role.
+
+### Role
+
+- Keeps the organisation's categories — [plays](aim:juicebar.core#Persona:Staff)
+
+### Access
+
+- The categories module — [accesses](aim:juicebar.categories)
+
+## Persona: CategorySuperAdmin
+
+### Summary
+
+A staff member whose role has `categories:role#super-admin`: they reach the categories of every organisation.
+
+### Role
+
+- Keeps the categories of every organisation — [plays](aim:juicebar.core#Persona:Staff)
+
+### Access
+
+- The categories module — [accesses](aim:juicebar.categories)
+
+## Record: Category
+
+### Summary
+
+One category in the tree.
+
+### Schema
+
+```schema
+id: string required unique
+name: map(string) required
+description: map(string)
+slug: map(string)
+order: integer
+active: boolean
+public: boolean
+type: string
+parent_id: string ref(juicebar.categories#Category.id)
+organisation_id: string ref(juicebar.core#Organisation.id)
+custom_category_organisation_ids: list(juicebar.core#Organisation)
+media: list(part(juicebar.core#Media))
+```
+
+### Constraints
+
+- `name`, `description` and `slug` hold one text per language code, such as `en_GB` or `de_DE`.
+- A category without `parent_id` is a first-level category.
+- `custom_category_organisation_ids` lists the organisations that took the category into their "Mine"; an organisation appears there at most once.
+
+### Immutable
+
+- `organisation_id`
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/categories/categories.types.ts#Category` — as: model
+- provenance: inferred
+
+## Capability: CategoryUsage
+
+### Summary
+
+Counts, per feature, the records that still use a category: qualifications, modules, trainings, educations, training templates, occupations and functions. Quality Circle's backend answers it.
+
+### Operations
+
+- `CountUsage(category) -> counts`
+
+### Bindings
+
+- binds: `service:category:usage:service#countUsage` — as: CountUsage
+- provenance: inferred
+
+## Capability: OrganisationTree
+
+### Summary
+
+The organisations related to the staff member's own, up to a given depth.
+
+### Operations
+
+- `RelatedOrganisations(maxDepth) -> organisations`
+
+### Bindings
+
+- binds: `service:organisation:service#fetchAllRelatedOrgs` — as: RelatedOrganisations
+- binds: `projects/juicebar/src/lib/core/modules/categories/categories-shared.ts#loadRelatedOrganisations` — as: component
+- provenance: inferred
+
+## Children
+
+- [tree](./tree/juicebar.categories.tree.aim) — the tree of categories, with the way to open, add under and delete a category
+- [create](./create/juicebar.categories.create.aim) — creating a first-level category or a subcategory
+- [details](./details/juicebar.categories.details.aim) — a category's details and changing them
+- [media](./media/juicebar.categories.media.aim) — the files of a category
+- [articles](./articles/juicebar.categories.articles.aim) — the articles filed under a subcategory
+- [mine](./mine/juicebar.categories.mine.aim) — taking another organisation's category into one's own, and removing it again

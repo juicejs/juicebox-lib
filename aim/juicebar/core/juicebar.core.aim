@@ -1,0 +1,74 @@
+---
+aim: juicebar.core
+kind: intent
+parent: juicebar
+provenance: inferred
+---
+
+# Shared
+
+## Summary
+
+What the modules share: the staff member who uses the admin, the organisation they work for, and the files attached to records. A staff member works for one organisation at a time, the one they signed in to, and records a module creates belong to that organisation. The file store that keeps the files is required by the admin itself (`juicebar`).
+
+## Requirements
+
+- **MEDIATYPES** — A file is uploaded under one of the media types the `media` configuration offers for the record's collection, and the type sets its key and its kind of file. A record whose collection has no media types offers none to choose.
+- **MEDIASIZE** — A file larger than its media type's limit is refused; without a limit on the type, the media service's default of 9,437,000 bytes applies.
+- **MEDIALIST** — A record's files are listed with their title and media type. Images and videos can be previewed and other files downloaded. A file's name, title, description, alternative text and media type can be edited, and removing a file asks for confirmation first.
+
+## Tests
+
+- Uploading an 11 MB image under a media type without its own limit is refused.
+- Removing a file asks "Delete media" with the file's title before it is taken off the record.
+
+## Persona: Staff
+
+### Summary
+
+A person with an account in the admin.
+
+### Role
+
+- Signs in to the admin for one of their organisations; what they may do there depends on the roles given to them
+
+## Record: Organisation
+
+### Summary
+
+An organisation of the project: a company or a part of one, whose staff use the admin and whose records it keeps.
+
+### Schema
+
+```schema
+id: string required unique
+name: string
+```
+
+## Record: Media
+
+### Summary
+
+One file on a record (an image, a document or a video), as the media service stored it, with the details staff gave it. Texts are kept per language.
+
+### Schema
+
+```schema
+id: string required
+fileName: string required
+mimeType: string required
+fullPath: string required
+thumbPath: string
+key: string
+type: string
+mediaType: map(string)
+name: map(string)
+title: map(string)
+description: map(string)
+alt_text: map(string)
+```
+
+### Constraints
+
+- `key` is the media type's key and `type` the kind of file within it; `mediaType` is the media type's title.
+- Some older records keep a text detail as one text instead of one per language.

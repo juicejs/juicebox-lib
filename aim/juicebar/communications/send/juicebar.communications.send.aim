@@ -1,0 +1,146 @@
+---
+aim: juicebar.communications.send
+kind: intent
+parent: juicebar.communications
+approved_by: Mario
+approved_at: 2026-11-11
+---
+
+# Quick send
+
+## Summary
+
+The Send tab: a message sent at once, by e-mail or push notification, to one recipient — a provider with its parameters — without keeping it as an automation. Staff choose the channel and the recipient, preview the customers it reaches, write the subject and the text, and follow the run's progress.
+
+## Requirements
+
+- **SENDTABS** — The tool has the tabs Email and Push, Email first and open. Email is shown unless the `communications:tabs` configuration lists its tabs without `email`; Push only where a channel of the push kind exists and that configuration is absent or lists `push`.
+- **SENDCHANNEL** — Each tab offers the channels of its kind, each by its name through the label dictionary, without its first "@"; when there is only one it is chosen. Nothing is sent without a channel.
+- **SENDRECIPIENT** — The recipients provider is chosen among the providers that deliver through the chosen channel's kind, and the selection type among those the provider takes; the first one it names other than Event parameters is preselected, or else the first. The selection type's form gives the parameters, and each change of them makes the recipient anew. Choosing another provider empties the preview but keeps the recipient made before until the new form gives parameters.
+- **PREVIEW** — Each new recipient is worked out on the backend into the customers it reaches, each e-mail address once. "Preview customers" shows their number and is disabled while there are none; it opens "Customers — Preview" with their first name, last name and e-mail, 10 to a page, closed with Close.
+- **SENDFORM** — Subject and Content are required; the content is rich text. Send is enabled once both are filled, a recipient is made and no send is running.
+- **SENDDONE** — A send runs the message for the staff member's organisation, started by them. A progress bar follows the run every 2.5 seconds; when it ends, done or failed, the notice "Push notification has been sent." shows for the channel `communication-channel-push-notifications` and "E-mail has been sent." for any other, and the bar goes 2.5 seconds later. The form keeps what was entered. A send the backend refuses shows nothing.
+
+## Tests
+
+- With `communications:tabs` listing only `email`, no Push tab is shown.
+- With one e-mail channel configured, it is chosen without a click.
+- Choosing two customers in the customer list shows "Preview customers (2)".
+- Send stays disabled while the subject is empty.
+- Sending to two customers shows the progress bar and then "E-mail has been sent.".
+
+## View: QuickSend
+
+### Summary
+
+The Send tab, with its Email and Push tabs, each holding the channel, the recipient, the preview and the message.
+
+### Display
+
+- The Email and Push tabs, as the `communications:tabs` configuration and the channels allow — [satisfies](aim:juicebar.communications.send#Requirements[SENDTABS]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- The channels of the tab's kind, read for any signed-in staff member — [invokes](aim:juicebar.communications#Capability:MessageDelivery), [satisfies](aim:juicebar.communications.send#Requirements[SENDCHANNEL]), [satisfies](aim:juicebar.communications#Requirements[CHANNELS]), [satisfies](aim:juicebar.communications#Requirements[SESSIONONLY])
+- The recipients provider, the selection type and the type's form — [invokes](aim:juicebar.communications#Capability:RecipientProviders), [satisfies](aim:juicebar.communications.send#Requirements[SENDRECIPIENT]), [satisfies](aim:juicebar.communications#Requirements[PROVIDERS]), [satisfies](aim:juicebar.communications.recipients#Requirements[SELTYPES])
+- The forms of the customer list, the firebase customer list and the customer groups — [invokes](aim:juicebar.communications#Capability:CustomerDirectory), [satisfies](aim:juicebar.communications.recipients#Requirements[CUSTOMERLIST]), [satisfies](aim:juicebar.communications.recipients#Requirements[FIREBASE]), [satisfies](aim:juicebar.communications.recipients#Requirements[GROUPS])
+- The forms of the event parameters, the filter by attribute and the form customers — [invokes](aim:juicebar.communications#Capability:CustomerDirectory), [invokes](aim:juicebar.communications#Capability:FormCustomers), [satisfies](aim:juicebar.communications.recipients#Requirements[EVENTPARAMS]), [satisfies](aim:juicebar.communications.recipients#Requirements[ATTRFILTER]), [satisfies](aim:juicebar.communications.recipients#Requirements[FORMCUST])
+- "Preview customers" with the number of customers reached — [satisfies](aim:juicebar.communications.send#Requirements[PREVIEW])
+- Subject, Content and Send, with the progress bar of a running send — [reads](aim:juicebar.communications#Record:TaskQueue), [satisfies](aim:juicebar.communications.send#Requirements[SENDFORM]), [satisfies](aim:juicebar.communications.send#Requirements[SENDDONE])
+
+### Actions
+
+- Preview customers — [exposes](aim:juicebar.communications.send#Operation:PreviewRecipients)
+- Send — [exposes](aim:juicebar.communications.send#Operation:QuickSend)
+
+### Layout
+
+- The channel, the recipient and Preview customers are on the left; Subject, Content and Send on the right.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/send/quick-send.component.ts#QuickSendComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/send/quick-send-panel/quick-send-panel.component.ts#QuickSendPanelComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/send/quick-recipient/quick-recipient.component.ts#QuickRecipientComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/selection-types/selection-type-form.component.ts#SelectionTypeFormComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/selection-types/customer-list/customer-list.component.ts#CustomerListComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/selection-types/customer-groups/customer-groups.component.ts#CustomerGroupsComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/selection-types/event-params/event-params.component.ts#EventParamsComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/selection-types/attribute-filter/attribute-filter.component.ts#AttributeFilterComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/selection-types/form-customers/form-customers.component.ts#FormCustomersComponent` — as: component
+- binds: `service:juicebox:configuration:service#getByKey` — as: handler
+- binds: `service:communication-service#searchChannel` — as: handler
+- binds: `service:communication-service#searchRecipients` — as: handler
+- binds: `service:communication-service#getReceiverSupportedSelectionTypes` — as: handler
+- provenance: inferred
+
+## Operation: PreviewRecipients
+
+### Summary
+
+The backend works out the customers a quick send's recipient reaches, and the staff member looks at them.
+
+### Input
+
+```schema
+provider: string required
+params: string required
+```
+
+### Authz
+
+- `juicebar.communications#Persona:CommunicationStaff`
+- `juicebar.communications#Persona:CommunicationSuperAdmin`
+
+### Ensures
+
+- The provider gives the ids of the customers of the staff member's organisation the parameters reach, each e-mail address once — [invokes](aim:juicebar.communications#Capability:RecipientProviders), [satisfies](aim:juicebar.communications.send#Requirements[PREVIEW])
+- The preview dialog shows those customers page by page — [invokes](aim:juicebar.communications#Capability:CustomerDirectory), [satisfies](aim:juicebar.communications.send#Requirements[PREVIEW])
+- The operation, and reading a provider's selection types, are refused without `communication:role` with its `send` permission — [satisfies](aim:juicebar.communications#Requirements[COMMROLE]), [satisfies](aim:juicebar#Requirements[ROLES])
+
+### Returns
+
+- The customers' ids.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/send/quick-send-panel/quick-send-panel.component.ts#QuickSendPanelComponent.prerender` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/send/preview-customers-dialog/preview-customers-dialog.component.ts#PreviewCustomersDialogComponent` — as: component
+- binds: `service:communication-service#prerenderRecipients` — as: handler
+- binds: `service:entities#fetchEntities` — as: handler
+- provenance: inferred
+
+## Operation: QuickSend
+
+### Summary
+
+A staff member sends a message at once to a quick send's recipient.
+
+### Input
+
+```schema
+channel: string required
+recipient: part(juicebar.communications#Recipient) required
+subject: string required
+template: string required
+```
+
+### Authz
+
+- `juicebar.communications#Persona:CommunicationStaff`
+- `juicebar.communications#Persona:CommunicationSuperAdmin`
+
+### Ensures
+
+- The message runs at once as an active communication of the staff member's organisation, started by them, and is kept only in the history — [invokes](aim:juicebar.communications#Operation:RunCommunication), [satisfies](aim:juicebar.communications.send#Requirements[SENDDONE]), [satisfies](aim:juicebar.communications#Requirements[RUN])
+- A send without a channel or without recipients is refused — [satisfies](aim:juicebar.communications.send#Requirements[SENDCHANNEL])
+- The staff member follows the run's progress, which the backend gives to any signed-in staff member — [reads](aim:juicebar.communications#Record:TaskQueue), [satisfies](aim:juicebar.communications.send#Requirements[SENDDONE]), [satisfies](aim:juicebar.communications#Requirements[SESSIONONLY])
+- The operation is refused without `communication:role`; its `send` permission is not asked — [satisfies](aim:juicebar.communications#Requirements[COMMROLE]), [satisfies](aim:juicebar#Requirements[ROLES])
+
+### Returns
+
+- The id of the task that carries out the run.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/send/quick-send-panel/quick-send-panel.component.ts#QuickSendPanelComponent.send` — as: component
+- binds: `service:communication-service#send` — as: handler
+- binds: `service:communication-service#getQueue` — as: handler
+- provenance: inferred

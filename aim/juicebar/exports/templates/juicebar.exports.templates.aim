@@ -1,0 +1,116 @@
+---
+aim: juicebar.exports.templates
+kind: intent
+parent: juicebar.exports
+provenance: inferred
+---
+
+# Export templates
+
+## Summary
+
+The page of the exports module: the templates page by page, each with its data source, its columns and its filters, and the buttons to download and delete it. From here staff create a template, open one, download one in a format its data source offers and delete one. The admin's search also finds templates by name.
+
+## Requirements
+
+- **TPLLIST** — The templates are listed 10 to a page (5, 10, 25 or 50 can be chosen), the most recently changed first. Sorting by name or by data source starts again from the first page; sorting and paging happen on the backend.
+- **TPLROW** — Each template shows its name, its data source's name, and the labels of its columns and of its filters in the admin's language, with all of them in a tooltip. A column or filter without a label shows its id; a template without columns or filters shows "-".
+- **TPLOPEN** — A template's name, or a click on its row, opens it in the editor.
+- **TPLEXPORT** — Each template has a download button that lists its formats by name; picking one opens that format's dialog. The button is disabled when the template has no format, and without the `export` permission (`admin` for a template of the SAP data source).
+- **TPLDELETE** — Deleting a template first asks "Are you sure you want to Delete <name>?". A deleted template shows "Template deleted" and leaves the list; a failure shows the backend's error. The delete button is disabled without the `delete` permission.
+- **CREATEBTN** — "Create" is the page's action and opens a new template; it is disabled without the `create` permission.
+- **TPLSEARCH** — For staff with the exports role, the admin's search lists, under "Exports", up to 10 templates whose name contains the typed text, ignoring case, each with its data source's name; choosing one opens it in the editor.
+
+## Tests
+
+- With 12 templates, the first page shows 10 and there are 2 pages.
+- A staff member without the `export` permission sees every download button disabled.
+- A template whose data source offers Excel and one PDF format lists both in its download button.
+- Typing "invo" in the admin's search lists "Invoices 2026" and "Monthly invoices", and choosing one opens it.
+- After confirming the deletion of a template, it is no longer listed or found by the search.
+
+## View: TemplateList
+
+### Summary
+
+The page of the exports module: the templates and what can be done with each.
+
+### Display
+
+- Each template that is not deleted, page by page, with its name, its data source, its columns and its filters — [reads](aim:juicebar.exports#Record:ExportTemplate), [satisfies](aim:juicebar.exports.templates#Requirements[TPLLIST]), [satisfies](aim:juicebar.exports.templates#Requirements[TPLROW]), [satisfies](aim:juicebar.exports#Requirements[TPLSCOPE])
+- Every label on the module's screens comes from the exports label dictionary, in the admin's language, with every language's texts the old admin had — [satisfies](aim:juicebar#Requirements[UILABELS])
+- A template's name and its row open it — [satisfies](aim:juicebar.exports.templates#Requirements[TPLOPEN])
+- Each template's download button, listing the formats registered for its data source and disabled where the staff member may not download it — [satisfies](aim:juicebar.exports.templates#Requirements[TPLEXPORT]), [satisfies](aim:juicebar.exports#Requirements[FORMATS]), [satisfies](aim:juicebar.exports#Requirements[SAPADMIN])
+- Each template's delete button, disabled without the `delete` permission — [satisfies](aim:juicebar.exports.templates#Requirements[TPLDELETE])
+- "Create", disabled without the `create` permission — [satisfies](aim:juicebar.exports.templates#Requirements[CREATEBTN])
+
+### Actions
+
+- Create — [navigates](aim:juicebar.exports.editor#View:CreateTemplatePage)
+- Open a template — [navigates](aim:juicebar.exports.editor#View:EditTemplatePage)
+- Download as Excel — [navigates](aim:juicebar.exports.excel#View:ExcelExportDialog)
+- Download as PDF — [navigates](aim:juicebar.exports.pdf#View:PdfExportDialog)
+- Delete — [exposes](aim:juicebar.exports.templates#Operation:DeleteExportTemplate)
+
+### Layout
+
+- Create is the page's action; download and delete are buttons on each template's row.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/export-template-listing/export-template-listing.component.ts#ExportTemplateListingComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/exports/pipes/column-labels.pipe.ts#ColumnLabelsPipe` — as: component
+- binds: `service:exports:template#getExportTemplates` — as: handler
+- provenance: inferred
+
+## View: TemplateSearch
+
+### Summary
+
+The templates the admin's search finds, under "Exports".
+
+### Display
+
+- Up to 10 templates whose name contains the typed text, each with its data source's name — [reads](aim:juicebar.exports#Record:ExportTemplate), [satisfies](aim:juicebar.exports.templates#Requirements[TPLSEARCH]), [satisfies](aim:juicebar.exports#Requirements[TPLSCOPE])
+
+### Actions
+
+- Open a template — [navigates](aim:juicebar.exports.editor#View:EditTemplatePage)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/exports.providers.ts#provideExports` — as: component
+- binds: `service:exports:template#getExportTemplates` — as: handler
+- provenance: inferred
+
+## Operation: DeleteExportTemplate
+
+### Summary
+
+A staff member deletes a template.
+
+### Input
+
+```schema
+templateId: string required ref(juicebar.exports#ExportTemplate.id)
+```
+
+### Authz
+
+- `juicebar.exports#Persona:ExportStaff`
+
+### Expects
+
+- The staff member confirmed the deletion.
+
+### Ensures
+
+- The template is marked deleted, and is no longer listed, opened or downloaded — [mutates](aim:juicebar.exports#Record:ExportTemplate), [satisfies](aim:juicebar.exports.templates#Requirements[TPLDELETE])
+- A notice tells whether it worked, and the list is loaded again — [satisfies](aim:juicebar.exports.templates#Requirements[TPLDELETE])
+- The operation is refused without the `delete` permission, or for a template the project's backend rules keep from the staff member — [satisfies](aim:juicebar.exports#Requirements[EXPROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.exports#Requirements[TPLSCOPE])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/export-template-listing/export-template-listing.component.ts#ExportTemplateListingComponent.delete` — as: component
+- binds: `service:exports:template#deleteExportTemplate` — as: handler
+- provenance: inferred

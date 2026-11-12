@@ -1,0 +1,86 @@
+---
+aim: juicebar.categories.mine
+kind: intent
+parent: juicebar.categories
+provenance: inferred
+---
+
+# Mine
+
+## Summary
+
+Where `showPublic` is set (Quality Circle), an organisation can take another organisation's category into its own categories, "Mine", without copying it, and remove it from Mine again. A category taken into Mine is shown under Mine in the tree and keeps belonging to the organisation that created it.
+
+## Requirements
+
+- **TOMINE** — "Transfer to Mine" is offered on the details of a category of another organisation, and is disabled when the category is already in Mine or the staff member lacks the `update` permission. Taking a category that is already in Mine is refused.
+- **FROMMINE** — A category taken into Mine has a "Remove from Mine" button in the tree. Removing it reloads the tree and shows Mine.
+- **MINEDONE** — Taking a category shows "Category added to Mine"; a failure shows the backend's error, or "The category could not be added". Removing shows "Category removed from Mine"; a failure shows "Category remove failed".
+
+## Tests
+
+- After "Transfer to Mine", the category is listed under Mine and the button is disabled.
+- After "Remove from Mine", the category is no longer listed under Mine.
+- Without `showPublic`, neither button appears.
+
+## Operation: AddToMine
+
+### Summary
+
+A staff member takes another organisation's category into their organisation's Mine.
+
+### Input
+
+```schema
+categoryId: string required ref(juicebar.categories#Category.id)
+```
+
+### Authz
+
+- `juicebar.categories#Persona:CategoryEditor`
+- `juicebar.categories#Persona:CategorySuperAdmin`
+
+### Expects
+
+- The category is not in the organisation's Mine yet.
+
+### Ensures
+
+- The staff member's organisation is among the organisations that took the category into Mine — [mutates](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.categories.mine#Requirements[TOMINE])
+- A notice tells whether it worked — [satisfies](aim:juicebar.categories.mine#Requirements[MINEDONE])
+- The backend refuses the operation to staff without the module's role `categories:role` and asks for no further permission; only the "Transfer to Mine" button in the admin is disabled without `update` — [satisfies](aim:juicebar#Requirements[ROLES])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/categories/details/details-category/details-category.component.ts#DetailsCategoryComponent.transfer` — as: component
+- binds: `service:juicecommerce:categories#addToCustomCategory` — as: handler
+- provenance: inferred
+
+## Operation: RemoveFromMine
+
+### Summary
+
+A staff member removes a category from their organisation's Mine.
+
+### Input
+
+```schema
+categoryId: string required ref(juicebar.categories#Category.id)
+```
+
+### Authz
+
+- `juicebar.categories#Persona:CategoryEditor`
+- `juicebar.categories#Persona:CategorySuperAdmin`
+
+### Ensures
+
+- The staff member's organisation is no longer among the organisations that took the category into Mine — [mutates](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.categories.mine#Requirements[FROMMINE])
+- A notice tells whether it worked — [satisfies](aim:juicebar.categories.mine#Requirements[MINEDONE])
+- The backend refuses the operation to staff without the module's role `categories:role` and asks for no further permission — [satisfies](aim:juicebar#Requirements[ROLES])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/categories/listing/categories-listing.component.ts#CategoriesListingComponent.removeFromMine` — as: component
+- binds: `service:juicecommerce:categories#removeFromCustomCategory` — as: handler
+- provenance: inferred

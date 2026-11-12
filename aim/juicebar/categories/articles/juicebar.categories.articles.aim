@@ -1,0 +1,68 @@
+---
+aim: juicebar.categories.articles
+kind: intent
+parent: juicebar.categories
+provenance: inferred
+---
+
+# Included articles
+
+## Summary
+
+The articles filed under a subcategory that has no subcategories of its own, listed page by page. The articles belong to the project's articles module; this tab only lists them, and opens one where the project has that module.
+
+## Requirements
+
+- **ARTLIST** — The tab lists the articles filed under the category that are not archived, 10 to a page (10, 20, 30 or 50 can be chosen), newest first until a column is sorted. Sorting and paging happen on the backend.
+- **ARTCOLUMNS** — Each article shows its name in the admin's language, its SAP-ID where the articles have one, whether it is active, and its type. Where the articles configuration (`juicecommerce:articles`) sets `showPublicStatus`, it also shows whether the article is public, and a private article with a privacy reason is marked "Missing name translation".
+- **ARTFILTER** — The name and the SAP-ID can be filtered by typing; the list follows once typing pauses, from its first page. The name is searched in the language of the articles shown.
+- **ARTOPEN** — Where the project has an articles module, an article's name opens its details.
+
+## Tests
+
+- A category with 25 articles shows 10 on the first page and 3 pages in all.
+- Typing part of an article's name leaves only matching articles, starting again from page 1.
+- Without an articles module in the project, the names are plain text.
+
+## Record: Article
+
+### Summary
+
+An article of the project's shop, as far as this tab shows it. It is kept by the articles module, outside this model.
+
+### Schema
+
+```schema
+id: string required unique
+name: map(string) required
+active: boolean
+public: boolean
+type: string
+sapId: string
+privacyReason: list(string)
+categories: list(juicebar.categories#Category)
+archived: boolean
+```
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/categories/categories.types.ts#CategoryArticle` — as: model
+- provenance: inferred
+
+## View: IncludedArticles
+
+### Summary
+
+The Included articles tab of an opened subcategory.
+
+### Display
+
+- The category's articles, page by page, with name, SAP-ID, status, public and type — [reads](aim:juicebar.categories.articles#Record:Article), [satisfies](aim:juicebar.categories.articles#Requirements[ARTLIST]), [satisfies](aim:juicebar.categories.articles#Requirements[ARTCOLUMNS])
+- Filters on name and SAP-ID — [satisfies](aim:juicebar.categories.articles#Requirements[ARTFILTER])
+- Each name links to the article's page in the articles module, where the project has one — [satisfies](aim:juicebar.categories.articles#Requirements[ARTOPEN])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/categories/details/included-articles/included-articles.component.ts#IncludedArticlesComponent` — as: component
+- binds: `service:juicecommerce:articles#fetch` — as: handler
+- provenance: inferred

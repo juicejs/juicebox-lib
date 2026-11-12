@@ -1,0 +1,57 @@
+---
+aim: juicebar
+kind: intent
+nature: software
+provenance: inferred
+---
+
+# Juicebar admin
+
+## Summary
+
+The admin modules that every project's back office takes from the juicebar library. A project's staff use them to manage what their organisation keeps: the categories, the export templates and the locations, with users to follow. Each module is switched on by the project, and the parts only some projects use are switched on and off by the project's backend configuration and the options it gives the library.
+
+Signing in, the app shell, the top bar, the sidebar menu, the search and the library's UI components are the library's framework. They are hand-coded and not described here.
+
+## Requirements
+
+- **ROLES** — Each part of a module is used only by staff whose role allows it. The backend refuses an operation to anyone without the role, whatever the screen shows, except the operations a module states are open to every signed-in user.
+- **LANG** — Texts are kept per language. Staff edit one language at a time: the admin's current language.
+- **UILABELS** — The screens take their labels from each module's own label dictionary, in the admin's language: English, German and every other language the old admin's dictionary of the module has texts in, with those texts (Croatian, Russian, Danish, Swedish, Finnish, Czech, Slovak, Portuguese and English for Germany among them). A label without a text in the admin's language shows its key after "@". No headline or intro copy is written for any screen, and none is invented.
+- **CONFIG** — A module carries all of its behaviour, including the parts only one project uses. Those parts are switched by the project's backend configuration or by the options the project gives the library, never by checking which project is running.
+
+## Tests
+
+- A staff member without a module's role does not see the module and cannot call the operations that need the role on the backend.
+- A text saved in German leaves the English text of the same field unchanged.
+- With a project-only option switched off, the screens show none of that option's controls.
+
+## Dependencies
+
+### Requires
+
+- MediaStorage as Files
+
+## Capability: MediaStorage
+
+### Summary
+
+A file store that keeps an uploaded file under a collection and a record, makes its resized versions, and gives it a web address the admin and the websites can show.
+
+### Operations
+
+- `Store(collection, reference, details, file) -> media`
+
+### Bindings
+
+- binds: `service:media#store` — as: Store
+- binds: `projects/juicebar/src/lib/core/shared/components/media/add-media/add-media.component.ts#AddMediaComponent` — as: component
+- provenance: inferred
+
+## Children
+
+- [core](./core/juicebar.core.aim) — what the modules share: the staff member, the organisation, and the files attached to records
+- [categories](./categories/juicebar.categories.aim) — the tree of categories that articles and other records are filed under
+- [exports](./exports/juicebar.exports.aim) — export templates, and downloading them as a spreadsheet or a zip of PDFs
+- [locations](./locations/juicebar.locations.aim) — the places a project keeps, with their files, documents and a venue's room plans
+- [communications](./communications/juicebar.communications.aim) — the messages sent to customers by e-mail, push notification or SMS: quick sends, contents, automations and their history

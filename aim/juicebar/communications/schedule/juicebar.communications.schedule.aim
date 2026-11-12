@@ -1,0 +1,120 @@
+---
+aim: juicebar.communications.schedule
+kind: intent
+parent: juicebar.communications
+approved_by: Mario
+approved_at: 2026-11-11
+---
+
+# Schedule
+
+## Summary
+
+Scheduling the runs of an automation with the event Scheduled communications. From the automation list staff open its schedule, add a date and time it should run at, and see its pending times and cancel one. The backend runs the automation when a pending time comes.
+
+## Requirements
+
+- **SCHEDOPEN** — Schedule on an automation with the event Scheduled communications opens "Schedule communication": a date and a time, set to the present moment, with Schedule beneath them, and beside them the automation's pending times. It closes only with its close button.
+- **SCHEDADD** — Schedule adds the date and time, in the staff member's local time, to the automation's pending times; an automation switched off is refused. No notice shows either way. The dialog reads the automation again at once, so a time added may show only when the dialog is opened again.
+- **PENDING** — The pending times are listed, all at once, with their time and the status "Pending", each with a button that cancels it without asking; the list is read again after. An automation not scheduled before the dialog opened lists none.
+- **SCHEDRUN** — The backend looks at the pending times every 20 seconds and runs the automation of each one less than 20 seconds away and in the same minute, without a staff member. The time is then started, with its run, and leaves the pending times. A time missed while the backend was not running stays pending and never runs.
+- **STARTED** — Below the pending times, a second list shows the runs of the automation's scheduled times, newest first, 10 to a page: each with the time it started, its progress, whether it is done and whether it failed.
+
+## Tests
+
+- Scheduling an automation that was switched off adds no pending time.
+- A time scheduled two minutes ahead runs the automation within those two minutes and 20 seconds, and leaves the pending list.
+- Cancelling a pending time removes it from the list, and the automation does not run at that time.
+- After a scheduled run, the list of started times shows it with its progress.
+- A staff member without `communication:role` cannot schedule an automation on the backend.
+
+## View: ScheduleDialog
+
+### Summary
+
+The dialog that schedules an automation's runs and shows its pending and started times.
+
+### Display
+
+- The date and time pickers, set to the present moment, with Schedule; the dialog closes only with its close button — [satisfies](aim:juicebar.communications.schedule#Requirements[SCHEDOPEN])
+- The pending times, each with its time, "Pending" and a cancel button — [reads](aim:juicebar.communications#Record:Communication), [satisfies](aim:juicebar.communications.schedule#Requirements[PENDING])
+- The started times, each with its time, progress, done and failed, newest first, page by page — [reads](aim:juicebar.communications#Record:TaskQueue), [satisfies](aim:juicebar.communications.schedule#Requirements[STARTED])
+
+### Actions
+
+- Schedule — [exposes](aim:juicebar.communications.schedule#Operation:ScheduleCommunication)
+- Cancel a pending time — [exposes](aim:juicebar.communications.schedule#Operation:CancelScheduledTime)
+
+### Layout
+
+- The date and time take the left third, the pending and started times the rest.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/schedule/schedule-dialog/schedule-dialog.component.ts#ScheduleDialogComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/schedule/pending-times/pending-times.component.ts#PendingTimesComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/schedule/started-times/started-times.component.ts#StartedTimesComponent` — as: component
+- binds: `service:communication-service#getCommunication` — as: handler
+- binds: `service:communication-service#fetchScheduleForCommunication` — as: handler
+- binds: `service:communication-service#getCommunicationQueues` — as: handler
+- provenance: inferred
+
+## Operation: ScheduleCommunication
+
+### Summary
+
+A staff member schedules an automation to run at a date and time.
+
+### Input
+
+```schema
+communicationId: string required ref(juicebar.communications#Communication.id)
+time: datetime required
+```
+
+### Authz
+
+- `juicebar.communications#Persona:CommunicationStaff`
+- `juicebar.communications#Persona:CommunicationSuperAdmin`
+
+### Ensures
+
+- An active automation gets the time as a pending time, and an inactive one is refused — [mutates](aim:juicebar.communications#Record:Communication), [satisfies](aim:juicebar.communications.schedule#Requirements[SCHEDADD])
+- When the time comes, the backend runs the automation without a staff member and marks the time started with its run — [invokes](aim:juicebar.communications#Operation:RunCommunication), [mutates](aim:juicebar.communications#Record:Communication), [satisfies](aim:juicebar.communications.schedule#Requirements[SCHEDRUN]), [satisfies](aim:juicebar.communications#Requirements[RUN])
+- The operation is refused without `communication:role`; another organisation's automation is scheduled all the same — [satisfies](aim:juicebar.communications#Requirements[COMMROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.communications#Requirements[COMMORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/schedule/schedule-dialog/schedule-dialog.component.ts#ScheduleDialogComponent.schedule` — as: component
+- binds: `service:communication-service#scheduleCommunication` — as: handler
+- binds: `juice-modules:packages/juice/src/modules/communications/modules/Communications.ts#Communications.scheduleInterval` — as: handler
+- provenance: inferred
+
+## Operation: CancelScheduledTime
+
+### Summary
+
+A staff member cancels a pending time of an automation.
+
+### Input
+
+```schema
+communicationId: string required ref(juicebar.communications#Communication.id)
+ref: string required
+```
+
+### Authz
+
+- `juicebar.communications#Persona:CommunicationStaff`
+- `juicebar.communications#Persona:CommunicationSuperAdmin`
+
+### Ensures
+
+- The time leaves the pending times and does not run — [mutates](aim:juicebar.communications#Record:Communication), [satisfies](aim:juicebar.communications.schedule#Requirements[PENDING])
+- The operation is refused without `communication:role`; another organisation's automation is changed all the same — [satisfies](aim:juicebar.communications#Requirements[COMMROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.communications#Requirements[COMMORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/schedule/pending-times/pending-times.component.ts#PendingTimesComponent.cancel` — as: component
+- binds: `service:communication-service#removeFromSchedule` — as: handler
+- provenance: inferred

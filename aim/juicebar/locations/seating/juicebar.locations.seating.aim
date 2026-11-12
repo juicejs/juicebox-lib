@@ -1,0 +1,139 @@
+---
+aim: juicebar.locations.seating
+kind: intent
+parent: juicebar.locations
+provenance: inferred
+---
+
+# Seating layout
+
+## Summary
+
+The Seating layout tab of a venue: the room plans the venue has, taken from the project's room plans, each with its name and its first image. Staff add room plans to the venue in a dialog that searches them by name, and remove one again; the room plans themselves are kept by the room plans module and stay as they are.
+
+## Requirements
+
+- **PLANLIST** — Only a venue (`venue`) has a seating layout. It lists the venue's room plans, all on one page, each with its name in the admin's language and its first image; a room plan that can't be read is left out.
+- **ADDPLANS** — Room plans are added in a dialog that searches the room plans by name in the admin's language, the first ten matches, once typing pauses. Several can be picked; the ones the venue has already are shown but can't be picked, and Add stays disabled until one is picked. The dialog closes only with Add or Cancel. Adding shows "Room plans added"; a failure shows the backend's error, or "Saving failed".
+- **REMOVEPLAN** — A room plan is taken off the venue after the staff member confirms "Remove … from the location" with its name; the room plan itself stays. Removing shows "Room plan removed"; a failure shows the backend's error, or "Saving failed".
+- **PLANWHO** — Add and Remove are shown only to staff with `room-plan:role#update`, the room plans module's permission; the backend asks for the locations module's `updated` permission to change the venue.
+
+## Tests
+
+- A venue with two room plans lists both, with their images.
+- In the add dialog, a room plan the venue has already is shown and can't be picked.
+- Removing a room plan from a venue leaves it in the room plans module.
+- A staff member without `room-plan:role#update` sees no Add or Remove button.
+
+## View: SeatingLayout
+
+### Summary
+
+The Seating layout tab of an opened venue.
+
+### Display
+
+- The venue's room plans, each with its name and its first image — [reads](aim:juicebar.locations#Record:Location), [reads](aim:juicebar.locations#Record:RoomPlan), [invokes](aim:juicebar.locations#Capability:RoomPlans), [satisfies](aim:juicebar.locations.seating#Requirements[PLANLIST])
+- Add and Remove are shown only to staff with `room-plan:role#update` — [satisfies](aim:juicebar.locations.seating#Requirements[PLANWHO])
+
+### Actions
+
+- Add — [navigates](aim:juicebar.locations.seating#View:AddRoomPlansDialog)
+- Remove — [exposes](aim:juicebar.locations.seating#Operation:RemoveRoomPlan)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/seating-layout/seating-layout.component.ts#SeatingLayoutComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/seating-layout/room-plans.ts#getRoomPlan` — as: component
+- provenance: inferred
+
+## View: AddRoomPlansDialog
+
+### Summary
+
+A dialog that adds room plans to the venue it was opened from.
+
+### Display
+
+- A search over the room plans' names, the matches to pick, the venue's own ones not pickable — [reads](aim:juicebar.locations#Record:RoomPlan), [invokes](aim:juicebar.locations#Capability:RoomPlans), [satisfies](aim:juicebar.locations.seating#Requirements[ADDPLANS])
+- Add is disabled until a room plan is picked; a click outside the dialog does not close it — [satisfies](aim:juicebar.locations.seating#Requirements[ADDPLANS])
+
+### Actions
+
+- Add — [exposes](aim:juicebar.locations.seating#Operation:AddRoomPlans)
+- Cancel — [navigates](aim:juicebar.locations.seating#View:SeatingLayout)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/seating-layout/add-room-plan/add-room-plan.component.ts#AddRoomPlanComponent` — as: component
+- provenance: inferred
+
+## Operation: AddRoomPlans
+
+### Summary
+
+A staff member adds the picked room plans to a venue.
+
+### Input
+
+```schema
+locationId: string required ref(juicebar.locations#Location.id)
+roomPlanIds: list(juicebar.locations#RoomPlan) required
+```
+
+### Authz
+
+- `juicebar.locations#Persona:LocationEditor`
+- `juicebar.locations#Persona:LocationAdmin`
+- `juicebar.locations#Persona:LocationSuperAdmin`
+
+### Expects
+
+- At least one room plan is picked.
+
+### Ensures
+
+- The picked room plans the venue didn't have are added after its own, which stay — [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations.seating#Requirements[ADDPLANS])
+- A notice tells whether it worked, and the list is read again — [satisfies](aim:juicebar.locations.seating#Requirements[ADDPLANS])
+- The operation is refused without the `updated` permission, or for a venue of another organisation — [satisfies](aim:juicebar.locations#Requirements[LOCROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.locations#Requirements[LOCORG]), [satisfies](aim:juicebar.locations.seating#Requirements[PLANWHO])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/seating-layout/add-room-plan/add-room-plan.component.ts#AddRoomPlanComponent.add` — as: component
+- binds: `service:locations:service#updateAttributes` — as: handler
+- provenance: inferred
+
+## Operation: RemoveRoomPlan
+
+### Summary
+
+A staff member takes a room plan off a venue.
+
+### Input
+
+```schema
+locationId: string required ref(juicebar.locations#Location.id)
+roomPlanId: string required ref(juicebar.locations#RoomPlan.id)
+```
+
+### Authz
+
+- `juicebar.locations#Persona:LocationEditor`
+- `juicebar.locations#Persona:LocationAdmin`
+- `juicebar.locations#Persona:LocationSuperAdmin`
+
+### Expects
+
+- The staff member confirmed the removal.
+
+### Ensures
+
+- The room plan is no longer among the venue's room plans; the others stay, and the room plan itself is unchanged — [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations.seating#Requirements[REMOVEPLAN])
+- A notice tells whether it worked — [satisfies](aim:juicebar.locations.seating#Requirements[REMOVEPLAN])
+- The operation is refused without the `updated` permission, or for a venue of another organisation — [satisfies](aim:juicebar.locations#Requirements[LOCROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.locations#Requirements[LOCORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/seating-layout/seating-layout.component.ts#SeatingLayoutComponent.remove` — as: component
+- binds: `service:locations:service#updateAttributes` — as: handler
+- provenance: inferred

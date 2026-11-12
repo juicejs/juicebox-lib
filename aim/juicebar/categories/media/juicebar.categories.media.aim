@@ -1,0 +1,146 @@
+---
+aim: juicebar.categories.media
+kind: intent
+parent: juicebar.categories
+provenance: inferred
+---
+
+# Category files
+
+## Summary
+
+A category's files, under the media collection `categories`: staff with the `update` permission upload images, change their details and remove them.
+
+## Requirements
+
+- **CATFILES** — A category takes PNG, JPG, JPEG and SVG files, under the media types of the `categories` collection.
+- **FILESLOCK** — Where `showPublic` is set, the files of a category of an organisation outside the organisation tree can't be added, changed or removed, except by a super admin of categories.
+- **FILESDONE** — An added file shows "Image was added" and a changed one "Media was updated"; a failure shows the backend's error, or "Saving failed" when it gives none.
+
+## Tests
+
+- Uploading a PDF to a category is refused by the file picker.
+- With `showPublic`, a staff member sees no add, edit or delete buttons on the files of another organisation's category outside their tree.
+
+## View: CategoryMedia
+
+### Summary
+
+The Media tab of an opened category.
+
+### Display
+
+- The category's files with their title and media type; images and videos previewed, other files downloaded — [reads](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.core#Requirements[MEDIALIST])
+- No add, edit or delete buttons where the files are locked — [satisfies](aim:juicebar.categories.media#Requirements[FILESLOCK]), [satisfies](aim:juicebar.categories#Requirements[ORGTREE])
+
+### Actions
+
+- Add — [exposes](aim:juicebar.categories.media#Operation:AddCategoryFile)
+- Edit — [exposes](aim:juicebar.categories.media#Operation:UpdateCategoryFile)
+- Delete — [exposes](aim:juicebar.categories.media#Operation:RemoveCategoryFile)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/categories/details/category-media/category-media.component.ts#CategoryMediaComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/shared/components/media/media.component.ts#MediaComponent` — as: component
+- provenance: inferred
+
+## Operation: AddCategoryFile
+
+### Summary
+
+A staff member uploads a file to a category under one of the collection's media types.
+
+### Input
+
+```schema
+categoryId: string required ref(juicebar.categories#Category.id)
+mediaTypeKey: string required
+file: file required
+```
+
+### Authz
+
+- `juicebar.categories#Persona:CategoryEditor`
+- `juicebar.categories#Persona:CategorySuperAdmin`
+
+### Ensures
+
+- The file is kept in the file store under the category and added to the category's files — [invokes](aim:juicebar#Capability:MediaStorage), [mutates](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.categories.media#Requirements[CATFILES]), [satisfies](aim:juicebar.core#Requirements[MEDIATYPES]), [satisfies](aim:juicebar.core#Requirements[MEDIASIZE])
+- A notice tells whether it worked — [satisfies](aim:juicebar.categories.media#Requirements[FILESDONE])
+- The operation is refused without the `update` permission, or for a category of another organisation — [satisfies](aim:juicebar.categories#Requirements[CATROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.categories#Requirements[CATORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/categories/details/category-media/category-media.component.ts#CategoryMediaComponent.added` — as: component
+- binds: `service:juicecommerce:categories#addMedia` — as: handler
+- provenance: inferred
+
+## Operation: UpdateCategoryFile
+
+### Summary
+
+A staff member changes a file's details: its name, title, description, alternative text and media type.
+
+### Input
+
+```schema
+categoryId: string required ref(juicebar.categories#Category.id)
+mediaId: string required
+key: string
+mediaType: map(string)
+name: map(string)
+title: map(string)
+description: map(string)
+alt_text: map(string)
+```
+
+### Authz
+
+- `juicebar.categories#Persona:CategoryEditor`
+- `juicebar.categories#Persona:CategorySuperAdmin`
+
+### Ensures
+
+- The file's details are replaced with the ones given — [mutates](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.core#Requirements[MEDIALIST])
+- A notice tells whether it worked — [satisfies](aim:juicebar.categories.media#Requirements[FILESDONE])
+- The operation is refused without the `update` permission, or for a category of another organisation — [satisfies](aim:juicebar.categories#Requirements[CATROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.categories#Requirements[CATORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/categories/details/category-media/category-media.component.ts#CategoryMediaComponent.updated` — as: component
+- binds: `service:juicecommerce:categories#updateMedia` — as: handler
+- provenance: inferred
+
+## Operation: RemoveCategoryFile
+
+### Summary
+
+A staff member removes a file from a category.
+
+### Input
+
+```schema
+categoryId: string required ref(juicebar.categories#Category.id)
+mediaId: string required
+```
+
+### Authz
+
+- `juicebar.categories#Persona:CategoryEditor`
+- `juicebar.categories#Persona:CategorySuperAdmin`
+
+### Expects
+
+- The staff member confirmed the removal.
+
+### Ensures
+
+- The file is no longer among the category's files — [mutates](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.core#Requirements[MEDIALIST])
+- The operation is refused without the `update` permission, or for a category of another organisation — [satisfies](aim:juicebar.categories#Requirements[CATROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.categories#Requirements[CATORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/categories/details/category-media/category-media.component.ts#CategoryMediaComponent.removed` — as: component
+- binds: `service:juicecommerce:categories#removeMedia` — as: handler
+- provenance: inferred

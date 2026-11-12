@@ -1,0 +1,179 @@
+---
+aim: juicebar.communications.recipients
+kind: intent
+parent: juicebar.communications
+approved_by: Mario
+approved_at: 2026-11-11
+---
+
+# Recipients
+
+## Summary
+
+Who a communication goes to. A recipient is a recipient provider with its parameters, which the form of a selection type builds: a customer list, customer groups, event parameters, a filter by attribute, a form's customers or a list of app customers. The quick send makes one recipient; an automation keeps several, beside its details, added, changed and deleted there.
+
+## Requirements
+
+- **SELTYPES** — The selection types are Customer list (`customer_list`), Customer group (`customer_group`), Event parameters (`event_params`), Filter by attribute (`attributes_filter`), Form customers (`form_customers`) and Firebase Customer list (`firebase_customer_list`).
+- **CUSTOMERLIST** — Customer list: a multiple choice of customers, organisations left out, searched as typed. In the quick send it lists 25, searches the first name, last name and e-mail, shows "first last (e-mail)" and gives the chosen customers' ids, comma-separated. In an automation it lists 10, searches the first name — the full name where the `communications` configuration sets `amg_communications` — and gives, comma-separated, the chosen parameter of each chosen customer who has one: the e-mail address, the first wallet's address or the phone number; the chosen customers are kept with the recipient.
+- **GROUPS** — Customer group: a multiple choice of up to 50 customer groups, searched by name; it gives the chosen groups' ids, comma-separated.
+- **FIREBASE** — Firebase Customer list: the quick send's customer list, limited to the customers with an app token (`attributes.firebase`) and the `mobile_user` attribute, in the quick send and in an automation alike; it gives the chosen customers' ids, comma-separated.
+- **EVENTPARAMS** — Event parameters: a text box "Event property" for the event data field that holds the addresses; it gives the text as typed, in the quick send once typing has paused for a second.
+- **ATTRFILTER** — Filter by attribute: rows of an attribute and a value, starting with one, and Add for another row. The attributes are those the `juicecommerce:entity:attribute` configurations declare, each property once; the values are all of the attribute's distinct values among the organisation's customers, in alphabetical order, in the quick send and in an automation alike. It gives `attribute:value` for each complete row, comma-separated. A "Match all attributes" switch is shown on and can't be changed.
+- **FORMCUST** — Form customers: a form, then a "Select all form customers" switch, on at first, and a multiple choice of the form's customers (the first 10; in an automation searched by first name as typed), open only with the switch off. The form choice lists the first 10 forms and searches the names of those not archived as typed. It gives `<form id>` with the switch on, or `<form id>:` and, for each chosen customer, the e-mail address in the quick send and the chosen parameter in an automation; switching it on clears the chosen customers, and removing the last one switches it on. The quick send and an automation behave alike.
+- **RECDIALOG** — The recipient dialog of an automation, titled "Add recipient", offers the Recipients provider (every provider except `customer-email-recipients-provider` and `customer-push-recipients-provider`), the Parameter (E-mail, Wallet or Phone number; E-mail at first), the Type of parameters (the six selection types; Customer list at first) and that type's form. Choosing a provider or a type clears the parameters; the provider `attribute-recipients-provider-email` fixes the parameter to E-mail and the type to Filter by attribute. Cancel closes it; Add stores the recipient as it is, empty parameters too, and the recipients are read again.
+- **RECEDIT** — Changing a recipient opens the dialog with its provider, locked, its parameter, type and parameters, and Update instead of Add. For a customer list or form customers, the kept customers of the staff member's organisation show as chosen, and the form can't be changed.
+- **RECLIST** — Beside an automation's details, its recipients are listed with their provider's key and their parameters, each with a button to change it and one to delete it. Deleting asks nothing and removes every recipient of the automation with the same provider and parameters; the list is read again when one was removed.
+
+## Tests
+
+- In an automation, a customer list with the parameter E-mail and two customers, one of them without an e-mail address, stores one address.
+- Choosing the provider `attribute-recipients-provider-email` fixes Parameter to E-mail and Type of parameters to Filter by attribute.
+- Filter by attribute with `city` and `Berlin` gives `city:Berlin`.
+- Deleting a recipient asks nothing, and it leaves the list.
+- A staff member without `communication:role` cannot add a recipient on the backend.
+
+## View: AutomationRecipients
+
+### Summary
+
+The right half of an opened automation: its recipients, with Add recipient and Send above them.
+
+### Display
+
+- The automation's recipients, each with its provider's key, its parameters and buttons to change and delete it — [reads](aim:juicebar.communications#Record:Communication), [satisfies](aim:juicebar.communications.recipients#Requirements[RECLIST])
+- Send, with the progress bar of the run it starts — [reads](aim:juicebar.communications#Record:TaskQueue), [satisfies](aim:juicebar.communications.automation#Requirements[SENDNOW])
+
+### Actions
+
+- Add recipient — [navigates](aim:juicebar.communications.recipients#View:RecipientDialog)
+- Change a recipient — [navigates](aim:juicebar.communications.recipients#View:RecipientDialog)
+- Delete a recipient — [exposes](aim:juicebar.communications.recipients#Operation:RemoveRecipient)
+- Send — [exposes](aim:juicebar.communications.automation#Operation:SendCommunication)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/automation-recipients/automation-recipients.component.ts#AutomationRecipientsComponent` — as: component
+- binds: `service:communication-service#getCommunication` — as: handler
+- provenance: inferred
+
+## View: RecipientDialog
+
+### Summary
+
+The dialog that adds a recipient to an automation or changes one.
+
+### Display
+
+- Recipients provider, Parameter and Type of parameters, with what the provider and the type fix — [invokes](aim:juicebar.communications#Capability:RecipientProviders), [satisfies](aim:juicebar.communications.recipients#Requirements[RECDIALOG]), [satisfies](aim:juicebar.communications.recipients#Requirements[SELTYPES]), [satisfies](aim:juicebar.communications#Requirements[PROVIDERS])
+- The forms of the customer list, searched by full name where `amg_communications` is set, and of the customer groups and the firebase customer list — [invokes](aim:juicebar.communications#Capability:CustomerDirectory), [satisfies](aim:juicebar.communications.recipients#Requirements[CUSTOMERLIST]), [satisfies](aim:juicebar.communications.recipients#Requirements[GROUPS]), [satisfies](aim:juicebar.communications.recipients#Requirements[FIREBASE]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- The forms of the event parameters, the filter by attribute and the form customers — [invokes](aim:juicebar.communications#Capability:CustomerDirectory), [invokes](aim:juicebar.communications#Capability:FormCustomers), [satisfies](aim:juicebar.communications.recipients#Requirements[EVENTPARAMS]), [satisfies](aim:juicebar.communications.recipients#Requirements[ATTRFILTER]), [satisfies](aim:juicebar.communications.recipients#Requirements[FORMCUST])
+- A recipient being changed, with its provider locked and its kept customers chosen — [satisfies](aim:juicebar.communications.recipients#Requirements[RECEDIT])
+
+### Actions
+
+- Add — [exposes](aim:juicebar.communications.recipients#Operation:AddRecipient)
+- Update — [exposes](aim:juicebar.communications.recipients#Operation:UpdateRecipient)
+- Cancel — [navigates](aim:juicebar.communications.recipients#View:AutomationRecipients)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/recipient-dialog/recipient-dialog.component.ts#RecipientDialogComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/selection-types/selection-type-form.component.ts#SelectionTypeFormComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/selection-types/customer-list/customer-list.component.ts#CustomerListComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/selection-types/customer-groups/customer-groups.component.ts#CustomerGroupsComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/selection-types/event-params/event-params.component.ts#EventParamsComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/selection-types/attribute-filter/attribute-filter.component.ts#AttributeFilterComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/selection-types/form-customers/form-customers.component.ts#FormCustomersComponent` — as: component
+- binds: `service:communication-service#searchRecipients` — as: handler
+- binds: `service:juicebox:configuration:service#getByKey` — as: handler
+- provenance: inferred
+
+## Operation: AddRecipient
+
+### Summary
+
+A staff member adds a recipient to an automation.
+
+### Input
+
+```schema
+communicationId: string required ref(juicebar.communications#Communication.id)
+recipient: part(juicebar.communications#Recipient) required
+```
+
+### Authz
+
+- `juicebar.communications#Persona:CommunicationStaff`
+- `juicebar.communications#Persona:CommunicationSuperAdmin`
+
+### Ensures
+
+- The recipient, with its provider, parameters, selection type, parameter and chosen customers, is added to the automation's recipients under a new id — [mutates](aim:juicebar.communications#Record:Communication), [satisfies](aim:juicebar.communications.recipients#Requirements[RECDIALOG])
+- The operation is refused without `communication:role`; another organisation's automation is changed all the same — [satisfies](aim:juicebar.communications#Requirements[COMMROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.communications#Requirements[COMMORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/recipient-dialog/recipient-dialog.component.ts#RecipientDialogComponent.save` — as: component
+- binds: `service:communication-service#addRecipient` — as: handler
+- provenance: inferred
+
+## Operation: UpdateRecipient
+
+### Summary
+
+A staff member changes a recipient of an automation.
+
+### Input
+
+```schema
+communicationId: string required ref(juicebar.communications#Communication.id)
+recipient: part(juicebar.communications#Recipient) required
+```
+
+### Authz
+
+- `juicebar.communications#Persona:CommunicationStaff`
+- `juicebar.communications#Persona:CommunicationSuperAdmin`
+
+### Ensures
+
+- The dialog shows the recipient's kept customers of the staff member's organisation — [reads](aim:juicebar.communications#Record:Communication), [invokes](aim:juicebar.communications#Capability:CustomerDirectory), [satisfies](aim:juicebar.communications.recipients#Requirements[RECEDIT])
+- The recipient with the same id takes the provider, parameters, selection type, parameter and chosen customers given — [mutates](aim:juicebar.communications#Record:Communication), [satisfies](aim:juicebar.communications.recipients#Requirements[RECEDIT])
+- The operation is refused without `communication:role`; another organisation's automation is changed all the same — [satisfies](aim:juicebar.communications#Requirements[COMMROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.communications#Requirements[COMMORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/recipient-dialog/recipient-dialog.component.ts#RecipientDialogComponent.save` — as: component
+- binds: `service:communication-service#fetchCustomerModels` — as: handler
+- binds: `service:communication-service#updateRecipient` — as: handler
+- provenance: inferred
+
+## Operation: RemoveRecipient
+
+### Summary
+
+A staff member deletes a recipient of an automation.
+
+### Input
+
+```schema
+communicationId: string required ref(juicebar.communications#Communication.id)
+recipient: part(juicebar.communications#Recipient) required
+```
+
+### Authz
+
+- `juicebar.communications#Persona:CommunicationStaff`
+- `juicebar.communications#Persona:CommunicationSuperAdmin`
+
+### Ensures
+
+- Every recipient of the automation with the same provider and parameters is removed, and the answer says whether one was — [mutates](aim:juicebar.communications#Record:Communication), [satisfies](aim:juicebar.communications.recipients#Requirements[RECLIST])
+- The operation is refused without `communication:role`; another organisation's automation is changed all the same — [satisfies](aim:juicebar.communications#Requirements[COMMROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.communications#Requirements[COMMORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/communications/recipients/automation-recipients/automation-recipients.component.ts#AutomationRecipientsComponent.remove` — as: component
+- binds: `service:communication-service#deleteRecipient` — as: handler
+- provenance: inferred

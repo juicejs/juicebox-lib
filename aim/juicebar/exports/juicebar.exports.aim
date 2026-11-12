@@ -1,0 +1,221 @@
+---
+aim: juicebar.exports
+kind: intent
+parent: juicebar
+provenance: inferred
+---
+
+# Exports
+
+## Summary
+
+Export templates: a named choice of one data source's columns, in their order, with a sort and values for the data source's filters, that staff download as a file whenever they need the data. Staff with the exports role list the templates, create and change them, download one in a format its data source offers (an Excel spreadsheet, or a zip of PDFs) and delete it. The admin's search finds templates by name.
+
+The data sources, with their columns, filters and filter options, and the export formats are registered on the backend by other modules and by the project; the module offers whatever is registered. The parts only some projects use are switched by the backend configuration and the options: grouped columns and booking categories (AMG), the vendors data source for the master organisation only, changing the filters before an Excel download, hidden filters and a time limit on downloads (Quality Circle).
+
+## Requirements
+
+- **EXPROLE** — The module needs `data-export:role`. Creating a template needs its `create` permission, changing it `update` and deleting it `delete`; downloading a template, and storing its changed filters before an Excel download, need `export`. Reading the templates, the data sources with their columns and filters, and a filter's options needs the role alone. The backend refuses each operation without its permission — from [juicebar#Requirements[ROLES]]
+- **SAPADMIN** — In the admin, a template of the SAP data source (`sap-data:strategy`) is downloaded only with the `admin` permission, and creating one warns about that.
+- **TPLSCOPE** — Staff with the role see, change, download and delete every template that is not deleted, whichever organisation made it. A project may narrow this on the backend, through the exports service's middleware (`exportService:middleware`).
+- **TPLMETA** — A template records the staff member who created it and the organisation they were signed in to; changing the template keeps both.
+- **SOURCES** — A template draws its rows from one data source. The data sources with their columns and filters (`data:source:strategy`), the searches for filter options (`export:filter:fetcher:strategy`) and the export formats (`data:export:strategy`) are registered on the backend by other modules and by the project. A data source, filter or option search that is not registered is refused.
+- **KEEPKNOWN** — A template keeps only what its data source declares: columns and filters the data source does not declare are dropped when the template is stored and when it is read, a filter without a value (empty, 0 or false) is not stored, and a sort on a column that can't be sorted is dropped.
+- **FORMATS** — A template offers the export formats registered for its data source; a format registered without a list of data sources fits every data source. The admin downloads the format `excel:export:strategy` as a spreadsheet and a format whose key begins with `pdf` as a zip of PDFs; picking any other format does nothing. A format the data source does not offer is refused.
+- **DOWNLOAD** — A download is made in the admin's current language, from the template's columns, sort and filters as stored. It is named as typed, or after the template and the day (`<template>_<DD.MM.YYYY>`), with `.xlsx` or `.zip`. An answer that is an error instead of a file, or a failed download, shows "Unable to complete download. Try again." and leaves the dialog open; a finished download closes it and shows "File exported". The templates are loaded again whenever the dialog closes.
+- **DOWNLOADTIME** — Where the project sets the `downloadTimeoutMs` option (Quality Circle: 90 seconds), a download that takes longer is cancelled with "Export is taking too long and was cancelled. Try narrowing your filters or contact support."; without the option a download waits.
+
+## Tests
+
+- A staff member without `data-export:role` does not see the module and cannot list the templates on the backend.
+- A staff member with the role but without `export` cannot download a template, on the backend either.
+- A template stored with a column its data source does not declare is read back without it.
+- With `downloadTimeoutMs` set to 1000, a download that takes two seconds is cancelled with the time-limit message.
+
+## Dependencies
+
+### Requires
+
+- DataSources as Sources
+- FilterOptions as OptionSearch
+- ExportFormats as Formats
+
+## Persona: ExportStaff
+
+### Summary
+
+A staff member whose role has the exports role, `data-export:role`.
+
+### Role
+
+- Keeps the organisation's export templates and downloads them — [plays](aim:juicebar.core#Persona:Staff)
+
+### Access
+
+- The exports module — [accesses](aim:juicebar.exports)
+
+## Record: ExportTemplate
+
+### Summary
+
+One export template.
+
+### Schema
+
+```schema
+id: string required unique
+name: string required
+data_source_key: string required
+columns: list(string)
+filters: list(part(juicebar.exports#FilterValue))
+sort: part(juicebar.exports#TemplateSort)
+meta: part(juicebar.exports#TemplateMeta)
+deleted: boolean required default(false)
+updated: datetime
+```
+
+### Constraints
+
+- `data_source_key` is the key of a data source registered on the backend; `columns` holds ids of that data source's columns, in the order they are exported.
+- `filters` holds at most one value per filter of the data source.
+- A deleted template is kept with `deleted` set and is never listed, opened or downloaded again.
+- `updated` is the moment the template was last stored.
+
+### Immutable
+
+- `meta`
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/types/ExportTemplate.ts#ExportTemplate` — as: model
+- provenance: inferred
+
+## Record: FilterValue
+
+### Summary
+
+The value a template gives one of its data source's filters.
+
+### Schema
+
+```schema
+id: string required
+value: string
+```
+
+### Constraints
+
+- `id` is the id of one of the data source's filters.
+- `value` holds what the filter's type takes: a text, a number, a date kept as `{year, month, day}`, one option's id or a list of option ids. The schema names it a text for want of one type for all of these.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/types/ExportFilter.ts#FilterValue` — as: model
+- provenance: inferred
+
+## Record: TemplateSort
+
+### Summary
+
+The column a template's rows are sorted by, and the direction.
+
+### Schema
+
+```schema
+prop: string
+dir: enum(asc, desc)
+```
+
+### Constraints
+
+- `prop` is the id of one of the template's columns that its data source can sort; without it there is no direction.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/types/ExportTemplate.ts#ExportTemplateFormValue` — as: model
+- provenance: inferred
+
+## Record: TemplateMeta
+
+### Summary
+
+Who created a template, and for which organisation.
+
+### Schema
+
+```schema
+user_id: string
+organisation_id: string ref(juicebar.core#Organisation.id)
+```
+
+### Constraints
+
+- `user_id` is the id of the staff member's user account. The users are not modelled yet, so it names no Record.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/types/ExportTemplate.ts#ExportTemplate` — as: model
+- provenance: inferred
+
+## Capability: DataSources
+
+### Summary
+
+The data sources other modules and the project register on the backend under `data:source:strategy`. Each has a key and a name; declares its columns (a label per language, whether the column can be sorted or filtered or can name a PDF, an optional description and an optional group) and its filters (an id, a label, a type, rules, and options for the choices); and gives the rows of an export for a template, a language and the staff member.
+
+### Operations
+
+- `List() -> dataSources`
+- `Columns(dataSource) -> columns`
+- `Filters(dataSource, staffMember) -> filters`
+- `Rows(template, language, staffMember) -> rows`
+
+### Bindings
+
+- binds: `service:exports:data-source#getDataSourceStrategies` — as: List
+- binds: `service:exports:column#getDataSourceColumns` — as: Columns
+- binds: `service:exports:filter#getDataSourceFilters` — as: Filters
+- binds: `service:exports#exportData` — as: Rows
+- provenance: inferred
+
+## Capability: FilterOptions
+
+### Summary
+
+The searches for a filter's options that other modules and the project register on the backend under `export:filter:fetcher:strategy`, each named by the filters that use it. A search is given the filter, the values of all the template's filters, the typed text, a page, the admin's language, the staff member and their organisation; it can also give the first options and the labels of values already chosen.
+
+### Operations
+
+- `Search(filter, filterValues, term, page, pageSize, language, staffMember) -> options`
+- `Initial(filter, filterValues, page, pageSize, language, staffMember) -> options`
+
+### Bindings
+
+- binds: `service:exports:filter#getAsyncFilterItems` — as: Search
+- binds: `service:exports:filter#getAsyncFilterItems` — as: Initial
+- provenance: inferred
+
+## Capability: ExportFormats
+
+### Summary
+
+The export formats registered on the backend under `data:export:strategy`, each with a key, a name and, optionally, the data sources it fits: the Excel format (`excel:export:strategy`) and PDF formats, whose keys begin with `pdf`, each with its own HTML template. A format makes a file from an export's rows and columns.
+
+### Operations
+
+- `FormatsFor(dataSource) -> formats`
+- `Render(rows, columns, template, fileNameColumn, language) -> file`
+
+### Bindings
+
+- binds: `service:exports:template#getExportTemplates` — as: FormatsFor
+- binds: `service:exports#exportData` — as: Render
+- provenance: inferred
+
+## Children
+
+- [templates](./templates/juicebar.exports.templates.aim) — the export templates page by page, and finding one in the admin's search, with the way to open, download and delete a template
+- [editor](./editor/juicebar.exports.editor.aim) — creating a template and changing one: its name, data source, columns, sort and filters
+- [filters](./filters/juicebar.exports.filters.aim) — a data source's filters and their values, in the editor and before an Excel download
+- [excel](./excel/juicebar.exports.excel.aim) — downloading a template as an Excel spreadsheet
+- [pdf](./pdf/juicebar.exports.pdf.aim) — downloading a template as a zip of PDFs

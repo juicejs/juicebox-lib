@@ -1,0 +1,110 @@
+---
+aim: juicebar.locations.create
+kind: intent
+parent: juicebar.locations
+provenance: inferred
+---
+
+# Creating a location
+
+## Summary
+
+Staff with the `create` permission create a location on its own page, in the admin's language: its type, category, names, its address or URL, Quality Circle's extra fields where the project has them, and the switches. The coordinates come from the address unless they are typed in.
+
+## Requirements
+
+- **NEWDEFAULTS** — A new location starts with no type, the country of the staff member's own language setting (Germany for `de_DE`) and its switches off. It is not archived, and the page offers no archived switch.
+- **NEWDONE** — A created location shows "Location successfully created" and opens on its details. A failure shows "Creating Location has failed" and stays on the page. Typed coordinates that are not a pair or out of range show their message and create nothing.
+- **NEWLEAVE** — Leaving the create page with unsaved changes asks before the changes are lost.
+
+## Tests
+
+- Saving a venue without a street shows "You must include a street" and creates nothing.
+- Choosing the type `web` replaces the description and the address with a URL, and the location is created without an address.
+- With `fields` holding `coordinates`, a latitude without a longitude shows "Enter both latitude and longitude, or leave both empty." and creates nothing.
+- A staff member whose language setting is `de_DE` finds Germany chosen as the country.
+- With `shortNameMaxLength` 19, a short name of 20 characters can't be saved.
+
+## View: CreateLocationPage
+
+### Summary
+
+The page for a new location.
+
+### Display
+
+- Type (required), the category where the configuration has categories, name (required) and short name — [reads](aim:juicebar.locations#Record:LocationType), [reads](aim:juicebar.locations#Record:LocationCategory), [satisfies](aim:juicebar.locations#Requirements[LOCTYPES]), [satisfies](aim:juicebar.locations#Requirements[LOCCATEGORY]), [satisfies](aim:juicebar.locations#Requirements[LOCNAME])
+- For a web location a URL; for every other one the description, and street, postcode, city and country (all four required) — [satisfies](aim:juicebar.locations#Requirements[WEB])
+- The countries named in the admin's language, in alphabetical order, the staff member's own country chosen at first — [reads](aim:juicebar.locations#Record:Country), [satisfies](aim:juicebar.locations#Requirements[COUNTRIES]), [satisfies](aim:juicebar.locations.create#Requirements[NEWDEFAULTS])
+- The "Organisation wide visibility" switch, off — [satisfies](aim:juicebar.locations.create#Requirements[NEWDEFAULTS])
+- The email with the project's hint, the accessibility switch, and the latitude and longitude, where the project's `fields` option names them; the short name's limit where `shortNameMaxLength` is set — [satisfies](aim:juicebar.locations#Requirements[EXTRAS]), [satisfies](aim:juicebar.locations#Requirements[COORDS]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- Create is shown only to staff with the `create` permission — [satisfies](aim:juicebar.locations#Requirements[LOCROLE])
+- Asks before unsaved changes are left — [satisfies](aim:juicebar.locations.create#Requirements[NEWLEAVE])
+
+### Actions
+
+- Create — [exposes](aim:juicebar.locations.create#Operation:CreateLocation)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/wizard/location-wizard.component.ts#LocationWizardComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/locations/location-fields/location-fields.component.ts#LocationFieldsComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/locations/locations-shared.ts#loadCountries` — as: component
+- binds: `service:locations:service#fetchCountries` — as: handler
+- provenance: inferred
+
+## Operation: CreateLocation
+
+### Summary
+
+A staff member creates a location in the admin's language.
+
+### Input
+
+```schema
+type: string required ref(juicebar.locations#LocationType.value)
+location_category: string ref(juicebar.locations#LocationCategory.value)
+name: string required
+short_name: string
+description: string
+street: string
+postcode: string
+city: string
+country: string ref(juicebar.locations#Country.id)
+url: string
+organisation_visibility: boolean
+accessibility: boolean
+email: string
+latitude: number
+longitude: number
+language: string required
+```
+
+### Authz
+
+- `juicebar.locations#Persona:LocationEditor`
+- `juicebar.locations#Persona:LocationAdmin`
+- `juicebar.locations#Persona:LocationSuperAdmin`
+
+### Ensures
+
+- A location exists with the type, the category, the name and the description in the given language, the short name and the organisation-wide visibility — [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations#Requirements[LOCNAME]), [satisfies](aim:juicebar.locations#Requirements[LOCTYPES]), [satisfies](aim:juicebar#Requirements[LANG])
+- A web location has the URL and no description or address; any other has the address and no URL — [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations#Requirements[WEB])
+- It has a unique slug made from the name in that language — [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations#Requirements[LOCSLUG])
+- Its coordinates are the ones typed in where the project has the field, or else the address lookup's first match; none when neither gives any — [invokes](aim:juicebar.locations#Capability:Geocoding), [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations#Requirements[COORDS])
+- Where the project's `fields` option names them, the email is kept with its attributes and the accessibility switch is stored — [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations#Requirements[EXTRAS]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- It belongs to the organisation the staff member is signed in to — [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations#Requirements[LOCORG])
+- A notice tells whether it worked, and a created location opens on its details — [satisfies](aim:juicebar.locations.create#Requirements[NEWDONE])
+- The operation is refused without the `create` permission — [satisfies](aim:juicebar.locations#Requirements[LOCROLE]), [satisfies](aim:juicebar#Requirements[ROLES])
+
+### Returns
+
+- The new location.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/wizard/location-wizard.component.ts#LocationWizardComponent.create` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/locations/location-form.ts#toLocationCreate` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/locations/location-form.ts#resolveCoordinates` — as: component
+- binds: `service:locations:service#createLocation` — as: handler
+- provenance: inferred

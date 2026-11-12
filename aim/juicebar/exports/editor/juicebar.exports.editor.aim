@@ -1,0 +1,160 @@
+---
+aim: juicebar.exports.editor
+kind: intent
+parent: juicebar.exports
+provenance: inferred
+---
+
+# Template editor
+
+## Summary
+
+Creating a template on its own page, and changing one opened from the list: its name, its data source, the columns it exports in their order, its sort and its filters. Both use the same editor; staff with the `create` permission create a template, staff with `update` save changes to one.
+
+## Requirements
+
+- **TPLNEEDS** — A template needs a name, a data source and at least one column, and its filters must keep their rules; until then "Create" and "Save" stay disabled, and an empty name or data source says "Field required" once touched. The backend refuses a new template without a name or a data source.
+- **PICKSOURCE** — The data source is picked by name, with a search, among the registered ones. A new template is not offered the vendors data source (`vendors:strategy`) unless the staff member is signed in to the master organisation (the `juice:master-organisation` configuration). Picking another data source clears the selected columns, the filter values and the sort, and loads that source's columns and filters.
+- **PICKCOLS** — The data source's columns are in two lists, available and selected. A column moves to the other list by dragging, or with Enter or Space, and all of them at once with "Select all" and "Deselect all"; the selected ones are put in order by dragging, and the template exports them in that order. Each column shows its label (its id without one), an [F] where it can be filtered, an [S] where it can be sorted, and its description as a tooltip.
+- **INVOICEALL** — A new template of the invoice data source (`invoice:strategy`) starts with all its columns selected.
+- **GROUPCOLS** — Where the backend configuration has the `amgshop` entry (AMG) and the data source's columns have groups, the columns are picked group by group, each group with its own two lists and buttons, the columns without a group under "Ungrouped"; the template's columns are the selected ones, group after group.
+- **PICKSORT** — The sort column is chosen, with a search, among the selected columns that can be sorted, and can be cleared. Choosing one sets the direction to descending, which can be changed to ascending; clearing it clears the direction. Without a selected column that can be sorted neither can be chosen, and a sort column that is no longer selected is cleared.
+- **FILTERSOFF** — The filters can be set only while at least one column is selected.
+- **EDITOPEN** — An opened template shows its name, its data source, its columns selected in its order with the others available after them, its sort, and its filters with their stored values.
+- **CREATEDONE** — A created template shows "Export template created" and returns to the list; one of the SAP data source (`sap-data:strategy`) also warns "When creating 'SAP' export template, be aware that you need 'Admin' permission to download it." A failure shows the backend's error and keeps the page.
+- **SAVEDONE** — A saved template shows "Template saved" and stays open; a failure shows the backend's error.
+
+## Tests
+
+- With no column selected, "Create" stays disabled.
+- Selecting "Name", "Email" and "City" and then dragging "City" to the top stores the columns in the order City, Name, Email.
+- Clearing the sort column also clears the direction.
+- Picking another data source empties the selected columns and the sort.
+- A staff member signed in to an organisation other than the master organisation is not offered the vendors data source for a new template.
+- Without the `update` permission an opened template shows "Save" disabled.
+
+## View: CreateTemplatePage
+
+### Summary
+
+The page for a new template.
+
+### Display
+
+- Name and data source (both required), the available and selected columns, the sort column and direction, and the data source's filters, which wait for a selected column — [satisfies](aim:juicebar.exports.editor#Requirements[TPLNEEDS]), [satisfies](aim:juicebar.exports.editor#Requirements[PICKCOLS]), [satisfies](aim:juicebar.exports.editor#Requirements[PICKSORT]), [satisfies](aim:juicebar.exports.editor#Requirements[FILTERSOFF])
+- The registered data sources, without the vendors data source outside the master organisation — [satisfies](aim:juicebar.exports.editor#Requirements[PICKSOURCE]), [satisfies](aim:juicebar.exports#Requirements[SOURCES]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- The columns in groups, where the `amgshop` configuration is present and the columns have groups — [satisfies](aim:juicebar.exports.editor#Requirements[GROUPCOLS]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- All columns selected at first for a template of the invoice data source — [satisfies](aim:juicebar.exports.editor#Requirements[INVOICEALL])
+
+### Actions
+
+- Create — [exposes](aim:juicebar.exports.editor#Operation:CreateExportTemplate)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/export-template-create/export-template-create.component.ts#ExportTemplateCreateComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/exports/export-template-editor/export-template-editor.component.ts#ExportTemplateEditorComponent` — as: component
+- binds: `service:exports:data-source#getDataSourceStrategies` — as: handler
+- binds: `service:exports:column#getDataSourceColumns` — as: handler
+- binds: `service:exports:filter#getDataSourceFilters` — as: handler
+- provenance: inferred
+
+## View: EditTemplatePage
+
+### Summary
+
+An opened template, in the same editor.
+
+### Display
+
+- The template's name, data source, selected columns in its order, sort, and filters with their stored values — [reads](aim:juicebar.exports#Record:ExportTemplate), [satisfies](aim:juicebar.exports.editor#Requirements[EDITOPEN])
+- The same fields and rules as for a new template, every registered data source among the choices — [satisfies](aim:juicebar.exports.editor#Requirements[PICKSOURCE]), [satisfies](aim:juicebar.exports.editor#Requirements[PICKCOLS]), [satisfies](aim:juicebar.exports.editor#Requirements[GROUPCOLS]), [satisfies](aim:juicebar.exports.editor#Requirements[PICKSORT]), [satisfies](aim:juicebar.exports.editor#Requirements[FILTERSOFF])
+- "Save", disabled without the `update` permission or while the template lacks what it needs — [satisfies](aim:juicebar.exports.editor#Requirements[TPLNEEDS])
+
+### Actions
+
+- Save — [exposes](aim:juicebar.exports.editor#Operation:EditExportTemplate)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/export-template-edit/export-template-edit.component.ts#ExportTemplateEditComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/exports/export-template-editor/export-template-editor.component.ts#ExportTemplateEditorComponent` — as: component
+- binds: `service:exports:template#getExportTemplate` — as: handler
+- provenance: inferred
+
+## Operation: CreateExportTemplate
+
+### Summary
+
+A staff member creates a template.
+
+### Input
+
+```schema
+name: string required
+data_source_key: string required
+columns: list(string) required
+filters: list(part(juicebar.exports#FilterValue))
+sort: part(juicebar.exports#TemplateSort)
+```
+
+### Authz
+
+- `juicebar.exports#Persona:ExportStaff`
+
+### Ensures
+
+- A template exists with the name, the data source, the columns in the order given, the filters that have a value, and the sort — [mutates](aim:juicebar.exports#Record:ExportTemplate), [satisfies](aim:juicebar.exports.editor#Requirements[TPLNEEDS]), [satisfies](aim:juicebar.exports.editor#Requirements[PICKCOLS])
+- Only the columns and filters the data source declares are kept, and the sort only on a column it can sort — [invokes](aim:juicebar.exports#Capability:DataSources), [mutates](aim:juicebar.exports#Record:ExportTemplate), [satisfies](aim:juicebar.exports#Requirements[KEEPKNOWN])
+- It records the staff member and the organisation they are signed in to — [mutates](aim:juicebar.exports#Record:ExportTemplate), [satisfies](aim:juicebar.exports#Requirements[TPLMETA])
+- A notice tells whether it worked; a template of the SAP data source also warns that downloading it needs the `admin` permission — [satisfies](aim:juicebar.exports.editor#Requirements[CREATEDONE]), [satisfies](aim:juicebar.exports#Requirements[SAPADMIN])
+- The operation is refused without the `create` permission — [satisfies](aim:juicebar.exports#Requirements[EXPROLE]), [satisfies](aim:juicebar#Requirements[ROLES])
+
+### Returns
+
+- The new template.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/export-template-create/export-template-create.component.ts#ExportTemplateCreateComponent.create` — as: component
+- binds: `service:exports:template#createExportTemplate` — as: handler
+- provenance: inferred
+
+## Operation: EditExportTemplate
+
+### Summary
+
+A staff member changes a template's name, data source, columns, sort and filters.
+
+### Input
+
+```schema
+templateId: string required ref(juicebar.exports#ExportTemplate.id)
+name: string required
+data_source_key: string required
+columns: list(string) required
+filters: list(part(juicebar.exports#FilterValue))
+sort: part(juicebar.exports#TemplateSort)
+```
+
+### Authz
+
+- `juicebar.exports#Persona:ExportStaff`
+
+### Ensures
+
+- The template's name, data source, columns in the order given, filters that have a value, and sort are replaced by the ones given — [mutates](aim:juicebar.exports#Record:ExportTemplate), [satisfies](aim:juicebar.exports.editor#Requirements[PICKSOURCE]), [satisfies](aim:juicebar.exports.editor#Requirements[PICKCOLS])
+- Only the columns and filters the data source declares are kept, and the sort only on a column it can sort; a data source that is not registered is refused — [invokes](aim:juicebar.exports#Capability:DataSources), [mutates](aim:juicebar.exports#Record:ExportTemplate), [satisfies](aim:juicebar.exports#Requirements[KEEPKNOWN]), [satisfies](aim:juicebar.exports#Requirements[SOURCES])
+- The staff member and organisation that created it stay as they were — [mutates](aim:juicebar.exports#Record:ExportTemplate), [satisfies](aim:juicebar.exports#Requirements[TPLMETA])
+- A notice tells whether it worked — [satisfies](aim:juicebar.exports.editor#Requirements[SAVEDONE])
+- The operation is refused without the `update` permission, or for a template the project's backend rules keep from the staff member — [satisfies](aim:juicebar.exports#Requirements[EXPROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.exports#Requirements[TPLSCOPE])
+
+### Returns
+
+- The stored template.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/exports/export-template-edit/export-template-edit.component.ts#ExportTemplateEditComponent.save` — as: component
+- binds: `service:exports:template#editExportTemplate` — as: handler
+- provenance: inferred

@@ -1,0 +1,111 @@
+---
+aim: juicebar.locations.attributes
+kind: intent
+parent: juicebar.locations
+provenance: inferred
+---
+
+# Location attributes
+
+## Summary
+
+The Attributes tab of an opened location: a stadium's or hall's attribute fields, as the project configures them, and the hatching pattern the availability calendar shows the location with.
+
+## Requirements
+
+- **ATTRFIELDS** — A stadium (`stadion`) or a hall (`hall`) has the attribute fields the `juicecommerce:location:attribute` configuration gives its kind (`location:stadion` or `location:hall`), each with its name, its kind of input and whether it is required. Other locations have none.
+- **HATCHING** — A location has no hatching pattern or one of 12: Horizontal 1, Vertical 1, Horizontal 2, Vertical 2, Diagonal 1, Diagonal 2, Rectangles, Rhombus, Zigzag, Dots, Triangles 1 and Triangles 2, stored as 1 to 12 and none as 0. A location without one shows none. The "No hatching pattern" switch sets none; switching it off, or Reset, sets the first pattern.
+- **ATTRSAVE** — Saving stores this tab's values and leaves the location's other attributes as they are. A required field left empty saves nothing. A save shows "Attributes updated"; a failure shows "Saving failed".
+- **ATTRLEAVE** — Leaving the tab with unsaved changes asks before the changes are lost.
+
+## Tests
+
+- A hall shows the configured hall fields with the hatching pattern; a venue shows only the hatching pattern.
+- Choosing "Dots" and saving stores the pattern 10.
+- Switching "No hatching pattern" on and saving stores 0.
+- Saving the tab of a venue leaves its room plans as they were.
+
+## Record: AttributeField
+
+### Summary
+
+An attribute field of the `juicecommerce:location:attribute` configuration.
+
+### Schema
+
+```schema
+name: string required
+property: string required
+datatype: string
+required: boolean
+model: string
+```
+
+### Constraints
+
+- `property` is the key the value is kept under in the location's attributes; `datatype` is the kind of input, such as `number`, and text without one.
+- `model` is `location:stadion` for a stadium's field and `location:hall` for a hall's.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/locations.types.ts#LocationAttributeField` — as: model
+- provenance: inferred
+
+## View: AttributesTab
+
+### Summary
+
+The Attributes tab of an opened location.
+
+### Display
+
+- A stadium's or hall's attribute fields with their stored values, required ones marked — [reads](aim:juicebar.locations.attributes#Record:AttributeField), [reads](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations.attributes#Requirements[ATTRFIELDS])
+- The hatching pattern shown, the "No hatching pattern" switch, a choice of the 12 patterns, and Reset — [satisfies](aim:juicebar.locations.attributes#Requirements[HATCHING])
+- Save and Reset are shown only to staff with the `updated` permission — [satisfies](aim:juicebar.locations#Requirements[LOCROLE])
+- Asks before unsaved changes are left — [satisfies](aim:juicebar.locations.attributes#Requirements[ATTRLEAVE])
+
+### Actions
+
+- Save — [exposes](aim:juicebar.locations.attributes#Operation:UpdateLocationAttributes)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/attributes-location/attributes-location.component.ts#AttributesLocationComponent` — as: component
+- binds: `service:juicebox:configuration:service#getBySchema` — as: handler
+- provenance: inferred
+
+## Operation: UpdateLocationAttributes
+
+### Summary
+
+A staff member saves a location's attribute values and hatching pattern.
+
+### Input
+
+```schema
+locationId: string required ref(juicebar.locations#Location.id)
+hatching_pattern: integer required min(0) max(12)
+values: map(string)
+```
+
+### Authz
+
+- `juicebar.locations#Persona:LocationEditor`
+- `juicebar.locations#Persona:LocationAdmin`
+- `juicebar.locations#Persona:LocationSuperAdmin`
+
+### Expects
+
+- Every required attribute field has a value.
+
+### Ensures
+
+- The hatching pattern and each attribute field's value are set in the location's attributes, and its other attributes stay — [mutates](aim:juicebar.locations#Record:Location), [satisfies](aim:juicebar.locations.attributes#Requirements[ATTRSAVE]), [satisfies](aim:juicebar.locations.attributes#Requirements[HATCHING])
+- A notice tells whether it worked — [satisfies](aim:juicebar.locations.attributes#Requirements[ATTRSAVE])
+- The operation is refused without the `updated` permission, or for a location of another organisation — [satisfies](aim:juicebar.locations#Requirements[LOCROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.locations#Requirements[LOCORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/attributes-location/attributes-location.component.ts#AttributesLocationComponent.save` — as: component
+- binds: `service:locations:service#updateAttributes` — as: handler
+- provenance: inferred

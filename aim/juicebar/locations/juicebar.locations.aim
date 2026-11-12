@@ -1,0 +1,342 @@
+---
+aim: juicebar.locations
+kind: intent
+parent: juicebar
+provenance: inferred
+---
+
+# Locations
+
+## Summary
+
+The places a project keeps, of the types the project configures: venues, stadiums and halls, regions, places on the map, web addresses and others. A location has a type, an optional category, a name and a description in each language, a short name, an address with its coordinates (a URL instead, for a web location), switches for being archived, visible across the organisation and accessible, and its files and documents. A venue also has room plans, a stadium or a hall the attribute fields the project configures, and every location a hatching pattern for the availability calendar. A location belongs to the organisation of the staff member who created it. Staff with the locations role list the locations, create them, change their details, attributes, files and room plans, archive them and delete them.
+
+Quality Circle's parts are switched by the options the project gives the library: the "Show locations" choice in the listing, the email, accessibility and typed coordinates, the short name's length, and the types that can be archived or deleted from the listing. A project can also hide the Attributes and Documents tabs.
+
+## Requirements
+
+- **LOCROLE** — The module needs `locations:role`. Creating a location needs its `create` permission; changing a location, its attributes, its files and its room plans, and archiving it, needs `updated` (the backend also accepts `update`); deleting needs `delete`. The backend refuses each operation without its permission — from [juicebar#Requirements[ROLES]]
+- **LOCORG** — A location belongs to the organisation the staff member who created it was signed in to. It is changed or deleted only by staff who have the permission in that organisation; a location without an organisation only by a super admin of locations (`locations:role#super-admin`), who changes and deletes every location. Where the backend configuration of `locations:service` sets `strictTenancy` off, these organisation checks are not made.
+- **LOCSEE** — Staff see the locations of every organisation, except venues: the listing shows the venues of the organisation they are signed in to and those without one. A venue opened directly is shown when it has no organisation, or belongs to the staff member's organisation or to another organisation where they have `locations:role`; a super admin of locations opens every venue, and so does everyone where `strictTenancy` is off.
+- **LOCTYPES** — Every location has one of the types the `location:type` configuration offers, and the type is required. A type that names permissions is offered only to staff with one of them on `locations:role`, and the listing shows only locations of the types offered to the staff member.
+- **WEB** — A location of type `web` has a URL instead of a description, an address and coordinates. Every other location needs a street, a postcode, a city and a country, and has no URL.
+- **LOCNAME** — A location needs a name; its short name and description are optional. The name and the description are kept per language, the short name once. Where the project sets the `shortNameMaxLength` option, a longer short name is refused — from [juicebar#Requirements[LANG]]
+- **LOCSLUG** — A location gets a web address (slug) made from its name in the language it is created in, unique among the locations. Saving a location in a language makes that language's slug again from its name.
+- **COORDS** — A location that is not a web location gets its coordinates from its address: the first match the address lookup finds for its street, its city and its country's English name. When nothing is found, a new location has none and a stored one keeps its own. Where the project's `fields` option has `coordinates`, a latitude and longitude typed in are used instead: both or neither, the latitude from -90 to 90 and the longitude from -180 to 180.
+- **EXTRAS** — Where the project's `fields` option has them, a location also has an email address, kept with its attributes and removed when emptied, and an accessibility switch; the project's `emailHint` option is shown under the email. Without them neither field is shown, and neither is sent.
+- **COUNTRIES** — The countries to choose from are the locations service's list. Each is named in the admin's language (its stored name, or else the browser's name for its country code) and they are listed in that language's alphabetical order.
+- **LOCCATEGORY** — A location may have one category of the `location:category` configuration. The category field is shown only where the configuration has categories.
+
+## Tests
+
+- A staff member without `locations:role` cannot read the locations from the backend.
+- A location created without a name is refused.
+- A staff member signed in to organisation A cannot change a location created in organisation B.
+- Without the `fields` option, no email, accessibility, latitude or longitude field appears anywhere in the module.
+- A type configured with the permissions `admin` is not offered to a staff member without `locations:role#admin`.
+- A new venue at "Unter den Linden 77, Berlin, Germany" is stored with coordinates near latitude 52.5 and longitude 13.4.
+
+## Dependencies
+
+### Requires
+
+- Geocoding as Coordinates
+- RoomPlans as Plans
+- LocationUsage as Usage
+
+## Persona: LocationEditor
+
+### Summary
+
+A staff member whose role has the locations role.
+
+### Role
+
+- Keeps the organisation's locations — [plays](aim:juicebar.core#Persona:Staff)
+
+### Access
+
+- The locations module — [accesses](aim:juicebar.locations)
+
+## Persona: LocationAdmin
+
+### Summary
+
+A staff member whose role has `locations:role#admin`: they also save regions.
+
+### Role
+
+- Keeps the organisation's locations, regions included — [plays](aim:juicebar.core#Persona:Staff)
+
+### Access
+
+- The locations module — [accesses](aim:juicebar.locations)
+
+## Persona: LocationSuperAdmin
+
+### Summary
+
+A staff member whose role has `locations:role#super-admin` in the organisation they are signed in to: they reach the locations of every organisation, and those without one.
+
+### Role
+
+- Keeps the locations of every organisation — [plays](aim:juicebar.core#Persona:Staff)
+
+### Access
+
+- The locations module — [accesses](aim:juicebar.locations)
+
+## Record: Location
+
+### Summary
+
+One place the project keeps.
+
+### Schema
+
+```schema
+id: string required unique
+type: string required ref(juicebar.locations#LocationType.value)
+location_category: string ref(juicebar.locations#LocationCategory.value)
+name: map(string) required
+short_name: string
+slug: map(string)
+description: map(string)
+url: string
+address: list(part(juicebar.locations#Address))
+archived: boolean
+cannotArchive: boolean
+organisation_id: string ref(juicebar.core#Organisation.id)
+organisation_visibility: boolean
+accessibility: boolean
+attributes: part(juicebar.locations#LocationAttributes)
+media: list(part(juicebar.core#Media))
+```
+
+### Constraints
+
+- `name`, `slug` and `description` hold one text per language code, such as `en_GB` or `de_DE`.
+- The admin keeps one address, the first; a web location's address is empty.
+- `cannotArchive` is set by the backend for a location that must stay active, never by staff.
+- `organisation_visibility` is the "Organisation wide visibility" switch and `accessibility` the "Accessibility" switch; the locations service stores them as given.
+
+### Immutable
+
+- `organisation_id`
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/locations.types.ts#StoredLocation` — as: model
+- provenance: inferred
+
+## Record: Address
+
+### Summary
+
+A location's postal address.
+
+### Schema
+
+```schema
+street: string
+postcode: string
+city: string
+country: string ref(juicebar.locations#Country.id)
+```
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/locations.types.ts#LocationAddress` — as: model
+- provenance: inferred
+
+## Record: Coordinates
+
+### Summary
+
+Where a location is on the map.
+
+### Schema
+
+```schema
+latitude: number required min(-90) max(90)
+longitude: number required min(-180) max(180)
+```
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/locations.types.ts#LocationCoordinates` — as: model
+- provenance: inferred
+
+## Record: LocationAttributes
+
+### Summary
+
+What a location keeps beside its details: its coordinates, its email address, its hatching pattern, a venue's room plans, and a stadium's or hall's configured attribute values.
+
+### Schema
+
+```schema
+coordinates: part(juicebar.locations#Coordinates)
+email: string
+hatching_pattern: integer min(0) max(12)
+roomPlans: list(juicebar.locations#RoomPlan)
+```
+
+### Constraints
+
+- A stadium or a hall also keeps the value of each attribute field the `juicecommerce:location:attribute` configuration gives its kind, under the field's `property`.
+- `hatching_pattern` 0 is no pattern.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/locations.types.ts#LocationAttributes` — as: model
+- provenance: inferred
+
+## Record: Country
+
+### Summary
+
+A country of the locations service's list.
+
+### Schema
+
+```schema
+id: string required unique
+code: string required
+name: map(string)
+callingCode: string
+```
+
+### Constraints
+
+- The backend fills the list with the countries' English names (`en_GB`); a project may add names in other languages.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/locations.types.ts#LocationCountry` — as: model
+- provenance: inferred
+
+## Record: LocationType
+
+### Summary
+
+A type of location, from the `location:type` configuration.
+
+### Schema
+
+```schema
+value: string required unique
+name: string
+localised_name: map(string)
+permissions: list(string)
+```
+
+### Constraints
+
+- `permissions` are names of permissions on `locations:role`; a type without them is offered to every staff member of the module.
+- The module gives the types `web`, `venue`, `region`, `stadion` and `hall` their own behaviour.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/locations.types.ts#LocationType` — as: model
+- provenance: inferred
+
+## Record: LocationCategory
+
+### Summary
+
+A category of location, from the `location:category` configuration.
+
+### Schema
+
+```schema
+value: string required unique
+name: string
+localised_name: map(string)
+```
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/locations.types.ts#LocationCategory` — as: model
+- provenance: inferred
+
+## Record: RoomPlan
+
+### Summary
+
+A room plan of the project's room plans module, as far as a venue's seating layout shows it. It is kept by the room plans service, outside this model.
+
+### Schema
+
+```schema
+id: string required unique
+name: map(string)
+media: list(part(juicebar.core#Media))
+```
+
+### Constraints
+
+- Some room plans keep their name as one text instead of one per language.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/seating-layout/room-plans.ts#RoomPlan` — as: model
+- provenance: inferred
+
+## Capability: Geocoding
+
+### Summary
+
+An address search that gives the coordinates of a street in a city and a country.
+
+### Operations
+
+- `CoordinatesOf(street, city, country) -> coordinates`
+
+### Bindings
+
+- binds: `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find` — as: CoordinatesOf
+- binds: `projects/juicebar/src/lib/core/modules/locations/geocoding.service.ts#GeocodingService.coordinatesOf` — as: component
+- provenance: inferred
+
+## Capability: RoomPlans
+
+### Summary
+
+The project's room plans: found by a name search, and read one by one.
+
+### Operations
+
+- `FindRoomPlans(term, language) -> roomPlans`
+- `GetRoomPlan(roomPlanId) -> roomPlan`
+
+### Bindings
+
+- binds: `service:room-plan#fetch` — as: FindRoomPlans
+- binds: `service:room-plan#getRoomPlan` — as: GetRoomPlan
+- binds: `projects/juicebar/src/lib/core/modules/locations/details/seating-layout/room-plans.ts#searchRoomPlans` — as: component
+- provenance: inferred
+
+## Capability: LocationUsage
+
+### Summary
+
+Tells whether a location may be deleted, or why not: what in the project still uses it. A project's backend answers it; Quality Circle's refuses while an open training or a shift uses the location.
+
+### Operations
+
+- `CheckDelete(location) -> allowed or reason`
+
+### Bindings
+
+- binds: `service:locations:service:middleware:qc#preDeleteLocation` — as: CheckDelete
+- provenance: inferred
+
+## Children
+
+- [list](./list/juicebar.locations.list.aim) — the listing of locations, with archiving and deleting from it
+- [create](./create/juicebar.locations.create.aim) — creating a location
+- [details](./details/juicebar.locations.details.aim) — an opened location's tabs, and changing its details
+- [attributes](./attributes/juicebar.locations.attributes.aim) — a location's attribute fields and hatching pattern
+- [media](./media/juicebar.locations.media.aim) — a location's files and documents
+- [seating](./seating/juicebar.locations.seating.aim) — a venue's room plans

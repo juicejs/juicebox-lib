@@ -1,0 +1,122 @@
+---
+aim: juicebar.categories.tree
+kind: intent
+parent: juicebar.categories
+provenance: inferred
+---
+
+# Category tree
+
+## Summary
+
+The categories as a tree: the first level and everything below it, each level in order, with a search over the names. From here staff open a category, add a subcategory under one, create a first-level category and delete a category.
+
+## Requirements
+
+- **TREEFILTER** — Typing in the search box keeps the categories whose name matches, with the categories above them, in the whole tree.
+- **TREEINACTIVE** — Inactive categories are left out of the tree. Where the project sets the `showInactive` option, a "Show inactive" switch adds them, at every level; an inactive category is marked as inactive.
+- **TREESHOW** — Where `showPublic` is set, a "Show categories" choice filters the first level: Mine (the organisation's own categories and the ones taken into Mine), Organisation (the categories of the organisations in the organisation tree) or All. Mine is chosen at first.
+- **OPENTAB** — A category opens on its details. Where the backend configuration sets `openCategoriesInNewTab`, it opens in a new browser tab.
+- **CATDELETE** — A category is deleted only after the staff member confirms it. Who may delete: by default, staff with the `delete` permission delete any category they see. Where the configuration sets `allowDelete` off, only super admins of categories delete. Where it sets `allowRootDelete` (Quality Circle), staff with the `delete` permission delete their own organisation's categories that have no subcategories, and with `allowDelete` off super admins delete any.
+- **RENUMBER** — After a subcategory is deleted, its remaining siblings get the positions they are shown in, counted from 0.
+- **DELETEDONE** — A deleted category leaves the tree with a notice "Category deleted"; a failed delete shows "Category delete failed", and a failed renumbering "Failed moving category".
+
+## Tests
+
+- Searching "rope" in a tree with "Ropes › Wire rope" shows "Ropes" with "Wire rope" below it.
+- Without the `showInactive` option no "Show inactive" switch is shown and inactive categories are not listed.
+- Deleting the second of three subcategories leaves the other two with the orders 0 and 1.
+- With `allowRootDelete`, a category that has subcategories shows no delete button.
+
+## View: CategoryTree
+
+### Summary
+
+The page of the categories module: the tree, its search, and Quality Circle's switches above it.
+
+### Display
+
+- Each category's name in the admin's language, inactive ones marked, every level in order — [reads](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.categories#Requirements[CATORDER]), [satisfies](aim:juicebar.categories.tree#Requirements[TREEINACTIVE])
+- A search box over the names — [satisfies](aim:juicebar.categories.tree#Requirements[TREEFILTER])
+- Every label on the module's screens comes from the categories label dictionary, in the admin's language, with every language's texts the old admin had — [satisfies](aim:juicebar#Requirements[UILABELS])
+- A category opens on its details, in a new browser tab where `openCategoriesInNewTab` is set — [satisfies](aim:juicebar.categories.tree#Requirements[OPENTAB])
+- The "Show categories" choice and the "Show inactive" switch, where their configuration and option are set — [satisfies](aim:juicebar.categories.tree#Requirements[TREESHOW]), [satisfies](aim:juicebar.categories#Requirements[ORGTREE]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- First-level categories of the staff member's organisation and those without one — [satisfies](aim:juicebar.categories#Requirements[CATORG])
+
+### Actions
+
+- Create — [navigates](aim:juicebar.categories.create#View:CreateCategoryPage)
+- Open a category — [navigates](aim:juicebar.categories.details#View:CategoryDetails)
+- Add a subcategory — [navigates](aim:juicebar.categories.create#View:AddSubcategory)
+- Delete — [exposes](aim:juicebar.categories.tree#Operation:DeleteCategory)
+- Remove from Mine — [exposes](aim:juicebar.categories.mine#Operation:RemoveFromMine)
+
+### Layout
+
+- Create is the page's action; add a subcategory, delete and remove from Mine are buttons on each category's row, shown only where the staff member may use them.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/categories/listing/categories-listing.component.ts#CategoriesListingComponent` — as: component
+- binds: `service:juicecommerce:categories#getTree` — as: handler
+- binds: `service:juicecommerce:categories#fetch` — as: handler
+- provenance: inferred
+
+## Operation: DeleteCategory
+
+### Summary
+
+A staff member deletes a category.
+
+### Input
+
+```schema
+categoryId: string required ref(juicebar.categories#Category.id)
+```
+
+### Authz
+
+- `juicebar.categories#Persona:CategoryEditor`
+- `juicebar.categories#Persona:CategorySuperAdmin`
+
+### Expects
+
+- The staff member confirmed the deletion.
+
+### Ensures
+
+- Only staff who may delete this category reach it: the delete button shows for them alone — [satisfies](aim:juicebar.categories.tree#Requirements[CATDELETE])
+- The category is gone — [mutates](aim:juicebar.categories#Record:Category), [emits](aim:juicebar.categories.tree#Event:CategoryDeleted)
+- Its remaining siblings are renumbered in the order shown — [mutates](aim:juicebar.categories#Record:Category), [satisfies](aim:juicebar.categories.tree#Requirements[RENUMBER])
+- A notice tells whether it worked — [satisfies](aim:juicebar.categories.tree#Requirements[DELETEDONE])
+- The operation is refused without the `delete` permission, or for a category of another organisation — [satisfies](aim:juicebar.categories#Requirements[CATROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.categories#Requirements[CATORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/categories/listing/categories-listing.component.ts#CategoriesListingComponent.remove` — as: component
+- binds: `service:juicecommerce:categories#deleteCategory` — as: handler
+- binds: `service:juicecommerce:categories#updateSiblingOrder` — as: handler
+- provenance: inferred
+
+## Event: CategoryDeleted
+
+### Summary
+
+A category was deleted, with the organisation and the staff member who deleted it.
+
+### Payload
+
+```schema
+categoryId: string required
+organisationId: string
+userId: string
+```
+
+### Routing
+
+- Channel: category:deleted
+
+### Bindings
+
+- binds: `service:juicecommerce:categories#deleteCategory` — as: topic
+- provenance: inferred
