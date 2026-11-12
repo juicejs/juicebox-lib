@@ -1,0 +1,26 @@
+.attribute-filter {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.attribute-filter-legend {
+  margin-bottom: 8px;
+  padding: 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+// The rows are set apart by a hairline, as the old form's rule between them
+.attribute-row + .attribute-row {
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.attribute-filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: 4px 0 12px;
+}

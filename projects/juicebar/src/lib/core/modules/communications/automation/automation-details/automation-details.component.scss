@@ -1,0 +1,19 @@
+// The details on the left, the recipients on the right; one under the other where there is no room (AUTODETAILS)
+.automation-page {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.details-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.details-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}

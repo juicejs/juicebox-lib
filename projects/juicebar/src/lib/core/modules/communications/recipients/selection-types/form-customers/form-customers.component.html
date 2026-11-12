@@ -1,0 +1,41 @@
+<app-form-field appearance="outline">
+  <app-label>{{ 'select_form' | translate }}</app-label>
+  <app-select [searchable]="true"
+              [externalSearch]="true"
+              [disabled]="formLocked()"
+              [value]="formId()"
+              (selectionChange)="chooseForm($event.value)"
+              (searchChange)="searchForms($event)"
+              [placeholder]="'select_form' | translate"
+              [searchPlaceholder]="'search' | translate">
+    @for (form of formOptions(); track form.value) {
+      <app-option [value]="form.value">{{ form.label }}</app-option>
+    }
+  </app-select>
+</app-form-field>
+
+@if (formId()) {
+  <div class="send-to-all">
+    <app-slide-toggle [checked]="sendToAll()" (toggled)="toggleAll($event)">
+      {{ 'select_all_form_recipients' | translate }}
+    </app-slide-toggle>
+  </div>
+}
+
+<app-form-field appearance="outline">
+  <app-label>{{ 'recipients_params' | translate }}</app-label>
+  <app-select [multiple]="true"
+              [bulkActions]="false"
+              [searchable]="automation()"
+              [externalSearch]="true"
+              [disabled]="customersDisabled()"
+              [value]="chosenIds()"
+              (selectionChange)="chooseCustomers($event.value)"
+              (searchChange)="searchCustomers($event)"
+              [placeholder]="'select_recipients' | translate"
+              [searchPlaceholder]="'search' | translate">
+    @for (option of customerOptions(); track option.value) {
+      <app-option [value]="option.value">{{ option.label }}</app-option>
+    }
+  </app-select>
+</app-form-field>

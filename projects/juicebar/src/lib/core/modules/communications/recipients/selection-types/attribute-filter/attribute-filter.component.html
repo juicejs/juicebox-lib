@@ -1,0 +1,44 @@
+<fieldset class="attribute-filter">
+  <legend class="attribute-filter-legend">{{ 'attributes_filter' | translate }}</legend>
+
+  @for (row of rowViews(); track row.id) {
+    <div class="attribute-row">
+      <app-form-field appearance="outline">
+        <app-label>{{ 'attribute' | translate }}</app-label>
+        <app-select [searchable]="true"
+                    [value]="row.attribute || null"
+                    (selectionChange)="chooseAttribute(row.id, $event.value)"
+                    [placeholder]="'filter_by_attribute' | translate"
+                    [searchPlaceholder]="'search' | translate">
+          @for (attribute of attributes(); track attribute.value) {
+            <app-option [value]="attribute.value">{{ attribute.label }}</app-option>
+          }
+        </app-select>
+      </app-form-field>
+
+      @if (row.attribute) {
+        <app-form-field appearance="outline">
+          <app-label>{{ 'choose_value' | translate }}</app-label>
+          <app-select [searchable]="true"
+                      [value]="row.value || null"
+                      (selectionChange)="chooseValue(row.id, $event.value)"
+                      [placeholder]="'choose_value' | translate"
+                      [searchPlaceholder]="'search' | translate">
+            @for (value of row.values; track value) {
+              <app-option [value]="value">{{ value }}</app-option>
+            }
+          </app-select>
+        </app-form-field>
+      }
+    </div>
+  }
+
+  <div class="attribute-filter-actions">
+    <button app-button appearance="stroked" type="button" (click)="add()">
+      <app-icon [icon]="'add'" />
+      {{ 'add' | translate }}
+    </button>
+  </div>
+
+  <app-slide-toggle [checked]="true" [disabled]="true">{{ 'match_all_attributes' | translate }}</app-slide-toggle>
+</fieldset>

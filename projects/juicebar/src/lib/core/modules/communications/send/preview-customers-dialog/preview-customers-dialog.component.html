@@ -1,0 +1,19 @@
+<app-dialog-title>
+  {{ 'customers' | translate }}
+  <span class="preview-subtitle">{{ 'preview' | translate }}</span>
+</app-dialog-title>
+
+<app-dialog-content>
+  <app-data-table [rows]="rows()"
+                  [columns]="columns"
+                  [totalCount]="count()"
+                  [pageSize]="pageSize"
+                  [pageSizeOptions]="pageSizeOptions"
+                  [pageIndex]="pageIndex()"
+                  [emptyMessage]="'no_data_to_display' | translate"
+                  (pageChange)="onPage($event)" />
+</app-dialog-content>
+
+<app-dialog-actions align="end">
+  <button app-button type="button" (click)="close()">{{ 'close' | translate }}</button>
+</app-dialog-actions>

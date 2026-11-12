@@ -1,0 +1,13 @@
+<app-data-table
+  [rows]="rows()"
+  [columns]="columns"
+  [totalCount]="count()"
+  [pageSize]="pageSize"
+  [pageSizeOptions]="pageSizeOptions"
+  [pageIndex]="page() - 1"
+  [emptyMessage]="'no_data_to_display' | translate"
+  (pageChange)="onPage($event)"
+>
+  <ng-template [cellDef]="'time'" let-row>{{ row.time | date: 'short' }}</ng-template>
+  <ng-template [cellDef]="'progress'" let-row>{{ row.progress }} %</ng-template>
+</app-data-table>

@@ -25,6 +25,7 @@ const FA_TO_MATERIAL_ICONS: Record<string, string> = {
   'fa-file': 'description',
   'fa-folder': 'folder',
   'fa-envelope': 'email',
+  'fa-paper-plane': 'send',
   'fa-mail': 'email',
   'fa-phone': 'phone',
   'fa-calendar': 'calendar_today',

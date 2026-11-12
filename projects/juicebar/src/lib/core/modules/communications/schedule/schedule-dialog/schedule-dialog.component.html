@@ -1,0 +1,20 @@
+<app-dialog-title>{{ 'schedule_communication' | translate }}</app-dialog-title>
+
+<app-dialog-content>
+  <div class="schedule-layout">
+    <div class="schedule-when">
+      <app-calendar [formControl]="date" />
+      <app-timepicker [formControl]="time" />
+      <button app-button appearance="raised" color="primary" type="button"
+              [promiseBtn]="schedulePromise()"
+              (click)="schedule()">
+        {{ 'schedule' | translate }}
+      </button>
+    </div>
+
+    <div class="schedule-times">
+      <app-pending-times [communication]="communication()" />
+      <app-started-times [communication]="communication()" />
+    </div>
+  </div>
+</app-dialog-content>

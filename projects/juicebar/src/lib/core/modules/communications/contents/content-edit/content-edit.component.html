@@ -1,0 +1,39 @@
+@if (loaded()) {
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <app-card>
+      <app-card-content class="content-fields">
+        <app-form-field appearance="outline">
+          <app-label>{{ 'name' | translate }}</app-label>
+          <input appInput type="text" formControlName="name" [placeholder]="'name' | translate" />
+        </app-form-field>
+
+        <app-form-field appearance="outline">
+          <app-label>{{ 'subject' | translate }}</app-label>
+          <input appInput type="text" formControlName="subject" [placeholder]="'subject' | translate" />
+        </app-form-field>
+
+        @if (tagsEnabled()) {
+          <app-form-field appearance="outline">
+            <app-label>{{ 'tag' | translate }}</app-label>
+            <input appInput type="text" formControlName="tag" [placeholder]="'tag' | translate" />
+          </app-form-field>
+        }
+
+        <app-label>{{ 'content' | translate }}</app-label>
+        <div class="content-text">
+          <app-rich-text-editor
+            formControlName="template"
+            [ariaLabel]="'content' | translate"
+            [placeholder]="'enter_text_here' | translate" />
+          <app-content-placeholders />
+        </div>
+      </app-card-content>
+
+      <app-card-actions>
+        <button app-button appearance="raised" color="primary" type="submit" [promiseBtn]="savePromise()">
+          {{ 'save' | translate }}
+        </button>
+      </app-card-actions>
+    </app-card>
+  </form>
+}

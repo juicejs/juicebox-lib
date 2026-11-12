@@ -119,6 +119,9 @@ export interface CategoriesCustomization extends ModuleCustomization {
   options?: CategoriesOptions;
 }
 
+/** The communications module has no options: its project parts are the backend configuration's */
+export type CommunicationsCustomization = ModuleCustomization;
+
 /** A project's look, like the old juicebox themes/<project> folder. Everything is optional: without it the admin is juice orange with the juice logo. */
 export interface JuicebarTheme {
   /**
@@ -159,6 +162,7 @@ export const USERS_CUSTOMIZATION = new InjectionToken<UsersCustomization>('USERS
 export const EXPORTS_CUSTOMIZATION = new InjectionToken<ExportsCustomization>('EXPORTS_CUSTOMIZATION');
 export const LOCATIONS_CUSTOMIZATION = new InjectionToken<LocationsCustomization>('LOCATIONS_CUSTOMIZATION');
 export const CATEGORIES_CUSTOMIZATION = new InjectionToken<CategoriesCustomization>('CATEGORIES_CUSTOMIZATION');
+export const COMMUNICATIONS_CUSTOMIZATION = new InjectionToken<CommunicationsCustomization>('COMMUNICATIONS_CUSTOMIZATION');
 
 export interface JuicebarFeature {
   routes: Routes;

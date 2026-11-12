@@ -1,0 +1,70 @@
+<app-dialog-title>{{ 'add_recipient' | translate }}</app-dialog-title>
+
+<app-dialog-content>
+  <app-form-field appearance="outline">
+    <app-label>{{ 'recipients_provider' | translate }}</app-label>
+    <app-select [searchable]="true"
+                [disabled]="editing"
+                [value]="provider()"
+                (selectionChange)="chooseProvider($event.value)"
+                [placeholder]="'select_recipients_provider' | translate"
+                [searchPlaceholder]="'search' | translate">
+      @for (option of providers(); track option.key) {
+        <app-option [value]="option.key">{{ option.name }}</app-option>
+      }
+    </app-select>
+  </app-form-field>
+
+  <app-form-field appearance="outline">
+    <app-label>{{ 'parameter' | translate }}</app-label>
+    <app-select [disabled]="fixed()"
+                [value]="parameter()"
+                (selectionChange)="chooseParameter($event.value)"
+                [placeholder]="'select_param' | translate">
+      @for (option of parameterOptions; track option.value) {
+        <app-option [value]="option.value">{{ option.label }}</app-option>
+      }
+    </app-select>
+  </app-form-field>
+
+  <app-divider class="recipient-divider" />
+
+  <app-form-field appearance="outline">
+    <app-label>{{ 'params_type' | translate }}</app-label>
+    <app-select [disabled]="fixed()"
+                placeholder=""
+                [value]="inputType()"
+                (selectionChange)="chooseType($event.value)">
+      @for (option of typeOptions; track option.value) {
+        <app-option [value]="option.value">{{ option.label }}</app-option>
+      }
+    </app-select>
+  </app-form-field>
+
+  <app-divider class="recipient-divider" />
+
+  @if (formReady()) {
+    @if (inputType(); as type) {
+      @for (generation of formGeneration(); track generation) {
+        @let recipientPreset = preset();
+        <app-selection-type-form [type]="type"
+                                 context="automation"
+                                 [parameter]="parameter()"
+                                 [presetParams]="recipientPreset?.params ?? ''"
+                                 [keptCustomers]="recipientPreset?.keptCustomers ?? []"
+                                 [formLocked]="formLocked()"
+                                 (paramsChange)="paramsChanged($event)"
+                                 (customerIdsChange)="customerIdsChanged($event)" />
+      }
+    }
+  }
+</app-dialog-content>
+
+<app-dialog-actions align="end">
+  <button app-button type="button" (click)="cancel()">{{ 'cancel' | translate }}</button>
+  <button app-button appearance="raised" color="primary" type="button"
+          [promiseBtn]="savePromise()"
+          (click)="save()">
+    {{ (editing ? 'edit' : 'add') | translate }}
+  </button>
+</app-dialog-actions>

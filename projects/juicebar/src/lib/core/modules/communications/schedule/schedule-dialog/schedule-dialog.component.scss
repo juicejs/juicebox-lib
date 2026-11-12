@@ -1,0 +1,25 @@
+// The date and time take the left third, the pending and started times the rest
+.schedule-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 24px;
+  align-items: start;
+
+  @media (max-width: 768px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.schedule-when {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.schedule-times {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-width: 0;
+}

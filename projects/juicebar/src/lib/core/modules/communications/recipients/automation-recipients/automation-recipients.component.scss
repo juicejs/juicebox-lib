@@ -1,0 +1,17 @@
+:host {
+  display: block;
+}
+
+.recipients-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.run-progress {
+  width: 174px;
+  accent-color: var(--color-secondary);
+}

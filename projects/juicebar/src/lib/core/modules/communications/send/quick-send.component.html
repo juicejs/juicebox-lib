@@ -1,0 +1,12 @@
+@if (tabs().length) {
+  <app-segmented class="quick-send-tabs" [options]="tabs()" [(value)]="openKind" />
+}
+
+@switch (openKind()) {
+  @case ('email') {
+    <app-quick-send-panel kind="email" />
+  }
+  @case ('push') {
+    <app-quick-send-panel kind="push" />
+  }
+}

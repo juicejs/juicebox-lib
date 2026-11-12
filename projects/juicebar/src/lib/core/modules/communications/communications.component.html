@@ -1,0 +1,13 @@
+@if (tabs.length) {
+  <app-tabs [class.communications-tabs--under-bar]="underBar()"
+            [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="onTabChange($event)">
+    @for (tab of tabs; track tab.route) {
+      <app-tab [label]="tab.label" />
+    }
+  </app-tabs>
+}
+
+<!-- The page gutter for every tab; the tabs' own screens don't add .parent again -->
+<div class="parent communications-tab" [class.communications-tab--listing]="listingOpen()">
+  <router-outlet />
+</div>

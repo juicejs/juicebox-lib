@@ -1,0 +1,79 @@
+@if (pane) {
+  <!-- The compact list next to an open content -->
+  <app-data-table compact
+    [rows]="rows()"
+    [columns]="columns()"
+    [activeId]="pane.activeId()"
+    [totalCount]="count()"
+    [pageSize]="pageSize()"
+    [pageIndex]="page() - 1"
+    [emptyMessage]="'no_data_to_display' | translate"
+    (pageChange)="onPage($event)"
+    (rowClick)="rowClicked($event)">
+    <ng-template compactRowDef let-row>
+      <span class="dt-list-title">{{ row.name }}</span>
+      @if (row.subject) {
+        <span class="dt-list-subtitle">{{ row.subject }}</span>
+      }
+    </ng-template>
+  </app-data-table>
+} @else {
+<div class="listing-page">
+  @if (tagsEnabled()) {
+    <div class="listing-toolbar">
+      <app-form-field appearance="outline" class="tag-filter">
+        <app-label>{{ 'tags' | translate }}</app-label>
+        <app-select placeholder="" [clearable]="true" [clearLabel]="'clear' | translate"
+                    (selectionChange)="onFilter('tag', $event.value)">
+          @for (option of tags(); track option) {
+            <app-option [value]="option">{{ option }}</app-option>
+          }
+        </app-select>
+      </app-form-field>
+    </div>
+  }
+
+  <app-data-table
+    [rows]="rows()"
+    [columns]="columns()"
+    [totalCount]="count()"
+    [pageSize]="pageSize()"
+    [pageIndex]="page() - 1"
+    [pageSizeOptions]="pageSizeOptions"
+    [emptyMessage]="'no_data_to_display' | translate"
+    [rowsPerPageLabel]="'rows_per_page' | translate"
+    (pageChange)="onPage($event)"
+    (rowClick)="rowClicked($event)"
+  >
+    <ng-template [headerDef]="'name'">
+      <div class="header-wrap">
+        <input class="filter-input" type="text"
+               [attr.aria-label]="'name' | translate"
+               [placeholder]="'name' | translate"
+               (input)="onFilter('name', $any($event.target).value)"
+               (click)="$event.stopPropagation()"
+               (keydown)="$event.stopPropagation()">
+      </div>
+    </ng-template>
+
+    <ng-template [cellDef]="'name'" let-row>
+      @if (canOpen) {
+        <a class="dt-row-link" [routerLink]="['/main/communications/contents/details', row._id]" (click)="$event.stopPropagation()">{{ row.name }}</a>
+      } @else {
+        {{ row.name }}
+      }
+    </ng-template>
+
+    <ng-template [cellDef]="'actions'" let-row>
+      <div class="dt-row-actions">
+        <button app-button appearance="icon" type="button" class="danger"
+                [attr.aria-label]="('delete' | translate) + ': ' + row.name"
+                [appTooltip]="'delete' | translate"
+                (click)="$event.stopPropagation(); remove(row)">
+          <app-icon [icon]="'delete'" />
+        </button>
+      </div>
+    </ng-template>
+  </app-data-table>
+</div>
+}

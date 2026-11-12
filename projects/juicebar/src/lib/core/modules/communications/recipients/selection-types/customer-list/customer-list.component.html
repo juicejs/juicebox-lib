@@ -1,0 +1,16 @@
+<app-form-field appearance="outline">
+  <app-label>{{ 'recipients_params' | translate }}</app-label>
+  <app-select [multiple]="true"
+              [bulkActions]="false"
+              [searchable]="true"
+              [externalSearch]="true"
+              [value]="chosenIds()"
+              (selectionChange)="choose($event.value)"
+              (searchChange)="search($event)"
+              [placeholder]="'select_recipients' | translate"
+              [searchPlaceholder]="'search' | translate">
+    @for (option of options(); track option.value) {
+      <app-option [value]="option.value">{{ option.label }}</app-option>
+    }
+  </app-select>
+</app-form-field>

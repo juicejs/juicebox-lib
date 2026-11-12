@@ -1,0 +1,57 @@
+<div class="quick-send">
+  <app-card>
+    <app-card-content class="quick-send-fields">
+      <app-form-field appearance="outline">
+        <app-label>{{ 'channel' | translate }}</app-label>
+        <app-select [value]="channelKey()" (selectionChange)="chooseChannel($event.value)" [placeholder]="'channel' | translate">
+          @for (option of channelOptions(); track option.value) {
+            <app-option [value]="option.value">{{ option.label }}</app-option>
+          }
+        </app-select>
+      </app-form-field>
+
+      <app-quick-recipient [channelKind]="channelKind()" (recipientChange)="recipientChanged($event)" />
+
+      <div class="quick-send-actions quick-send-actions--start">
+        <button app-button appearance="stroked" type="button"
+                [disabled]="previewCount() === 0"
+                [promiseBtn]="previewPromise()"
+                (click)="openPreview()">
+          {{ 'preview_customers' | translate }}
+          @if (previewCount() > 0) {
+            ({{ previewCount() }})
+          }
+        </button>
+      </div>
+    </app-card-content>
+  </app-card>
+
+  <app-card>
+    <app-card-content>
+      <!-- No submission: Enter in Subject must not send (the old form had none either) -->
+      <form class="quick-send-fields" [formGroup]="form">
+        <app-form-field appearance="outline">
+          <app-label>{{ 'subject' | translate }} *</app-label>
+          <input appInput type="text" formControlName="subject" aria-required="true" [placeholder]="'subject' | translate" />
+        </app-form-field>
+
+        <app-label>{{ 'content' | translate }} *</app-label>
+        <app-rich-text-editor formControlName="content"
+                              [ariaLabel]="'content' | translate"
+                              [placeholder]="'enter_text_here' | translate" />
+
+        <div class="quick-send-actions">
+          @if (running()) {
+            <progress class="run-progress" max="100" [value]="progress()" [attr.aria-label]="'progress' | translate"></progress>
+          }
+          <button app-button appearance="raised" color="primary" type="button"
+                  [disabled]="sendDisabled()"
+                  [promiseBtn]="sendPromise()"
+                  (click)="send()">
+            {{ 'send' | translate }}
+          </button>
+        </div>
+      </form>
+    </app-card-content>
+  </app-card>
+</div>

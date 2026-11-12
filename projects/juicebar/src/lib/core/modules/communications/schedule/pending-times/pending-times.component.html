@@ -1,0 +1,23 @@
+<app-data-table
+  [rows]="rows()"
+  [columns]="columns"
+  idKey="ref"
+  [totalCount]="rows().length"
+  [pageSize]="pageSize()"
+  [pageSizeOptions]="[]"
+  [emptyMessage]="'no_data_to_display' | translate"
+>
+  <ng-template [cellDef]="'time'" let-row>{{ row.time | date: 'short' }}</ng-template>
+  <ng-template [cellDef]="'status'" let-row>{{ 'pending' | translate }}</ng-template>
+  <ng-template [cellDef]="'actions'" let-row>
+    <div class="dt-row-actions">
+      <button app-button appearance="icon" type="button" class="danger"
+              [promiseBtn]="cancelPromise()"
+              [attr.aria-label]="('cancel' | translate) + ': ' + (row.time | date: 'short')"
+              [appTooltip]="'cancel' | translate"
+              (click)="cancel(row)">
+        <app-icon [icon]="'delete'" />
+      </button>
+    </div>
+  </ng-template>
+</app-data-table>

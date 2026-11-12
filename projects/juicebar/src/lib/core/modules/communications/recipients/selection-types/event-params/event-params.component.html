@@ -1,0 +1,9 @@
+<app-form-field appearance="outline">
+  <app-label>{{ 'recipients_params' | translate }}</app-label>
+  <textarea appInput
+            #box
+            rows="3"
+            [value]="text()"
+            (input)="typed(box.value)"
+            [placeholder]="'event_property' | translate"></textarea>
+</app-form-field>

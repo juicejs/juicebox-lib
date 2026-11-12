@@ -1,0 +1,14 @@
+// Under the breadcrumb bar's line the tabs are as far from it as from their own line below (20px with their own 2px)
+.communications-tabs--under-bar {
+  padding-top: 18px;
+}
+
+.communications-tab {
+  padding-top: 20px;
+
+  // A listing's table follows the tabs' line: no band between them, and its top line lies on that one
+  &--listing {
+    margin-top: -1px;
+    padding-top: 0;
+  }
+}

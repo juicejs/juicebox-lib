@@ -1,0 +1,28 @@
+:host {
+  display: block;
+}
+
+// A run's progress bar (RUNNOW)
+.run-progress {
+  display: block;
+  width: 100%;
+  height: 8px;
+  border: none;
+  border-radius: 999px;
+  overflow: hidden;
+  appearance: none;
+  background: var(--color-grey-200);
+  color: var(--color-secondary);
+
+  &::-webkit-progress-bar {
+    background: var(--color-grey-200);
+  }
+
+  &::-webkit-progress-value {
+    background: var(--color-secondary);
+  }
+
+  &::-moz-progress-bar {
+    background: var(--color-secondary);
+  }
+}

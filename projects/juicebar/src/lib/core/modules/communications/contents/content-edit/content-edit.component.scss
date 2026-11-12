@@ -1,0 +1,22 @@
+:host {
+  display: block;
+}
+
+.content-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+// The text takes three quarters of the width, the placeholder reference the last quarter
+.content-text {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  margin-top: 4px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

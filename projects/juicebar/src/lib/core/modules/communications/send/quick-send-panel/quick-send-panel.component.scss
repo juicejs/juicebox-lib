@@ -1,0 +1,36 @@
+// The channel, the recipient and Preview customers on the left; the message and Send on the right
+.quick-send {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.quick-send-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quick-send-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+
+  &--start {
+    justify-content: flex-start;
+    margin-top: 4px;
+  }
+}
+
+.run-progress {
+  width: 174px;
+  accent-color: var(--color-secondary);
+}

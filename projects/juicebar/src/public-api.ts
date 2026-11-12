@@ -31,6 +31,7 @@ export * from './lib/core/modules/users/users.providers';
 export * from './lib/core/modules/exports/exports.providers';
 export * from './lib/core/modules/locations/locations.providers';
 export * from './lib/core/modules/categories/categories.providers';
+export * from './lib/core/modules/communications/communications.providers';
 
 // Directives
 export * from './lib/core/shared/directives/PromiseButton';

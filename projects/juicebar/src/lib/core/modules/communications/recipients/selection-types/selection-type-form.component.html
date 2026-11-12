@@ -1,0 +1,33 @@
+@switch (type()) {
+  @case ('customer_list') {
+    <app-customer-list-recipients [context]="context()"
+                                  [parameter]="parameter()"
+                                  [keptCustomers]="keptCustomers()"
+                                  (paramsChange)="paramsChange.emit($event)"
+                                  (customerIdsChange)="customerIdsChange.emit($event)" />
+  }
+  @case ('firebase_customer_list') {
+    <app-customer-list-recipients [context]="context()"
+                                  [firebase]="true"
+                                  [presetIds]="presetIds()"
+                                  (paramsChange)="paramsChange.emit($event)" />
+  }
+  @case ('customer_group') {
+    <app-customer-groups-recipients [presetIds]="presetIds()" (paramsChange)="paramsChange.emit($event)" />
+  }
+  @case ('event_params') {
+    <app-event-params-recipients [pause]="eventPause()" [preset]="presetParams()" (paramsChange)="paramsChange.emit($event)" />
+  }
+  @case ('attributes_filter') {
+    <app-attribute-filter-recipients [preset]="presetParams()" (paramsChange)="paramsChange.emit($event)" />
+  }
+  @case ('form_customers') {
+    <app-form-customers-recipients [context]="context()"
+                                   [parameter]="parameter()"
+                                   [presetFormId]="presetFormId()"
+                                   [keptCustomers]="keptCustomers()"
+                                   [formLocked]="formLocked()"
+                                   (paramsChange)="paramsChange.emit($event)"
+                                   (customerIdsChange)="customerIdsChange.emit($event)" />
+  }
+}

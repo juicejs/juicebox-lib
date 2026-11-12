@@ -1,0 +1,40 @@
+<app-dialog-title>{{ 'create_communication' | translate }}</app-dialog-title>
+
+<form [formGroup]="form">
+  <app-dialog-content>
+    <app-form-field appearance="outline">
+      <app-label>{{ 'name_communication' | translate }} *</app-label>
+      <input appInput type="text" formControlName="name" aria-required="true" [placeholder]="'name_communication' | translate" />
+      @if (form.controls.name.touched && form.controls.name.errors?.['required']) {
+        <app-error>{{ 'include_name' | translate }}</app-error>
+      }
+    </app-form-field>
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'event' | translate }}</app-label>
+      <app-select formControlName="event" [searchable]="true" [clearable]="true" [placeholder]="'event' | translate">
+        @for (event of events(); track event.key) {
+          <app-option [value]="event.key">{{ event.name }}</app-option>
+        }
+      </app-select>
+    </app-form-field>
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'channel' | translate }} *</app-label>
+      <app-select formControlName="channel" [searchable]="true" [clearable]="true" [placeholder]="'channel' | translate">
+        @for (channel of channels(); track channel.key) {
+          <app-option [value]="channel.key">{{ channel.name }}</app-option>
+        }
+      </app-select>
+      @if (form.controls.channel.touched && form.controls.channel.errors?.['required']) {
+        <app-error>{{ 'select_channel' | translate }}</app-error>
+      }
+    </app-form-field>
+  </app-dialog-content>
+
+  <app-dialog-actions align="end">
+    <button app-button appearance="raised" color="primary" type="button" [promiseBtn]="createPromise()" (click)="create()">
+      {{ 'create' | translate }}
+    </button>
+  </app-dialog-actions>
+</form>

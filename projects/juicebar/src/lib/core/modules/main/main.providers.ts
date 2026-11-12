@@ -1,5 +1,5 @@
 import { EnvironmentProviders, inject, makeEnvironmentProviders, provideEnvironmentInitializer } from '@angular/core';
-import { BASE_APP_CONFIG, BaseAppConfig, USERS_CUSTOMIZATION, EXPORTS_CUSTOMIZATION, LOCATIONS_CUSTOMIZATION, CATEGORIES_CUSTOMIZATION } from '../../../config/base-app.config';
+import { BASE_APP_CONFIG, BaseAppConfig, USERS_CUSTOMIZATION, EXPORTS_CUSTOMIZATION, LOCATIONS_CUSTOMIZATION, CATEGORIES_CUSTOMIZATION, COMMUNICATIONS_CUSTOMIZATION } from '../../../config/base-app.config';
 import { SidebarService } from '../../shared/services/sidebar.service';
 import { MainTranslationPipe } from './i18n/main.translation';
 
@@ -13,6 +13,7 @@ export function provideMain(): EnvironmentProviders {
       const exportsCustomization = inject(EXPORTS_CUSTOMIZATION, { optional: true });
       const locationsCustomization = inject(LOCATIONS_CUSTOMIZATION, { optional: true });
       const categoriesCustomization = inject(CATEGORIES_CUSTOMIZATION, { optional: true });
+      const communicationsCustomization = inject(COMMUNICATIONS_CUSTOMIZATION, { optional: true });
 
       if (usersCustomization != null) {
         sidebarService.registerSidebarItem('users', 'users', 'users:role', 'fa-users', 'users');
@@ -29,6 +30,10 @@ export function provideMain(): EnvironmentProviders {
 
       if (categoriesCustomization != null) {
         sidebarService.registerSidebarItem('categories', 'categories', 'categories:role', 'fa-th-list', 'categories');
+      }
+
+      if (communicationsCustomization != null) {
+        sidebarService.registerSidebarItem('communications', 'communications', 'communication:role', 'fa-paper-plane', 'communications');
       }
 
       if (config?.mainRoutes) {

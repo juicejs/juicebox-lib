@@ -1,0 +1,36 @@
+<div class="recipients-toolbar">
+  @if (running()) {
+    <progress class="run-progress" max="100" [value]="progress()" [attr.aria-label]="'progress' | translate"></progress>
+  }
+  <button app-button appearance="stroked" type="button" (click)="add()">
+    <app-icon [icon]="'add'" />
+    {{ 'add_recipient' | translate }}
+  </button>
+  <button app-button appearance="raised" color="primary" type="button" [disabled]="running()" (click)="send()">
+    {{ 'send' | translate }}
+  </button>
+</div>
+
+<app-data-table [rows]="rows()"
+                [columns]="columns"
+                [totalCount]="rows().length"
+                [pageSize]="pageSize()"
+                [pageSizeOptions]="pageSizeOptions"
+                [emptyMessage]="'no_data_to_display' | translate">
+  <ng-template [cellDef]="'actions'" let-row>
+    <div class="dt-row-actions">
+      <button app-button appearance="icon" type="button"
+              [attr.aria-label]="'edit' | translate"
+              [appTooltip]="'edit' | translate"
+              (click)="$event.stopPropagation(); change(row)">
+        <app-icon [icon]="'edit'" />
+      </button>
+      <button app-button appearance="icon" type="button" class="danger"
+              [attr.aria-label]="'delete' | translate"
+              [appTooltip]="'delete' | translate"
+              (click)="$event.stopPropagation(); remove(row)">
+        <app-icon [icon]="'delete'" />
+      </button>
+    </div>
+  </ng-template>
+</app-data-table>

@@ -1,0 +1,27 @@
+<app-form-field appearance="outline">
+  <app-label>{{ 'recipients_provider' | translate }}</app-label>
+  <app-select [searchable]="true"
+              [value]="provider()"
+              (selectionChange)="chooseProvider($event.value)"
+              [placeholder]="'select_recipients_provider' | translate"
+              [searchPlaceholder]="'search' | translate">
+    @for (option of providers(); track option.value) {
+      <app-option [value]="option.value">{{ option.label }}</app-option>
+    }
+  </app-select>
+</app-form-field>
+
+<app-form-field appearance="outline">
+  <app-label>{{ 'selection_type' | translate }}</app-label>
+  <app-select [value]="selectionType()" (selectionChange)="chooseType($event.value)" [placeholder]="'selection_type' | translate">
+    @for (option of types(); track option.value) {
+      <app-option [value]="option.value">{{ option.label }}</app-option>
+    }
+  </app-select>
+</app-form-field>
+
+@if (selectionType(); as type) {
+  @for (generation of formGeneration(); track generation) {
+    <app-selection-type-form [type]="type" context="send" (paramsChange)="paramsChanged($event)" />
+  }
+}

@@ -1,0 +1,22 @@
+<app-form-field appearance="outline">
+  <app-label>{{ 'model' | translate }}</app-label>
+  <app-select [(value)]="kind" placeholder="" [clearable]="true" [clearLabel]="'clear' | translate">
+    @for (name of kinds; track name) {
+      <app-option [value]="name">{{ name }}</app-option>
+    }
+  </app-select>
+</app-form-field>
+
+@if (placeholders().length) {
+  <table class="placeholder-table">
+    <caption class="visually-hidden">{{ kind() }}</caption>
+    <tbody>
+      @for (entry of placeholders(); track entry.placeholder) {
+        <tr>
+          <th scope="row">{{ entry.label | translate }}</th>
+          <td><code>{{ entry.placeholder }}</code></td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

@@ -1,0 +1,107 @@
+@if (pane) {
+  <!-- The compact list next to an open automation -->
+  <app-data-table compact
+    [rows]="rows()"
+    [columns]="columns"
+    [activeId]="pane.activeId()"
+    [totalCount]="count()"
+    [pageSize]="pageSize"
+    [pageIndex]="page() - 1"
+    [emptyMessage]="'no_data_to_display' | translate"
+    (pageChange)="onPage($event)"
+    (rowClick)="rowClicked($event)">
+    <ng-template compactRowDef let-row>
+      <span class="dt-list-title">{{ row.name }}</span>
+      <span class="dt-list-subtitle">{{ row.summary }}</span>
+    </ng-template>
+  </app-data-table>
+} @else {
+<div class="listing-page">
+  <app-data-table
+    [rows]="rows()"
+    [columns]="columns"
+    [totalCount]="count()"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="pageSizeOptions"
+    [pageIndex]="page() - 1"
+    [emptyMessage]="'no_data_to_display' | translate"
+    (pageChange)="onPage($event)"
+    (rowClick)="rowClicked($event)"
+  >
+    <ng-template [headerDef]="'name'">
+      <input class="dt-header-filter" type="text"
+             [attr.aria-label]="'name_communication' | translate"
+             [placeholder]="'name' | translate"
+             (input)="onFilter($any($event.target).value)"
+             (click)="$event.stopPropagation()"
+             (keydown)="$event.stopPropagation()">
+    </ng-template>
+
+    <ng-template [cellDef]="'status'" let-row>
+      <span class="badge" [class.badge-success]="row.active" [class.badge-warning]="!row.active">{{ row.status }}</span>
+    </ng-template>
+
+    <ng-template [cellDef]="'name'" let-row>
+      @if (canOpen) {
+        <a class="dt-row-link" [routerLink]="[detailsUrl, row._id]" (click)="$event.stopPropagation()">{{ row.name }}</a>
+      } @else {
+        {{ row.name }}
+      }
+    </ng-template>
+
+    <ng-template [cellDef]="'progress'" let-row>
+      @if (row.showProgress) {
+        <progress class="run-progress" max="100" [value]="row.progress"
+                  [attr.aria-label]="('progress' | translate) + ': ' + row.name"></progress>
+      }
+    </ng-template>
+
+    <ng-template [cellDef]="'actions'" let-row>
+      <div class="dt-row-actions" (click)="$event.stopPropagation()">
+        @if (row.active) {
+          <button app-button appearance="icon" type="button"
+                  [disabled]="row.manual"
+                  [attr.aria-label]="('stop' | translate) + ': ' + row.name"
+                  [appTooltip]="'stop' | translate"
+                  (click)="switchState(row, false)">
+            <app-icon [icon]="'stop_circle'" />
+          </button>
+        } @else {
+          <button app-button appearance="icon" type="button"
+                  [disabled]="row.manual"
+                  [attr.aria-label]="('start' | translate) + ': ' + row.name"
+                  [appTooltip]="'start' | translate"
+                  (click)="switchState(row, true)">
+            <app-icon [icon]="'play_circle'" />
+          </button>
+        }
+        <button app-button appearance="icon" type="button" class="danger"
+                [attr.aria-label]="('delete' | translate) + ': ' + row.name"
+                [appTooltip]="'delete' | translate"
+                (click)="remove(row)">
+          <app-icon [icon]="'delete'" />
+        </button>
+        @if (row.manual) {
+          <button app-button appearance="icon" type="button"
+                  [disabled]="row.running"
+                  [promiseBtn]="runPromise()"
+                  [attr.aria-label]="('run' | translate) + ': ' + row.name"
+                  [appTooltip]="'run' | translate"
+                  (click)="run(row)">
+            <app-icon [icon]="'send'" />
+          </button>
+        }
+        @if (row.scheduled) {
+          <button app-button appearance="icon" type="button"
+                  [disabled]="row.running"
+                  [attr.aria-label]="('schedule' | translate) + ': ' + row.name"
+                  [appTooltip]="'schedule' | translate"
+                  (click)="openSchedule(row)">
+            <app-icon [icon]="'schedule'" />
+          </button>
+        }
+      </div>
+    </ng-template>
+  </app-data-table>
+</div>
+}

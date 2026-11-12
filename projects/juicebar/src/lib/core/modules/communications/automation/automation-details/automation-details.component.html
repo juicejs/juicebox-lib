@@ -1,0 +1,50 @@
+<div class="automation-page">
+  <div class="automation-details">
+    @if (loaded()) {
+      <app-card>
+        <app-card-content>
+          <form class="details-form" [formGroup]="form" (ngSubmit)="save()">
+            <app-form-field appearance="outline">
+              <app-label>{{ 'name' | translate }}</app-label>
+              <input appInput type="text" formControlName="name" [placeholder]="'name' | translate" />
+            </app-form-field>
+
+            <app-form-field appearance="outline">
+              <app-label>{{ 'event' | translate }}</app-label>
+              <input appInput type="text" disabled [value]="event()" [placeholder]="'manual_triggered' | translate" />
+            </app-form-field>
+
+            <app-form-field appearance="outline">
+              <app-label>{{ 'channel' | translate }}</app-label>
+              <input appInput type="text" disabled [value]="channel()" />
+            </app-form-field>
+
+            <app-form-field appearance="outline">
+              <app-label>{{ 'content' | translate }}</app-label>
+              <app-select formControlName="content" [searchable]="true" [externalSearch]="true" [clearable]="true"
+                          [placeholder]="'content' | translate"
+                          (searchChange)="onContentSearch($event)">
+                @for (content of contents(); track content._id) {
+                  <app-option [value]="content._id">{{ content.name }}</app-option>
+                }
+              </app-select>
+            </app-form-field>
+
+            <div class="details-actions">
+              <button app-button appearance="raised" color="primary" type="submit" [promiseBtn]="savePromise()">
+                {{ 'save' | translate }}
+              </button>
+            </div>
+          </form>
+        </app-card-content>
+      </app-card>
+    }
+  </div>
+
+  <!-- One recipients panel per automation: it is created anew when another automation is opened -->
+  @for (id of [automationId()]; track id) {
+    @if (id) {
+      <app-automation-recipients [communicationId]="id" />
+    }
+  }
+</div>

@@ -1,0 +1,16 @@
+<div class="listing-page">
+  <app-data-table
+    [rows]="rows()"
+    [columns]="columns"
+    [totalCount]="count()"
+    [pageSize]="pageSize"
+    [pageIndex]="page() - 1"
+    [pageSizeOptions]="pageSizeOptions"
+    [emptyMessage]="'no_data_to_display' | translate"
+    (pageChange)="onPage($event)"
+  >
+    <ng-template [cellDef]="'startedBy'" let-row>
+      <app-icon class="started-by-icon" [icon]="row.startedByIcon" />{{ row.startedBy }}
+    </ng-template>
+  </app-data-table>
+</div>
