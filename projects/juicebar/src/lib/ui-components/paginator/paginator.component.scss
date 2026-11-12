@@ -14,6 +14,7 @@
 
 .paginator-range {
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .paginator-pages {
@@ -145,8 +146,39 @@
   }
 }
 
-@media (max-width: 600px) {
+// On a phone: the range and the page sizes on one line, the pages on the next
+@media (max-width: 768px) {
+  .app-paginator {
+    flex-wrap: wrap;
+    gap: 10px 12px;
+    padding-inline: 16px;
+  }
+
   .paginator-size-label {
     display: none;
+  }
+
+  .paginator-size {
+    margin-right: 0;
+  }
+
+  .size-option {
+    height: 32px;
+    padding: 0 12px;
+  }
+
+  .paginator-pages {
+    margin-left: auto;
+  }
+
+  // Easier to hit with a finger
+  .pager-arrow,
+  .pager-num {
+    min-width: 36px;
+    height: 36px;
+  }
+
+  .pager-arrow {
+    width: 36px;
   }
 }

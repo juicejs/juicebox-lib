@@ -2,12 +2,15 @@
   display: flex;
   flex-direction: column;
   width: fit-content;
+  // Not wider than a phone's screen; the 400px fields below then follow it
+  max-width: 100%;
   padding-bottom: 3rem;
   gap: 1.5rem;
 }
 
 .template-form-field {
   width: 400px;
+  max-width: 100%;
 }
 
 .section-label {
@@ -20,6 +23,7 @@
 
 .columns-section {
   width: 400px;
+  max-width: 100%;
 }
 
 .columns-container {
@@ -49,6 +53,8 @@
   border-radius: var(--radius-control);
   padding: 4px 0;
   width: 46%;
+  // The two lists share the width, however long their column names are
+  min-width: 0;
   user-select: none;
   min-height: 200px;
   flex: 1;
@@ -86,6 +92,7 @@
 
   .column-label {
     flex-grow: 1;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -125,6 +132,7 @@
 
 .sort-section {
   width: 400px;
+  max-width: 100%;
 }
 
 .sort-controls {
@@ -135,17 +143,20 @@
   .sort-field,
   .sort-direction {
     width: 400px;
+    max-width: 100%;
   }
 }
 
 .filters-section {
   width: 400px;
+  max-width: 100%;
 }
 
 .actions-section {
   display: flex;
   justify-content: flex-end;
   width: 400px;
+  max-width: 100%;
 }
 
 .cdk-drop-list {

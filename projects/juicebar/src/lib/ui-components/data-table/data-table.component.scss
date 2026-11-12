@@ -98,6 +98,186 @@
   font-size: 13px;
 }
 
+// The phone list: on a phone the table's rows are a list. A row has its name (the compactRowDef template or the first
+// column) with its actions at the right, and the other columns under it as fields
+.dt-cards-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px var(--page-gutter, 16px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dt-cards-filter {
+  flex: 1 1 96px;
+  min-width: 0;
+
+  // The in-header filters, here as fields of their own (input.filter-input: to outweigh the header's pill)
+  input,
+  input.filter-input {
+    width: 100%;
+    max-width: none !important;
+    height: 36px;
+    padding: 4px 12px;
+    box-sizing: border-box;
+    border: 1px solid var(--color-border-input);
+    border-radius: var(--radius-pill);
+    background: var(--color-background);
+    color: var(--color-text-primary);
+    font-family: inherit;
+
+    &::placeholder {
+      color: var(--color-text-secondary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-secondary);
+      outline-offset: -2px;
+    }
+  }
+}
+
+// As wide as its text, on its own line under the filters
+.dt-cards-tools .dt-cards-sort {
+  flex: 0 0 auto;
+  width: auto;
+  max-width: 100%;
+}
+
+.dt-cards-sort-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  .app-icon {
+    font-size: 16px;
+    color: var(--color-text-secondary);
+  }
+}
+
+.dt-card {
+  padding: 14px var(--page-gutter, 16px);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  cursor: pointer;
+
+  &:active {
+    background: var(--color-grey-100);
+  }
+}
+
+.dt-card--selected {
+  background: var(--color-secondary-active-bg);
+}
+
+// The selection toolbar or the row's detail, above the row as in the table
+.dt-card-detail {
+  margin: -14px calc(-1 * var(--page-gutter, 16px)) 12px;
+  cursor: default;
+}
+
+.dt-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// The checkbox (.dt-select-cell) fills this
+.dt-card-select {
+  flex: 0 0 auto;
+  width: 28px;
+}
+
+.dt-card-name {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 2px;
+  }
+
+  .dt-list-title {
+    font-size: 15px;
+  }
+
+  .dt-list-subtitle {
+    font-size: 13px;
+  }
+}
+
+.dt-card-actions {
+  flex: 0 0 auto;
+
+  .dt-row-actions {
+    gap: 14px;
+    margin-block: 0;
+  }
+
+  // The icon stays its size; a finger gets 44px
+  button {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -7px;
+    }
+  }
+}
+
+// How many places a field takes comes from the component (placeFields): up to three in a line
+.dt-card-fields {
+  display: grid;
+  grid-template-columns: repeat(var(--dt-card-fields-per-line, 3), minmax(0, 1fr));
+  gap: 10px 12px;
+  margin: 12px 0 0;
+}
+
+.dt-card-field {
+  min-width: 0;
+
+  dt {
+    margin-bottom: 3px;
+    overflow: hidden;
+    color: var(--color-text-secondary);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  // There is no pointer to show a cut value's tooltip: a value takes a second line before it is cut
+  dd {
+    display: -webkit-box;
+    min-width: 0;
+    min-height: 20px;
+    margin: 0;
+    overflow: hidden;
+    font-size: 13px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+}
+
 .data-table {
   width: 100%;
   table-layout: fixed;

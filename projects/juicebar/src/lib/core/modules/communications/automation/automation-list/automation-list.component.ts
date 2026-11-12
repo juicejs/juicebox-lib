@@ -157,7 +157,7 @@ export class AutomationListComponent implements OnInit, OnDestroy {
 
   protected readonly columns: ColumnConfig[] = [
     {key: 'status', label: this.i18n.transform('state'), width: '130px'},
-    {key: 'name', label: this.i18n.transform('name_communication')},
+    {key: 'name', label: this.i18n.transform('name_communication'), listRole: 'name'},
     {key: 'count', label: this.i18n.transform('requests_send'), width: '150px'},
     {key: 'event', label: this.i18n.transform('requests_event')},
     {key: 'progress', label: this.i18n.transform('progress'), width: '160px', ellipsis: false},

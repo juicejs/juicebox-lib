@@ -1,8 +1,8 @@
-import {Component, inject, OnDestroy, OnInit, TemplateRef, ChangeDetectionStrategy, signal, Pipe, PipeTransform} from '@angular/core';
+import {Component, computed, inject, OnDestroy, OnInit, TemplateRef, ChangeDetectionStrategy, signal, Pipe, PipeTransform} from '@angular/core';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {SidebarItem, SidebarService} from '../../../shared/services/sidebar.service';
 import {SocketService} from '../../../shared/services/socket.service';
-import {DialogService} from '../../../../ui-components';
+import {DialogService, ViewportService} from '../../../../ui-components';
 import type {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {moveItemInArray} from '@angular/cdk/drag-drop';
 import {ImageCroppedEvent, ImageCropperComponent} from 'ngx-image-cropper';
@@ -178,8 +178,12 @@ export class SidebarComponent implements OnInit, OnDestroy{
     subs = new Subscription();
 
     private sidebarService = inject(SidebarService);
-    /** Collapsed by the top bar's button; a signal, so the sidebar shows it however it was changed */
-    protected readonly collapsed = this.sidebarService.sidebarCollapsed;
+    private readonly phone = inject(ViewportService).phone;
+    /**
+     * Collapsed by the top bar's button; a signal, so the sidebar shows it however it was changed. On a phone the
+     * sidebar is a drawer, which has no collapse button and always shows the names
+     */
+    protected readonly collapsed = computed(() => this.sidebarService.sidebarCollapsed() && !this.phone());
     /** The project's number for each module (`sidebarCount`), by sidebar id */
     protected readonly counts = this.sidebarService.counts;
     private socketService = inject(SocketService);

@@ -225,18 +225,70 @@
   }
 }
 
+// A phone: a dialog is the whole screen, its content scrolls and its buttons stay at the bottom
 @media (max-width: 600px) {
+  // !important: the sizes a dialog was opened with are inline styles on the panel
   .app-dialog-panel,
   .app-dialog-panel--sm,
   .app-dialog-panel--md,
   .app-dialog-panel--lg,
   .app-dialog-panel--xl {
-    width: 100vw;
-    max-width: 100vw;
-    height: 100vh;
-    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    width: 100vw !important;
+    min-width: 0 !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    // What is really visible, so the browser's bars don't cover the dialog's buttons
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    padding: 0;
     border-radius: 0;
     border: none;
+  }
+
+  // A dialog without the dialog parts scrolls as a whole (the padding is here, so a focus ring at the edge shows)
+  .app-dialog-panel > .cdk-dialog-container {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+    overflow-y: auto;
+  }
+
+  // A question (the confirmation dialog) stays a card
+  .app-dialog-panel:has(app-confirmation-dialog) {
+    width: calc(100vw - 32px) !important;
+    height: auto !important;
+    max-height: calc(100dvh - 32px) !important;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+
+    > .cdk-dialog-container {
+      padding: 20px;
+    }
+  }
+
+  // The dialog's component, and the box that holds its parts (the component itself, or a form in it), are columns as
+  // tall as the screen. Other boxes around the content keep their layout; such a dialog scrolls as a whole.
+  .app-dialog-panel > .cdk-dialog-container:has(.app-dialog-content),
+  .app-dialog-panel > .cdk-dialog-container > :has(.app-dialog-content),
+  .app-dialog-panel :has(> .app-dialog-content):not([hidden]) {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .app-dialog-title,
+  .app-dialog-actions {
+    flex-shrink: 0;
+  }
+
+  .app-dialog-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
   }
 
   .app-dialog-actions {
@@ -1231,6 +1283,13 @@ html, body {
     :root {
         --page-gutter: 16px;
     }
+
+    // iOS zooms the page when a field with smaller text takes the focus, and doesn't zoom back
+    input:not([type='checkbox']):not([type='radio']):not([type='range']),
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
 }
 
 
@@ -1790,7 +1849,9 @@ table.data-table {
     filter: blur(4px);
     transition: filter 0.2s ease;
 
-    &:hover {
+    // --shown: tapped on a touch screen, which has no pointer to hold over it
+    &:hover,
+    &.hidden-email--shown {
         filter: none;
     }
 }
@@ -1948,5 +2009,35 @@ input.filter-input {
 @media (max-width: 768px) {
     .parent {
         padding: 16px 16px 16px;
+    }
+}
+
+// =============================================================================
+// A PHONE (768px and below; after the rules it changes)
+// =============================================================================
+
+@media (max-width: 768px) {
+    // A filter takes the whole line
+    .filter-bar,
+    .gdrive-filters {
+        gap: 8px;
+        width: 100%;
+        margin-bottom: 0;
+        padding: 0;
+    }
+
+    .filter-button {
+        width: 100%;
+
+        .filter-btn,
+        .gdrive-filter-btn {
+            height: 40px;
+            font-size: 14px;
+        }
+    }
+
+    // As wide as its filter: the screen less the shell's and the page's edges
+    .filter-panel {
+        width: calc(100vw - 50px);
     }
 }

@@ -11,6 +11,7 @@ import {CdkMenuModule} from '@angular/cdk/menu';
 import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 import {ThemeService, Theme} from '../../../shared/services/theme.service';
 import {BrandService} from '../../../shared/services/brand.service';
+import {ViewportService} from '../../../../ui-components/viewport/viewport.service';
 
 export interface Language {
   name: string;
@@ -82,6 +83,13 @@ export class NavigationComponent implements OnInit {
   protected readonly userEmail = this.signedIn?.email && this.signedIn.email !== this.userName ? this.signedIn.email : '';
   /** The project's logo, or the user's organisation logo */
   protected readonly logo = signal(this.brand.sidebarLogo());
+  /** May edit the help document; fixed while the page lives, as switching the organisation reloads it */
+  private readonly canEditHelp = !!this.juicebox.hasPermission('juicebox:role#edit-help-document');
+  /** There is a help document for this module, or the user may add one */
+  protected readonly helpAvailable = computed(() => !!this.fileInfo() || this.canEditHelp);
+  /** On a phone the search is an icon until it is opened, and help, language and theme are in the user's menu */
+  protected readonly phone = inject(ViewportService).phone;
+  protected readonly searchOpen = signal(false);
 
   constructor() {
     this.router.events.pipe(
@@ -92,6 +100,7 @@ export class NavigationComponent implements OnInit {
       if (!url.startsWith('/main/search')) {
         const input = this.searchInput()?.nativeElement;
         if (input?.value) input.value = '';
+        if (input !== document.activeElement) this.searchOpen.set(false);
       }
     });
   }
@@ -178,7 +187,36 @@ export class NavigationComponent implements OnInit {
   }
 
   doSearch($event: Event) {
-    const value = ($event.target as HTMLInputElement).value.trim();
+    this.search(($event.target as HTMLInputElement).value.trim());
+  }
+
+  /** The search field takes the focus wherever its pill is clicked; on a phone that opens it */
+  protected focusSearch() {
+    this.searchInput()?.nativeElement.focus();
+  }
+
+  /** Left empty (spaces search for nothing either), the search folds back to its icon on a phone */
+  protected onSearchBlur() {
+    const input = this.searchInput()?.nativeElement;
+    if (input && !input.value.trim()) {
+      input.value = '';
+      this.searchOpen.set(false);
+    }
+  }
+
+  /** Phone: the search's close button empties the field, which leaves the results as emptying it by hand does */
+  protected closeSearch($event: Event) {
+    $event.stopPropagation();
+    const input = this.searchInput()?.nativeElement;
+    if (input) {
+      input.value = '';
+      input.blur();
+    }
+    this.searchOpen.set(false);
+    this.search('');
+  }
+
+  private search(value: string) {
     const onSearch = this.router.url.startsWith('/main/search');
 
     if (value === '') {

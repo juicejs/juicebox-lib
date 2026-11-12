@@ -60,6 +60,8 @@ columns: ColumnConfig[] = [
   width?: string;    // e.g. '200px' — strongly recommended (table-layout is fixed)
   align?: 'left' | 'center' | 'right';
   ellipsis?: boolean; // default true. Set false on icon/action/checkbox cells.
+  inCompactRow?: boolean; // the compactRowDef template already shows it (see "On a phone")
+  listRole?: 'name' | 'actions'; // what the column is in the phone list, where the table can't tell (see "On a phone")
 }
 ```
 
@@ -97,6 +99,8 @@ That's it for a plain-text listing. Default cell renders `row[key]` with ellipsi
 | `pageIndex` | `number` | `0` | Zero-based. Pass `page - 1` if you store 1-based. |
 | `compact` | `boolean` | `false` | A narrow list instead of the table (see "The split view" below) |
 | `activeId` | `unknown` | `null` | Compact list: the id of the row to mark as the current one |
+| `sortLabel` | `string` | `'Sort'` | Phone list: the translated label of the control that sorts the rows |
+| `selectAriaLabel` | `string` | `'Select row'` | The translated label of a row's checkbox (`selectable`) |
 
 ### Outputs
 
@@ -300,17 +304,55 @@ edge to edge of the workspace. See `core/modules/locations/listing/`.
 
 ---
 
-## 9. Styling notes
+## 9. On a phone — a list of rows
+
+At 768px and below the table shows its rows as a list, with nothing for a listing to do:
+
+- **A row's name** is the first column's cell. Where another column is the name (the first one is a status, or the
+  buttons that order the rows), mark that column with `listRole: 'name'`. Where the name is more than one column (the
+  users' first and last name), give the table a `compactRowDef` template, as for the split view, and mark the columns
+  that template shows with `inCompactRow: true` so they are not repeated.
+- **The row's actions** are the cell template of the column with the key `actions`, at the right of the name. An
+  actions column with another key says so with `listRole: 'actions'`.
+- **The other columns** stand under the name as labelled fields, each with its own cell template: up to three in a
+  line, a column whose `width` is 180px or more taking two places. A field that doesn't fit a line starts the next
+  one and a later, smaller field fills the gap; the last field in a line takes the room that is left. A value takes
+  a second line before it is cut.
+- **Above the rows**, in place of the header: the `*headerDef` templates (the in-header filters) and a control that
+  sorts by any `sortable` column. Choosing the column the rows are sorted by turns the direction, as a click on its
+  header does. Pass the control's label with `[sortLabel]`.
+- A click on a row emits `rowClick`; `selectable` and detail rows work as in the table.
+- When the screen crosses the phone's width (a tablet is turned), what is typed in the in-header filters goes over
+  to the other layout's fields.
+
+```ts
+{ key: 'firstname', label: …, sortable: true, inCompactRow: true },
+{ key: 'lastname',  label: …, sortable: true, inCompactRow: true },
+```
+
+```html
+<app-data-table [rows]="rows()" [columns]="columns" [sortLabel]="'sort' | translate" …>
+  <ng-template compactRowDef let-row>
+    <span class="dt-list-title">{{ row.firstname }} {{ row.lastname }}</span>
+    <span class="dt-list-subtitle">{{ row.email }}</span>
+  </ng-template>
+  …
+</app-data-table>
+```
+
+---
+
+## 10. Styling notes
 
 - `table-layout: fixed` — set `width` on every meaningful column. Remaining columns share leftover space.
 - Ellipsis works because the `<td>` has `max-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis`. Inline text/spans truncate cleanly. `inline-flex`/`flex` content does not — opt out with `ellipsis: false`.
 - Sticky header is on by default.
-- Below 768px the wrapper switches to horizontal scroll (`min-width: 600px` on the table).
+- When the columns need more room than there is, the wrapper scrolls sideways. At 768px and below the rows are a list instead (see "On a phone").
 - CSS variables consumed: `--color-surface`, `--color-table-header`, `--color-border`, `--color-secondary` (and its `-rgb`, for the row under the pointer), `--page-gutter`.
 
 ---
 
-## 10. Real examples in the codebase
+## 11. Real examples in the codebase
 
 - `core/modules/exports/export-template-listing/` — text columns + dot-path + `*cellDef` for inline `cdk-menu` export dropdown + delete button.
 - `core/modules/users/listing/` — bigger one. `*headerDef` for inline filter inputs (firstname/lastname/email), `*cellDef` for status icon, roles count, groups tooltip, lastLogin pipe, conditional 2FA login button, permission-aware delete.
@@ -319,7 +361,7 @@ Read these before adding a new listing.
 
 ---
 
-## 11. Checklist for a new listing
+## 12. Checklist for a new listing
 
 1. [ ] Build column config in the constructor / `ngOnInit` (translate labels there).
 2. [ ] Set `width` on every column you care about; `ellipsis: false` on icon/action/multi-element cells.

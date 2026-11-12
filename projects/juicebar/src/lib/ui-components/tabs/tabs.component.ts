@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ElementRef, input, model, contentChildren, viewChildren } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ElementRef, afterRenderEffect, input, model, contentChildren, viewChildren } from '@angular/core';
 
 @Component({
   selector: 'app-tab',
@@ -49,6 +49,22 @@ export class TabsComponent {
 
   tabs = contentChildren(TabComponent);
   private readonly tabButtons = viewChildren<ElementRef<HTMLButtonElement>>('tabButton');
+
+  constructor() {
+    // Where the tabs don't fit (a phone) their row scrolls sideways: the selected tab comes into view
+    afterRenderEffect(() => {
+      const button = this.tabButtons()[this.selectedIndex()]?.nativeElement;
+      const header = button?.parentElement;
+      if (!button || !header) return;
+      const tab = button.getBoundingClientRect();
+      const row = header.getBoundingClientRect();
+      if (tab.left < row.left) header.scrollLeft -= row.left - tab.left + TabsComponent.SCROLL_MARGIN;
+      else if (tab.right > row.right) header.scrollLeft += tab.right - row.right + TabsComponent.SCROLL_MARGIN;
+    });
+  }
+
+  /** The room left next to a tab that was scrolled into view (px) */
+  private static readonly SCROLL_MARGIN = 16;
 
   selectTab(index: number) {
     if (this.tabs()[index]?.disabled()) return;

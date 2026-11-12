@@ -1,23 +1,30 @@
 import {
   Component,
   ChangeDetectionStrategy,
+  ElementRef,
+  Injector,
   ViewEncapsulation,
   TemplateRef,
+  afterNextRender,
   booleanAttribute,
   computed,
   contentChild,
   contentChildren,
   effect,
+  inject,
   input,
   output,
-  signal
+  signal,
+  untracked
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
+import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { CdkTableModule } from '@angular/cdk/table';
 import { PaginatorComponent, PageEvent } from '../paginator/paginator.component';
 import { IconComponent } from '../icon/icon.component';
 import { CellDefDirective, CompactRowDefDirective, HeaderDefDirective, SelectionDetailDefDirective } from './cell-def.directive';
 import { ColumnConfig, SortDir, SortState } from './data-table.types';
+import { ViewportService } from '../viewport/viewport.service';
 
 @Component({
   selector: 'app-data-table',
@@ -25,7 +32,7 @@ import { ColumnConfig, SortDir, SortState } from './data-table.types';
   styleUrls: ['./data-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  imports: [NgTemplateOutlet, CdkTableModule, PaginatorComponent, IconComponent]
+  imports: [NgTemplateOutlet, CdkTableModule, CdkMenu, CdkMenuItem, CdkMenuTrigger, PaginatorComponent, IconComponent]
 })
 export class DataTableComponent {
   rows = input<any[]>([]);
@@ -43,6 +50,8 @@ export class DataTableComponent {
   emptyMessage = input('No data to display');
   idKey = input<string>('_id');
   clearAriaLabel = input<string>('Clear selection');
+  /** Translated label of a row's checkbox (`selectable`) */
+  selectAriaLabel = input('Select row');
   /** Translated label of a column's resize handle, followed by the column label */
   resizeAriaLabel = input('Resize column');
   /**
@@ -52,6 +61,8 @@ export class DataTableComponent {
   compact = input(false, { transform: booleanAttribute });
   /** Compact list: the id of the row to mark as the current one */
   activeId = input<unknown>(null);
+  /** Phone list: the translated label of the control that sorts the rows */
+  sortLabel = input('Sort');
 
   pageChange = output<PageEvent>();
   rowClick = output<any>();
@@ -69,7 +80,23 @@ export class DataTableComponent {
 
   protected readonly selectedId = signal<any | null>(null);
 
+  private readonly viewportPhone = inject(ViewportService).phone;
+  /** On a phone the table is a list of rows: each row's name, its other columns under it and its actions */
+  protected readonly phone = signal(this.viewportPhone());
+  private readonly host: HTMLElement = inject(ElementRef).nativeElement;
+  private readonly injector = inject(Injector);
+
   constructor() {
+    // The table and the phone list are different elements. When the screen crosses the phone's width, what is typed in
+    // the in-header filters goes over to the new ones, as the listing still filters by it.
+    effect(() => {
+      const phone = this.viewportPhone();
+      if (phone === untracked(this.phone)) return;
+      const typed = this.headerFilterValues();
+      this.phone.set(phone);
+      if (typed.size) afterNextRender(() => this.restoreHeaderFilterValues(typed), { injector: this.injector });
+    });
+
     effect(() => {
       this.rows();
       this.selectedId.set(null);
@@ -94,6 +121,26 @@ export class DataTableComponent {
   clearSelection(): void {
     this.selectedId.set(null);
   }
+
+  /** What is typed in the fields of each `headerDef` template (the in-header filters), by column */
+  private headerFilterValues(): Map<string, string[]> {
+    const values = new Map<string, string[]>();
+    this.host.querySelectorAll<HTMLElement>('[data-dt-filter]').forEach(filter => {
+      const typed = Array.from(filter.querySelectorAll<HTMLInputElement>(DataTableComponent.FILTER_FIELDS), field => field.value);
+      if (typed.some(Boolean)) values.set(filter.dataset['dtFilter'] ?? '', typed);
+    });
+    return values;
+  }
+
+  private restoreHeaderFilterValues(values: Map<string, string[]>): void {
+    this.host.querySelectorAll<HTMLElement>('[data-dt-filter]').forEach(filter => {
+      const typed = values.get(filter.dataset['dtFilter'] ?? '');
+      filter.querySelectorAll<HTMLInputElement>(DataTableComponent.FILTER_FIELDS).forEach((field, index) => {
+        if (typed?.[index]) field.value = typed[index];
+      });
+    });
+  }
+  private static readonly FILTER_FIELDS = 'input, select, textarea';
 
   /** The projected cell and header templates by column key */
   private readonly cellMap = computed(() => new Map<string, TemplateRef<any>>(this.cellDefs().map(d => [d.cellDef(), d.templateRef])));
@@ -160,19 +207,27 @@ export class DataTableComponent {
   /** Template of the `__detail__` cell, for detail rows that don't show the selection toolbar */
   protected readonly detailTpl = computed(() => this.cellMap().get('__detail__') ?? null);
 
+  /** The values each row's plain cells show, by row: worked out when the rows or columns change, not on a selection */
+  private readonly rowValues = computed(() => {
+    const keys = this.columns().map(column => column.key);
+    return new Map<unknown, Record<string, any>>(
+      this.rows().map(row => [row, Object.fromEntries(keys.map(key => [key, this.value(row, key)]))])
+    );
+  });
+
   /**
    * The table's data source: each data row with its selected state and the values its plain cells show (detail
    * markers pass through). Worked out when the rows, columns or selection change rather than on every check.
    */
   protected readonly renderRows = computed(() => {
-    const keys = this.columns().map(column => column.key);
+    const values = this.rowValues();
     const selectable = this.selectable();
     const sid = this.selectedId();
     const idKey = this.idKey();
     return this.displayedRows().map(r => r?.__detail ? r : {
       row: r,
       selected: selectable && r?.[idKey] === sid,
-      values: Object.fromEntries(keys.map(key => [key, this.value(r, key)])) as Record<string, any>,
+      values: values.get(r) ?? {},
     });
   });
 
@@ -187,6 +242,81 @@ export class DataTableComponent {
       active: activeId != null && row?.[idKey] === activeId,
       label: firstKey ? this.value(row, firstKey) : null,
     }));
+  });
+
+  /**
+   * The phone list: which column names a row (when there is no `compactRowDef`), which holds its actions, which
+   * stand under the name as fields, and which filters and sort choices stand above the rows in place of the header.
+   * A column says what it is with `listRole`; otherwise the actions are the column with the key `actions` and the
+   * name is the first of the others.
+   */
+  protected readonly listLayout = computed(() => {
+    const columns = this.renderColumns().filter(column => column.col.key !== '__select__');
+    const hasRowDef = !!this.compactRowDef();
+    const marked = (role: ColumnConfig['listRole']) => columns.find(column => column.col.listRole === role);
+    // The actions are their cell template; a column without one is a field like the others
+    const actionsColumn = marked('actions') ?? columns.find(column => column.col.key === 'actions');
+    const actions = actionsColumn?.cellTpl ? actionsColumn : null;
+    const head = hasRowDef ? null : marked('name') ?? columns.find(column => column !== actions) ?? null;
+    const fields = columns.filter(column => column !== head && column !== actions && !(hasRowDef && column.col.inCompactRow));
+    return {
+      head,
+      actions,
+      ...this.placeFields(fields),
+      filters: columns.filter(column => column.headerTpl),
+      sortable: columns.filter(column => column.col.sortable),
+      sorted: columns.find(column => column.sortDir !== '') ?? null,
+    };
+  });
+
+  /**
+   * The fields under a row's name, in the order they stand: up to three in a line, a wide column (180px or more in
+   * the table) taking two places. A field goes into the first line that has room for it, and the last one in a line
+   * takes the room that is left, so one field alone has the whole line. The lines are full, so the fields only say
+   * how many places they take; they are read (and reached with the keyboard) in the order they are seen.
+   */
+  private placeFields<T extends { col: ColumnConfig }>(fields: T[]) {
+    const max = DataTableComponent.FIELDS_PER_LINE;
+    const sizes = fields.map(field => parseFloat(field.col.width ?? '') >= DataTableComponent.WIDE_FIELD_WIDTH ? 2 : 1);
+    const perLine = Math.max(1, Math.min(max, sizes.reduce((total, size) => total + size, 0)));
+    const lines: { field: T; size: number }[][] = [];
+    fields.forEach((field, index) => {
+      const size = Math.min(sizes[index], perLine);
+      const used = (line: { size: number }[]) => line.reduce((total, placed) => total + placed.size, 0);
+      const line = lines.find(candidate => used(candidate) + size <= perLine) ?? lines[lines.push([]) - 1];
+      line.push({ field, size });
+    });
+    for (const line of lines) {
+      line[line.length - 1].size += perLine - line.reduce((total, placed) => total + placed.size, 0);
+    }
+    return {
+      fieldsPerLine: perLine,
+      fields: lines.flat().map(({ field, size }) => ({ ...field, gridColumn: `span ${size}` })),
+    };
+  }
+  private static readonly FIELDS_PER_LINE = 3;
+  private static readonly WIDE_FIELD_WIDTH = 180;
+
+  /**
+   * The phone list's rows: the values their plain fields show, whether the row is selected, and whether its detail
+   * (the selection toolbar, or the `__detail__` template) stands with it, as the table's detail row does
+   */
+  protected readonly cardRows = computed(() => {
+    const values = this.rowValues();
+    const idKey = this.idKey();
+    const selectable = this.selectable();
+    const selectedId = selectable ? this.selectedId() : null;
+    const hasDetail = this.detailRowFor();
+    return this.rows().map(row => {
+      const selected = selectable && selectedId != null && row?.[idKey] === selectedId;
+      return {
+        row,
+        id: row?.[idKey],
+        selected,
+        detail: selectable ? selected : hasDetail(row),
+        values: values.get(row) ?? {},
+      };
+    });
   });
 
   isDetailRow = (_: number, r: any) => !!r?.__detail;

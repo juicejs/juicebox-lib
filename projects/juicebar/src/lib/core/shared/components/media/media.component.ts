@@ -119,7 +119,7 @@ export class MediaComponent implements OnInit {
   private readonly orderColumn: ColumnConfig =
     {key: 'order', label: this.i18n.transform('order'), width: '104px', ellipsis: false, resizable: false};
   private readonly fileColumns: ColumnConfig[] = [
-    {key: 'name', label: this.i18n.transform('name')},
+    {key: 'name', label: this.i18n.transform('name'), listRole: 'name'},
     {key: 'mediaType', label: this.i18n.transform('media_type')},
     {key: 'type', label: this.i18n.transform('type')},
     {key: 'fileName', label: this.i18n.transform('file_name')},

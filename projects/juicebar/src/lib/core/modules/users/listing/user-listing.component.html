@@ -1,5 +1,11 @@
 <!-- Action buttons now handled by main component actionButtons system -->
 
+<!-- A user in the compact list and in the phone list: the name, and the e-mail hidden as in the table -->
+<ng-template #userRow let-row>
+  <span class="dt-list-title">{{ row.firstname }} {{ row.lastname }}</span>
+  <span class="dt-list-subtitle hidden-email" (click)="revealEmail($event)">{{ row.email }}</span>
+</ng-template>
+
 @if (pane) {
   <!-- The compact list next to an open user -->
   <app-data-table compact
@@ -12,8 +18,7 @@
     (pageChange)="onPageChange($event)"
     (rowClick)="onSelect({type: 'click', row: $event})">
     <ng-template compactRowDef let-row>
-      <span class="dt-list-title">{{ row.firstname }} {{ row.lastname }}</span>
-      <span class="dt-list-subtitle hidden-email">{{ row.email }}</span>
+      <ng-container *ngTemplateOutlet="userRow; context: { $implicit: row }"></ng-container>
     </ng-template>
   </app-data-table>
 } @else {
@@ -39,9 +44,15 @@
       [pageSizeOptions]="[10, 20, 30, 50]"
       [sort]="sortSig()"
       [rowsPerPageLabel]="'rows_per_page' | translate"
+      [sortLabel]="'sort' | translate"
       (pageChange)="onPageChange($event)"
       (sortChange)="onSort($event)"
       (rowClick)="onSelect({type: 'click', row: $event})">
+
+      <!-- On a phone: a row's name in the list -->
+      <ng-template compactRowDef let-row>
+        <ng-container *ngTemplateOutlet="userRow; context: { $implicit: row }"></ng-container>
+      </ng-template>
 
       <ng-template [headerDef]="'firstname'">
         <div class="header-wrap">
@@ -93,7 +104,7 @@
       </ng-template>
 
       <ng-template [cellDef]="'email'" let-row>
-        <span class="hidden-email">{{row.email}}</span>
+        <span class="hidden-email" (click)="revealEmail($event)">{{row.email}}</span>
       </ng-template>
 
       <ng-template [cellDef]="'active'" let-row>

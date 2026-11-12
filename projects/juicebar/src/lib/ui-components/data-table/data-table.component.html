@@ -1,3 +1,39 @@
+<!-- A row's checkbox, in the table and in the phone list -->
+<ng-template #selectBox let-row let-selected="selected">
+  <div class="dt-select-cell"
+       role="checkbox"
+       tabindex="0"
+       [attr.aria-checked]="selected"
+       [attr.aria-label]="selectAriaLabel()"
+       (click)="$event.stopPropagation(); toggleRow(row)"
+       (keydown.space)="$event.preventDefault(); $event.stopPropagation(); toggleRow(row)"
+       (keydown.enter)="$event.preventDefault(); $event.stopPropagation(); toggleRow(row)">
+    <span class="dt-select-box" [class.is-checked]="selected" aria-hidden="true">
+      <app-icon [icon]="'check'"></app-icon>
+    </span>
+  </div>
+</ng-template>
+
+<!-- What stands with a selected row, or with a row that has a detail: the selection toolbar or the `__detail__` template -->
+<ng-template #rowDetail let-row>
+  @if (selectable() && selectionDetailDef(); as detailDef) {
+    <div class="dt-selection-row" role="toolbar">
+      <div class="dt-selection-content">
+        <ng-container *ngTemplateOutlet="detailDef.templateRef; context: { $implicit: row, row: row }"></ng-container>
+      </div>
+      <button class="dt-clear-action"
+              type="button"
+              [attr.aria-label]="clearAriaLabel()"
+              [title]="clearAriaLabel()"
+              (click)="clearSelection()">
+        <app-icon [icon]="'close'"></app-icon>
+      </button>
+    </div>
+  } @else if (detailTpl(); as t) {
+    <ng-container *ngTemplateOutlet="t; context: { $implicit: row, row: row }"></ng-container>
+  }
+</ng-template>
+
 <div class="data-table-wrapper" [class.data-table-wrapper--compact]="compact()">
   @if (compact()) {
     <div class="dt-list" role="list">
@@ -18,6 +54,96 @@
         <p class="dt-list-empty">{{ emptyMessage() }}</p>
       }
     </div>
+  } @else if (phone()) {
+    @let layout = listLayout();
+    @let cards = cardRows();
+    @if (layout.filters.length || layout.sortable.length) {
+      <div class="dt-cards-tools">
+        @for (column of layout.filters; track column.col.key) {
+          <div class="dt-cards-filter" [attr.data-dt-filter]="column.col.key">
+            <ng-container *ngTemplateOutlet="column.headerTpl; context: { $implicit: column.col }"></ng-container>
+          </div>
+        }
+        @if (layout.sortable.length) {
+          <button type="button" class="dropdown-trigger dropdown-trigger--compact dt-cards-sort" [cdkMenuTriggerFor]="sortMenu">
+            <span class="dropdown-trigger-label">{{ sortLabel() }}@if (layout.sorted; as sorted) {: {{ sorted.col.label }}}</span>
+            <app-icon class="dropdown-trigger-arrow" [icon]="layout.sorted ? layout.sorted.sortIcon : 'unfold_more'"></app-icon>
+          </button>
+          <ng-template #sortMenu>
+            <div class="dropdown-panel dropdown-panel--compact" cdkMenu>
+              <div class="dropdown-panel-options">
+                @for (column of layout.sortable; track column.col.key) {
+                  <button class="dropdown-option dt-cards-sort-option" cdkMenuItem (click)="toggleSort(column.col)">
+                    <span>{{ column.col.label }}</span>
+                    @if (column.sortDir !== '') {
+                      <app-icon [icon]="column.sortIcon"></app-icon>
+                    }
+                  </button>
+                }
+              </div>
+            </div>
+          </ng-template>
+        }
+      </div>
+    }
+    @if (cards.length) {
+      <div class="dt-cards" role="list">
+        @for (item of cards; track item.id ?? $index) {
+          <div class="dt-card" role="listitem" [class.dt-card--selected]="item.selected" (click)="rowClick.emit(item.row)">
+            @if (item.detail) {
+              <div class="dt-card-detail" (click)="$event.stopPropagation()">
+                <ng-container *ngTemplateOutlet="rowDetail; context: { $implicit: item.row }"></ng-container>
+              </div>
+            }
+            <div class="dt-card-head">
+              @if (selectable()) {
+                <div class="dt-card-select">
+                  <ng-container *ngTemplateOutlet="selectBox; context: { $implicit: item.row, selected: item.selected }"></ng-container>
+                </div>
+              }
+              @if (compactRowDef(); as def) {
+                <button type="button" class="dt-card-name">
+                  <ng-container *ngTemplateOutlet="def.templateRef; context: { $implicit: item.row, row: item.row }"></ng-container>
+                </button>
+              } @else if (layout.head; as head) {
+                @if (head.cellTpl; as t) {
+                  <div class="dt-card-name">
+                    <ng-container *ngTemplateOutlet="t; context: { $implicit: item.row, row: item.row }"></ng-container>
+                  </div>
+                } @else {
+                  <button type="button" class="dt-card-name">
+                    <span class="dt-list-title">{{ item.values[head.col.key] ?? '-' }}</span>
+                  </button>
+                }
+              }
+              @if (layout.actions; as actions) {
+                <div class="dt-card-actions">
+                  <ng-container *ngTemplateOutlet="actions.cellTpl; context: { $implicit: item.row, row: item.row }"></ng-container>
+                </div>
+              }
+            </div>
+            @if (layout.fields.length) {
+              <dl class="dt-card-fields" [style.--dt-card-fields-per-line]="layout.fieldsPerLine">
+                @for (field of layout.fields; track field.col.key) {
+                  <div class="dt-card-field" [style.grid-column]="field.gridColumn">
+                    <dt>{{ field.col.label }}</dt>
+                    <dd>
+                      @if (field.cellTpl; as t) {
+                        <ng-container *ngTemplateOutlet="t; context: { $implicit: item.row, row: item.row }"></ng-container>
+                      } @else {
+                        {{ item.values[field.col.key] ?? '-' }}
+                      }
+                    </dd>
+                  </div>
+                }
+              </dl>
+            }
+          </div>
+        }
+      </div>
+    } @else {
+      <p class="dt-list-empty">{{ emptyMessage() }}</p>
+    }
   } @else {
   <table cdk-table [dataSource]="renderRows()" [trackBy]="trackRow" class="data-table" [style.min-width.px]="minTableWidth()">
     @for (column of renderColumns(); track column.col.key) {
@@ -34,7 +160,7 @@
             (click)="col.key === '__select__' ? null : toggleSort(col)"
             (keydown)="onSortKey($event, col)">
           @if (col.key !== '__select__') {
-            <span class="th-inner">
+            <span class="th-inner" [attr.data-dt-filter]="column.headerTpl ? col.key : null">
               @if (column.headerTpl; as h) {
                 <ng-container *ngTemplateOutlet="h; context: { $implicit: col }"></ng-container>
               } @else {
@@ -70,17 +196,7 @@
             [class.text-center]="col.align === 'center'"
             (click)="col.key === '__select__' ? null : rowClick.emit(item.row)">
           @if (col.key === '__select__') {
-            <div class="dt-select-cell"
-                 role="checkbox"
-                 tabindex="0"
-                 [attr.aria-checked]="item.selected"
-                 (click)="$event.stopPropagation(); toggleRow(item.row)"
-                 (keydown.space)="$event.preventDefault(); $event.stopPropagation(); toggleRow(item.row)"
-                 (keydown.enter)="$event.preventDefault(); $event.stopPropagation(); toggleRow(item.row)">
-              <span class="dt-select-box" [class.is-checked]="item.selected" aria-hidden="true">
-                <app-icon [icon]="'check'"></app-icon>
-              </span>
-            </div>
+            <ng-container *ngTemplateOutlet="selectBox; context: { $implicit: item.row, selected: item.selected }"></ng-container>
           } @else if (column.cellTpl; as t) {
             <ng-container *ngTemplateOutlet="t; context: { $implicit: item.row, row: item.row }"></ng-container>
           } @else {
@@ -93,22 +209,7 @@
       <td cdk-cell *cdkCellDef="let marker"
           [attr.colspan]="columnKeys().length"
           class="detail-cell">
-        @if (selectable() && selectionDetailDef(); as detailDef) {
-          <div class="dt-selection-row" role="toolbar">
-            <div class="dt-selection-content">
-              <ng-container *ngTemplateOutlet="detailDef.templateRef; context: { $implicit: marker.source, row: marker.source }"></ng-container>
-            </div>
-            <button class="dt-clear-action"
-                    type="button"
-                    [attr.aria-label]="clearAriaLabel()"
-                    [title]="clearAriaLabel()"
-                    (click)="clearSelection()">
-              <app-icon [icon]="'close'"></app-icon>
-            </button>
-          </div>
-        } @else if (detailTpl(); as t) {
-          <ng-container *ngTemplateOutlet="t; context: { $implicit: marker.source, row: marker.source }"></ng-container>
-        }
+        <ng-container *ngTemplateOutlet="rowDetail; context: { $implicit: marker.source }"></ng-container>
       </td>
     </ng-container>
 

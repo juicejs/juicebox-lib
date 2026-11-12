@@ -1,3 +1,4 @@
+import {NgTemplateOutlet} from '@angular/common';
 import { Component, inject, OnDestroy, OnInit, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { UsersService } from '../users.service';
 import { ListingComponent } from '../../../shared/components/listing/listing.component';
@@ -45,7 +46,8 @@ export interface Sort {
         CellDefDirective,
         CompactRowDefDirective,
         HeaderDefDirective,
-        RouterLink
+        RouterLink,
+        NgTemplateOutlet
     ]
 })
 export class UserListingComponent extends ListingComponent implements OnInit, OnDestroy {
@@ -61,6 +63,17 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
     protected readonly rowsSig = signal<Array<any>>([]);
     protected readonly pageSig = signal<number>(1);
     protected readonly itemsPerPageSig = signal<number>(10);
+    /**
+     * The e-mail is hidden until the pointer is over it. A touch screen has no pointer: there the first tap on a hidden
+     * e-mail shows it instead of opening the user, and the next tap opens the user as one anywhere else in the row does.
+     */
+    protected revealEmail(event: Event): void {
+        const email = event.currentTarget as HTMLElement;
+        if (email.classList.contains('hidden-email--shown') || matchMedia('(hover: hover)').matches) return;
+        email.classList.add('hidden-email--shown');
+        event.stopPropagation();
+    }
+
     protected readonly canLoginAsOther = computed(() =>
         this.juicebox.getUser().attributes?.settings?.twoFactor === 'totp'
     );
@@ -96,9 +109,9 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
     displayedColumns: string[] = ['firstname', 'lastname', 'email', 'active', 'roles_count', 'groups', 'lastLogin', 'loginCount'];
 
     tableColumns: ColumnConfig[] = [
-        { key: 'firstname',   label: '', sortable: true },
-        { key: 'lastname',    label: '', sortable: true },
-        { key: 'email',       label: '', sortable: true },
+        { key: 'firstname',   label: '', sortable: true, inCompactRow: true },
+        { key: 'lastname',    label: '', sortable: true, inCompactRow: true },
+        { key: 'email',       label: '', sortable: true, inCompactRow: true },
         { key: 'active',      label: '', width: '100px',  align: 'center', ellipsis: false, sortable: true },
         { key: 'roles_count', label: '', width: '135px', align: 'right', ellipsis: false },
         { key: 'groups',      label: '', width: '220px' },

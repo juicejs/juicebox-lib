@@ -280,36 +280,137 @@
   }
 }
 
-// Responsive Design
+// The search's close button: on a phone, while the search is open
+.search-cmd-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin-right: -8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+
+  app-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 1px;
+  }
+}
+
+// The user's menu on a phone also holds help, the theme and the languages
+.user-menu-group {
+  margin: 4px 0;
+  padding: 4px 0;
+  border-block: 1px solid var(--color-border-light);
+}
+
+.user-menu-group-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 10px;
+  color: var(--color-text-secondary);
+  font-size: 12.5px;
+}
+
+// Under the group's label, past its icon
+.user-menu-language {
+  padding-left: 34px;
+}
+
+// A phone: the menu button, the logo, then the search as an icon, the organisation and the user
 @media (max-width: 768px) {
   .mobile-menu-btn {
     display: inline-flex;
+    width: 40px;
+    height: 40px;
+    margin-left: -6px;
   }
 
-  // The sidebar is a drawer: the menu button, the logo and the search start at the edge; nothing to collapse
+  // The sidebar is a drawer: the menu button and the logo start at the edge; nothing to collapse
   .modern-navigation {
     padding: 0 12px;
-    gap: 12px;
+    gap: 6px;
 
+    // Where the bar is too narrow for all of it, the logo gets smaller and the user's name shorter
     .brand,
     &.sidebar-collapsed .brand {
+      flex-shrink: 1;
       width: auto;
+      min-width: 40px;
       padding: 0;
+    }
+
+    .brand-home {
+      flex: 0 1 auto;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      flex: 0 1 auto;
+      min-width: 0;
+      max-width: 120px;
+      max-height: 32px;
     }
 
     .collapse-btn {
       display: none;
     }
-  }
 
-  .modern-navigation {
+    // An icon at the right until it is opened; its field is still there for the keyboard
+    .search-cmd {
+      flex: 0 0 auto;
+      justify-content: center;
+      gap: 0;
+      width: 40px;
+      height: 40px;
+      margin-left: auto;
+      padding: 0;
+      border-color: transparent;
+      background: transparent;
+      cursor: pointer;
+
+      &:hover {
+        border-color: transparent;
+      }
+
+      .search-cmd-icon {
+        width: 18px;
+        height: 18px;
+        font-size: 18px;
+      }
+
+      .search-cmd-input {
+        flex: 0 0 0;
+        width: 0;
+        opacity: 0;
+      }
+    }
 
     .nav-right-section {
-      gap: var(--spacing-xs);
+      flex-shrink: 1;
+      gap: 4px;
+      min-width: 0;
+      margin-left: 0;
 
       .org-switcher-btn {
-        padding: 0 10px;
+        flex-shrink: 0;
+        width: auto;
         min-width: 0;
+        height: 36px;
+        padding: 0 12px;
 
         .dropdown-trigger-label,
         .dropdown-trigger-arrow {
@@ -319,24 +420,50 @@
 
       // Less room: a shorter name, without the arrow
       .user-menu-btn {
-        max-width: 120px;
+        flex: 0 1 auto;
+        width: auto;
+        min-width: 56px;
+        max-width: 132px;
+        height: 36px;
         padding: 0 10px;
+
+        .dropdown-trigger-label {
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
 
         .dropdown-trigger-arrow {
           display: none;
         }
       }
     }
-  }
-}
 
-@media (max-width: 480px) {
-  .modern-navigation {
-    .nav-right-section {
-      gap: 2px;
+    // Open, the search takes the bar next to the menu button
+    &.search-open {
+      .brand,
+      .nav-right-section {
+        display: none;
+      }
 
-      .action-cluster {
-        gap: 0;
+      .search-cmd {
+        flex: 1 1 auto;
+        justify-content: flex-start;
+        gap: 8px;
+        width: auto;
+        max-width: none;
+        height: 38px;
+        padding: 0 14px;
+        border-color: var(--color-secondary);
+        background: var(--color-background);
+        cursor: text;
+
+        .search-cmd-input {
+          flex: 1;
+          width: auto;
+          opacity: 1;
+        }
       }
     }
   }

@@ -25,6 +25,7 @@
         [pageSize]="pageSize()"
         [pageIndex]="page() - 1"
         [sort]="sort()"
+        [sortLabel]="'sort' | translate"
         (pageChange)="onPageChange($event)"
         (sortChange)="onSort($event)"
         (rowClick)="onSelect($event._id)">

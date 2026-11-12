@@ -1,5 +1,8 @@
 export * from './disableable';
 
+// Viewport
+export * from './viewport/viewport.service';
+
 // Button
 export * from './button/button.component';
 

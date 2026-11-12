@@ -1,4 +1,6 @@
-<app-toolbar class="modern-navigation" [class.sidebar-collapsed]="sidebarService.sidebarCollapsed()">
+<app-toolbar class="modern-navigation"
+             [class.sidebar-collapsed]="sidebarService.sidebarCollapsed()"
+             [class.search-open]="searchOpen()">
 
   <!-- Small screens: opens the sidebar drawer -->
   <button type="button" class="mobile-menu-btn"
@@ -10,7 +12,7 @@
 
   <!-- Above the sidebar: the logo, and the button that collapses the sidebar -->
   <div class="brand">
-    @if (!sidebarService.sidebarCollapsed()) {
+    @if (phone() || !sidebarService.sidebarCollapsed()) {
       <button type="button" class="brand-home" (click)="goHome()">
         <img [src]="logo()" alt="Logo" class="brand-logo" (error)="onLogoError()">
       </button>
@@ -25,22 +27,31 @@
   </div>
 
   <!-- Search -->
-  <div class="search-cmd">
+  <div class="search-cmd" (click)="focusSearch()">
     <app-icon [icon]="'search'" class="search-cmd-icon"></app-icon>
     <input aria-label="Search or jump to…" #searchInput
            type="text"
            class="search-cmd-input"
            placeholder="Search or jump to…"
+           (focus)="searchOpen.set(true)"
+           (blur)="onSearchBlur()"
            (input)="doSearch($event)">
+    @if (phone() && searchOpen()) {
+      <button type="button" class="search-cmd-close" [attr.aria-label]="'close' | translate" (click)="closeSearch($event)">
+        <app-icon [icon]="'close'"></app-icon>
+      </button>
+    }
   </div>
 
   <!-- Right Section - User Actions -->
   <div class="nav-right-section">
 
+    <!-- On a phone these three are in the user's menu -->
+    @if (!phone()) {
     <div class="action-cluster">
 
       <!-- Help Button -->
-      @if (fileInfo() || this.juicebox.hasPermission('juicebox:role#edit-help-document')) {
+      @if (helpAvailable()) {
         <button [attr.aria-label]="'help' | translate" app-button
                 appearance="icon"
                 class="action-button help-btn"
@@ -61,6 +72,18 @@
         </button>
       }
 
+      <!-- Theme Toggle -->
+      <button [attr.aria-label]="'toggle_theme' | translate" app-button
+              appearance="icon"
+              class="action-button theme-btn"
+              (click)="toggleTheme()"
+              [appTooltip]="(theme() === 'light' ? 'switch_to_dark' : 'switch_to_light') | translate">
+        <app-icon [icon]="theme() === 'light' ? 'dark_mode' : 'light_mode'"></app-icon>
+      </button>
+
+    </div>
+    }
+
     <ng-template #languageMenu>
       <div class="dropdown-panel dropdown-panel--compact" cdkMenu>
         <div class="dropdown-panel-options">
@@ -72,17 +95,6 @@
         </div>
       </div>
     </ng-template>
-
-      <!-- Theme Toggle -->
-      <button [attr.aria-label]="'toggle_theme' | translate" app-button
-              appearance="icon"
-              class="action-button theme-btn"
-              (click)="toggleTheme()"
-              [appTooltip]="(theme() === 'light' ? 'switch_to_dark' : 'switch_to_light') | translate">
-        <app-icon [icon]="theme() === 'light' ? 'dark_mode' : 'light_mode'"></app-icon>
-      </button>
-
-    </div>
 
     <!-- Organization Switcher -->
     @if (userOrganisations().length > 1) {
@@ -109,6 +121,31 @@
             <app-icon [icon]="'person'" class="user-menu-icon"></app-icon>
             {{ 'view_profile' | translate }}
           </button>
+          @if (phone()) {
+            @if (helpAvailable()) {
+              <button class="dropdown-option" cdkMenuItem (click)="getHelp()">
+                <app-icon [icon]="'help_outline'" class="user-menu-icon"></app-icon>
+                {{ 'help' | translate }}
+              </button>
+            }
+            <button class="dropdown-option" cdkMenuItem (click)="toggleTheme()">
+              <app-icon [icon]="theme() === 'light' ? 'dark_mode' : 'light_mode'" class="user-menu-icon"></app-icon>
+              {{ (theme() === 'light' ? 'switch_to_dark' : 'switch_to_light') | translate }}
+            </button>
+            @if (languages().length > 1) {
+              <div class="user-menu-group" role="group" [attr.aria-label]="'change_language' | translate">
+                <div class="user-menu-group-label" aria-hidden="true">
+                  <app-icon [icon]="'language'" class="user-menu-icon"></app-icon>
+                  {{ 'change_language' | translate }}
+                </div>
+                @for (language of languages(); track language.code) {
+                  <button class="dropdown-option user-menu-language" cdkMenuItem (click)="changeLanguage(language)">
+                    {{ language.name | translate }}
+                  </button>
+                }
+              </div>
+            }
+          }
           <button class="dropdown-option" cdkMenuItem (click)="logout()">
             <app-icon [icon]="'logout'" class="user-menu-icon"></app-icon>
             {{ 'logout' | translate }}
