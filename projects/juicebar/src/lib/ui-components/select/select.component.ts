@@ -62,6 +62,8 @@ export class SelectComponent implements AfterContentInit, OnDestroy, ControlValu
   /** Shows a × that empties a single selection, like ng-select's clear button */
   clearable = input<boolean>(false);
   clearLabel = input<string>('Clear');
+  /** "Select all" and "Clear all" above a multiple select's options; `false` leaves them out (ng-select had none) */
+  bulkActions = input<boolean>(true);
 
   selectionChange = output<{ value: any }>();
   /** The text typed in the search field ('' when it is cleared) */

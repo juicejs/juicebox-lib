@@ -80,7 +80,7 @@
           (click)="$event.stopPropagation()" />
       </div>
     }
-    @if (multiple()) {
+    @if (multiple() && bulkActions()) {
       <div class="app-select-multi-actions">
         <button type="button" class="app-select-action-btn" (click)="selectAll()">Select all</button>
         <button type="button" class="app-select-action-btn" (click)="clearAll()">Clear all</button>
