@@ -8,8 +8,9 @@ import { CdkTableModule } from '@angular/cdk/table';
 import { CdkMenuModule } from '@angular/cdk/menu';
 import { CdkListboxModule } from '@angular/cdk/listbox';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { DATA_TABLE_LABELS, DialogService, SnackbarService } from './ui-components';
+import { DATA_TABLE_LABELS, DialogService, JSON_EDITOR_LABELS, SnackbarService } from './ui-components';
 import { translatedDataTableLabels } from './core/shared/i18n/data-table-labels';
+import { translatedJsonEditorLabels } from './core/shared/i18n/json-editor-labels';
 import { LoginComponent } from './core/modules/main/login/login.component';
 import { MainComponent } from './core/modules/main/main.component';
 import { provideMain } from './core/modules/main/main.providers';
@@ -46,8 +47,9 @@ export function provideJuicebar(config: BaseAppConfig, ...features: JuicebarFeat
     provideAppInitializer(() => JuiceboxProviderFactory(inject(Juice), inject(JuiceboxService), inject(BASE_APP_CONFIG))()),
     // The project's colours and favicon (config.theme), before anything renders
     provideAppInitializer(() => inject(BrandService).apply()),
-    // Every data table's own texts, translated once here; a project's providers below may replace them
+    // Every data table's and JSON editor's own texts, translated once here; a project's providers below may replace them
     { provide: DATA_TABLE_LABELS, useFactory: translatedDataTableLabels },
+    { provide: JSON_EDITOR_LABELS, useFactory: translatedJsonEditorLabels },
     ...(config.providers || []),
   ]);
 }

@@ -55,3 +55,4 @@ A file store that keeps an uploaded file under a collection and a record, makes 
 - [exports](./exports/juicebar.exports.aim) — export templates, and downloading them as a spreadsheet or a zip of PDFs
 - [locations](./locations/juicebar.locations.aim) — the places a project keeps, with their files, documents and a venue's room plans
 - [communications](./communications/juicebar.communications.aim) — the messages sent to customers by e-mail, push notification or SMS: quick sends, contents, automations and their history
+- [configurations](./configurations/juicebar.configurations.aim) — the backend's configurations, in memory and in the database: comparing the two copies, adding, changing and deleting them

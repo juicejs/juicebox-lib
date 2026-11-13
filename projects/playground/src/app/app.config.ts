@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideCategories, provideCommunications, provideExports, provideJuicebar, provideLocations, provideUsers } from '@juicejs/juicebar';
+import { provideCategories, provideCommunications, provideConfigurations, provideExports, provideJuicebar, provideLocations, provideUsers } from '@juicejs/juicebar';
 import { environment } from '../environments/environment';
 
 /**
@@ -32,6 +32,7 @@ export const appConfig: ApplicationConfig = {
       // Quality Circle's categories
       provideCategories({options: {showInactive: true, confirmDeactivation: true, subcategoriesActive: true}}),
       provideCommunications(),
+      provideConfigurations(),
     ),
   ],
 };

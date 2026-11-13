@@ -99,6 +99,7 @@ const FA_TO_MATERIAL_ICONS: Record<string, string> = {
   'fa-gamepad': 'sports_esports',
   'fa-puzzle-piece': 'extension',
   'fa-wrench': 'build',
+  'fa-tools': 'build',
   'fa-hammer': 'construction',
   'fa-paint-brush': 'brush',
   'fa-palette': 'palette',

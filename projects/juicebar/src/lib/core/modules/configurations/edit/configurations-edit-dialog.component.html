@@ -1,0 +1,76 @@
+@if (compared(); as compared) {
+  <app-dialog-title>
+    <span class="edit-title">
+      {{ 'edit' | translate }} -
+      @if (compared.comparison.equal) {
+        <span class="edit-title__state edit-title__state--equal">
+          <app-icon icon="check_circle" />
+          {{ 'configurations_equal' | translate }}
+        </span>
+      } @else {
+        <span class="edit-title__state edit-title__state--unequal">
+          <app-icon icon="warning" />
+          {{ 'configurations_not_equal' | translate }}
+        </span>
+        <button app-button appearance="stroked" type="button"
+                aria-controls="configuration-differences"
+                [attr.aria-expanded]="showDifferences()"
+                (click)="toggleDifferences()">
+          {{ 'show_differences' | translate }}
+        </button>
+      }
+    </span>
+  </app-dialog-title>
+
+  <form [formGroup]="form">
+    <app-dialog-content>
+      @if (!compared.comparison.equal) {
+        @if (showDifferences()) {
+          <div id="configuration-differences" class="differences">
+            <div>{{ 'differences_in_database' | translate }}:</div>
+            <pre>{{ compared.comparison.difference | json }}</pre>
+          </div>
+        }
+
+        <p class="note">* {{ 'first_apply_from_memory_or_database_than_edit' | translate }}</p>
+
+        <div class="copies">
+          <div class="copy">
+            <div class="copy__label">{{ 'memory' | translate }}:</div>
+            <pre class="copy__json" tabindex="0" [attr.aria-label]="'memory' | translate">{{ compared.configurations.memory | json }}</pre>
+            <button app-button appearance="raised" color="primary" type="button" (click)="apply('memory')">
+              {{ 'apply_from_memory' | translate }}
+              <app-icon icon="arrow_downward" />
+            </button>
+          </div>
+          <div class="copy">
+            <div class="copy__label">{{ 'database' | translate }}:</div>
+            <pre class="copy__json" tabindex="0" [attr.aria-label]="'database' | translate">{{ compared.configurations.database | json }}</pre>
+            <button app-button appearance="raised" color="primary" type="button" class="copy__apply--end" (click)="apply('database')">
+              {{ 'apply_from_database' | translate }}
+              <app-icon icon="arrow_downward" />
+            </button>
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        @if (applied(); as applied) {
+          <p class="applied">{{ 'applied_from' | translate }}: <strong>{{ applied | translate }}</strong></p>
+        }
+      }
+
+      <app-json-editor class="configuration-editor" formControlName="configuration" />
+    </app-dialog-content>
+
+    <app-dialog-actions>
+      <button app-button type="button" (click)="cancel()">{{ 'cancel' | translate }}</button>
+      <button app-button appearance="raised" color="primary" type="button"
+              [disabled]="!applied()"
+              [promiseBtn]="savePromise()"
+              (click)="save()">
+        {{ 'save' | translate }}
+      </button>
+    </app-dialog-actions>
+  </form>
+}

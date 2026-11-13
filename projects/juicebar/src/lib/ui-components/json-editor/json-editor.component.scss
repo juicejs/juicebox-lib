@@ -1,0 +1,166 @@
+// Not encapsulated (the coloured pieces are made in code): every rule stays under .app-json-editor
+.app-json-editor {
+  --app-json-editor-font: 13px/20px ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+
+  display: flex;
+  flex-direction: column;
+  height: 460px;
+  min-height: 160px;
+  color: var(--color-text-primary);
+  background: var(--color-background);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-control);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus-within {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.15);
+  }
+
+  &--invalid,
+  &--invalid:focus-within {
+    border-color: var(--color-error);
+  }
+
+  &--disabled {
+    background: var(--color-grey-200);
+    color: var(--color-text-secondary);
+  }
+}
+
+.app-json-editor__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-background-secondary);
+}
+
+.app-json-editor__divider {
+  width: 1px;
+  height: 20px;
+  margin: 0 4px;
+  background: var(--color-border);
+}
+
+.app-json-editor__body {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.app-json-editor__gutter {
+  flex: none;
+  min-width: 3ch;
+  padding: 8px 8px 8px 12px;
+  overflow: hidden;
+  font: var(--app-json-editor-font);
+  text-align: right;
+  color: var(--color-text-secondary);
+  background: var(--color-background-secondary);
+  border-right: 1px solid var(--color-border);
+  user-select: none;
+}
+
+.app-json-editor__line-number--error {
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+.app-json-editor__area {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+// The text area and its coloured copy lie on each other, letter on letter
+.app-json-editor__code,
+.app-json-editor__input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 8px 12px;
+  font: var(--app-json-editor-font);
+  letter-spacing: normal;
+  white-space: pre;
+  tab-size: 2;
+  border: 0;
+  box-sizing: border-box;
+}
+
+.app-json-editor__code {
+  overflow: visible;
+  pointer-events: none;
+  color: var(--color-text-primary);
+  background: transparent;
+
+  code {
+    font: inherit;
+  }
+}
+
+// Two classes: a dialog styles every text area in it (`.app-dialog-panel textarea`), this one is not a field of its own
+.app-json-editor .app-json-editor__input {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 8px 12px;
+  overflow: auto;
+  resize: none;
+  outline: none;
+  font: var(--app-json-editor-font);
+  color: transparent;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  caret-color: var(--color-text-primary);
+
+  &:focus {
+    border: 0;
+    box-shadow: none;
+  }
+
+  &::selection {
+    color: transparent;
+    background: rgba(var(--color-secondary-rgb), 0.25);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.app-json-editor__key {
+  color: var(--color-tertiary);
+}
+
+.app-json-editor__string {
+  color: var(--color-success);
+}
+
+.app-json-editor__number {
+  color: var(--color-secondary);
+}
+
+.app-json-editor__literal {
+  color: var(--color-warning);
+}
+
+.app-json-editor__punctuation {
+  color: var(--color-text-secondary);
+}
+
+.app-json-editor__status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  font-size: 12.5px;
+  color: var(--color-error);
+  border-top: 1px solid var(--color-border);
+}

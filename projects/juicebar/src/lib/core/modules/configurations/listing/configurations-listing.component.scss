@@ -1,0 +1,25 @@
+:host {
+  display: block;
+}
+
+.configurations-filter {
+  max-width: 420px;
+}
+
+// In memory, In database, Equal: green when yes, red when not
+.state {
+  color: var(--color-error);
+
+  &--yes {
+    color: var(--color-success);
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

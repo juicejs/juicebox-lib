@@ -15,6 +15,8 @@ export * from './input/input.directive';
 export * from './select/select.component';
 export * from './checkbox/checkbox.component';
 export * from './rich-text-editor/rich-text-editor.component';
+export * from './json-editor/json-editor.component';
+export * from './json-editor/json-editor.labels';
 export * from './file-input/file-input.component';
 
 // Icon

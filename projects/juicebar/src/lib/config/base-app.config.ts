@@ -188,6 +188,11 @@ export const LOCATIONS_CUSTOMIZATION = new InjectionToken<LocationsCustomization
 export const CATEGORIES_CUSTOMIZATION = new InjectionToken<CategoriesCustomization>('CATEGORIES_CUSTOMIZATION');
 export const COMMUNICATIONS_CUSTOMIZATION = new InjectionToken<CommunicationsCustomization>('COMMUNICATIONS_CUSTOMIZATION');
 
+/** The configurations module has no options of its own yet */
+export type ConfigurationsCustomization = ModuleCustomization;
+
+export const CONFIGURATIONS_CUSTOMIZATION = new InjectionToken<ConfigurationsCustomization>('CONFIGURATIONS_CUSTOMIZATION');
+
 export interface JuicebarFeature {
   routes: Routes;
   providers: EnvironmentProviders;

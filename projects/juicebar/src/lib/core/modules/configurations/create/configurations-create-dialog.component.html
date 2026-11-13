@@ -1,0 +1,13 @@
+<app-dialog-title>{{ 'create' | translate }}</app-dialog-title>
+
+<form [formGroup]="form">
+  <app-dialog-content>
+    <app-json-editor class="configuration-editor" formControlName="configuration" />
+  </app-dialog-content>
+
+  <app-dialog-actions>
+    <button app-button appearance="raised" color="primary" type="button" [promiseBtn]="createPromise()" (click)="create()">
+      {{ 'create' | translate }}
+    </button>
+  </app-dialog-actions>
+</form>

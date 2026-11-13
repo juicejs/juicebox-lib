@@ -1,0 +1,274 @@
+---
+aim: juicebar.configurations
+kind: intent
+parent: juicebar
+approved_by: Mario
+approved_at: 2026-11-13
+---
+
+# Configurations
+
+## Summary
+
+The backend's configurations: each one a JSON document with a key and a name that the backend and its modules run on — services, roles, channels, options. The backend keeps every configuration twice, in its memory and in its database, and the two copies of a key can differ or one can be missing. Staff with the configuration role list them with where they are kept and whether the copies are equal, filter them, add one, change one in a JSON editor — choosing first which copy to start from when the two differ — and delete one.
+
+## Requirements
+
+- **CONFROLE** — The module needs `configuration:role`. The backend installs no such role itself, so a project gives it only to the staff who may change configurations. The module checks no permission of the role; every operation and read of the module needs the role on the backend — from [juicebar#Requirements[ROLES]]
+- **CONFLIST** — The list shows each configuration of the backend's memory and each one of its database, matched by key, one row per key: its name, key and schema, whether it is in memory, whether it is in the database, and whether the two copies are equal; a key with one copy only is not equal. Name, key and schema are the memory copy's; where only the database has the key, they are the database copy's, each written after "[DB]". The list shows 100 rows to a page and is sorted by key at first. Name, Key, Schema, In memory, In database and Equal sort it, one column at a time: a click on a column sorts it ascending, a second click descending. Texts sort ignoring case, by the value without "[DB]"; ascending puts the keys without a memory copy first on In memory, those without a database copy first on In database, and the unequal before the equal on Equal.
+- **CONFFILTER** — The filter above the list keeps, half a second after typing pauses, the rows whose name, key or schema contains the text, in any case; an empty filter keeps them all. The filter stays applied when the list is read again.
+- **CONFREAD** — The list is read again whenever a dialog of the module closes, however it was closed, and whenever the delete question is answered, Ok or Cancel.
+- **CONFNEW** — "Add new" opens the Create dialog with the JSON editor holding `{"key": null, "name": null}`; a click outside it does not close it, and the × closes it without creating. Create checks the editor: a text that is not JSON shows "Invalid JSON", and a JSON value that is empty (`null`, `""` or `[]`) shows "Configuration must have a 'key' and 'name' properties set"; neither is sent. Otherwise the configuration is sent as written; when it is stored, "Configuration created" shows and the dialog closes. When the backend refuses it, the backend's error shows and the dialog stays open.
+- **CONFEDIT** — The edit button on a row opens the Edit dialog of that row's key, which asks the backend to compare the key's memory copy with its database copy. Equal copies: the header says "Edit - Configurations are equal" and the editor holds the memory copy, ready to save. Unequal copies: the header says "Edit - Configurations not equal" with "Show differences", which shows "Differences in database:" and what the database copy adds, lacks and changes against the memory copy, as JSON; under it the note "* Configurations from Memory and Database are not the same, first apply from memory or database and than edit the configuration in json editor", and the two copies side by side as JSON, "Memory:" with "Apply from memory" and "Database:" with "Apply from database". The editor stays empty and Save stays off until a copy is applied; applying a copy replaces what the editor holds, and "Applied from:" names the copy applied, Memory or Database. When the comparison can't be read, the backend's error shows and the dialog closes.
+- **CONFSAVE** — Save checks the editor as Create does ("Invalid JSON"; "Configuration must have a 'key' and 'name' properties set") and otherwise sends the configuration as written. When it is stored, the dialog closes with the notice "New configuration created" where the backend created the key anew, and "Edited" otherwise. When the backend refuses it, the backend's error shows and the dialog stays open. Cancel and the × close the dialog without saving.
+- **CONFDELETE** — The delete button on a row asks "Are you sure you want to delete configuration: " followed by the name of the memory copy, else of the database copy, else the key, and "?", with Cancel and Ok. Ok deletes the configuration of the key, from the database and from memory, and "Configuration deleted" shows, or the backend's error.
+
+## Tests
+
+- A configuration only in the database shows "[DB]" before its name, key and schema, the cross under In memory and the warning under Equal.
+- Typing "MAIL" in the filter keeps, after half a second, the configurations whose name, key or schema contains "mail" in any case, and reading the list again keeps the filter.
+- Create with a text that is not JSON shows "Invalid JSON" and sends nothing.
+- Creating a configuration whose key is already in memory shows "Error, configuration not installed" and leaves the dialog open.
+- Opening a configuration whose two copies differ shows both copies, and Save is off until one of them is applied.
+- Saving a configuration whose key is only in the database shows "New configuration created".
+- Answering Cancel to the delete question deletes nothing and reads the list again.
+- A staff member without `configuration:role` cannot list, create, change, compare or delete configurations on the backend.
+
+## Persona: ConfigurationAdmin
+
+### Summary
+
+A staff member whose role has `configuration:role`.
+
+### Role
+
+- Keeps the backend's configurations — [plays](aim:juicebar.core#Persona:Staff)
+
+### Access
+
+- The configurations module — [accesses](aim:juicebar.configurations)
+
+## View: ConfigurationList
+
+### Summary
+
+The module's page: the filter and the configurations, with Add new as the page's action.
+
+### Display
+
+- Each key's name, key and schema, In memory, In database and Equal, 100 rows to a page, sorted by key at first and by the column clicked, read for staff with `configuration:role` — [reads](aim:juicebar.configurations#Record:Configuration), [satisfies](aim:juicebar.configurations#Requirements[CONFLIST]), [satisfies](aim:juicebar.configurations#Requirements[CONFROLE])
+- The filter by name, key and schema, with the placeholder "Type to filter columns: Name, Key, Schema..." — [satisfies](aim:juicebar.configurations#Requirements[CONFFILTER])
+- The list read again after each dialog closes and after the delete question is answered — [satisfies](aim:juicebar.configurations#Requirements[CONFREAD])
+- "No data to display" when no row is left — [satisfies](aim:juicebar.configurations#Requirements[CONFLIST])
+- Every label on the module's screens comes from the configurations label dictionary, in the admin's language, with every language's texts the old admin had — [satisfies](aim:juicebar#Requirements[UILABELS])
+
+### Actions
+
+- Add new — [navigates](aim:juicebar.configurations#View:CreateConfigurationDialog)
+- Edit — [navigates](aim:juicebar.configurations#View:EditConfigurationDialog)
+- Delete — [exposes](aim:juicebar.configurations#Operation:DeleteConfiguration)
+
+### Layout
+
+- Add new is the page's action and the filter stands above the table. Edit and delete are icon buttons on each row; a click elsewhere on a row does nothing. In memory, In database and Equal show a tick when yes, and a cross (In memory, In database) or a warning (Equal) when no.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/configurations/listing/configurations-listing.component.ts#ConfigurationsListingComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/configurations/configurations.route.ts#buildConfigurationsRoute` — as: route
+- binds: `projects/juicebar/src/lib/core/modules/configurations/i18n/configurations_dictionary.ts#configurationsDictionary` — as: component
+- binds: `projects/juicebar/src/lib/core/shared/services/configuration.service.ts#ConfigurationService` — as: component
+- binds: `service:juicebox:configuration:service#fetch` — as: handler
+- provenance: inferred
+
+## View: CreateConfigurationDialog
+
+### Summary
+
+The dialog that adds a configuration, written as JSON.
+
+### Display
+
+- "Create" and the JSON editor holding `{"key": null, "name": null}`; a click outside does not close it — [satisfies](aim:juicebar.configurations#Requirements[CONFNEW])
+- "Invalid JSON" for a text that is not JSON, and "Configuration must have a 'key' and 'name' properties set" for an empty value, before anything is sent — [satisfies](aim:juicebar.configurations#Requirements[CONFNEW])
+
+### Actions
+
+- Create — [exposes](aim:juicebar.configurations#Operation:InstallConfiguration)
+- Close (×) — [navigates](aim:juicebar.configurations#View:ConfigurationList)
+
+### Layout
+
+- A large dialog, the editor filling it, Create at its foot.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/configurations/create/configurations-create-dialog.component.ts#ConfigurationsCreateDialogComponent` — as: component
+- binds: `projects/juicebar/src/lib/ui-components/json-editor/json-editor.component.ts#JsonEditorComponent` — as: component
+- provenance: inferred
+
+## View: EditConfigurationDialog
+
+### Summary
+
+The dialog that changes a configuration: the comparison of its two copies, and the copy applied in the JSON editor.
+
+### Display
+
+- The comparison of the key's memory and database copies, read when the dialog opens for staff with `configuration:role`; the dialog closes with the backend's error when it can't be read — [reads](aim:juicebar.configurations#Record:Configuration), [satisfies](aim:juicebar.configurations#Requirements[CONFEDIT]), [satisfies](aim:juicebar.configurations#Requirements[CONFROLE])
+- Equal copies: "Edit - Configurations are equal" and the memory copy in the editor, Save on — [satisfies](aim:juicebar.configurations#Requirements[CONFEDIT])
+- Unequal copies: "Edit - Configurations not equal", Show differences, the note, both copies with Apply from memory and Apply from database, and "Applied from:" with the copy applied; the editor empty and Save off until a copy is applied, a copy applied replacing what the editor holds — [satisfies](aim:juicebar.configurations#Requirements[CONFEDIT])
+- "Invalid JSON" and "Configuration must have a 'key' and 'name' properties set" before anything is sent — [satisfies](aim:juicebar.configurations#Requirements[CONFSAVE])
+
+### Actions
+
+- Save — [exposes](aim:juicebar.configurations#Operation:UpdateConfiguration)
+- Cancel — [navigates](aim:juicebar.configurations#View:ConfigurationList)
+
+### Layout
+
+- A large dialog. Unequal copies: the note, then Memory and Database side by side, each in a short scrolling frame with its Apply button under it, a line, then "Applied from:" and the editor. Show differences stands in the header and opens a panel under it. Cancel and Save at the foot.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/configurations/edit/configurations-edit-dialog.component.ts#ConfigurationsEditDialogComponent` — as: component
+- binds: `projects/juicebar/src/lib/ui-components/json-editor/json-editor.component.ts#JsonEditorComponent` — as: component
+- binds: `service:juicebox:configuration:service#compare` — as: handler
+- provenance: inferred
+
+## Operation: InstallConfiguration
+
+### Summary
+
+A staff member adds a configuration, written as JSON.
+
+### Input
+
+```schema
+configuration: string required
+```
+
+### Authz
+
+- `juicebar.configurations#Persona:ConfigurationAdmin`
+
+### Ensures
+
+- The configuration, as the JSON written, is stored in the database and in memory, its texts turned into ids and dates as the Record's Constraints say — [mutates](aim:juicebar.configurations#Record:Configuration), [satisfies](aim:juicebar.configurations#Requirements[CONFNEW])
+- Without a key nothing is stored and the answer is "Configuration key is missing"; with a key already in memory, "Error, configuration not installed" — [satisfies](aim:juicebar.configurations#Requirements[CONFNEW])
+- The backend refuses it to anyone without `configuration:role` — [satisfies](aim:juicebar.configurations#Requirements[CONFROLE]), [satisfies](aim:juicebar#Requirements[ROLES])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/configurations/create/configurations-create-dialog.component.ts#ConfigurationsCreateDialogComponent.create` — as: component
+- binds: `service:juicebox:configuration:service#install` — as: handler
+- provenance: inferred
+
+## Operation: UpdateConfiguration
+
+### Summary
+
+A staff member changes a configuration, written as JSON.
+
+### Input
+
+```schema
+configuration: string required
+```
+
+### Authz
+
+- `juicebar.configurations#Persona:ConfigurationAdmin`
+
+### Ensures
+
+- Where the key is in memory, the fields written replace those of the memory copy, a field left out keeping its value, and the result is saved to the database, which memory then holds; texts are turned into ids and dates as the Record's Constraints say — [mutates](aim:juicebar.configurations#Record:Configuration), [satisfies](aim:juicebar.configurations#Requirements[CONFSAVE])
+- Where the key is not in memory, the configuration is stored as a new one, and the answer says "New configuration created" — [mutates](aim:juicebar.configurations#Record:Configuration), [satisfies](aim:juicebar.configurations#Requirements[CONFSAVE])
+- The part of the backend registered under the key is given the configuration's new options at once — [satisfies](aim:juicebar.configurations#Requirements[CONFSAVE])
+- Without a key nothing is stored and the answer is "Configuration key is missing" — [satisfies](aim:juicebar.configurations#Requirements[CONFSAVE])
+- The backend refuses it to anyone without `configuration:role` — [satisfies](aim:juicebar.configurations#Requirements[CONFROLE]), [satisfies](aim:juicebar#Requirements[ROLES])
+
+### Returns
+
+- "New configuration created" as the answer's message where the key was new; nothing else.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/configurations/edit/configurations-edit-dialog.component.ts#ConfigurationsEditDialogComponent.save` — as: component
+- binds: `service:juicebox:configuration:service#update` — as: handler
+- provenance: inferred
+
+## Operation: DeleteConfiguration
+
+### Summary
+
+A staff member deletes a configuration from the list.
+
+### Input
+
+```schema
+key: string required ref(juicebar.configurations#Configuration.key)
+```
+
+### Authz
+
+- `juicebar.configurations#Persona:ConfigurationAdmin`
+
+### Ensures
+
+- The configuration of the key is taken out of the database and out of memory — [mutates](aim:juicebar.configurations#Record:Configuration), [satisfies](aim:juicebar.configurations#Requirements[CONFDELETE])
+- The backend answers success as soon as a key is given, without waiting for the deletion to finish; without a key the answer is "Key is missing" — [satisfies](aim:juicebar.configurations#Requirements[CONFDELETE])
+- The backend refuses it to anyone without `configuration:role` — [satisfies](aim:juicebar.configurations#Requirements[CONFROLE]), [satisfies](aim:juicebar#Requirements[ROLES])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/configurations/listing/configurations-listing.component.ts#ConfigurationsListingComponent.remove` — as: component
+- binds: `service:juicebox:configuration:service#delete` — as: handler
+- provenance: inferred
+
+## Record: Configuration
+
+### Summary
+
+One configuration of the backend, kept in its memory and in its database.
+
+### Schema
+
+```schema
+key: string required unique
+name: string
+schema: string
+type: string
+description: string
+base: string
+owner: string
+attribute: string
+module: string
+model: string
+target: string
+reference: string
+reference_id: string
+adapter: string
+scope: string
+organisation_id: string ref(juicebar.core#Organisation.id)
+enabled: boolean
+required: boolean
+params: string
+options: string
+value: string
+inject: list(string)
+created: datetime
+updated: datetime
+```
+
+### Constraints
+
+- The backend keeps each configuration twice: in its memory, which the backend and its modules read, and in its database (the `configurations` collection), from which memory is filled when the backend starts. The two copies of a key are equal when all their fields are deeply equal.
+- `params`, `options` and `value` hold any JSON value, and a configuration may hold fields of its own besides these (a role's `permissions`, for one); they are kept as written.
+- On the way in, at any depth, a text the database's id type accepts (24 hexadecimal characters, or any 12 characters) is stored as an id, and a text in ISO date form as a date.
+
+### Bindings
+
+- binds: `juice-modules:packages/juice/src/models/Configuration.ts#Configuration` — as: model
+- binds: `juice-modules:packages/juice/src/modules/configuration/Configurations.ts#Configurations` — as: model
+- provenance: inferred

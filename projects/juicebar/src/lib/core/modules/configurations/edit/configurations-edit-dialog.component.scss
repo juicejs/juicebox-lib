@@ -1,0 +1,92 @@
+.edit-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-title__state {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  &--equal {
+    color: var(--color-success);
+  }
+
+  &--unequal {
+    color: var(--color-error);
+  }
+}
+
+.differences {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-control);
+  background: var(--color-background-secondary);
+
+  pre {
+    margin: 6px 0 0;
+    max-height: 240px;
+    overflow: auto;
+  }
+}
+
+.note {
+  margin: 0 0 8px;
+  color: var(--color-error);
+}
+
+.copies {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 12px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.copy__json {
+  height: 170px;
+  margin: 0;
+  padding: 10px;
+  overflow: auto;
+  font-size: 12px;
+  line-height: 1.4;
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+
+.copy button {
+  align-self: flex-start;
+}
+
+.copy .copy__apply--end {
+  align-self: flex-end;
+}
+
+.divider {
+  margin: 0 0 12px;
+  border: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.applied {
+  margin: 0 0 8px;
+}
+
+// As tall as the old juicebox's editor
+.configuration-editor {
+  height: min(460px, 60vh);
+}

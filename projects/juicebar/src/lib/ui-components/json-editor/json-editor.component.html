@@ -1,0 +1,53 @@
+<div class="app-json-editor__toolbar" role="toolbar" [attr.aria-label]="label() || labels.editor">
+  <button app-button appearance="icon" type="button" [disabled]="disabled() || !valid()"
+          [attr.aria-label]="labels.format" [appTooltip]="labels.format" (click)="format()">
+    <app-icon icon="format_align_left" />
+  </button>
+  <button app-button appearance="icon" type="button" [disabled]="disabled() || !valid()"
+          [attr.aria-label]="labels.compact" [appTooltip]="labels.compact" (click)="compact()">
+    <app-icon icon="compress" />
+  </button>
+  <span class="app-json-editor__divider" aria-hidden="true"></span>
+  <button app-button appearance="icon" type="button" [disabled]="disabled()"
+          [attr.aria-label]="labels.undo" [appTooltip]="labels.undo" (click)="undo()">
+    <app-icon icon="undo" />
+  </button>
+  <button app-button appearance="icon" type="button" [disabled]="disabled()"
+          [attr.aria-label]="labels.redo" [appTooltip]="labels.redo" (click)="redo()">
+    <app-icon icon="redo" />
+  </button>
+</div>
+
+<div class="app-json-editor__body">
+  <div class="app-json-editor__gutter" aria-hidden="true">
+    <div [style.transform]="gutterTransform()">
+      @for (line of lineNumbers(); track line) {
+        <div class="app-json-editor__line-number" [class.app-json-editor__line-number--error]="line === errorLine()">{{ line }}</div>
+      }
+    </div>
+  </div>
+  <div class="app-json-editor__area">
+    <pre class="app-json-editor__code" aria-hidden="true" [style.transform]="codeTransform()"><code #code></code></pre>
+    <textarea #textarea
+              class="app-json-editor__input"
+              spellcheck="false"
+              autocapitalize="off"
+              autocomplete="off"
+              wrap="off"
+              [attr.aria-label]="label() || labels.editor"
+              [attr.aria-invalid]="errorLine() !== null"
+              [attr.aria-describedby]="errorLine() !== null ? statusId : null"
+              [disabled]="disabled()"
+              (input)="onInput()"
+              (scroll)="onScroll()"
+              (keydown)="onKeydown($event)"
+              (blur)="onTouched()"></textarea>
+  </div>
+</div>
+
+@if (errorLine(); as line) {
+  <div class="app-json-editor__status" [id]="statusId">
+    <app-icon icon="error" />
+    <span>{{ labels.invalid }} · {{ labels.line }} {{ line }}</span>
+  </div>
+}

@@ -1,0 +1,56 @@
+<div class="parent listing-page">
+  <app-form-field class="configurations-filter">
+    <input #filterInput
+           appInput
+           type="text"
+           debounceKeyUp
+           [debounceTime]="500"
+           [placeholder]="filterPlaceholder"
+           [attr.aria-label]="filterPlaceholder"
+           (onEvent)="onFilter(filterInput.value)" />
+  </app-form-field>
+
+  <app-data-table
+    [rows]="rows()"
+    [columns]="columns"
+    [totalCount]="count()"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="pageSizeOptions"
+    [pageIndex]="page()"
+    [sort]="sort()"
+    [emptyMessage]="'no_data_to_display' | translate"
+    (sortChange)="onSort($event)"
+    (pageChange)="onPage($event)">
+    <ng-template [cellDef]="'inMemory'" let-row>
+      <app-icon class="state" [class.state--yes]="row.inMemory" [icon]="row.inMemory ? 'check_circle' : 'cancel'" />
+      <span class="visually-hidden">{{ (row.inMemory ? 'yes' : 'no') | translate }}</span>
+    </ng-template>
+
+    <ng-template [cellDef]="'inDatabase'" let-row>
+      <app-icon class="state" [class.state--yes]="row.inDatabase" [icon]="row.inDatabase ? 'check_circle' : 'cancel'" />
+      <span class="visually-hidden">{{ (row.inDatabase ? 'yes' : 'no') | translate }}</span>
+    </ng-template>
+
+    <ng-template [cellDef]="'equal'" let-row>
+      <app-icon class="state" [class.state--yes]="row.equal" [icon]="row.equal ? 'check_circle' : 'warning'" />
+      <span class="visually-hidden">{{ (row.equal ? 'yes' : 'no') | translate }}</span>
+    </ng-template>
+
+    <ng-template [cellDef]="'actions'" let-row>
+      <div class="dt-row-actions">
+        <button app-button appearance="icon" type="button"
+                [attr.aria-label]="('edit' | translate) + ': ' + row.name"
+                [appTooltip]="'edit' | translate"
+                (click)="$event.stopPropagation(); edit(row)">
+          <app-icon [icon]="'edit'" />
+        </button>
+        <button app-button appearance="icon" type="button" class="danger"
+                [attr.aria-label]="('delete' | translate) + ': ' + row.name"
+                [appTooltip]="'delete' | translate"
+                (click)="$event.stopPropagation(); remove(row)">
+          <app-icon [icon]="'delete'" />
+        </button>
+      </div>
+    </ng-template>
+  </app-data-table>
+</div>
