@@ -1,0 +1,97 @@
+import {Component, inject, OnDestroy, signal} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {ActivatedRoute} from '@angular/router';
+<%= importLib(1, {ui: ['ButtonComponent', 'CardActionsComponent', 'CardComponent', 'CardContentComponent', 'ErrorComponent', 'FormFieldComponent', 'InputDirective', 'LabelComponent'], promiseButton: ['PromiseButtonDirective'], juicebox: ['JuiceboxService']}) %>
+import {<%= className %>TranslationPipe} from '../i18n/<%= name %>.translation';
+import {<%= className %>Service} from '../<%= name %>.service';
+import {<%= className %>Record} from '../<%= name %>.types';
+
+/**
+ * A <%= label %> record's page: its fields in a form, with Save. The route's unsaved-changes guard reads the form, so
+ * leaving with changes asks first. Beside the page the layout shows the listing as a compact list (the split view).
+ */
+@Component({
+  selector: 'app-<%= name %>-details',
+  templateUrl: './<%= name %>-details.component.html',
+  styleUrl: './<%= name %>-details.component.scss',
+  imports: [
+    ReactiveFormsModule,
+    CardComponent,
+    CardContentComponent,
+    CardActionsComponent,
+    FormFieldComponent,
+    LabelComponent,
+    ErrorComponent,
+    InputDirective,
+    ButtonComponent,
+    PromiseButtonDirective,
+    <%= className %>TranslationPipe,
+  ],
+  providers: [<%= className %>TranslationPipe],
+})
+export class <%= className %>DetailsComponent implements OnDestroy {
+  private readonly route = inject(ActivatedRoute);
+  private readonly service = inject(<%= className %>Service);
+  private readonly juicebox = inject(JuiceboxService);
+  private readonly i18n = inject(<%= className %>TranslationPipe);
+
+  protected readonly form = new FormGroup({
+    name: new FormControl('', {nonNullable: true, validators: Validators.required}),
+  });
+  /** Set once the record shown was read */
+  protected readonly loaded = signal(false);
+  protected readonly savePromise = signal<Promise<void> | null>(null);
+  private readonly recordId = signal<string | null>(null);
+  private readonly record = signal<<%= className %>Record | null>(null);
+
+  constructor() {
+    // Another record opened from the list beside it reuses this page
+    this.route.paramMap.pipe(takeUntilDestroyed()).subscribe(params => {
+      const id = params.get('id');
+      this.recordId.set(id);
+      if (id) void this.load(id);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.juicebox.setPageHeader(null);
+  }
+
+  protected save(): void {
+    this.savePromise.set(this.update());
+  }
+
+  private async load(id: string): Promise<void> {
+    this.loaded.set(false);
+    const result = await this.service.get(id);
+    if (this.recordId() !== id) return;
+    const record = result?.success ? result.payload ?? null : null;
+    this.record.set(record);
+    this.form.reset({name: record?.name ?? ''});
+    this.loaded.set(true);
+    if (record) this.showHeader(record);
+  }
+
+  private async update(): Promise<void> {
+    this.form.markAllAsTouched();
+    const record = this.record();
+    if (!record || this.form.invalid) return;
+    const changed = {...record, ...this.form.getRawValue()};
+    const result = await this.service.update(changed);
+    if (!result?.success) {
+      this.juicebox.showToast('error', this.i18n.transform('save_failed'));
+      return;
+    }
+    this.record.set(changed);
+    this.form.markAsPristine();
+    this.showHeader(changed);
+  }
+
+  /** The record's name over the page and in the breadcrumb, which leads back to the listing */
+  private showHeader(record: <%= className %>Record): void {
+    const name = record.name ?? '';
+    this.juicebox.setPageHeader({scope: `/main/<%= route %>/details/${record._id}`, title: name});
+    this.juicebox.navigationEvent({location: this.i18n.transform('<%= name %>'), subject: name, link: '/main/<%= route %>'});
+  }
+}

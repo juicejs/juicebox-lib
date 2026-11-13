@@ -64,6 +64,14 @@ provideJuicebar(
 - `"url": "auto"` means the API is on the same origin as the admin.
 - `config.json` can also set `authenticator`.
 
+**A new module.** The generator writes a module in the library's shape (listing with the split view, record page, create dialog, service, labels) and registers it in `mainRoutes`:
+
+```
+ng g @juicejs/juicebar:module orders --label "Orders" --role orders:role --service orders
+```
+
+`MODULE_GUIDE.md` in the package says how a module is built and what to check; the generator also adds a Claude skill (`.claude/skills/juicebar-module`) that points to it.
+
 **Sidebar numbers.** `sidebarCount` puts a number next to the modules' names in the sidebar. The project answers it; the lib only shows it:
 
 ```ts
@@ -132,5 +140,7 @@ Use Node 24: the Angular 22 CLI needs Node 22.22.3+ or 24.15+.
 | `npm start` | Serves the playground app (`projects/playground`) with the lib from source |
 | `npm run build` | Builds the package and its schematics into `dist/juicebar` |
 | `npm run publish:lib` | Builds the package and publishes it to GitHub Packages (needs a token with `write:packages`) |
+
+A new module of the library starts from the same generator, with `--lib`: `npm run build:schematics`, then `npx ng g ./dist/juicebar/schematics/collection.json:module <name> --lib`. It also wires the module into the config, the sidebar, `public-api.ts` and the playground. A module ported from the old juicebox keeps its old address and sidebar id with `--route <old address>`. `MODULE_GUIDE.md` says how a module is built.
 
 Raise `version` in `projects/juicebar/package.json` before publishing.

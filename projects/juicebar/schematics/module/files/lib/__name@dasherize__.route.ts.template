@@ -1,0 +1,26 @@
+import {Routes} from '@angular/router';
+import {ComponentOverride} from '../../../config/base-app.config';
+import {applyComponentOverrides} from '../../../config/route-customization';
+import {unsavedChangesGuard} from '../../shared/guards/unsaved-changes.guard';
+
+/** /main/<%= route %>: the listing, and a record's page beside the compact listing (the split view) */
+export function build<%= className %>Route(overrides?: ComponentOverride[]): Routes {
+  return applyComponentOverrides([{
+    path: '<%= route %>',
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./listing/<%= name %>-listing.component').then(m => m.<%= className %>ListingComponent),
+        // The compact list next to an open record
+        data: {listingPane: true},
+      },
+      {
+        path: 'details/:id',
+        loadComponent: () => import('./details/<%= name %>-details.component').then(m => m.<%= className %>DetailsComponent),
+        data: {splitView: true},
+        // Leaving a record with unsaved changes asks first
+        canDeactivate: [unsavedChangesGuard],
+      },
+    ],
+  }], overrides);
+}

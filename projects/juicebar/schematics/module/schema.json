@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "JuicebarModule",
+  "title": "Juicebar module",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The module's name; also its route (/main/<name>) and folder",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "Name of the module (e.g. orders):"
+    },
+    "project": {
+      "type": "string",
+      "description": "Application the module is added to (default: the first application in angular.json)"
+    },
+    "path": {
+      "type": "string",
+      "description": "Folder the module's own folder is created in (default: <sourceRoot>/app/modules)"
+    },
+    "route": {
+      "type": "string",
+      "description": "The module's address under /main/ and its sidebar id (default: the name). Give a ported module the old juicebox's, so links and staff's saved sidebar order keep working"
+    },
+    "label": {
+      "type": "string",
+      "description": "The module's name as staff read it in the sidebar and the breadcrumb (default: the name, capitalised)"
+    },
+    "role": {
+      "type": "string",
+      "description": "Role that shows the module in the sidebar (default: <name>:role)"
+    },
+    "service": {
+      "type": "string",
+      "description": "Backend service the module calls (default: the name, as in the old juicebox generator)"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Material icon of the sidebar entry",
+      "default": "label"
+    },
+    "lib": {
+      "type": "boolean",
+      "description": "Add the module to the juicebar library itself (run in the juicebox-lib repository) instead of to a project",
+      "default": false
+    },
+    "skipSkill": {
+      "type": "boolean",
+      "description": "Do not write the Claude skill that points at the module guide",
+      "default": false
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

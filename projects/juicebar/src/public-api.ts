@@ -47,6 +47,8 @@ export * from './lib/core/shared/components/listing/listing.component';
 export * from './lib/core/shared/components/filter-container/filter-container.component';
 export * from './lib/core/shared/components/page-size-selector/page-size-selector.component';
 export * from './lib/core/shared/components/filter-bar/filter-bar.component';
+// The split view: a project module's listing reads whether it is the compact list next to an open record
+export * from './lib/core/shared/components/listing-pane/listing-pane';
 // A record's files (the old juicebox app-media), for the modules that have media
 export * from './lib/core/shared/components/media/media.component';
 export * from './lib/core/shared/components/media/media.types';

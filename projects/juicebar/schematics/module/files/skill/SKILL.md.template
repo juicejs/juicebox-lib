@@ -1,0 +1,17 @@
+---
+name: juicebar-module
+description: Use when adding a module to this Juicebox admin (a sidebar entry with its listing, record page and dialogs), when porting a module from the old juicebox, or when changing how a module is laid out. Gives the generator command and sends you to the module guide of the <%= lib %> library this admin is built on.
+---
+
+# A module in this Juicebox admin
+
+This admin is built on `<%= lib %>`. Its modules follow that library's module guide.
+
+1. Read `node_modules/<%= lib %>/<%= guide %>` in full before you write or restructure a module, and follow it.
+2. Start a new module with the generator, then fill the skeleton in:
+
+   ```
+   ng g <%= lib %>:module <name> --label "<Name staff read>" --role <role> --service <backend service>
+   ```
+
+3. This project's own `CLAUDE.md` still applies; where it is stricter than the guide, it wins.

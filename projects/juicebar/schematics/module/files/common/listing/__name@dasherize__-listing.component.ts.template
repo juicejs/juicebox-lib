@@ -1,0 +1,123 @@
+import {Component, inject, OnInit, signal} from '@angular/core';
+import {Router, RouterLink} from '@angular/router';
+<%= importLib(1, {ui: ['ButtonComponent', 'CellDefDirective', 'ColumnConfig', 'CompactRowDefDirective', 'DataTableComponent', 'DialogService', 'IconComponent', 'PageEvent', 'TooltipDirective'], confirmation: ['ConfirmationDialogComponent', 'ConfirmationDialogData'], listingPane: ['injectListingPane', 'ListingStateService'], juicebox: ['JuiceboxService']}) %>
+import {<%= className %>CreateDialogComponent} from '../create/<%= name %>-create-dialog.component';
+import {<%= className %>TranslationPipe} from '../i18n/<%= name %>.translation';
+import {<%= className %>Service} from '../<%= name %>.service';
+import {<%= className %>Record} from '../<%= name %>.types';
+
+const PAGE_SIZE = 10;
+const DETAILS_URL = '/main/<%= route %>/details';
+/** Where the listing keeps the page it showed last, for the compact list next to an open record */
+const STATE_KEY = '<%= name %>';
+
+/**
+ * The <%= label %> listing: the records page by page, Create as the page's action, delete on each row. A click opens
+ * a record. Next to an open record (the split view) the same component is the compact list of the page it showed last.
+ */
+@Component({
+  selector: 'app-<%= name %>-listing',
+  templateUrl: './<%= name %>-listing.component.html',
+  styleUrl: './<%= name %>-listing.component.scss',
+  imports: [
+    RouterLink,
+    DataTableComponent,
+    CellDefDirective,
+    CompactRowDefDirective,
+    ButtonComponent,
+    IconComponent,
+    TooltipDirective,
+    <%= className %>TranslationPipe,
+  ],
+  providers: [<%= className %>TranslationPipe],
+})
+export class <%= className %>ListingComponent implements OnInit {
+  /** Set when this is the compact list next to an open record, not the page itself */
+  protected readonly pane = injectListingPane();
+  private readonly listingState = inject(ListingStateService);
+  private readonly service = inject(<%= className %>Service);
+  private readonly juicebox = inject(JuiceboxService);
+  private readonly dialog = inject(DialogService);
+  private readonly router = inject(Router);
+  private readonly i18n = inject(<%= className %>TranslationPipe);
+
+  protected readonly detailsUrl = DETAILS_URL;
+  protected readonly pageSize = PAGE_SIZE;
+  protected readonly pageSizeOptions = [PAGE_SIZE];
+  protected readonly page = signal(1);
+  protected readonly count = signal(0);
+  protected readonly rows = signal<<%= className %>Record[]>([]);
+  /** Counts the readings, so a slower older answer can't replace a newer one */
+  private request = 0;
+
+  protected readonly columns: ColumnConfig[] = [
+    {key: 'name', label: this.i18n.transform('name')},
+    {key: 'actions', label: this.i18n.transform('actions'), width: '96px', align: 'right', ellipsis: false},
+  ];
+
+  async ngOnInit(): Promise<void> {
+    if (this.pane) {
+      this.page.set(this.listingState.restore<number>(STATE_KEY) ?? 1);
+    } else {
+      this.juicebox.navigationEvent({
+        location: this.i18n.transform('<%= name %>'),
+        subject: this.i18n.transform('<%= name %>_list'),
+        link: '/main/<%= route %>',
+      });
+      this.juicebox.setActionButtons([{
+        title: this.i18n.transform('create'),
+        type: 'btn-primary',
+        icon: 'add',
+        callback: () => this.create(),
+      }]);
+    }
+    await this.fetch();
+  }
+
+  protected onPage(event: PageEvent): void {
+    this.page.set(event.pageIndex + 1);
+    void this.fetch();
+  }
+
+  protected open(row: <%= className %>Record): void {
+    void this.router.navigate([DETAILS_URL, row._id]);
+  }
+
+  /** Asks first; then the list is read again */
+  protected remove(row: <%= className %>Record): void {
+    const data: ConfirmationDialogData = {
+      action: this.i18n.transform('delete'),
+      subject: row.name,
+      confirm: 'delete',
+      destructive: true,
+    };
+    this.dialog
+      .open<ConfirmationDialogComponent, ConfirmationDialogData, boolean>(ConfirmationDialogComponent, {data})
+      .closed.subscribe(async confirmed => {
+        if (!confirmed) return;
+        const result = await this.service.delete(row._id);
+        if (!result?.success) {
+          this.juicebox.showToast('error', this.i18n.transform('delete_failed'));
+          return;
+        }
+        await this.fetch();
+      });
+  }
+
+  private create(): void {
+    this.dialog
+      .open<<%= className %>CreateDialogComponent, undefined, boolean>(<%= className %>CreateDialogComponent, {disableClose: true})
+      .closed.subscribe(created => {
+        if (created) void this.fetch();
+      });
+  }
+
+  private async fetch(): Promise<void> {
+    const request = ++this.request;
+    if (!this.pane) this.listingState.save(STATE_KEY, this.page());
+    const result = await this.service.fetch(this.page() - 1, PAGE_SIZE);
+    if (request !== this.request || !result?.success) return;
+    this.rows.set(result.payload?.items ?? []);
+    this.count.set(result.payload?.count ?? 0);
+  }
+}

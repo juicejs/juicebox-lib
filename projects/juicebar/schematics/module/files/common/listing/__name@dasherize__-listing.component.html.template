@@ -1,0 +1,45 @@
+@if (pane) {
+  <!-- The compact list next to an open record -->
+  <app-data-table compact
+    [rows]="rows()"
+    [columns]="columns"
+    [activeId]="pane.activeId()"
+    [totalCount]="count()"
+    [pageSize]="pageSize"
+    [pageIndex]="page() - 1"
+    [emptyMessage]="'no_data_to_display' | translate"
+    (pageChange)="onPage($event)"
+    (rowClick)="open($event)">
+    <ng-template compactRowDef let-row>
+      <span class="dt-list-title">{{ row.name }}</span>
+    </ng-template>
+  </app-data-table>
+} @else {
+  <div class="parent listing-page">
+    <app-data-table
+      [rows]="rows()"
+      [columns]="columns"
+      [totalCount]="count()"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      [pageIndex]="page() - 1"
+      [emptyMessage]="'no_data_to_display' | translate"
+      (pageChange)="onPage($event)"
+      (rowClick)="open($event)">
+      <ng-template [cellDef]="'name'" let-row>
+        <a class="dt-row-link" [routerLink]="[detailsUrl, row._id]" (click)="$event.stopPropagation()">{{ row.name }}</a>
+      </ng-template>
+
+      <ng-template [cellDef]="'actions'" let-row>
+        <div class="dt-row-actions">
+          <button app-button appearance="icon" type="button" class="danger"
+                  [attr.aria-label]="('delete' | translate) + ': ' + row.name"
+                  [appTooltip]="'delete' | translate"
+                  (click)="$event.stopPropagation(); remove(row)">
+            <app-icon [icon]="'delete'" />
+          </button>
+        </div>
+      </ng-template>
+    </app-data-table>
+  </div>
+}

@@ -1,0 +1,16 @@
+import {makeEnvironmentProviders} from '@angular/core';
+import {<%= constant %>_CUSTOMIZATION, <%= className %>Customization, JuicebarFeature} from '../../../config/base-app.config';
+import {<%= className %>TranslationPipe} from './i18n/<%= name %>.translation';
+import {build<%= className %>Route} from './<%= name %>.route';
+
+/** The <%= label %> module, with a sidebar entry for `<%= role %>` */
+export function provide<%= className %>(customization?: <%= className %>Customization): JuicebarFeature {
+  return {
+    routes: build<%= className %>Route(customization?.componentOverrides),
+    providers: makeEnvironmentProviders([
+      <%= className %>TranslationPipe,
+      ...(customization?.providers ?? []),
+      {provide: <%= constant %>_CUSTOMIZATION, useValue: customization ?? {}},
+    ]),
+  };
+}

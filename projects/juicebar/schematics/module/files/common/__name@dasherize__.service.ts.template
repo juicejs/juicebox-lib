@@ -1,0 +1,36 @@
+import {inject, Injectable} from '@angular/core';
+<%= importLib(0, {juice: ['Juice'], result: ['Result']}) %>
+import {<%= className %>Page, <%= className %>Record} from './<%= name %>.types';
+
+/** The backend service the module talks to */
+const SERVICE = '<%= service %>';
+
+/**
+ * The <%= label %> backend calls. Other projects may share the backend: keep the service, the method names, the
+ * argument order and the payloads exactly as the backend has them.
+ */
+@Injectable({providedIn: 'root'})
+export class <%= className %>Service {
+  private readonly juice = inject(Juice);
+
+  /** `page` starts at 0 */
+  fetch(page: number, pageSize: number, options: Record<string, unknown> = {}): Promise<Result<<%= className %>Page>> {
+    return this.juice.request(SERVICE, 'fetch', [page, pageSize, options]);
+  }
+
+  get(id: string): Promise<Result<<%= className %>Record>> {
+    return this.juice.request(SERVICE, 'get', [id]);
+  }
+
+  create(data: Partial<<%= className %>Record>): Promise<Result<<%= className %>Record>> {
+    return this.juice.request(SERVICE, 'create', [data]);
+  }
+
+  update(data: <%= className %>Record): Promise<Result> {
+    return this.juice.request(SERVICE, 'update', [data]);
+  }
+
+  delete(id: string): Promise<Result> {
+    return this.juice.request(SERVICE, 'delete', [id]);
+  }
+}

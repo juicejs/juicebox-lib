@@ -1,0 +1,11 @@
+/** One <%= label %> record, as the backend keeps it */
+export interface <%= className %>Record {
+  _id: string;
+  name?: string;
+}
+
+/** A page of the listing: its records, and how many there are in all */
+export interface <%= className %>Page {
+  items: <%= className %>Record[];
+  count: number;
+}

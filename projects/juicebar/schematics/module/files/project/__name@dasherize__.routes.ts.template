@@ -1,0 +1,27 @@
+import {Routes} from '@angular/router';
+import {unsavedChangesGuard} from '@juicejs/juicebar';
+
+/**
+ * /main/<%= route %>: the listing, and a record's page beside the compact listing (the split view). The two stay
+ * children of one route: the layout looks for the listing among the record's sibling routes.
+ */
+export default [
+  {
+    path: '',
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./listing/<%= name %>-listing.component').then(m => m.<%= className %>ListingComponent),
+        // The compact list next to an open record
+        data: {listingPane: true},
+      },
+      {
+        path: 'details/:id',
+        loadComponent: () => import('./details/<%= name %>-details.component').then(m => m.<%= className %>DetailsComponent),
+        data: {splitView: true},
+        // Leaving a record with unsaved changes asks first
+        canDeactivate: [unsavedChangesGuard],
+      },
+    ],
+  },
+] satisfies Routes;

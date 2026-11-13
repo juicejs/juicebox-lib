@@ -1,0 +1,14 @@
+import {inject, Pipe} from '@angular/core';
+<%= importLib(1, {juicebox: ['JuiceboxService'], translationPipe: ['TranslationPipe']}) %>
+import {<%= camel %>Dictionary} from './<%= name %>_dictionary';
+
+/** The module's labels, in the admin's language. A label without a text in that language shows as `@key`. */
+@Pipe({name: 'translate'})
+export class <%= className %>TranslationPipe extends TranslationPipe {
+  constructor() {
+    const juicebox = inject(JuiceboxService);
+    super(juicebox);
+    this.setDefault(juicebox.getLanguage());
+    this.addDictionary(<%= camel %>Dictionary);
+  }
+}

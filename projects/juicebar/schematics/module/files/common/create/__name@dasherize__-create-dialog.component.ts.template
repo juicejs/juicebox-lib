@@ -1,0 +1,56 @@
+import {Component, inject, signal} from '@angular/core';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {DialogRef} from '@angular/cdk/dialog';
+<%= importLib(1, {ui: ['ButtonComponent', 'DialogActionsComponent', 'DialogContentComponent', 'DialogTitleComponent', 'ErrorComponent', 'FormFieldComponent', 'InputDirective', 'LabelComponent'], promiseButton: ['PromiseButtonDirective'], juicebox: ['JuiceboxService']}) %>
+import {<%= className %>TranslationPipe} from '../i18n/<%= name %>.translation';
+import {<%= className %>Service} from '../<%= name %>.service';
+
+/** Creates a <%= label %> record with its name; closes with `true` once it is stored, so the listing reads again */
+@Component({
+  selector: 'app-<%= name %>-create-dialog',
+  templateUrl: './<%= name %>-create-dialog.component.html',
+  imports: [
+    ReactiveFormsModule,
+    DialogTitleComponent,
+    DialogContentComponent,
+    DialogActionsComponent,
+    FormFieldComponent,
+    LabelComponent,
+    ErrorComponent,
+    InputDirective,
+    ButtonComponent,
+    PromiseButtonDirective,
+    <%= className %>TranslationPipe,
+  ],
+  providers: [<%= className %>TranslationPipe],
+})
+export class <%= className %>CreateDialogComponent {
+  private readonly service = inject(<%= className %>Service);
+  private readonly juicebox = inject(JuiceboxService);
+  private readonly dialogRef = inject<DialogRef<boolean>>(DialogRef);
+  private readonly i18n = inject(<%= className %>TranslationPipe);
+
+  protected readonly form = new FormGroup({
+    name: new FormControl('', {nonNullable: true, validators: Validators.required}),
+  });
+  protected readonly createPromise = signal<Promise<void> | null>(null);
+
+  protected create(): void {
+    this.createPromise.set(this.save());
+  }
+
+  protected cancel(): void {
+    this.dialogRef.close(false);
+  }
+
+  private async save(): Promise<void> {
+    this.form.markAllAsTouched();
+    if (this.form.invalid) return;
+    const result = await this.service.create(this.form.getRawValue());
+    if (!result?.success) {
+      this.juicebox.showToast('error', this.i18n.transform('create_failed'));
+      return;
+    }
+    this.dialogRef.close(true);
+  }
+}

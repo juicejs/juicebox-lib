@@ -186,7 +186,7 @@ The juicebar (or juicebox) library supports extending built-in functionality via
 
 The project supports light/dark theme toggling via `html.light-theme` (managed by `ThemeService`). The CSS custom properties are defined in `projects/juicebar/src/lib/styles.scss` (dark default on `:root`, light overrides under `html.light-theme`) and `projects/juicebar/src/styles.scss`. For theme toggling to work, ALL colors must resolve through these CSS custom properties.
 
-**MUST use `var(--color-*)` CSS custom properties for any color value.** This is the only way the light/dark toggle reaches the rule.
+**Use `var(--color-*)` CSS custom properties for colors by default.** This is the only way the light/dark toggle reaches the rule. A hard-coded color is allowed where someone wants one on purpose (it then stays the same in both themes); don't treat it as a mistake by itself.
 
 - Backgrounds: `var(--color-background)`, `var(--color-background-secondary)`, `var(--color-grey-100..900)`
 - Text: `var(--color-text-primary)`, `var(--color-text-secondary)`, `var(--color-text-disabled)`
@@ -197,7 +197,7 @@ The project supports light/dark theme toggling via `html.light-theme` (managed b
 
 ### Color Anti-Patterns — NEVER Do These
 
-- Never hardcode hex (`#1c1c1f`, `#f97316`) or named colors (`white`, `black`) for theme-able surfaces, text, or borders — they don't change with the theme.
+- Don't hardcode hex (`#1c1c1f`, `#f97316`) or named colors (`white`, `black`) for theme-able surfaces, text, or borders unless that is deliberate — they don't change with the theme.
 - Never use the legacy SCSS color variables (`$primary`, `$gray-100`, `$gray-200`, `$error`, `$success`, `$warning`, `$primary-light`, etc.) defined in `lib/styles.scss` for new code — they are static and bypass the theme system. Migrate to `var(--color-*)` when you touch surrounding code.
 - Never use `rgba($primary, 0.1)` or `lighten($primary, 10%)`-style SCSS color functions for theme surfaces — they bake in a static color. Prefer `var(--color-secondary)` / `var(--color-tertiary)` with opacity via a sibling CSS layer, or use the existing `rgba(var(--color-secondary-rgb), 0.1)` pattern where available.
 - Never set hardcoded backgrounds on `:host` of a `ui-components/` component — every `app-*` host inherits its colors from CSS vars so it follows the theme.
@@ -255,6 +255,7 @@ projects/
 
 ## Workflow Reminders
 
+- Adding or porting a module: read `projects/juicebar/MODULE_GUIDE.md` and start from the generator (`ng g …:module`, see the `juicebar-module` skill).
 - No need to run build commands.
 - Always check existing custom UI components (ui-components) before creating new ones or reaching for external libraries.
 - When updating a component: logic in `.ts`, styles in `.scss`, template in `.html`.

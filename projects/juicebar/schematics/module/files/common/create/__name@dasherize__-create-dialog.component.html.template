@@ -1,0 +1,20 @@
+<app-dialog-title>{{ 'create_<%= name %>' | translate }}</app-dialog-title>
+
+<form [formGroup]="form">
+  <app-dialog-content>
+    <app-form-field appearance="outline">
+      <app-label>{{ 'name' | translate }} *</app-label>
+      <input appInput type="text" formControlName="name" aria-required="true" [placeholder]="'name' | translate" />
+      @if (form.controls.name.touched && form.controls.name.errors?.['required']) {
+        <app-error>{{ 'name_required' | translate }}</app-error>
+      }
+    </app-form-field>
+  </app-dialog-content>
+
+  <app-dialog-actions>
+    <button app-button type="button" (click)="cancel()">{{ 'cancel' | translate }}</button>
+    <button app-button appearance="raised" color="primary" type="button" [promiseBtn]="createPromise()" (click)="create()">
+      {{ 'create' | translate }}
+    </button>
+  </app-dialog-actions>
+</form>

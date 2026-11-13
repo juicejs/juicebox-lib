@@ -1,0 +1,23 @@
+@if (loaded()) {
+  <div class="parent">
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <app-card>
+        <app-card-content class="record-fields">
+          <app-form-field appearance="outline">
+            <app-label>{{ 'name' | translate }} *</app-label>
+            <input appInput type="text" formControlName="name" aria-required="true" [placeholder]="'name' | translate" />
+            @if (form.controls.name.touched && form.controls.name.errors?.['required']) {
+              <app-error>{{ 'name_required' | translate }}</app-error>
+            }
+          </app-form-field>
+        </app-card-content>
+
+        <app-card-actions>
+          <button app-button appearance="raised" color="primary" type="submit" [promiseBtn]="savePromise()">
+            {{ 'save' | translate }}
+          </button>
+        </app-card-actions>
+      </app-card>
+    </form>
+  </div>
+}

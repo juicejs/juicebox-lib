@@ -1,0 +1,21 @@
+/**
+ * The <%= label %> labels. Every label has English and German; add the other languages the project's staff use
+ * (hr_HR, ru_RU, da_DK, sv_SE, fi_FI, cs_CZ, sk_SK, pt_PT). When a module is ported, every text its old dictionary
+ * had is carried over.
+ */
+export const <%= camel %>Dictionary = {
+  "<%= name %>": {"en_GB": "<%= label %>", "de_DE": "<%= label %>"},
+  "<%= name %>_list": {"en_GB": "<%= label %> list", "de_DE": "<%= label %>-Liste"},
+  "create_<%= name %>": {"en_GB": "Create", "de_DE": "Erstellen"},
+  "name": {"en_GB": "Name", "de_DE": "Name", "hr_HR": "Ime", "da_DK": "Navn", "sv_SE": "Namn", "fi_FI": "Nimi"},
+  "name_required": {"en_GB": "You must include a name.", "de_DE": "Bitte geben Sie einen Namen an."},
+  "actions": {"en_GB": "Actions", "de_DE": "Aktionen", "hr_HR": "Akcije", "da_DK": "Handlinger", "sv_SE": "Aktiviteter", "fi_FI": "Toiminnot"},
+  "create": {"en_GB": "Create", "de_DE": "Erstellen", "hr_HR": "Stvori", "da_DK": "Opret", "sv_SE": "Skapa", "fi_FI": "Luo"},
+  "cancel": {"en_GB": "Cancel", "de_DE": "Abbrechen", "hr_HR": "Odustani", "da_DK": "Afbryd", "sv_SE": "Avbryt", "fi_FI": "Peruuta"},
+  "save": {"en_GB": "Save", "de_DE": "Speichern", "hr_HR": "Spremi", "da_DK": "Gem", "sv_SE": "Spara", "fi_FI": "Tallenna"},
+  "delete": {"en_GB": "Delete", "de_DE": "Löschen", "hr_HR": "Obriši", "da_DK": "Slette", "sv_SE": "Ta bort", "fi_FI": "Poista"},
+  "no_data_to_display": {"en_GB": "No data to display", "de_DE": "Keine Daten anzeigbar", "da_DK": "Ingen data kan vises", "sv_SE": "Ingen data att visa"},
+  "create_failed": {"en_GB": "Creating failed", "de_DE": "Erstellen fehlgeschlagen"},
+  "save_failed": {"en_GB": "Saving failed", "de_DE": "Speichern fehlgeschlagen"},
+  "delete_failed": {"en_GB": "Deleting failed", "de_DE": "Löschen fehlgeschlagen"},
+};
