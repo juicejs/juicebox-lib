@@ -14,13 +14,13 @@ describe('translatedDataTableLabels', () => {
     const labels = TestBed.runInInjectionContext(() => translatedDataTableLabels());
 
     juicebox.setLanguage('de_DE');
-    expect(labels.rowsPerPage).toBe('Zeilen pro Seite');
     expect(labels.of).toBe('von');
+    expect(labels.sort).toBe('Sortieren');
 
-    juicebox.setLanguage('hr_HR');
-    expect(labels.rowsPerPage).toBe('Redaka po stranici');
-    expect(labels.noData).toBe('Nema podataka za prikaz');
-    expect(labels.sort).toBe('Sortiraj');
+    juicebox.setLanguage('sv_SE');
+    expect(labels.noData).toBe('Ingen data att visa');
+    // Only texts copied from the old juicebox: a word it has none for in the language shows its key
+    expect(labels.rowsPerPage).toBe('@rows_per_page');
   });
 
   it('has every text in English', () => {

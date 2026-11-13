@@ -269,12 +269,9 @@ export const exportsDictionary = {
     "de_DE": "Der Export dauert zu lange und wurde abgebrochen. Bitte engen Sie die Filter ein oder wenden Sie sich an den Support."
   },
   "filters_not_saved": {
-    "en_GB": "The changed filters could not be saved",
-    "de_DE": "Die geänderten Filter konnten nicht gespeichert werden"
+    "en_GB": "The changed filters could not be saved"
   },
   "filters_load_failed": {
-    "en_GB": "The filters could not be loaded. The export uses the template's saved filters.",
-    "de_DE": "Die Filter konnten nicht geladen werden. Der Export verwendet die gespeicherten Filter der Vorlage.",
-    "hr_HR": "Filtri se nisu mogli učitati. Izvoz koristi spremljene filtre predloška."
+    "en_GB": "The filters could not be loaded. The export uses the template's saved filters."
   }
 }

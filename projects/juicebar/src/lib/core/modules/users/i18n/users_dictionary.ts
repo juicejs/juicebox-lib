@@ -2250,29 +2250,21 @@ export const usersDictionary = {
     "de_DE": "Muss Land enthalten"
   },
   "rows_per_page": {
-    "en_GB": "Rows per page",
-    "de_DE": "Zeilen pro Seite",
-    "hr_HR": "Redaka po stranici"
+    "en_GB": "Rows per page"
   },
   "create_organisation": {
     "en_GB": "Create organisation",
-    "de_DE": "Organisation erstellen",
-    "hr_HR": "Kreiraj organizaciju"
+    "de_DE": "Anbieter erstellen"
   },
   "organisation_created": {
-    "en_GB": "Organisation created",
-    "de_DE": "Organisation erstellt",
-    "hr_HR": "Organizacija je kreirana"
+    "en_GB": "Organisation created"
   },
   "error_creating_organisation": {
-    "en_GB": "The organisation could not be created",
-    "de_DE": "Die Organisation konnte nicht erstellt werden",
-    "hr_HR": "Organizaciju nije moguće kreirati"
+    "en_GB": "The organisation could not be created"
   },
   "tax_number": {
     "en_GB": "Tax number",
-    "de_DE": "Steuer-ID",
-    "hr_HR": "Porezni broj"
+    "de_DE": "Steuer-ID"
   },
   "phone": {
     "en_GB": "Phone",
@@ -2284,38 +2276,26 @@ export const usersDictionary = {
   },
   "mobilephone": {
     "en_GB": "Mobile phone",
-    "de_DE": "Mobiltelefon",
-    "hr_HR": "Mobitel"
+    "de_DE": "Mobiltelefon"
   },
   "delete_user": {
     "en_GB": "Delete user",
-    "de_DE": "Benutzer löschen",
-    "hr_HR": "Obriši korisnika"
+    "de_DE": "Benutzer löschen"
   },
   "code_required": {
-    "en_GB": "Enter the code",
-    "de_DE": "Bitte den Code eingeben",
-    "hr_HR": "Unesite kod"
+    "en_GB": "Enter the code"
   },
   "code_numbers_only": {
-    "en_GB": "The code may only contain numbers",
-    "de_DE": "Der Code darf nur Ziffern enthalten",
-    "hr_HR": "Kod smije sadržavati samo brojeve"
+    "en_GB": "The code may only contain numbers"
   },
   "code_six_digits": {
-    "en_GB": "The code must have exactly 6 digits",
-    "de_DE": "Der Code muss genau 6 Ziffern haben",
-    "hr_HR": "Kod mora imati točno 6 znamenki"
+    "en_GB": "The code must have exactly 6 digits"
   },
   "include_publisher": {
-    "en_GB": "You must include a publisher",
-    "de_DE": "Sie müssen einen Herausgeber angeben",
-    "hr_HR": "Morate odabrati izdavača"
+    "en_GB": "You must include a publisher"
   },
   "include_group_key": {
-    "en_GB": "You must include a key",
-    "de_DE": "Sie müssen einen Schlüssel angeben",
-    "hr_HR": "Morate unijeti ključ"
+    "en_GB": "You must include a key"
   },
   "protected": {
     "en_GB": "Customer only visible for me",

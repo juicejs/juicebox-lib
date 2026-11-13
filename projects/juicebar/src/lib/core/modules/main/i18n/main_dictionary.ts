@@ -1465,23 +1465,15 @@ export const mainDictionary = {
     "de_DE": "Nur Ziffern erlaubt"
   },
   "toggle_theme": {
-    "en_GB": "Switch light/dark mode",
-    "de_DE": "Hell-/Dunkelmodus wechseln",
-    "hr_HR": "Promijeni svijetli/tamni način"
+    "en_GB": "Switch light/dark mode"
   },
   "open_menu": {
-    "en_GB": "Open menu",
-    "de_DE": "Menü öffnen",
-    "hr_HR": "Otvori izbornik"
+    "en_GB": "Open menu"
   },
   "hide_list": {
-    "en_GB": "Hide list",
-    "de_DE": "Liste ausblenden",
-    "hr_HR": "Sakrij popis"
+    "en_GB": "Hide list"
   },
   "show_list": {
-    "en_GB": "Show list",
-    "de_DE": "Liste einblenden",
-    "hr_HR": "Prikaži popis"
+    "en_GB": "Show list"
   }
 }

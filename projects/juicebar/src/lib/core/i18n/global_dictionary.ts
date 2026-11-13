@@ -258,16 +258,13 @@ export const globalDictionary = {
     "de_DE": "Suchergebnisse"
   },
   "not-found": {
-    "en_GB": "Page not found",
-    "de_DE": "Seite nicht gefunden"
+    "en_GB": "Page not found"
   },
   "page_not_found_text": {
-    "en_GB": "The page you are looking for does not exist or has been moved.",
-    "de_DE": "Die gesuchte Seite existiert nicht oder wurde verschoben."
+    "en_GB": "The page you are looking for does not exist or has been moved."
   },
   "back": {
     "en_GB": "Back",
-    "de_DE": "Zurück",
-    "hr_HR": "Natrag"
+    "de_DE": "Zurück"
   }
 };
