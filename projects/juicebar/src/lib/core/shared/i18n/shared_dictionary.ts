@@ -152,34 +152,28 @@ export const sharedDictionary = {
     "sk_SK": "Zmeniť šírku stĺpca",
     "ru_RU": "Изменить ширину столбца"
   },
-  // The JSON editor (JSON_EDITOR_LABELS)
+  // The JSON editor (JSON_EDITOR_LABELS): only texts the old juicebox has; the other words are in English only
   "json_editor": {
-    "en_GB": "JSON editor",
-    "de_DE": "JSON-Editor"
+    "en_GB": "JSON editor"
   },
   "format_json": {
-    "en_GB": "Format JSON",
-    "de_DE": "JSON formatieren"
+    "en_GB": "Format JSON"
   },
   "compact_json": {
-    "en_GB": "Compact JSON",
-    "de_DE": "JSON komprimieren"
+    "en_GB": "Compact JSON"
   },
   "undo": {
-    "en_GB": "Undo",
-    "de_DE": "Rückgängig"
+    "en_GB": "Undo"
   },
   "redo": {
-    "en_GB": "Redo",
-    "de_DE": "Wiederholen"
+    "en_GB": "Redo"
   },
   "invalid_json": {
     "en_GB": "Invalid JSON",
-    "de_DE": "Ungültiges JSON"
+    "de_DE": "Invalid JSON"
   },
   "line": {
-    "en_GB": "Line",
-    "de_DE": "Zeile"
+    "en_GB": "Line"
   },
   "complete": {
     "en_GB": "Complete",

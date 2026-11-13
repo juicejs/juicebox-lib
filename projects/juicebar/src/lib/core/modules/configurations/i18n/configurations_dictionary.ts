@@ -1,7 +1,8 @@
 /**
  * The configurations labels: every text of the old juicebox's configuration dictionary (English and German), the
  * words its screens had written in English (cancel, save, applied_from) and those the lib needs for assistive
- * technology (yes, no). Those take every language the old juicebox's other dictionaries have them in.
+ * technology (yes, no). Those take the texts the old juicebox's other dictionaries have for them, in every language;
+ * a word it has none for is in English only.
  */
 export const configurationsDictionary = {
   "configurations": {
@@ -126,8 +127,7 @@ export const configurationsDictionary = {
   },
   // Written in English on the old screens
   "applied_from": {
-    "en_GB": "Applied from",
-    "de_DE": "Übernommen aus"
+    "en_GB": "Applied from"
   },
   "cancel": {
     "en_GB": "Cancel",

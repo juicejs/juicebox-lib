@@ -67,7 +67,7 @@ Add folders as the module grows (one per screen or dialog), keep components smal
 ### Labels
 
 - Every text on screen comes from the module's dictionary through `| translate` or the pipe's `transform()`. No text in templates, no headline or intro copy, nothing made up.
-- Every label has English and German. A ported module keeps every text its old dictionary had in other languages (`hr_HR`, `ru_RU`, `da_DK`, `sv_SE`, `fi_FI`, `cs_CZ`, `sk_SK`, `pt_PT`, `en_DE`). A label without a text in the admin's language shows as `@key`; do not invent translations to hide that.
+- Translations are copied from the old juicebox, never written anew. A ported module keeps every text its old dictionary had, in every language (`de_DE`, `hr_HR`, `ru_RU`, `da_DK`, `sv_SE`, `fi_FI`, `cs_CZ`, `sk_SK`, `pt_PT`, `en_DE`). A label the old module didn't have takes the texts the old juicebox's other dictionaries have for the same English word; a word it has no text for is in English only. A label without a text in the admin's language shows as `@key`; do not write a translation to hide that.
 
 ### Interface
 
