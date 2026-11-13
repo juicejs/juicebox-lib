@@ -117,7 +117,15 @@ export class <%= className %>ListingComponent implements OnInit {
     if (!this.pane) this.listingState.save(STATE_KEY, this.page());
     const result = await this.service.fetch(this.page() - 1, PAGE_SIZE);
     if (request !== this.request || !result?.success) return;
-    this.rows.set(result.payload?.items ?? []);
-    this.count.set(result.payload?.count ?? 0);
+    const items = result.payload?.items ?? [];
+    const count = result.payload?.count ?? 0;
+    // The last record of the last page was deleted: show the page before it
+    const lastPage = Math.max(Math.ceil(count / PAGE_SIZE), 1);
+    if (!items.length && this.page() > lastPage) {
+      this.page.set(lastPage);
+      return this.fetch();
+    }
+    this.rows.set(items);
+    this.count.set(count);
   }
 }

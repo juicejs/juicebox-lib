@@ -15,6 +15,7 @@ export const <%= camel %>Dictionary = {
   "save": {"en_GB": "Save", "de_DE": "Speichern", "hr_HR": "Spremi", "da_DK": "Gem", "sv_SE": "Spara", "fi_FI": "Tallenna"},
   "delete": {"en_GB": "Delete", "de_DE": "Löschen", "hr_HR": "Obriši", "da_DK": "Slette", "sv_SE": "Ta bort", "fi_FI": "Poista"},
   "no_data_to_display": {"en_GB": "No data to display", "de_DE": "Keine Daten anzeigbar", "da_DK": "Ingen data kan vises", "sv_SE": "Ingen data att visa"},
+  "load_failed": {"en_GB": "Loading failed", "de_DE": "Laden fehlgeschlagen"},
   "create_failed": {"en_GB": "Creating failed", "de_DE": "Erstellen fehlgeschlagen"},
   "save_failed": {"en_GB": "Saving failed", "de_DE": "Speichern fehlgeschlagen"},
   "delete_failed": {"en_GB": "Deleting failed", "de_DE": "Löschen fehlgeschlagen"},

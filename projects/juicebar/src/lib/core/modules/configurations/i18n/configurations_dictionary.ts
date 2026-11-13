@@ -1,7 +1,7 @@
 /**
- * The configurations labels: every text of the old juicebox's configuration dictionary (English and German), and the
+ * The configurations labels: every text of the old juicebox's configuration dictionary (English and German), the
  * words its screens had written in English (cancel, save, applied_from) and those the lib needs for assistive
- * technology (yes, no), in English and German.
+ * technology (yes, no). Those take every language the old juicebox's other dictionaries have them in.
  */
 export const configurationsDictionary = {
   "configurations": {
@@ -131,19 +131,37 @@ export const configurationsDictionary = {
   },
   "cancel": {
     "en_GB": "Cancel",
-    "de_DE": "Abbrechen"
+    "de_DE": "Abbrechen",
+    "hr_HR": "Odustani",
+    "da_DK": "Afbryd",
+    "sv_SE": "Avbryt",
+    "fi_FI": "Peruuta",
+    "ru_RU": "Отменить",
+    "cs_CZ": "Cancel",
+    "sk_SK": "Cancel"
   },
   "save": {
     "en_GB": "Save",
-    "de_DE": "Speichern"
+    "de_DE": "Speichern",
+    "hr_HR": "Spremi",
+    "da_DK": "Gem",
+    "sv_SE": "Spara",
+    "fi_FI": "Tallenna",
+    "ru_RU": "Сохранить",
+    "cs_CZ": "Save",
+    "sk_SK": "Save"
   },
   // New in the lib: what the ticks and crosses say to assistive technology
   "yes": {
     "en_GB": "Yes",
-    "de_DE": "Ja"
+    "de_DE": "Ja",
+    "cs_CZ": "Yes",
+    "sk_SK": "Yes"
   },
   "no": {
     "en_GB": "No",
-    "de_DE": "Nein"
+    "de_DE": "Nein",
+    "cs_CZ": "No",
+    "sk_SK": "No"
   }
 };

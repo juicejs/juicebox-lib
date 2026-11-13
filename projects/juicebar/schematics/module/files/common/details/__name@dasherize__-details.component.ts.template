@@ -1,7 +1,7 @@
 import {Component, inject, OnDestroy, signal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 <%= importLib(1, {ui: ['ButtonComponent', 'CardActionsComponent', 'CardComponent', 'CardContentComponent', 'ErrorComponent', 'FormFieldComponent', 'InputDirective', 'LabelComponent'], promiseButton: ['PromiseButtonDirective'], juicebox: ['JuiceboxService']}) %>
 import {<%= className %>TranslationPipe} from '../i18n/<%= name %>.translation';
 import {<%= className %>Service} from '../<%= name %>.service';
@@ -32,6 +32,7 @@ import {<%= className %>Record} from '../<%= name %>.types';
 })
 export class <%= className %>DetailsComponent implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly service = inject(<%= className %>Service);
   private readonly juicebox = inject(JuiceboxService);
   private readonly i18n = inject(<%= className %>TranslationPipe);
@@ -68,9 +69,15 @@ export class <%= className %>DetailsComponent implements OnDestroy {
     if (this.recordId() !== id) return;
     const record = result?.success ? result.payload ?? null : null;
     this.record.set(record);
-    this.form.reset({name: record?.name ?? ''});
+    if (!record) {
+      // Not there, or the backend refused it: say so and go back to the listing, rather than show an empty form
+      this.juicebox.showToast('error', this.i18n.transform('load_failed'));
+      void this.router.navigate(['/main/<%= route %>']);
+      return;
+    }
+    this.form.reset({name: record.name ?? ''});
     this.loaded.set(true);
-    if (record) this.showHeader(record);
+    this.showHeader(record);
   }
 
   private async update(): Promise<void> {

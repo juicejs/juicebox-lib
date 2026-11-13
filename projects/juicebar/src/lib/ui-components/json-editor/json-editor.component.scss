@@ -1,6 +1,15 @@
+@use '../../breakpoints' as *;
+
+$app-json-editor-fonts: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+
 // Not encapsulated (the coloured pieces are made in code): every rule stays under .app-json-editor
 .app-json-editor {
-  --app-json-editor-font: 13px/20px ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  --app-json-editor-font: 13px/20px #{$app-json-editor-fonts};
+
+  // A phone gives every text area 16px (so iOS doesn't zoom in): the coloured copy and the line numbers follow it
+  @include phone {
+    --app-json-editor-font: 16px/24px #{$app-json-editor-fonts};
+  }
 
   display: flex;
   flex-direction: column;

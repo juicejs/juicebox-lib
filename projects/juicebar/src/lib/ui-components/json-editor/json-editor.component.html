@@ -20,14 +20,14 @@
 
 <div class="app-json-editor__body">
   <div class="app-json-editor__gutter" aria-hidden="true">
-    <div [style.transform]="gutterTransform()">
+    <div #gutterLines>
       @for (line of lineNumbers(); track line) {
         <div class="app-json-editor__line-number" [class.app-json-editor__line-number--error]="line === errorLine()">{{ line }}</div>
       }
     </div>
   </div>
   <div class="app-json-editor__area">
-    <pre class="app-json-editor__code" aria-hidden="true" [style.transform]="codeTransform()"><code #code></code></pre>
+    <pre #codeFrame class="app-json-editor__code" aria-hidden="true"><code #code></code></pre>
     <textarea #textarea
               class="app-json-editor__input"
               spellcheck="false"

@@ -67,12 +67,24 @@ describe('JsonEditorComponent', () => {
     await type('{"key": "a", "name": "A"}');
     expect(host.control.value).toEqual({key: 'a', name: 'A'});
     expect(fixture.debugElement.children[0].componentInstance.valid()).toBe(true);
+    expect(host.control.hasError('invalidJson')).toBe(false);
 
     await type('{"key": "a",\n "name": }');
     expect(host.control.value).toEqual({key: 'a', name: 'A'});
     expect(fixture.debugElement.children[0].componentInstance.valid()).toBe(false);
+    expect(host.control.hasError('invalidJson')).toBe(true);
     expect(element.querySelector('.app-json-editor__status')!.textContent).toContain('Invalid JSON · Line 2');
     expect(element.querySelector('.app-json-editor__line-number--error')!.textContent).toBe('2');
+  });
+
+  it('leaves Enter to an input method that is composing, and leaves Tab alone', async () => {
+    const {textarea} = await setup();
+    const composing = new KeyboardEvent('keydown', {key: 'Enter', isComposing: true, cancelable: true});
+    textarea.dispatchEvent(composing);
+    expect(composing.defaultPrevented).toBe(false);
+    const tab = new KeyboardEvent('keydown', {key: 'Tab', cancelable: true});
+    textarea.dispatchEvent(tab);
+    expect(tab.defaultPrevented).toBe(false);
   });
 
   it('shows an empty editor for nothing, without an error', async () => {

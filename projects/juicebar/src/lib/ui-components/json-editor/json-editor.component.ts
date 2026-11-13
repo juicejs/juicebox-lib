@@ -11,7 +11,7 @@ import {
   viewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {AbstractControl, ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator} from '@angular/forms';
 import {ButtonComponent} from '../button/button.component';
 import {IconComponent} from '../icon/icon.component';
 import {TooltipDirective} from '../tooltip/tooltip.directive';
@@ -22,11 +22,14 @@ const INDENT = '  ';
 
 let nextJsonEditorId = 0;
 
+/** The text read as JSON: its value, or where it stops being JSON (an empty text is not JSON) */
+type Parsed = {value: unknown} | {errorOffset: number};
+
 /**
  * Edits a JSON value as text, coloured, with line numbers: Format and Compact, undo and redo, and the line where the
- * text stops being JSON. A form control's value is the JSON the text holds: while the text is not JSON the value
- * stays the last JSON it held, as the old juicebox's editor (ang-jsoneditor) did, so check `valid()` before using it.
- * Nothing (null) shows an empty editor. Tab indents; Shift+Tab leaves the editor.
+ * text stops being JSON. A form control's value is the JSON the text holds. While the text is not JSON the value stays
+ * the last JSON it held, as the old juicebox's editor (ang-jsoneditor) did, and the control has the error
+ * `invalidJson`. Nothing (null) shows an empty editor. Enter keeps the line's indent; Tab moves on, as in any field.
  */
 @Component({
   selector: 'app-json-editor',
@@ -35,52 +38,53 @@ let nextJsonEditorId = 0;
   // The coloured pieces are made in code, outside the template
   encapsulation: ViewEncapsulation.None,
   imports: [ButtonComponent, IconComponent, TooltipDirective],
-  providers: [{provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => JsonEditorComponent), multi: true}],
+  providers: [
+    {provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => JsonEditorComponent), multi: true},
+    {provide: NG_VALIDATORS, useExisting: forwardRef(() => JsonEditorComponent), multi: true},
+  ],
   host: {
     class: 'app-json-editor',
     '[class.app-json-editor--invalid]': 'errorLine() !== null',
     '[class.app-json-editor--disabled]': 'disabled()',
   },
 })
-export class JsonEditorComponent implements ControlValueAccessor {
+export class JsonEditorComponent implements ControlValueAccessor, Validator {
   private readonly document = inject(DOCUMENT);
-  protected readonly labels = inject(JSON_EDITOR_LABELS);
+  /** Read once: the provided labels may be translated on each read */
+  protected readonly labels = {...inject(JSON_EDITOR_LABELS)};
   /** The editor's name for assistive technology; without it the provided "JSON editor" */
   readonly label = input('');
 
   protected readonly statusId = `app-json-editor-status-${nextJsonEditorId++}`;
   protected readonly text = signal('');
   protected readonly disabled = signal(false);
-  private readonly scrollTop = signal(0);
-  private readonly scrollLeft = signal(0);
-  protected readonly gutterTransform = computed(() => `translateY(${-this.scrollTop()}px)`);
-  protected readonly codeTransform = computed(() => `translate(${-this.scrollLeft()}px, ${-this.scrollTop()}px)`);
 
-  /** Where the text stops being JSON; null while it is JSON. An empty text is not JSON. */
-  private readonly errorOffset = computed(() => {
+  private readonly parsed = computed<Parsed>(() => {
     const text = this.text();
     try {
-      JSON.parse(text);
-      return null;
+      return {value: JSON.parse(text)};
     } catch {
-      return jsonErrorOffset(text) ?? text.length;
+      return {errorOffset: jsonErrorOffset(text) ?? text.length};
     }
   });
   /** Whether the text is JSON, so the form control's value is what it holds now */
-  readonly valid = computed(() => this.errorOffset() === null);
+  readonly valid = computed(() => 'value' in this.parsed());
   /** The line where the text stops being JSON, for the status under the editor; nothing while the editor is empty */
   protected readonly errorLine = computed(() => {
-    const offset = this.errorOffset();
-    return offset === null || !this.text().trim() ? null : lineAt(this.text(), offset);
+    const parsed = this.parsed();
+    return 'value' in parsed || !this.text().trim() ? null : lineAt(this.text(), parsed.errorOffset);
   });
   private readonly lineCount = computed(() => this.text().split('\n').length);
   protected readonly lineNumbers = computed(() => Array.from({length: this.lineCount()}, (_, index) => index + 1));
 
   private readonly textarea = viewChild.required<ElementRef<HTMLTextAreaElement>>('textarea');
   private readonly code = viewChild.required<ElementRef<HTMLElement>>('code');
+  private readonly codeFrame = viewChild.required<ElementRef<HTMLElement>>('codeFrame');
+  private readonly gutterLines = viewChild.required<ElementRef<HTMLElement>>('gutterLines');
 
   private onChange: (value: unknown) => void = () => {};
   protected onTouched: () => void = () => {};
+  private onValidatorChange: () => void = () => {};
 
   constructor() {
     afterRenderEffect({
@@ -88,7 +92,10 @@ export class JsonEditorComponent implements ControlValueAccessor {
         const text = this.text();
         // A value written by the form reaches the text area here; what is typed is already there
         const textarea = this.textarea().nativeElement;
-        if (textarea.value !== text) textarea.value = text;
+        if (textarea.value !== text) {
+          textarea.value = text;
+          this.onScroll();
+        }
         this.paint(text);
       },
     });
@@ -110,28 +117,34 @@ export class JsonEditorComponent implements ControlValueAccessor {
     this.disabled.set(isDisabled);
   }
 
-  protected onInput(): void {
-    const text = this.textarea().nativeElement.value;
-    this.text.set(text);
-    try {
-      this.onChange(JSON.parse(text));
-    } catch {
-      // Not JSON (yet): the value stays the last JSON the text held
-    }
+  validate(_control: AbstractControl): ValidationErrors | null {
+    return this.valid() ? null : {invalidJson: true};
   }
 
+  registerOnValidatorChange(onValidatorChange: () => void): void {
+    this.onValidatorChange = onValidatorChange;
+  }
+
+  protected onInput(): void {
+    this.text.set(this.textarea().nativeElement.value);
+    const parsed = this.parsed();
+    if ('value' in parsed) this.onChange(parsed.value);
+    // Not JSON (yet): the value stays the last JSON the text held, and the control learns it is now invalid
+    else this.onValidatorChange();
+  }
+
+  /** The coloured copy and the line numbers follow the text area's scrolling, without a change detection */
   protected onScroll(): void {
-    const textarea = this.textarea().nativeElement;
-    this.scrollTop.set(textarea.scrollTop);
-    this.scrollLeft.set(textarea.scrollLeft);
+    const {scrollTop, scrollLeft} = this.textarea().nativeElement;
+    this.codeFrame().nativeElement.style.transform =`translate(${-scrollLeft}px, ${-scrollTop}px)`;
+    this.gutterLines().nativeElement.style.transform = `translateY(${-scrollTop}px)`;
   }
 
   protected onKeydown(event: KeyboardEvent): void {
+    // A key that finishes an input method's composition (Japanese, Chinese, …) belongs to it
+    if (event.isComposing || event.keyCode === 229) return;
     const command = event.ctrlKey || event.metaKey;
-    if (event.key === 'Tab' && !event.shiftKey && !command && !event.altKey) {
-      event.preventDefault();
-      this.insert(INDENT);
-    } else if (event.key === 'Enter' && !command && !event.altKey && !event.shiftKey) {
+    if (event.key === 'Enter' && !command && !event.altKey && !event.shiftKey) {
       event.preventDefault();
       this.insert('\n' + this.indentAfterCaret());
     } else if (command && !event.altKey && event.key.toLowerCase() === 'i') {
@@ -143,11 +156,13 @@ export class JsonEditorComponent implements ControlValueAccessor {
   }
 
   protected format(): void {
-    if (this.valid()) this.replaceText(JSON.stringify(JSON.parse(this.text()), null, 2));
+    const parsed = this.parsed();
+    if ('value' in parsed) this.replaceText(JSON.stringify(parsed.value, null, 2));
   }
 
   protected compact(): void {
-    if (this.valid()) this.replaceText(JSON.stringify(JSON.parse(this.text())));
+    const parsed = this.parsed();
+    if ('value' in parsed) this.replaceText(JSON.stringify(parsed.value));
   }
 
   protected undo(): void {

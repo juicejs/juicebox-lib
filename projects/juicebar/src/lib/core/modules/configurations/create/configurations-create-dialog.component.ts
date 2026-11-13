@@ -1,4 +1,4 @@
-import {Component, inject, signal, viewChild} from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {DialogRef} from '@angular/cdk/dialog';
 import {
@@ -38,9 +38,8 @@ export class ConfigurationsCreateDialogComponent {
   private readonly juicebox = inject(JuiceboxService);
   private readonly dialogRef = inject<DialogRef<boolean>>(DialogRef);
   private readonly i18n = inject(ConfigurationsTranslationPipe);
-  private readonly editor = viewChild.required(JsonEditorComponent);
 
-  /** `required` refuses an empty value: null, "" or [] */
+  /** `required` refuses an empty value (null, "" or []); the editor adds `invalidJson` while the text is not JSON */
   protected readonly form = new FormGroup({
     configuration: new FormControl<unknown>({key: null, name: null}, Validators.required),
   });
@@ -51,12 +50,14 @@ export class ConfigurationsCreateDialogComponent {
   }
 
   private async save(): Promise<void> {
-    if (!this.editor().valid()) {
-      this.juicebox.showToast('error', this.i18n.transform('invalid_json'));
+    // As the old juicebox: an empty value first, then text that is not JSON (the editor's `invalidJson`)
+    const control = this.form.controls.configuration;
+    if (control.hasError('required')) {
+      this.juicebox.showToast('error', this.i18n.transform('configuration_must_have_properties_set'));
       return;
     }
-    if (this.form.invalid) {
-      this.juicebox.showToast('error', this.i18n.transform('configuration_must_have_properties_set'));
+    if (control.hasError('invalidJson')) {
+      this.juicebox.showToast('error', this.i18n.transform('invalid_json'));
       return;
     }
     const result = await this.configurations.install(this.form.getRawValue().configuration);

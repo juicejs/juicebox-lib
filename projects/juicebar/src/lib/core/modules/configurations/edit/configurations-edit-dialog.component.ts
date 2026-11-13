@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal, viewChild} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {JsonPipe} from '@angular/common';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {DIALOG_DATA, DialogRef} from '@angular/cdk/dialog';
@@ -52,12 +52,11 @@ export class ConfigurationsEditDialogComponent implements OnInit {
   private readonly dialogRef = inject<DialogRef<boolean>>(DialogRef);
   private readonly data = inject<ConfigurationsEditDialogData>(DIALOG_DATA);
   private readonly i18n = inject(ConfigurationsTranslationPipe);
-  private readonly editor = viewChild(JsonEditorComponent);
 
   protected readonly compared = signal<ComparedConfiguration | null>(null);
   protected readonly applied = signal<Copy | null>(null);
   protected readonly showDifferences = signal(false);
-  /** `required` refuses an empty value: null, "" or [] */
+  /** `required` refuses an empty value (null, "" or []); the editor adds `invalidJson` while the text is not JSON */
   protected readonly form = new FormGroup({
     configuration: new FormControl<unknown>(null, Validators.required),
   });
@@ -94,12 +93,14 @@ export class ConfigurationsEditDialogComponent implements OnInit {
   }
 
   private async store(): Promise<void> {
-    if (!this.editor()?.valid()) {
-      this.juicebox.showToast('error', this.i18n.transform('invalid_json'));
+    // As the old juicebox: an empty value first, then text that is not JSON (the editor's `invalidJson`)
+    const control = this.form.controls.configuration;
+    if (control.hasError('required')) {
+      this.juicebox.showToast('error', this.i18n.transform('configuration_must_have_properties_set'));
       return;
     }
-    if (this.form.invalid) {
-      this.juicebox.showToast('error', this.i18n.transform('configuration_must_have_properties_set'));
+    if (control.hasError('invalidJson')) {
+      this.juicebox.showToast('error', this.i18n.transform('invalid_json'));
       return;
     }
     const result = await this.configurations.update(this.form.getRawValue().configuration);

@@ -1281,6 +1281,16 @@ html, body {
     padding-bottom: 0;
 }
 
+// Read by assistive technology, not shown: e.g. what a tick or a cross in a table cell means
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
 @include phone {
     :root {
         --page-gutter: 16px;

@@ -37,7 +37,7 @@
         <div class="copies">
           <div class="copy">
             <div class="copy__label">{{ 'memory' | translate }}:</div>
-            <pre class="copy__json" tabindex="0" [attr.aria-label]="'memory' | translate">{{ compared.configurations.memory | json }}</pre>
+            <pre class="copy__json" role="region" tabindex="0" [attr.aria-label]="'memory' | translate">{{ compared.configurations.memory | json }}</pre>
             <button app-button appearance="raised" color="primary" type="button" (click)="apply('memory')">
               {{ 'apply_from_memory' | translate }}
               <app-icon icon="arrow_downward" />
@@ -45,7 +45,7 @@
           </div>
           <div class="copy">
             <div class="copy__label">{{ 'database' | translate }}:</div>
-            <pre class="copy__json" tabindex="0" [attr.aria-label]="'database' | translate">{{ compared.configurations.database | json }}</pre>
+            <pre class="copy__json" role="region" tabindex="0" [attr.aria-label]="'database' | translate">{{ compared.configurations.database | json }}</pre>
             <button app-button appearance="raised" color="primary" type="button" class="copy__apply--end" (click)="apply('database')">
               {{ 'apply_from_database' | translate }}
               <app-icon icon="arrow_downward" />

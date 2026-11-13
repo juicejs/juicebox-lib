@@ -9,9 +9,12 @@ description: Use when adding a module to the juicebar library (a sidebar entry w
 2. Start a new module with the generator, then fill the skeleton in. The schematics are run from the build, so build them first:
 
    ```
-   PATH=~/.nvm/versions/node/v24.21.0/bin:$PATH npm run build:schematics
+   export PATH=~/.nvm/versions/node/v24.21.0/bin:$PATH   # the Angular 22 CLI needs Node 24
+   npm run build:schematics
    npx ng g ./dist/juicebar/schematics/collection.json:module <name> --lib --label "<Name staff read>" --role <role> --service <backend service>
    ```
+
+   A module ported from the old juicebox keeps its old address and sidebar id with `--route <old address>` (the last entry of its `sidebar` in the old `generator/modules.json`).
 
    It writes `projects/juicebar/src/lib/core/modules/<name>/` and wires the module into `config/base-app.config.ts`, `core/modules/main/main.providers.ts`, `public-api.ts` and the playground.
 3. The generator's templates are in `projects/juicebar/schematics/module/files/`. When the library's way of building a listing, a record page or a dialog changes, change the templates and the guide with it, so new modules start from the current shape.
