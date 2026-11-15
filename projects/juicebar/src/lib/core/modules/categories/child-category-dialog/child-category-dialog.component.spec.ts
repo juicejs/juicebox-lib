@@ -1,7 +1,7 @@
 import {TestBed} from '@angular/core/testing';
 import {DIALOG_DATA, DialogRef} from '@angular/cdk/dialog';
 import {CATEGORIES_CUSTOMIZATION, CategoriesCustomization} from '../../../../config/base-app.config';
-import {provideJuicebarTesting, signInTestUser} from '../../../../../testing/juicebar-testing';
+import {provideJuicebarTesting, settle, signInTestUser} from '../../../../../testing/juicebar-testing';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {CategoriesService} from '../categories.service';
 import {CategoriesTranslationPipe} from '../i18n/categories.translation';
@@ -33,8 +33,7 @@ describe('ChildCategoryDialogComponent', () => {
       input.value = name;
       input.dispatchEvent(new Event('input'));
       element.querySelector<HTMLButtonElement>('button[type="submit"]')!.click();
-      await fixture.whenStable();
-      await new Promise(resolve => setTimeout(resolve));
+      await settle(fixture);
     };
     return {element, create, close, submit};
   }

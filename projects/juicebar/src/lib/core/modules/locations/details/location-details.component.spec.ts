@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {provideRouter, Router} from '@angular/router';
 import {LOCATIONS_CUSTOMIZATION, LocationsCustomization} from '../../../../config/base-app.config';
-import {provideJuicebarTesting} from '../../../../../testing/juicebar-testing';
+import {provideJuicebarTesting, settle} from '../../../../../testing/juicebar-testing';
 import {LocationsService} from '../locations.service';
 import {StoredLocation} from '../locations.types';
 import {LocationDetailsComponent} from './location-details.component';
@@ -28,7 +28,7 @@ describe('LocationDetailsComponent', () => {
     const harness = await RouterTestingHarness.create();
     await harness.navigateByUrl(`/main/location/details/${location._id}/details-location`);
     // The location loads after the navigation
-    await new Promise(resolve => setTimeout(resolve));
+    await settle(harness.fixture, 1);
     harness.detectChanges();
     expect(TestBed.inject(Router).url).toContain(location._id);
     return Array.from((harness.routeNativeElement as HTMLElement).querySelectorAll('[role="tab"]'))

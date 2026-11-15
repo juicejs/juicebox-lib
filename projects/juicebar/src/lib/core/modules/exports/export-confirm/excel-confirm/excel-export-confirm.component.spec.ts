@@ -1,7 +1,7 @@
 import {TestBed} from '@angular/core/testing';
 import {DIALOG_DATA, DialogRef} from '@angular/cdk/dialog';
 import {EXPORTS_CUSTOMIZATION} from '../../../../../config/base-app.config';
-import {provideJuicebarTesting} from '../../../../../../testing/juicebar-testing';
+import {provideJuicebarTesting, settle} from '../../../../../../testing/juicebar-testing';
 import {ConfigurationService} from '../../../../shared/services/configuration.service';
 import {HelperService} from '../../../../shared/services/helper.service';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
@@ -40,8 +40,7 @@ describe('ExcelExportConfirmComponent', () => {
     const toast = vi.spyOn(juicebox, 'showToast');
     const fixture = TestBed.createComponent(ExcelExportConfirmComponent);
     fixture.autoDetectChanges();
-    for (let step = 0; step < 3; step++) await new Promise(resolve => setTimeout(resolve));
-    await fixture.whenStable();
+    await settle(fixture);
     const element = fixture.nativeElement as HTMLElement;
     const downloadButton = () => Array.from(element.querySelectorAll<HTMLButtonElement>('button'))
       .find(button => button.textContent?.trim() === 'Download')!;
@@ -54,8 +53,7 @@ describe('ExcelExportConfirmComponent', () => {
     name.value = 'march';
     name.dispatchEvent(new Event('input'));
     downloadButton().click();
-    await fixture.whenStable();
-    for (let step = 0; step < 3; step++) await new Promise(resolve => setTimeout(resolve));
+    await settle(fixture);
     expect(exportData).toHaveBeenCalledWith('t1', 'excel:export:strategy', {language: 'en_GB'}, 90000);
     expect(download).toHaveBeenCalledWith(expect.any(Blob), 'march.xlsx');
     expect(close).toHaveBeenCalledWith(true);
@@ -68,7 +66,7 @@ describe('ExcelExportConfirmComponent', () => {
     status.dispatchEvent(new Event('input'));
     await fixture.whenStable();
     downloadButton().click();
-    for (let step = 0; step < 3; step++) await new Promise(resolve => setTimeout(resolve));
+    await settle(fixture);
     expect(store).toHaveBeenCalledWith('t1', {filters: {status: 'open'}});
     expect(store.mock.invocationCallOrder[0]).toBeLessThan(exportData.mock.invocationCallOrder[0]);
   });
@@ -77,8 +75,7 @@ describe('ExcelExportConfirmComponent', () => {
     const {fixture, exportData, toast, close, downloadButton} = await setup();
     exportData.mockRejectedValue({name: 'TimeoutError'});
     downloadButton().click();
-    await fixture.whenStable();
-    for (let step = 0; step < 3; step++) await new Promise(resolve => setTimeout(resolve));
+    await settle(fixture);
     expect(toast).toHaveBeenCalledWith('error', expect.stringContaining('taking too long'));
     expect(close).not.toHaveBeenCalled();
   });

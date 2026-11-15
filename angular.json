@@ -49,9 +49,6 @@
             "outputPath": "dist/playground",
             "index": "projects/playground/src/index.html",
             "browser": "projects/playground/src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
             "tsConfig": "projects/playground/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -74,11 +71,7 @@
               "includePaths": [
                 "projects/juicebar/src/lib"
               ]
-            },
-            "allowedCommonJsDependencies": [
-              "moment",
-              "randexp"
-            ]
+            }
           },
           "configurations": {
             "production": {

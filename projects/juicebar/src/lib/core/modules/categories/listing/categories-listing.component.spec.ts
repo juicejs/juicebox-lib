@@ -2,7 +2,7 @@ import {TestBed} from '@angular/core/testing';
 import {provideRouter} from '@angular/router';
 import {of} from 'rxjs';
 import {CATEGORIES_CUSTOMIZATION, CategoriesCustomization} from '../../../../config/base-app.config';
-import {provideJuicebarTesting, signInTestUser} from '../../../../../testing/juicebar-testing';
+import {provideJuicebarTesting, settle, signInTestUser} from '../../../../../testing/juicebar-testing';
 import {DialogService} from '../../../../ui-components';
 import {ConfigurationService} from '../../../shared/services/configuration.service';
 import {Juice} from '../../../shared/services/juice.service';
@@ -57,19 +57,15 @@ describe('CategoriesListingComponent', () => {
 
     const fixture = TestBed.createComponent(CategoriesListingComponent);
     fixture.autoDetectChanges();
-    await fixture.whenStable();
+    await settle(fixture);
     const element = fixture.nativeElement as HTMLElement;
     const item = (key: string) => element.querySelector<HTMLElement>(`[role="treeitem"][data-key="${key}"]`);
     const button = (key: string, label: string) => item(key)?.querySelector<HTMLButtonElement>(`[aria-label^="${label}"]`) ?? null;
     const open = async (key: string) => {
       item(key)!.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
-      await fixture.whenStable();
+      await settle(fixture);
     };
-    const settle = async () => {
-      for (let step = 0; step < 3; step++) await new Promise(resolve => setTimeout(resolve));
-      await fixture.whenStable();
-    };
-    return {fixture, element, item, button, open, settle, dialog, getTree, getTreeWithInactive, remove, reorder, getTreeFromNode};
+    return {fixture, element, item, button, open, dialog, getTree, getTreeWithInactive, remove, reorder, getTreeFromNode};
   }
 
   it('loads the whole tree as the old listing did', async () => {
@@ -80,10 +76,10 @@ describe('CategoriesListingComponent', () => {
   });
 
   it('after a delete, renumbers the siblings on the backend as the old listing did', async () => {
-    const {button, open, remove, reorder, item, settle} = await setup();
+    const {fixture, button, open, remove, reorder, item} = await setup();
     await open('food');
     button('bread', 'delete')!.click();
-    await settle();
+    await settle(fixture);
     expect(remove).toHaveBeenCalledWith('bread');
     expect(reorder).toHaveBeenCalledWith(
       [{categoryId: 'fruit', order: 0}, {categoryId: 'milk', order: 1}], 'food', {skipValidation: true});
@@ -91,17 +87,17 @@ describe('CategoriesListingComponent', () => {
   });
 
   it('loads the tree again after deleting a first-level category, which the old listing crashed on', async () => {
-    const {button, getTree, reorder, settle} = await setup();
+    const {fixture, button, getTree, reorder} = await setup();
     button('tools', 'delete')!.click();
-    await settle();
+    await settle(fixture);
     expect(getTree).toHaveBeenCalledTimes(2);
     expect(reorder).not.toHaveBeenCalled();
   });
 
   it('adds a subcategory at the parent\'s end and shows it without loading the tree again', async () => {
-    const {button, dialog, getTreeFromNode, getTree, item, settle} = await setup({dialogResult: 'cheese'});
+    const {fixture, button, dialog, getTreeFromNode, getTree, item} = await setup({dialogResult: 'cheese'});
     button('food', 'Add a subcategory')!.click();
-    await settle();
+    await settle(fixture);
     expect(dialog.mock.calls[0][1]).toEqual(expect.objectContaining({data: {parentId: 'food', order: 3, showPublic: false}}));
     expect(getTreeFromNode).toHaveBeenCalledWith('cheese', {level: null});
     expect(getTree).toHaveBeenCalledTimes(1);
@@ -132,14 +128,14 @@ describe('CategoriesListingComponent', () => {
     expect(item('tools')).toBeNull();
     // The filter's select sets this
     (fixture.componentInstance as any).display.set('all');
-    await fixture.whenStable();
+    await settle(fixture);
     expect(item('tools')).not.toBeNull();
   });
 
   it('Quality Circle (showInactive): the switch loads the tree with the inactive categories', async () => {
-    const {element, getTreeWithInactive, settle} = await setup({customization: {options: {showInactive: true}}});
+    const {fixture, element, getTreeWithInactive} = await setup({customization: {options: {showInactive: true}}});
     element.querySelector<HTMLElement>('app-slide-toggle button, app-slide-toggle input')!.click();
-    await settle();
+    await settle(fixture);
     expect(getTreeWithInactive).toHaveBeenCalled();
   });
 });

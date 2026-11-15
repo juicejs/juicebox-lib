@@ -2,7 +2,7 @@ import {TestBed} from '@angular/core/testing';
 import {ActivatedRoute, convertToParamMap} from '@angular/router';
 import {of} from 'rxjs';
 import {CATEGORIES_CUSTOMIZATION, CategoriesCustomization} from '../../../../../config/base-app.config';
-import {provideJuicebarTesting, signInTestUser} from '../../../../../../testing/juicebar-testing';
+import {provideJuicebarTesting, settle, signInTestUser} from '../../../../../../testing/juicebar-testing';
 import {DialogService} from '../../../../../ui-components';
 import {ConfigurationService} from '../../../../shared/services/configuration.service';
 import {Juice} from '../../../../shared/services/juice.service';
@@ -50,15 +50,12 @@ describe('DetailsCategoryComponent', () => {
     });
     const fixture = TestBed.createComponent(DetailsCategoryComponent);
     fixture.autoDetectChanges();
-    await fixture.whenStable();
-    for (let step = 0; step < 3; step++) await new Promise(resolve => setTimeout(resolve));
-    await fixture.whenStable();
+    await settle(fixture);
     const element = fixture.nativeElement as HTMLElement;
     const component = fixture.componentInstance as any;
     const save = async () => {
       element.querySelector<HTMLButtonElement>('button[type="submit"]')!.click();
-      for (let step = 0; step < 3; step++) await new Promise(resolve => setTimeout(resolve));
-      await fixture.whenStable();
+      await settle(fixture);
     };
     return {element, component, save, update, dialog, usage};
   }

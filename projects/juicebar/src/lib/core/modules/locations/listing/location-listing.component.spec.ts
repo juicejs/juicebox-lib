@@ -3,7 +3,7 @@ import {TestBed} from '@angular/core/testing';
 import {Location} from '@angular/common';
 import {provideRouter, Router} from '@angular/router';
 import {LOCATIONS_CUSTOMIZATION, LocationsCustomization} from '../../../../config/base-app.config';
-import {provideJuicebarTesting, signInTestUser} from '../../../../../testing/juicebar-testing';
+import {provideJuicebarTesting, settle, signInTestUser} from '../../../../../testing/juicebar-testing';
 import {LISTING_PANE, ListingStateService} from '../../../shared/components/listing-pane/listing-pane';
 import {ConfigurationService} from '../../../shared/services/configuration.service';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
@@ -44,7 +44,7 @@ describe('LocationListingComponent', () => {
     await TestBed.inject(Router).navigateByUrl('/main/location?page=2');
     const fixture = TestBed.createComponent(LocationListingComponent);
     fixture.autoDetectChanges();
-    await fixture.whenStable();
+    await settle(fixture);
     const element = fixture.nativeElement as HTMLElement;
     const rowButton = (row: number, label: string) =>
       element.querySelectorAll('tbody tr')[row]?.querySelector<HTMLButtonElement>(`[aria-label^="${label}"]`) ?? null;
@@ -71,7 +71,7 @@ describe('LocationListingComponent', () => {
     input.dispatchEvent(new Event('input'));
     expect(fetch).toHaveBeenCalledTimes(1);
     await new Promise(resolve => setTimeout(resolve, 350));
-    await fixture.whenStable();
+    await settle(fixture);
     expect(fetch).toHaveBeenLastCalledWith(0, 10, expect.objectContaining({
       filters: expect.objectContaining({typed: [{key: 'name.en_GB', value: 'Hal'}]}),
     }));
@@ -90,7 +90,7 @@ describe('LocationListingComponent', () => {
     const {rowButton, put, fixture} = await setup({options: {archivableTypes: ['web', 'geo'], deletableTypes: ['region', 'web', 'geo']}});
     expect(rowButton(1, 'Delete')).not.toBeNull();
     rowButton(1, 'Archive')!.click();
-    await fixture.whenStable();
+    await settle(fixture);
     expect(put).toHaveBeenCalledWith('site', expect.objectContaining({name: 'Site', type: 'web', archived: true}));
   });
 
@@ -98,11 +98,11 @@ describe('LocationListingComponent', () => {
     const {element, fixture} = await setup({options: {ownerFilter: true}});
     const component = fixture.componentInstance as unknown as {owner: {set(value: string): void}};
     component.owner.set('mine');
-    await fixture.whenStable();
+    await settle(fixture);
     expect(Array.from(element.querySelectorAll('tbody tr')).map(row => row.querySelector('a')?.textContent?.trim()))
       .toEqual(['Hall']);
     component.owner.set('public');
-    await fixture.whenStable();
+    await settle(fixture);
     expect(element.querySelectorAll('tbody tr').length).toBe(2);
   });
 
@@ -110,9 +110,7 @@ describe('LocationListingComponent', () => {
     const pane = {provide: LISTING_PANE, useValue: {activeId: signal('site')}};
     const shown = {page: 3, pageSize: 20, sort: {prop: 'name', dir: 'desc'}, archived: true, owner: 'all', typed: []};
     const {fetch, element, fixture} = await setup({}, [pane], shown);
-    // The compact list sets no title or buttons, so nothing but its own start is pending
-    await new Promise(resolve => setTimeout(resolve));
-    await fixture.whenStable();
+    await settle(fixture);
     const juicebox = TestBed.inject(JuiceboxService);
     expect(fetch).toHaveBeenCalledWith(2, 20, expect.objectContaining({
       filters: expect.objectContaining({archived: true, sort: {prop: 'name', dir: 'desc'}}),
@@ -126,7 +124,7 @@ describe('LocationListingComponent', () => {
 
     // Paging the list leaves the open location's address alone
     element.querySelector<HTMLButtonElement>('button[aria-label="Previous page"]')!.click();
-    await fixture.whenStable();
+    await settle(fixture);
     expect(fetch).toHaveBeenLastCalledWith(1, 20, expect.anything());
     expect(TestBed.inject(Location).path()).toBe('/main/location?page=2');
 

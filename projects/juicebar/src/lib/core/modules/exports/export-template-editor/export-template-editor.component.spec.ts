@@ -1,6 +1,6 @@
 import {Component, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {provideJuicebarTesting} from '../../../../../testing/juicebar-testing';
+import {provideJuicebarTesting, settle} from '../../../../../testing/juicebar-testing';
 import {ConfigurationService} from '../../../shared/services/configuration.service';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {ExportsService} from '../exports.service';
@@ -45,8 +45,7 @@ describe('ExportTemplateEditorComponent', () => {
     fixture.componentInstance.template.set(template);
     fixture.autoDetectChanges();
     // The editor loads the configuration, data sources, columns and filters one after another
-    for (let step = 0; step < 5; step++) await new Promise(resolve => setTimeout(resolve));
-    await fixture.whenStable();
+    await settle(fixture, 5);
     // The test drives the editor's own (protected) handlers, as its template does
     const editor = fixture.debugElement.children[0].componentInstance as any;
     return {fixture, host: fixture.componentInstance, editor};

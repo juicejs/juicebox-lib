@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, signal, viewChild } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, Validators, ReactiveFormsModule } from '@angular/forms';
 import { JuiceboxService } from '../../../../../../shared/services/Juicebox.service';
+import { HelperService } from '../../../../../../shared/services/helper.service';
 import { UsersService } from '../../../../../users/users.service';
 import { DialogService, SelectComponent } from '../../../../../../../ui-components';
 import { ConfirmationDialogComponent } from '../../../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
@@ -34,6 +35,7 @@ function passwordMatchValidator(group: AbstractControl): ValidationErrors | null
 })
 export class UserProfileDetailsComponent implements OnInit {
   private juicebox = inject(JuiceboxService);
+  private helper = inject(HelperService);
   private usersService = inject(UsersService);
   private dialog = inject(DialogService);
   private i18n = new MainTranslationPipe(this.juicebox);
@@ -100,22 +102,9 @@ export class UserProfileDetailsComponent implements OnInit {
     });
   }
 
+  /** The shared generator, as the old profile used it */
   generateRandomPassword() {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@$!%*#?&';
-    let pwd = '';
-    while (!passwordValidator({ value: pwd } as AbstractControl)) {
-      pwd = Array.from({ length: 12 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-    }
-    // ensure it passes: just generate a solid one
-    const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const lower = 'abcdefghijklmnopqrstuvwxyz';
-    const digits = '0123456789';
-    const special = '@$!%*#?&';
-    const all = upper + lower + digits + special;
-    const random = (str: string) => str[Math.floor(Math.random() * str.length)];
-    const base = random(upper) + random(lower) + random(digits) + random(special);
-    const rest = Array.from({ length: 8 }, () => random(all)).join('');
-    const generated = (base + rest).split('').sort(() => Math.random() - 0.5).join('');
+    const generated = this.helper.generateRandomPassword();
     this.randomPassword.set(generated);
     this.passwordForm.patchValue({ password: generated, repeatPassword: generated });
   }

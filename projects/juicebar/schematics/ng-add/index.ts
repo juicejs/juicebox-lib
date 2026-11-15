@@ -75,10 +75,6 @@ function configureBuild(projectName: string): Rule {
     const hasAsset = (input: string) => assets.some(asset => typeof asset === 'object' && (asset as { input?: string } | null)?.input === input);
     buildOptions['assets'] = [...assets, ...[LIB_ASSETS, EDITOR_ICONS].filter(asset => !hasAsset(asset.input))];
 
-    // CommonJS packages the lib uses; avoids a build warning in every project
-    const commonJs = (buildOptions['allowedCommonJsDependencies'] as string[] | undefined) ?? [];
-    buildOptions['allowedCommonJsDependencies'] = [...new Set([...commonJs, 'moment', 'randexp'])];
-
     // Build straight into dist/ (index.html at dist/index.html); deploy pipelines add dist/config.json
     buildOptions['outputPath'] = { base: 'dist', browser: '' };
 
