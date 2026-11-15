@@ -8,12 +8,13 @@ import {<%= className %>Record} from '../<%= name %>.types';
 
 const PAGE_SIZE = 10;
 const DETAILS_URL = '/main/<%= route %>/details';
-/** Where the listing keeps the page it showed last, for the compact list next to an open record */
+/** Where the listing keeps the page it showed last: it comes back to it from a record, the compact list starts on it */
 const STATE_KEY = '<%= name %>';
 
 /**
  * The <%= label %> listing: the records page by page, Create as the page's action, delete on each row. A click opens
- * a record. Next to an open record (the split view) the same component is the compact list of the page it showed last.
+ * a record; coming back from it, the listing is on the page it was opened from. Next to an open record (the split
+ * view) the same component is the compact list of that page.
  */
 @Component({
   selector: 'app-<%= name %>-listing',
@@ -56,9 +57,9 @@ export class <%= className %>ListingComponent implements OnInit {
   ];
 
   async ngOnInit(): Promise<void> {
-    if (this.pane) {
-      this.page.set(this.listingState.restore<number>(STATE_KEY) ?? 1);
-    } else {
+    // Back from a record, and in the compact list next to one: the page the listing showed last
+    this.page.set(this.listingState.restore<number>(STATE_KEY) ?? 1);
+    if (!this.pane) {
       this.juicebox.navigationEvent({
         location: this.i18n.transform('<%= name %>'),
         subject: this.i18n.transform('<%= name %>_list'),
@@ -114,7 +115,7 @@ export class <%= className %>ListingComponent implements OnInit {
 
   private async fetch(): Promise<void> {
     const request = ++this.request;
-    if (!this.pane) this.listingState.save(STATE_KEY, this.page());
+    this.listingState.save(STATE_KEY, this.page());
     const result = await this.service.fetch(this.page() - 1, PAGE_SIZE);
     if (request !== this.request || !result?.success) return;
     const items = result.payload?.items ?? [];

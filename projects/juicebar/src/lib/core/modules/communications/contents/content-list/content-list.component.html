@@ -24,6 +24,7 @@
       <app-form-field appearance="outline" class="tag-filter">
         <app-label>{{ 'tags' | translate }}</app-label>
         <app-select placeholder="" [clearable]="true" [clearLabel]="'clear' | translate"
+                    [value]="searched.tag ?? null"
                     (selectionChange)="onFilter('tag', $event.value)">
           @for (option of tags(); track option) {
             <app-option [value]="option">{{ option }}</app-option>
@@ -50,6 +51,7 @@
         <input class="filter-input" type="text"
                [attr.aria-label]="'name' | translate"
                [placeholder]="'name' | translate"
+               [value]="searched.name ?? ''"
                (input)="onFilter('name', $any($event.target).value)"
                (click)="$event.stopPropagation()"
                (keydown)="$event.stopPropagation()">

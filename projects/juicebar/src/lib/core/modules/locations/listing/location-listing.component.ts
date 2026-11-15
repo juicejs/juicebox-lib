@@ -44,7 +44,7 @@ interface LocationRow {
   deletable: boolean;
 }
 
-/** What the listing shows, kept for the compact list next to an open location */
+/** What the listing shows, kept for coming back from a location and for the compact list next to an open one */
 interface LocationsListingState {
   page: number;
   pageSize: number;
@@ -114,6 +114,8 @@ export class LocationListingComponent implements OnInit, OnDestroy {
   private readonly types = signal<LocationType[]>([]);
   private readonly organisationId = signal<string | null>(null);
   private typed: Array<{key: string; value: string}> = [];
+  /** The header's text filters the listing comes back with, shown in their fields */
+  protected typedValues: Record<string, string> = {};
   private filterTimer?: ReturnType<typeof setTimeout>;
   private request = 0;
 
@@ -136,17 +138,19 @@ export class LocationListingComponent implements OnInit, OnDestroy {
   ];
 
   async ngOnInit(): Promise<void> {
-    if (this.pane) {
-      const state = this.listingState.restore<LocationsListingState>('location');
-      if (state) {
-        this.page.set(state.page);
-        this.pageSize.set(state.pageSize);
-        this.sort.set(state.sort);
-        this.archived.set(state.archived);
-        this.owner.set(state.owner);
-        this.typed = state.typed;
-      }
-    } else {
+    // Back from a location, and in the compact list next to one: the rows the listing showed last
+    const state = this.listingState.restore<LocationsListingState>('location');
+    if (state) {
+      // A page in the address wins: the browser's Back returned to it
+      if (this.pane || !this.route.snapshot.queryParamMap.has('page')) this.setPage(state.page);
+      this.pageSize.set(state.pageSize);
+      this.sort.set(state.sort);
+      this.archived.set(state.archived);
+      this.owner.set(state.owner);
+      this.typed = state.typed;
+      this.typedValues = Object.fromEntries(state.typed.map(({key, value}) => [key.startsWith('name.') ? 'name' : key, value]));
+    }
+    if (!this.pane) {
       this.juicebox.navigationEvent({
         location: this.i18n.transform('location'),
         subject: this.i18n.transform('location_list'),
@@ -242,17 +246,16 @@ export class LocationListingComponent implements OnInit, OnDestroy {
     await this.fetch();
   }
 
+  /** Works on the rows shown, so there is nothing to read; the listing comes back with it */
+  protected showOwner(owner: Owner): void {
+    this.owner.set(owner);
+    this.saveState();
+  }
+
   private async fetch(): Promise<void> {
     const request = ++this.request;
     const sort = this.sort();
-    this.listingState.save('location', {
-      page: this.page(),
-      pageSize: this.pageSize(),
-      sort,
-      archived: this.archived(),
-      owner: this.owner(),
-      typed: this.typed,
-    } satisfies LocationsListingState);
+    this.saveState();
     const result = await this.locations.fetch(this.page() - 1, this.pageSize(), {
       filters: {
         archived: this.archived(),
@@ -266,6 +269,17 @@ export class LocationListingComponent implements OnInit, OnDestroy {
     if (request !== this.request || !result?.success || !result.payload) return;
     this.fetched.set(result.payload.locations);
     this.count.set(result.payload.count);
+  }
+
+  private saveState(): void {
+    this.listingState.save('location', {
+      page: this.page(),
+      pageSize: this.pageSize(),
+      sort: this.sort(),
+      archived: this.archived(),
+      owner: this.owner(),
+      typed: this.typed,
+    } satisfies LocationsListingState);
   }
 
   /**

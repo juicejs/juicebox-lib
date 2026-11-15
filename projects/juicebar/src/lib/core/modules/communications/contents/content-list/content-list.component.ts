@@ -26,7 +26,7 @@ import {CommunicationsTranslationPipe} from '../../i18n/communications.translati
 import {ContentCreateDialogComponent, ContentCreateDialogData} from '../content-create/content-create-dialog.component';
 import {CONTENT_UPDATE_PERMISSION, contentLink, hasContentTags} from '../contents-shared';
 
-/** What the listing shows, kept for the compact list next to an open content */
+/** What the listing shows, kept for coming back from a content and for the compact list next to an open one */
 interface ContentsListingState {
   page: number;
   pageSize: number;
@@ -91,6 +91,8 @@ export class ContentListComponent implements OnInit, OnDestroy {
   protected readonly tags = signal<string[]>([]);
   /** The name or tag searched for; none until a filter was used */
   private search: {terms: CommunicationSearchTerm[]} | null = null;
+  /** The name or tag the listing comes back with, shown in its filter */
+  protected searched: {name?: string; tag?: string} = {};
   private filterTimer?: ReturnType<typeof setTimeout>;
   private request = 0;
   /** The row a click landed on, opened once the click reaches the host and tells whether Ctrl was held */
@@ -109,13 +111,16 @@ export class ContentListComponent implements OnInit, OnDestroy {
   });
 
   async ngOnInit(): Promise<void> {
+    // Back from a content, and in the compact list next to one: the rows the listing showed last
+    const state = this.listingState.restore<ContentsListingState>(LISTING_STATE_KEY);
+    if (state) {
+      this.page.set(state.page);
+      this.pageSize.set(state.pageSize);
+      this.search = state.search;
+      const term = state.search?.terms[0];
+      if (term) this.searched = {[term.property]: term.term};
+    }
     if (this.pane) {
-      const state = this.listingState.restore<ContentsListingState>(LISTING_STATE_KEY);
-      if (state) {
-        this.page.set(state.page);
-        this.pageSize.set(state.pageSize);
-        this.search = state.search;
-      }
       await this.fetch();
       return;
     }

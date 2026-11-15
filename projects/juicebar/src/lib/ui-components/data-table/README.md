@@ -305,9 +305,29 @@ protected readonly pane = injectListingPane();   // set when the listing is the 
 }
 ```
 
-As the compact list, the listing must not set the page's title, breadcrumb or action buttons, nor change the address;
-it starts from what the listing showed last (`ListingStateService`). `listing-page` lets the page's table run from
-edge to edge of the workspace. See `core/modules/locations/listing/`.
+As the compact list, the listing must not set the page's title, breadcrumb or action buttons, nor change the address.
+`listing-page` lets the page's table run from edge to edge of the workspace. See `core/modules/locations/listing/`.
+
+The listing keeps what it shows in `ListingStateService` and starts from it, both as the page and as the compact list,
+so staff coming back from a record find the page they opened it from:
+
+```ts
+private readonly listingState = inject(ListingStateService);
+
+ngOnInit() {
+  const state = this.listingState.restore<OrdersListingState>('orders');
+  if (state) { this.page.set(state.page); this.pageSize.set(state.pageSize); this.sort.set(state.sort); /* filters */ }
+  …
+}
+
+private async fetch() {
+  this.listingState.save('orders', {page: this.page(), pageSize: this.pageSize(), sort: this.sort()});
+  …
+}
+```
+
+A filter field shows its restored value with `[value]`. The state lasts while staff stay on the listing and its
+records, and is forgotten once they go to another module.
 
 ---
 

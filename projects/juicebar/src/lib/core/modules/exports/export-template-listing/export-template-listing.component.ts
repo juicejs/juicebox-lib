@@ -14,7 +14,7 @@ import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 import {ColumnLabelsPipe} from '../pipes/column-labels.pipe';
 import {ExportTemplate} from '../types/ExportTemplate';
 
-/** What the listing shows, kept for the compact list next to an open template */
+/** What the listing shows, kept for coming back from a template and for the compact list next to an open one */
 interface ExportsListingState {
     page: number;
     pageSize: number;
@@ -56,14 +56,14 @@ export class ExportTemplateListingComponent {
     private readonly autoLanguage = new AutoLanguagePipe(this.juicebox);
 
     constructor() {
-        if (this.pane) {
-            const state = this.listingState.restore<ExportsListingState>('exports');
-            if (state) {
-                this.page.set(state.page);
-                this.pageSize.set(state.pageSize);
-                this.sort.set(state.sort);
-            }
-        } else {
+        // Back from a template, and in the compact list next to one: the rows the listing showed last
+        const state = this.listingState.restore<ExportsListingState>('exports');
+        if (state) {
+            this.page.set(state.page);
+            this.pageSize.set(state.pageSize);
+            this.sort.set(state.sort);
+        }
+        if (!this.pane) {
             this.juicebox.navigationEvent({
                 location: this.i18n.transform('exports'),
                 subject: this.i18n.transform('export_templates'),

@@ -65,7 +65,7 @@ interface AutomationRow {
   progress: number;
 }
 
-/** What the listing shows, kept for the compact list next to an open automation */
+/** What the listing shows, kept for coming back from an automation and for the compact list next to an open one */
 interface AutomationListingState {
   page: number;
   name: string;
@@ -122,7 +122,8 @@ export class AutomationListComponent implements OnInit, OnDestroy {
   private readonly runs = signal<Record<string, FollowedRun>>({});
   protected readonly runPromise = signal<Promise<void> | null>(null);
   private readonly statusLabels = {enabled: this.i18n.transform('enabled'), disabled: this.i18n.transform('disabled')};
-  private nameFilter = '';
+  /** Also the name filter's value the listing comes back with */
+  protected nameFilter = '';
   private clickedRow: AutomationRow | null = null;
   private request = 0;
   private reading = false;
@@ -165,13 +166,13 @@ export class AutomationListComponent implements OnInit, OnDestroy {
   ];
 
   async ngOnInit(): Promise<void> {
-    if (this.pane) {
-      const state = this.listingState.restore<AutomationListingState>(STATE_KEY);
-      if (state) {
-        this.page.set(state.page);
-        this.nameFilter = state.name;
-      }
-    } else {
+    // Back from an automation, and in the compact list next to one: the rows the listing showed last
+    const state = this.listingState.restore<AutomationListingState>(STATE_KEY);
+    if (state) {
+      this.page.set(state.page);
+      this.nameFilter = state.name;
+    }
+    if (!this.pane) {
       this.juicebox.navigationEvent({
         location: this.i18n.transform('communications'),
         subject: this.i18n.transform('automation'),
@@ -269,7 +270,7 @@ export class AutomationListComponent implements OnInit, OnDestroy {
 
   private async fetch(): Promise<void> {
     const request = ++this.request;
-    if (!this.pane) this.listingState.save(STATE_KEY, {page: this.page(), name: this.nameFilter} satisfies AutomationListingState);
+    this.listingState.save(STATE_KEY, {page: this.page(), name: this.nameFilter} satisfies AutomationListingState);
     const terms = this.nameFilter ? [{property: 'name', fullText: true, language: false, term: this.nameFilter}] : [];
     const result = await this.communications.fetchCommunications(this.page() - 1, PAGE_SIZE, {search: {terms}});
     if (request !== this.request || !result || !('communications' in result)) return;

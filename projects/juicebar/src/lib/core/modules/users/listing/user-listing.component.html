@@ -58,6 +58,7 @@
           <input [attr.aria-label]="'firstname' | translate" class="filter-input"
                  type="text"
                  [placeholder]="'firstname' | translate"
+                 [value]="typed['firstname'] ?? ''"
                  debounceKeyUp
                  [debounceTime]="500"
                  (onEvent)="onFilter('firstname', $event.target['value'])"
@@ -72,6 +73,7 @@
           <input [attr.aria-label]="'lastname' | translate" class="filter-input"
                  type="text"
                  [placeholder]="'lastname' | translate"
+                 [value]="typed['lastname'] ?? ''"
                  debounceKeyUp
                  [debounceTime]="500"
                  (onEvent)="onFilter('lastname', $event.target['value'])"
@@ -86,6 +88,7 @@
           <input [attr.aria-label]="'email' | translate" class="filter-input"
                  type="text"
                  [placeholder]="'email' | translate"
+                 [value]="typed['email'] ?? ''"
                  debounceKeyUp
                  [debounceTime]="500"
                  (onEvent)="onFilter('email', $event.target['value'])"

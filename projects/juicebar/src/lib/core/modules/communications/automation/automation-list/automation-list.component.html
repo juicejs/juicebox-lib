@@ -32,6 +32,7 @@
       <input class="dt-header-filter" type="text"
              [attr.aria-label]="'name_communication' | translate"
              [placeholder]="'name' | translate"
+             [value]="nameFilter"
              (input)="onFilter($any($event.target).value)"
              (click)="$event.stopPropagation()"
              (keydown)="$event.stopPropagation()">

@@ -19,12 +19,16 @@ import { FilterConfig, FilterBarComponent } from '../../../shared/components/fil
 import {SHARED_IMPORTS} from '../../../shared/shared-imports';
 import {injectListingPane, ListingStateService} from '../../../shared/components/listing-pane/listing-pane';
 
-/** What the listing shows, kept for the compact list next to an open user */
+/** What the listing shows, kept for coming back from a user and for the compact list next to an open user */
 interface UsersListingState {
     page: number;
     pageSize: number;
     sort: ISort;
     filter: Array<ISearchTerm>;
+    /** The filter bar's choices, shown again with the filter */
+    organisation: any;
+    role: any;
+    group: any;
 }
 
 export interface Sort {
@@ -63,6 +67,8 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
     protected readonly rowsSig = signal<Array<any>>([]);
     protected readonly pageSig = signal<number>(1);
     protected readonly itemsPerPageSig = signal<number>(10);
+    /** The header's text filters the listing comes back with, shown in their fields */
+    protected typed: Record<string, string> = {};
     protected readonly canLoginAsOther = computed(() =>
         this.juicebox.getUser().attributes?.settings?.twoFactor === 'totp'
     );
@@ -133,15 +139,21 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
 
         this.loggedInOrganisationId = this.juicebox.getUser().organisation_id;
 
-        // The compact list: the rows the listing showed last, without the page's title, buttons and filters
+        // Back from a user, and in the compact list next to one: the rows the listing showed last
+        const state = this.listingState.restore<UsersListingState>('users');
+        if (state) {
+            this.pageSig.set(state.page);
+            this.itemsPerPageSig.set(state.pageSize);
+            this.sortSig.set(state.sort);
+            this.filterSig.set(state.filter.map(term => ({...term})));
+            this.selectedOrganisation.set(state.organisation);
+            this.selectedRole.set(state.role);
+            this.selectedGroup.set(state.group);
+            this.typed = Object.fromEntries(state.filter.map(term => [term.property, String(term.term)]));
+        }
+
+        // The compact list: without the page's title, buttons and filters
         if (this.pane) {
-            const state = this.listingState.restore<UsersListingState>('users');
-            if (state) {
-                this.pageSig.set(state.page);
-                this.itemsPerPageSig.set(state.pageSize);
-                this.sortSig.set(state.sort);
-                this.filterSig.set(state.filter);
-            }
             await this.fetchUsers();
             return;
         }
@@ -194,6 +206,9 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
             pageSize: this.itemsPerPageSig(),
             sort: this.sortSig(),
             filter: this.filterSig(),
+            organisation: this.selectedOrganisation(),
+            role: this.selectedRole(),
+            group: this.selectedGroup(),
         } satisfies UsersListingState);
         const result = await this.usersService.fetch(this.loggedInOrganisationId, this.pageSig() - 1, this.itemsPerPageSig(), this.sortSig(), this.filterSig());
         if (!result.success)
