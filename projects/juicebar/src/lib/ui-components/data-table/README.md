@@ -308,26 +308,29 @@ protected readonly pane = injectListingPane();   // set when the listing is the 
 As the compact list, the listing must not set the page's title, breadcrumb or action buttons, nor change the address.
 `listing-page` lets the page's table run from edge to edge of the workspace. See `core/modules/locations/listing/`.
 
-The listing keeps what it shows in `ListingStateService` and starts from it, both as the page and as the compact list,
-so staff coming back from a record find the page they opened it from:
+The listing keeps what it shows with `injectListingState` and starts from it, both as the page and as the compact
+list, so staff coming back from a record find the page they opened it from:
 
 ```ts
-private readonly listingState = inject(ListingStateService);
+private readonly listingState = injectListingState<OrdersListingState>('orders');
 
 ngOnInit() {
-  const state = this.listingState.restore<OrdersListingState>('orders');
+  const state = this.listingState.restore();
   if (state) { this.page.set(state.page); this.pageSize.set(state.pageSize); this.sort.set(state.sort); /* filters */ }
   …
 }
 
 private async fetch() {
-  this.listingState.save('orders', {page: this.page(), pageSize: this.pageSize(), sort: this.sort()});
+  this.listingState.save({page: this.page(), pageSize: this.pageSize(), sort: this.sort()});
   …
+  // Fewer rows than when the listing was left: its last page
+  if (!items.length && this.page() > lastPage) { this.page.set(lastPage); return this.fetch(); }
 }
 ```
 
-A filter field shows its restored value with `[value]`. The state lasts while staff stay on the listing and its
-records, and is forgotten once they go to another module.
+A filter field shows its restored value with `[value]`. The state lasts while staff are on the listing's address or a
+page under it (its records), and is forgotten at any other address and on a reload. A page that creates a record and
+then opens the listing calls `ListingStateService.forget('orders')` first, so the listing starts on its first page.
 
 ---
 

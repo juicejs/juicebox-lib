@@ -28,7 +28,7 @@ interface Person {
         </ng-template>
       }
       <ng-template [headerDef]="'city'">
-        <input class="city-filter" type="text" aria-label="City">
+        <input class="city-filter" type="text" aria-label="City" value="Pula">
       </ng-template>
       @if (withActions()) {
         <ng-template [cellDef]="'actions'" let-row>
@@ -116,6 +116,18 @@ describe('DataTableComponent', () => {
     await fixture.whenStable();
 
     expect(element.querySelector<HTMLInputElement>('th .city-filter')!.value).toBe('Pul');
+  });
+
+  it('keeps an emptied header filter empty when the screen crosses the phone width', async () => {
+    show([{ key: 'first', label: 'First name' }, { key: 'city', label: 'City' }]);
+    // The field came with a value (as a listing coming back with its filter) and was emptied
+    element.querySelector<HTMLInputElement>('th .city-filter')!.value = '';
+
+    phone.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(element.querySelector<HTMLInputElement>('.dt-cards-filter .city-filter')!.value).toBe('');
   });
 
   describe('on a phone', () => {

@@ -17,7 +17,7 @@ import {
   SelectComponent,
   TooltipDirective,
 } from '../../../../../ui-components';
-import {injectListingPane, ListingStateService} from '../../../../shared/components/listing-pane/listing-pane';
+import {injectListingPane, injectListingState} from '../../../../shared/components/listing-pane/listing-pane';
 import {ConfigurationService} from '../../../../shared/services/configuration.service';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {CommunicationsService} from '../../communications.service';
@@ -72,7 +72,7 @@ const CONTENT_TYPE_FILTER: CommunicationListOptions['filter'] = {type: {fullText
 export class ContentListComponent implements OnInit, OnDestroy {
   /** Set when this is the compact list next to an open content, not the page itself */
   protected readonly pane = injectListingPane();
-  private readonly listingState = inject(ListingStateService);
+  private readonly listingState = injectListingState<ContentsListingState>(LISTING_STATE_KEY);
   private readonly communications = inject(CommunicationsService);
   private readonly configuration = inject(ConfigurationService);
   private readonly juicebox = inject(JuiceboxService);
@@ -112,7 +112,7 @@ export class ContentListComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     // Back from a content, and in the compact list next to one: the rows the listing showed last
-    const state = this.listingState.restore<ContentsListingState>(LISTING_STATE_KEY);
+    const state = this.listingState.restore();
     if (state) {
       this.page.set(state.page);
       this.pageSize.set(state.pageSize);
@@ -209,17 +209,23 @@ export class ContentListComponent implements OnInit, OnDestroy {
 
   private async fetch(): Promise<void> {
     const request = ++this.request;
-    this.listingState.save(LISTING_STATE_KEY, {
+    this.listingState.save({
       page: this.page(),
       pageSize: this.pageSize(),
       search: this.search,
-    } satisfies ContentsListingState);
+    });
     const options: CommunicationListOptions = {
       filter: CONTENT_TYPE_FILTER,
       ...(this.search && {search: this.search}),
     };
     const result = await this.communications.fetchContents(this.page() - 1, this.pageSize(), options);
     if (request !== this.request || !result || !('contents' in result)) return;
+    // Fewer contents than when the listing was left: its last page
+    const lastPage = Math.max(Math.ceil((result.count ?? 0) / this.pageSize()), 1);
+    if (!result.contents?.length && this.page() > lastPage) {
+      this.page.set(lastPage);
+      return this.fetch();
+    }
     this.rows.set(result.contents ?? []);
     this.count.set(result.count ?? 0);
   }

@@ -1,6 +1,6 @@
 import {inject, Injectable, InjectionToken, Signal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {ActivatedRouteSnapshot, NavigationEnd, Router} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router} from '@angular/router';
 import {filter} from 'rxjs';
 
 /**
@@ -11,6 +11,8 @@ import {filter} from 'rxjs';
 export interface ListingPane {
   /** The record that is open, to mark its row */
   readonly activeId: Signal<string | null>;
+  /** The listing's own address (the open record's parent route), which the listing's state belongs to */
+  readonly address?: string;
 }
 
 export const LISTING_PANE = new InjectionToken<ListingPane>('LISTING_PANE');
@@ -18,6 +20,30 @@ export const LISTING_PANE = new InjectionToken<ListingPane>('LISTING_PANE');
 /** The pane a listing is shown in, or null when it is the page itself */
 export function injectListingPane(): ListingPane | null {
   return inject(LISTING_PANE, {optional: true});
+}
+
+/** A listing's state in `ListingStateService`, under the address the listing belongs to */
+export interface ListingState<T> {
+  /** What the listing showed last, if staff stayed on it and the pages under its address since */
+  restore(): T | undefined;
+  /** Keeps what the listing shows now: call it each time the listing reads its rows */
+  save(state: T): void;
+}
+
+/**
+ * The state of the listing `module` (page, page size, sort, filters): the listing restores it when it starts, as the
+ * page and as the compact list next to an open record, and saves it each time it reads its rows. Call it in the
+ * listing component's injection context. The address the state belongs to is fixed here: the listing's own route, or
+ * as the compact list, the listing's address in the split view. So a save after an `await` or when the listing is
+ * destroyed still files it under the listing.
+ */
+export function injectListingState<T>(module: string): ListingState<T> {
+  const states = inject(ListingStateService);
+  const address = injectListingPane()?.address ?? addressOf(inject(ActivatedRoute).snapshot);
+  return {
+    restore: () => states.restore<T>(module),
+    save: state => states.save(module, state, address),
+  };
 }
 
 /**
@@ -47,12 +73,21 @@ export class ListingStateService {
       });
   }
 
-  save(module: string, state: unknown): void {
-    this.states.set(module, {address: this.listingAddress(), state});
+  /**
+   * Keeps a listing's state under its address. Without one, the address is read from the route shown at the time:
+   * call it while the listing is on screen, or use `injectListingState`, which fixes the address when the listing starts.
+   */
+  save(module: string, state: unknown, address = this.listingAddress()): void {
+    this.states.set(module, {address, state});
   }
 
   restore<T>(module: string): T | undefined {
     return this.states.get(module)?.state as T | undefined;
+  }
+
+  /** A record was created: the listing starts afresh, on its first page */
+  forget(module: string): void {
+    this.states.delete(module);
   }
 
   /**
@@ -77,4 +112,9 @@ export class ListingStateService {
     const segments = this.router.parseUrl(url).root.children['primary']?.segments ?? [];
     return '/' + segments.map(segment => segment.path).join('/');
   }
+}
+
+/** A route's address, without its parameters */
+function addressOf(route: ActivatedRouteSnapshot): string {
+  return '/' + route.pathFromRoot.flatMap(part => part.url.map(segment => segment.path)).join('/');
 }

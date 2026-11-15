@@ -1,5 +1,6 @@
 import {Component, inject, signal} from '@angular/core';
 import {Router} from '@angular/router';
+import {ListingStateService} from '../../../shared/components/listing-pane/listing-pane';
 import {JuiceboxService} from '../../../shared/services/Juicebox.service';
 import {ExportTemplateEditorComponent} from '../export-template-editor/export-template-editor.component';
 import {ExportsService} from '../exports.service';
@@ -16,6 +17,7 @@ export class ExportTemplateCreateComponent {
     private readonly juicebox = inject(JuiceboxService);
     private readonly exports = inject(ExportsService);
     private readonly router = inject(Router);
+    private readonly listingState = inject(ListingStateService);
     private readonly i18n = inject(ExportsTranslationPipe);
 
     protected readonly canCreate = !!this.juicebox.hasPermission('data-export:role#create');
@@ -44,6 +46,8 @@ export class ExportTemplateCreateComponent {
         if (template.data_source_key === 'sap-data:strategy') {
             this.juicebox.showToast('warning', this.i18n.transform('sap_export_create_admin'));
         }
+        // The listing starts afresh, as before, with the new template first
+        this.listingState.forget('exports');
         await this.router.navigateByUrl('/main/exports');
     }
 }

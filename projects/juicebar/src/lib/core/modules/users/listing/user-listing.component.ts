@@ -17,7 +17,7 @@ import { User } from '../models/user.model';
 import { LoginAsAnotherUserComponent } from './login-as-another-user/login-as-another-user.component';
 import { FilterConfig, FilterBarComponent } from '../../../shared/components/filter-bar/filter-bar.component';
 import {SHARED_IMPORTS} from '../../../shared/shared-imports';
-import {injectListingPane, ListingStateService} from '../../../shared/components/listing-pane/listing-pane';
+import {injectListingPane, injectListingState} from '../../../shared/components/listing-pane/listing-pane';
 
 /** What the listing shows, kept for coming back from a user and for the compact list next to an open user */
 interface UsersListingState {
@@ -26,9 +26,9 @@ interface UsersListingState {
     sort: ISort;
     filter: Array<ISearchTerm>;
     /** The filter bar's choices, shown again with the filter */
-    organisation: any;
-    role: any;
-    group: any;
+    organisation: unknown;
+    role: unknown;
+    group: unknown;
 }
 
 export interface Sort {
@@ -58,7 +58,7 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
 
     /** Set when this is the compact list next to an open user (the split view), not the page itself */
     protected readonly pane = injectListingPane();
-    private readonly listingState = inject(ListingStateService);
+    private readonly listingState = injectListingState<UsersListingState>('users');
 
     protected readonly sortSig = signal<ISort>({ dir: 'asc', prop: 'lastname' });
     protected readonly filterSig = signal<Array<ISearchTerm>>([]);
@@ -140,7 +140,7 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
         this.loggedInOrganisationId = this.juicebox.getUser().organisation_id;
 
         // Back from a user, and in the compact list next to one: the rows the listing showed last
-        const state = this.listingState.restore<UsersListingState>('users');
+        const state = this.listingState.restore();
         if (state) {
             this.pageSig.set(state.page);
             this.itemsPerPageSig.set(state.pageSize);
@@ -201,7 +201,7 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
     }
 
     private async fetchUsers(): Promise<any> {
-        this.listingState.save('users', {
+        this.listingState.save({
             page: this.pageSig(),
             pageSize: this.itemsPerPageSig(),
             sort: this.sortSig(),
@@ -209,10 +209,17 @@ export class UserListingComponent extends ListingComponent implements OnInit, On
             organisation: this.selectedOrganisation(),
             role: this.selectedRole(),
             group: this.selectedGroup(),
-        } satisfies UsersListingState);
+        });
         const result = await this.usersService.fetch(this.loggedInOrganisationId, this.pageSig() - 1, this.itemsPerPageSig(), this.sortSig(), this.filterSig());
         if (!result.success)
             return false;
+
+        // Fewer rows than when the listing was left (a user no longer matches the filter): its last page
+        const lastPage = Math.max(Math.ceil(result.payload.count / this.itemsPerPageSig()), 1);
+        if (!result.payload.items.length && this.pageSig() > lastPage) {
+            this.pageSig.set(lastPage);
+            return this.fetchUsers();
+        }
 
         this.getLoginData(result.payload.items);
 

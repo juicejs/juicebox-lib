@@ -14,7 +14,7 @@ import {
   TreeNodeDefDirective,
 } from '../../../../ui-components';
 import {ConfirmationDialogComponent, ConfirmationDialogData} from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import {injectListingPane, ListingStateService} from '../../../shared/components/listing-pane/listing-pane';
+import {injectListingPane, injectListingState} from '../../../shared/components/listing-pane/listing-pane';
 import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 import {ConfigurationService} from '../../../shared/services/configuration.service';
 import {Juice} from '../../../shared/services/juice.service';
@@ -79,7 +79,7 @@ interface CategoriesListingState {
 export class CategoriesListingComponent implements OnInit, OnDestroy {
   /** Set when this is the compact tree next to an open category, not the page itself */
   protected readonly pane = injectListingPane();
-  private readonly listingState = inject(ListingStateService);
+  private readonly listingState = injectListingState<CategoriesListingState>('categories');
   private readonly categories = inject(CategoriesService);
   private readonly configuration = inject(ConfigurationService);
   private readonly juice = inject(Juice);
@@ -118,7 +118,7 @@ export class CategoriesListingComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     if (this.pane) {
-      const state = this.listingState.restore<CategoriesListingState>('categories');
+      const state = this.listingState.restore();
       if (state) {
         this.showInactive.set(state.showInactive);
         this.display.set(state.display);
@@ -150,10 +150,11 @@ export class CategoriesListingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.pane) return;
-    this.listingState.save('categories', {
+    // Filed under the listing's address, though the next page is already on screen
+    this.listingState.save({
       showInactive: this.showInactive(),
       display: this.display(),
-    } satisfies CategoriesListingState);
+    });
   }
 
   protected open(node: TreeNode): void {

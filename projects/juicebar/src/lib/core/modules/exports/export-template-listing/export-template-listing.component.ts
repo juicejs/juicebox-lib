@@ -3,7 +3,7 @@ import {ExportsTranslationPipe} from '../i18n/exports.translation';
 import {Router, RouterLink} from '@angular/router';
 import {ExportsService} from '../exports.service';
 import {DialogService, DataTableComponent, CellDefDirective, CompactRowDefDirective, ColumnConfig, PageEvent, SortState} from '../../../../ui-components';
-import {injectListingPane, ListingStateService} from '../../../shared/components/listing-pane/listing-pane';
+import {injectListingPane, injectListingState} from '../../../shared/components/listing-pane/listing-pane';
 import {ConfirmationDialogComponent} from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 import {TableFilter, TableSort} from '../../../shared/services/helper.service';
@@ -38,7 +38,7 @@ export class ExportTemplateListingComponent {
 
     /** Set when this is the compact list next to an open template (the split view), not the page itself */
     protected readonly pane = injectListingPane();
-    private readonly listingState = inject(ListingStateService);
+    private readonly listingState = injectListingState<ExportsListingState>('exports');
 
     readonly page = signal(1);
     readonly pageSize = signal(10);
@@ -57,7 +57,7 @@ export class ExportTemplateListingComponent {
 
     constructor() {
         // Back from a template, and in the compact list next to one: the rows the listing showed last
-        const state = this.listingState.restore<ExportsListingState>('exports');
+        const state = this.listingState.restore();
         if (state) {
             this.page.set(state.page);
             this.pageSize.set(state.pageSize);
@@ -94,11 +94,11 @@ export class ExportTemplateListingComponent {
     }
 
     fetchExportTemplates() {
-        this.listingState.save('exports', {
+        this.listingState.save({
             page: this.page(),
             pageSize: this.pageSize(),
             sort: this.sort(),
-        } satisfies ExportsListingState);
+        });
         this.exports.getExportTemplates(this.page() - 1, this.pageSize(), {
             sort: this.sort(),
             populateColumns: true,
@@ -108,6 +108,12 @@ export class ExportTemplateListingComponent {
         }).then((result): any => {
             if (!result) return;
             if (!result.success) return this.juicebox.showToast("error", result.error);
+            // Fewer templates than when the listing was left: its last page
+            const lastPage = Math.max(Math.ceil(result.payload.count / this.pageSize()), 1);
+            if (!result.payload.items.length && this.page() > lastPage) {
+                this.page.set(lastPage);
+                return this.fetchExportTemplates();
+            }
             this.rows.set(result.payload.items);
             this.count.set(result.payload.count);
         });

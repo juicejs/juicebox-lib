@@ -95,7 +95,8 @@ export class DataTableComponent {
 
   constructor() {
     // The table and the phone list are different elements. When the screen crosses the phone's width, what is typed in
-    // the in-header filters goes over to the new ones, as the listing still filters by it.
+    // the in-header filters goes over to the new ones, as the listing still filters by it. An emptied field goes over
+    // empty, even where the listing gives the field a value it came back with.
     effect(() => {
       const phone = this.viewportPhone();
       if (phone === untracked(this.phone)) return;
@@ -134,7 +135,7 @@ export class DataTableComponent {
     const values = new Map<string, string[]>();
     this.host.querySelectorAll<HTMLElement>('[data-dt-filter]').forEach(filter => {
       const typed = Array.from(filter.querySelectorAll<HTMLInputElement>(DataTableComponent.FILTER_FIELDS), field => field.value);
-      if (typed.some(Boolean)) values.set(filter.dataset['dtFilter'] ?? '', typed);
+      values.set(filter.dataset['dtFilter'] ?? '', typed);
     });
     return values;
   }
@@ -143,7 +144,7 @@ export class DataTableComponent {
     this.host.querySelectorAll<HTMLElement>('[data-dt-filter]').forEach(filter => {
       const typed = values.get(filter.dataset['dtFilter'] ?? '');
       filter.querySelectorAll<HTMLInputElement>(DataTableComponent.FILTER_FIELDS).forEach((field, index) => {
-        if (typed?.[index]) field.value = typed[index];
+        if (typed?.[index] !== undefined) field.value = typed[index];
       });
     });
   }

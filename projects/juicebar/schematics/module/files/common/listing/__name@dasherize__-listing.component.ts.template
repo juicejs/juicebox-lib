@@ -1,6 +1,6 @@
 import {Component, inject, OnInit, signal} from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
-<%= importLib(1, {ui: ['ButtonComponent', 'CellDefDirective', 'ColumnConfig', 'CompactRowDefDirective', 'DataTableComponent', 'DialogService', 'IconComponent', 'PageEvent', 'TooltipDirective'], confirmation: ['ConfirmationDialogComponent', 'ConfirmationDialogData'], listingPane: ['injectListingPane', 'ListingStateService'], juicebox: ['JuiceboxService']}) %>
+<%= importLib(1, {ui: ['ButtonComponent', 'CellDefDirective', 'ColumnConfig', 'CompactRowDefDirective', 'DataTableComponent', 'DialogService', 'IconComponent', 'PageEvent', 'TooltipDirective'], confirmation: ['ConfirmationDialogComponent', 'ConfirmationDialogData'], listingPane: ['injectListingPane', 'injectListingState'], juicebox: ['JuiceboxService']}) %>
 import {<%= className %>CreateDialogComponent} from '../create/<%= name %>-create-dialog.component';
 import {<%= className %>TranslationPipe} from '../i18n/<%= name %>.translation';
 import {<%= className %>Service} from '../<%= name %>.service';
@@ -35,7 +35,7 @@ const STATE_KEY = '<%= name %>';
 export class <%= className %>ListingComponent implements OnInit {
   /** Set when this is the compact list next to an open record, not the page itself */
   protected readonly pane = injectListingPane();
-  private readonly listingState = inject(ListingStateService);
+  private readonly listingState = injectListingState<number>(STATE_KEY);
   private readonly service = inject(<%= className %>Service);
   private readonly juicebox = inject(JuiceboxService);
   private readonly dialog = inject(DialogService);
@@ -58,7 +58,7 @@ export class <%= className %>ListingComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     // Back from a record, and in the compact list next to one: the page the listing showed last
-    this.page.set(this.listingState.restore<number>(STATE_KEY) ?? 1);
+    this.page.set(this.listingState.restore() ?? 1);
     if (!this.pane) {
       this.juicebox.navigationEvent({
         location: this.i18n.transform('<%= name %>'),
@@ -115,7 +115,7 @@ export class <%= className %>ListingComponent implements OnInit {
 
   private async fetch(): Promise<void> {
     const request = ++this.request;
-    this.listingState.save(STATE_KEY, this.page());
+    this.listingState.save(this.page());
     const result = await this.service.fetch(this.page() - 1, PAGE_SIZE);
     if (request !== this.request || !result?.success) return;
     const items = result.payload?.items ?? [];

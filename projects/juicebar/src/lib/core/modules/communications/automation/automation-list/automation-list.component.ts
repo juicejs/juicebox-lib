@@ -17,7 +17,7 @@ import {
   ConfirmationDialogComponent,
   ConfirmationDialogData,
 } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import {injectListingPane, ListingStateService} from '../../../../shared/components/listing-pane/listing-pane';
+import {injectListingPane, injectListingState} from '../../../../shared/components/listing-pane/listing-pane';
 import {PromiseButtonDirective} from '../../../../shared/directives/PromiseButton';
 import {JuiceboxService} from '../../../../shared/services/Juicebox.service';
 import {CommunicationsService} from '../../communications.service';
@@ -102,7 +102,7 @@ interface AutomationListingState {
 export class AutomationListComponent implements OnInit, OnDestroy {
   /** Set when this is the compact list next to an open automation, not the page itself */
   protected readonly pane = injectListingPane();
-  private readonly listingState = inject(ListingStateService);
+  private readonly listingState = injectListingState<AutomationListingState>(STATE_KEY);
   private readonly communications = inject(CommunicationsService);
   private readonly juicebox = inject(JuiceboxService);
   private readonly dialog = inject(DialogService);
@@ -167,7 +167,7 @@ export class AutomationListComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     // Back from an automation, and in the compact list next to one: the rows the listing showed last
-    const state = this.listingState.restore<AutomationListingState>(STATE_KEY);
+    const state = this.listingState.restore();
     if (state) {
       this.page.set(state.page);
       this.nameFilter = state.name;
@@ -270,11 +270,17 @@ export class AutomationListComponent implements OnInit, OnDestroy {
 
   private async fetch(): Promise<void> {
     const request = ++this.request;
-    this.listingState.save(STATE_KEY, {page: this.page(), name: this.nameFilter} satisfies AutomationListingState);
+    this.listingState.save({page: this.page(), name: this.nameFilter});
     const terms = this.nameFilter ? [{property: 'name', fullText: true, language: false, term: this.nameFilter}] : [];
     const result = await this.communications.fetchCommunications(this.page() - 1, PAGE_SIZE, {search: {terms}});
     if (request !== this.request || !result || !('communications' in result)) return;
     const communications = result.communications ?? [];
+    // Fewer automations than when the listing was left: its last page
+    const lastPage = Math.max(Math.ceil((result.count ?? 0) / PAGE_SIZE), 1);
+    if (!communications.length && this.page() > lastPage) {
+      this.page.set(lastPage);
+      return this.fetch();
+    }
     this.listed.set(communications);
     this.count.set(result.count ?? 0);
     if (!this.pane) await this.followRunsGoing(communications);

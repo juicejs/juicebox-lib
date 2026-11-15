@@ -9,6 +9,7 @@ import { TraineesService } from '../../../../shared/services/trainees.service';
 import { Trainee } from '../../../../shared/models/trainee.model';
 import { PromiseButtonDirective } from '../../../../shared/directives/PromiseButton';
 import { injectCustomUserTabs, injectUsersOptions } from '../../users-customization';
+import { ListingStateService } from '../../../../shared/components/listing-pane/listing-pane';
 import {
     FormFieldComponent, LabelComponent, ErrorComponent, InputDirective,
     AutocompleteComponent, ButtonComponent, CardComponent,
@@ -57,6 +58,7 @@ export class MainWizardComponent implements OnInit {
     salutations: any[];
 
     private router = inject(Router);
+    private listingState = inject(ListingStateService);
     private route = inject(ActivatedRoute);
     private userService = inject(UsersService);
     private traineesService = inject(TraineesService);
@@ -117,6 +119,8 @@ export class MainWizardComponent implements OnInit {
             if (result.success) {
                 this.userForm.markAsPristine();
                 this.juicebox.showToast('success', this.i18n.transform('user_profile_created'));
+                // The listing starts afresh, as before, rather than on the page the wizard was opened from
+                this.listingState.forget('users');
                 await this.router.navigate(['/main/users']);
             } else {
                 this.juicebox.showToast('error', this.i18n.transform(result.error));

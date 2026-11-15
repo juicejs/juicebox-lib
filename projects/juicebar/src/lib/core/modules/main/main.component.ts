@@ -196,10 +196,13 @@ export class MainComponent implements OnInit {
         const loaded = isObservable(loading) ? await firstValueFrom(loading) : await loading;
         const component = listing.component ?? (typeof loaded === 'function' ? loaded : loaded?.default);
         if (request !== this.listingPaneRequest || !component) return;
+        // The listing's own address, which its state belongs to
+        const address = '/' + record!.parent!.pathFromRoot.flatMap(route => route.url.map(segment => segment.path)).join('/');
+        const pane: ListingPane = { ...this.pane, address };
         this.listingPane.set({
             route: listing,
             component,
-            injector: Injector.create({ providers: [{ provide: LISTING_PANE, useValue: this.pane }], parent: this.injector }),
+            injector: Injector.create({ providers: [{ provide: LISTING_PANE, useValue: pane }], parent: this.injector }),
         });
     }
 

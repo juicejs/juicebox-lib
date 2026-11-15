@@ -18,7 +18,7 @@ import {
   TooltipDirective,
 } from '../../../../ui-components';
 import {ConfirmationDialogComponent, ConfirmationDialogData} from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import {injectListingPane, ListingStateService} from '../../../shared/components/listing-pane/listing-pane';
+import {injectListingPane, injectListingState} from '../../../shared/components/listing-pane/listing-pane';
 import {escapeHtml} from '../../../shared/components/media/media-files';
 import {AutoLanguagePipe} from '../../../shared/pipes/auto-language.pipe';
 import {ConfigurationService} from '../../../shared/services/configuration.service';
@@ -59,9 +59,9 @@ const FILTER_DELAY_MS = 300;
 
 /**
  * The locations of the types the user may see, filtered by name, city and country in the table header, sorted on
- * the server, with archived ones on request. The page is kept in the URL, so going back from a location returns to
- * it. A response that arrives after a newer request is dropped. Next to an open location (the split view) it is the
- * compact list of the rows it showed last.
+ * the server, with archived ones on request. The page is kept in the URL; going back from a location returns to it
+ * with the sort and filters. A response that arrives after a newer request is dropped. Next to an open location (the
+ * split view) it is the compact list of the rows it showed last.
  */
 @Component({
   selector: 'app-location-listing',
@@ -85,7 +85,7 @@ const FILTER_DELAY_MS = 300;
 export class LocationListingComponent implements OnInit, OnDestroy {
   /** Set when this is the compact list next to an open location, not the page itself */
   protected readonly pane = injectListingPane();
-  private readonly listingState = inject(ListingStateService);
+  private readonly listingState = injectListingState<LocationsListingState>('location');
   private readonly locations = inject(LocationsService);
   private readonly configuration = inject(ConfigurationService);
   private readonly juicebox = inject(JuiceboxService);
@@ -139,10 +139,10 @@ export class LocationListingComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     // Back from a location, and in the compact list next to one: the rows the listing showed last
-    const state = this.listingState.restore<LocationsListingState>('location');
+    const state = this.listingState.restore();
     if (state) {
-      // A page in the address wins: the browser's Back returned to it
-      if (this.pane || !this.route.snapshot.queryParamMap.has('page')) this.setPage(state.page);
+      // The page shown last, also when the compact list was paged on; the address shows it again
+      this.setPage(state.page);
       this.pageSize.set(state.pageSize);
       this.sort.set(state.sort);
       this.archived.set(state.archived);
@@ -267,19 +267,25 @@ export class LocationListingComponent implements OnInit, OnDestroy {
       populateCountry: true,
     });
     if (request !== this.request || !result?.success || !result.payload) return;
+    // Fewer locations than when the listing was left: its last page
+    const lastPage = Math.max(Math.ceil(result.payload.count / this.pageSize()), 1);
+    if (!result.payload.locations.length && this.page() > lastPage) {
+      this.setPage(lastPage);
+      return this.fetch();
+    }
     this.fetched.set(result.payload.locations);
     this.count.set(result.payload.count);
   }
 
   private saveState(): void {
-    this.listingState.save('location', {
+    this.listingState.save({
       page: this.page(),
       pageSize: this.pageSize(),
       sort: this.sort(),
       archived: this.archived(),
       owner: this.owner(),
       typed: this.typed,
-    } satisfies LocationsListingState);
+    });
   }
 
   /**
