@@ -13,9 +13,8 @@
     },
     "apiUrl": {
       "type": "string",
-      "description": "Backend used by `ng serve`. Production builds read `url` from config.json instead.",
-      "default": "http://localhost:3000",
-      "x-prompt": "Backend URL for development:"
+      "description": "Backend used by `ng serve`; production builds read `url` from config.json, which the deploy writes",
+      "default": "http://localhost:3000"
     },
     "appName": {
       "type": "string",

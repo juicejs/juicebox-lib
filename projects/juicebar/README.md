@@ -19,8 +19,9 @@ Then one command creates the admin, in the project monorepo:
 npx -p @angular/cli@22 -p @juicejs/juicebar@beta ng new juicebox --collection @juicejs/juicebar
 ```
 
-It is Angular's `ng new` (SCSS, no server-side rendering) with the admin set up in it; the only question is the
-backend URL for `ng serve` (or pass `--api-url`). The app gets:
+It is Angular's `ng new` (SCSS, no server-side rendering) with the admin set up in it, and it asks nothing. `ng serve`
+talks to the backend at `http://localhost:3000` (`--api-url` sets another); production builds read the backend's URL
+from `config.json`, which the deploy writes (see Configuration). The app gets:
 
 - `src/main.ts` bootstrapping `JuicebarComponent`, and `src/app/app.config.ts` calling `provideJuicebar(...)` with users
   and exports; the placeholder root component is removed;
