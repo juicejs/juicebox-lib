@@ -101,7 +101,22 @@ sidebarCount: {
 
 The answer is `{ <sidebar id>: number }`: `users`, `exports`, `location`, `categories`, `communications`, or a project module's `path`. A module that is left out (or gets `null`) shows no number, and without `sidebarCount` the sidebar has none. `inject(SidebarService).refreshCounts()` reads them again at any time, e.g. after the project's own screen changed something.
 
-**Modules.** Leaving out `provideUsers()` or `provideExports()` removes that module completely: no routes, no menu entry, no code in the bundle.
+**Modules.** The lib's modules are switched on one by one after the config, `provideJuicebar(config, provideUsers(), …)`.
+A module left out has no routes, no sidebar entry and no code in the bundle. A module's sidebar entry shows to users
+whose role has its sidebar role.
+
+| Function | The module (old juicebox name) | Address | Sidebar role | Options (`options: {…}`) |
+|---|---|---|---|---|
+| `provideUsers()` | Staff accounts: the list with organisation, role and group filters, the create wizard, and a user's details, documents, wallets, roles, channels, groups, sidebar and organisations (`users`) | `/main/users` | `users:role` | `hiddenFields`, `readonlyFields`, `hidePassword`, `hideOrganisationsTab`, `createFromTrainees` (see Users options) |
+| `provideExports()` | Export templates (data source, columns, filters) and their exports to Excel or PDF (`exports`) | `/main/exports` | `data-export:role` | `hiddenFilters`, `downloadTimeoutMs` |
+| `provideLocations()` | Locations: the list, a wizard, and a location's details, attributes, media, documents and seating layout (`location`) | `/main/location` | `locations:role` | `hiddenTabs`, `fields`, `emailHint`, `shortNameMaxLength`, `ownerFilter`, `archivableTypes`, `deletableTypes` |
+| `provideCategories()` | The category tree, a wizard, and a category's details, media and articles (`categories`) | `/main/categories` | `categories:role` | `showInactive`, `confirmDeactivation`, `subcategoriesActive`; the backend's `juicecommerce:categories` configuration has a say too |
+| `provideCommunications()` | E-mail and push: quick send, contents, automations, history (`communications`) | `/main/communications` | `communication:role` | none: the backend's `communications:tabs`, `amgshop` and `communications` configurations switch its parts |
+| `provideConfigurations()` | The backend's configurations in memory and in the database: compared, added, changed and deleted (`configuration`) | `/main/configuration` | `configuration:role` | none |
+
+Each one also takes `componentOverrides` (see Overrides) and `providers`, e.g.
+`provideLocations({ options: { ownerFilter: true, deletableTypes: ['region', 'web'] } })`. The editor shows each
+function's and each option's description too.
 
 **Users options.** These replace the old checks on the project name:
 
