@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "JuicebarNgNew",
+  "title": "Juicebar ng-new",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The app's name, also the name of its folder",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use for the new admin?"
+    },
+    "directory": {
+      "type": "string",
+      "description": "The folder to create the app in (default: its name)"
+    },
+    "apiUrl": {
+      "type": "string",
+      "description": "Backend used by `ng serve`. Production builds read `url` from config.json instead.",
+      "default": "http://localhost:3000",
+      "x-prompt": "Backend URL for development:"
+    },
+    "appName": {
+      "type": "string",
+      "description": "Application name",
+      "default": "Juicebox"
+    },
+    "packageManager": {
+      "type": "string",
+      "description": "The package manager used to install dependencies",
+      "enum": ["npm", "yarn", "pnpm", "bun"]
+    },
+    "skipInstall": {
+      "type": "boolean",
+      "description": "Do not install the packages",
+      "default": false
+    },
+    "skipGit": {
+      "type": "boolean",
+      "description": "Do not create a git repository (one is never created inside an existing repository)",
+      "default": false
+    },
+    "commit": {
+      "type": "boolean",
+      "description": "Make the first commit in the new git repository",
+      "default": true
+    },
+    "version": {
+      "type": "string",
+      "description": "The Angular CLI's version",
+      "visible": false,
+      "$default": {
+        "$source": "ng-cli-version"
+      }
+    }
+  },
+  "required": ["name", "version"]
+}

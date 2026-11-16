@@ -4,31 +4,35 @@ The Juicebox admin for Angular 22: app shell (login, sidebar, search, profile), 
 
 ## New project
 
-```bash
-# in the project monorepo
-ng new juicebox --style=scss --ssr=false
-cd juicebox
-ng add @juicejs/juicebar@beta
-```
-
-Version 1 is in beta: install it with the `beta` tag, and `npm install @juicejs/juicebar@beta` for a later beta.
-
-The registry for `@juicejs` packages is GitHub Packages, so the project needs an `.npmrc` (before `ng add`):
+`@juicejs` packages are on GitHub Packages. Each developer (and the build server) needs a GitHub token with
+`read:packages` from someone with access to `juicejs/juicebox-lib`, and these two lines in `~/.npmrc` (on a build server,
+the token from a secret, e.g. `${NODE_AUTH_TOKEN}`; never commit the token):
 
 ```
 @juicejs:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+//npm.pkg.github.com/:_authToken=<token>
 ```
 
-`NODE_AUTH_TOKEN` is a GitHub token with `read:packages` of someone with access to `juicejs/juicebox-lib`, set in the
-environment (on a build server, as a secret). Never commit the token itself.
+Then one command creates the admin, in the project monorepo:
 
-`ng add` sets up the new app:
+```bash
+npx -p @angular/cli@22 -p @juicejs/juicebar@beta ng new juicebox --collection @juicejs/juicebar
+```
 
-- `src/main.ts` bootstraps `JuicebarComponent`, and `src/app/app.config.ts` calls `provideJuicebar(...)` with users and exports;
-- `angular.json` gets the lib styles and assets (with the rich-text editor's icons in `assets/ae-icons/`), builds into `dist/` and allows a larger bundle;
-- `public/config.json` is created;
-- the placeholder root component is removed.
+It is Angular's `ng new` (SCSS, no server-side rendering) with the admin set up in it; the only question is the
+backend URL for `ng serve` (or pass `--api-url`). The app gets:
+
+- `src/main.ts` bootstrapping `JuicebarComponent`, and `src/app/app.config.ts` calling `provideJuicebar(...)` with users
+  and exports; the placeholder root component is removed;
+- `@juicejs/juicebar` at the same version, and an `.npmrc` that names its registry (without a token);
+- in `angular.json`, the lib styles and assets (with the rich-text editor's icons in `assets/ae-icons/`), output straight
+  into `dist/` and a larger bundle budget;
+- `public/config.json`.
+
+Version 1 is in beta, so the app pins the exact beta; a later one is `npm install @juicejs/juicebar@1.0.0-beta.N --save-exact`.
+
+An app made with a plain `ng new juicebox --style=scss --ssr=false` gets the same with `ng add @juicejs/juicebar@beta`
+(with the `.npmrc` line in the app first).
 
 Your project's `juicebox/` folder is then mostly `app.config.ts`, `styles.scss`, `config.json` and your own modules.
 
