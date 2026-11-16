@@ -1,11 +1,10 @@
 import { JsonValue } from '@angular-devkit/core';
 import {
-  MergeStrategy, Rule, SchematicContext, SchematicsException, Tree, apply, applyTemplates, chain, mergeWith, move, url,
+  MergeStrategy, Rule, SchematicContext, SchematicsException, Tree, apply, chain, filter, mergeWith, move, url,
 } from '@angular-devkit/schematics';
 import { DependencyType, ExistingBehavior, InstallBehavior, addDependency } from '@schematics/angular/utility';
 import { getPackageJsonDependency } from '@schematics/angular/utility/dependencies';
 import { getWorkspace, updateWorkspace } from '@schematics/angular/utility/workspace';
-import { packageVersion } from '../package-version';
 
 interface NgAddOptions {
   project?: string;
@@ -42,7 +41,7 @@ export function ngAdd(options: NgAddOptions): Rule {
       configureBuild(projectName),
       writeAppFiles(sourceRoot, publicRoot, options),
       removeDefaultRootComponent(sourceRoot),
-      writeReadme(projectRoot, options),
+      writeReadme(projectRoot),
     ]);
   };
 }
@@ -141,19 +140,24 @@ function removeDefaultRootComponent(sourceRoot: string): Rule {
 }
 
 /**
- * The project's README: running the admin, the lib's modules and its own, configuration, deploy and updates. It only
+ * The project's README is the package's PROJECT_README.md: everything on using the lib (modules and their options,
+ * configuration, theme, overrides, phones, deploy) is in the project, as of the version it was set up with. It only
  * replaces the README Angular's `ng new` wrote, never the project's own.
  */
-function writeReadme(projectRoot: string, options: NgAddOptions): Rule {
+function writeReadme(projectRoot: string): Rule {
   return (tree: Tree, context: SchematicContext) => {
     const path = `${projectRoot === '/' ? '' : projectRoot + '/'}README.md`;
     if (tree.exists(path) && !tree.readText(path).includes('generated using [Angular CLI]')) {
-      context.logger.info(`${path} is the project's own, so it stays; the lib's README is node_modules/${LIB}/README.md.`);
+      context.logger.info(`${path} is the project's own, so it stays; the lib's guide is node_modules/${LIB}/PROJECT_README.md.`);
       return tree;
     }
-    // From ng-new this runs in ng-new's context, so the path names ng-add's folder from either
-    const readme = apply(url('../ng-add/files'), [
-      applyTemplates({ appName: options.appName, version: packageVersion() }),
+    // The package's root, two folders up from either schematic (from ng-new this runs in ng-new's context)
+    const readme = apply(url('../..'), [
+      filter(file => file === '/PROJECT_README.md'),
+      (guide: Tree) => {
+        guide.create('/README.md', guide.readText('/PROJECT_README.md'));
+        guide.delete('/PROJECT_README.md');
+      },
       move(projectRoot),
     ]);
     return mergeWith(readme, MergeStrategy.Overwrite);

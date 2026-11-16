@@ -22,7 +22,7 @@ npx -p @angular/cli@22 -p @juicejs/juicebar@beta ng new juicebox --collection @j
 It is Angular's `ng new` (SCSS, no server-side rendering) with the admin set up in it, and it asks nothing. It installs
 the packages but leaves git alone: no repository, no commit. `ng serve`
 talks to the backend at `http://localhost:3000` (`--api-url` sets another); production builds read the backend's URL
-from `config.json`, which the deploy writes (see Configuration). The app gets:
+from `config.json`, which the deploy writes. The app gets:
 
 - `src/main.ts` bootstrapping `JuicebarComponent`, and `src/app/app.config.ts` calling `provideJuicebar(...)` without
   any module; the placeholder root component is removed;
@@ -30,8 +30,7 @@ from `config.json`, which the deploy writes (see Configuration). The app gets:
 - in `angular.json`, the lib styles and assets (with the rich-text editor's icons in `assets/ae-icons/`), output straight
   into `dist/` and a larger bundle budget;
 - `public/config.json`;
-- a `README.md` for the project, in place of Angular's: running it, the lib's modules and where to switch them on, its
-  own modules, configuration, deploy and updating the lib.
+- `PROJECT_README.md` as its `README.md`, in place of Angular's: everything on using the lib is in the project.
 
 Version 1 is in beta, so the app pins the exact beta; a later one is `npm install @juicejs/juicebar@1.0.0-beta.N --save-exact`.
 
@@ -45,125 +44,12 @@ signing in ends in a logout, as in the old juicebox for a user without modules.
 
 Your project's `juicebox/` folder is then mostly `app.config.ts`, `styles.scss`, `config.json` and your own modules.
 
-## Configuration
+## Using it in a project
 
-```ts
-provideJuicebar(
-  {
-    apiUrl: 'http://localhost:3000',   // backend for `ng serve`
-    appName: 'Stoked admin',
-    authenticator: 'juicebox:cse:user', // optional login authenticator
-    privacyPolicyLink: 'https://…',     // optional; translation key or URL
-    loginLanguage: 'de_DE',             // optional; login page language (setup.json's login_language), default de_DE
-    theme: { primary: '#243088' },      // optional; see Theme below
-    sidebarCount: {                     // optional; see Sidebar numbers below
-      getSidebarCount: () => inject(Juice).request('myproject', 'getSidebarCount', []),
-    },
-    mainRoutes: [                        // project modules inside the shell
-      {
-        path: 'pages',
-        loadChildren: () => import('./modules/pages/pages.routes'),
-        // label is shown as written; icon is a Material icon name
-        navigation: { label: 'Pages', role: 'pages:role', icon: 'article' },
-      },
-    ],
-    modules: [],                         // routes outside the shell
-  },
-  provideUsers({ options: { hiddenFields: ['department'] } }),
-  provideExports(),
-)
-```
-
-**Backend URL.** `ng serve` uses `apiUrl`. Production builds read `config.json` next to `index.html`, which the deploy pipeline writes:
-
-```json
-{ "url": "https://api.example.com" }
-```
-
-- `"url": "auto"` means the API is on the same origin as the admin.
-- `config.json` can also set `authenticator`.
-
-**A new module.** The generator writes a module in the library's shape (listing with the split view, record page, create dialog, service, labels) and registers it in `mainRoutes`:
-
-```
-ng g @juicejs/juicebar:module orders --label "Orders" --role orders:role --service orders
-```
-
-`MODULE_GUIDE.md` in the package says how a module is built and what to check; the generator also adds a Claude skill (`.claude/skills/juicebar-module`) that points to it.
-
-**Sidebar numbers.** `sidebarCount` puts a number next to the modules' names in the sidebar. The project answers it; the lib only shows it:
-
-```ts
-sidebarCount: {
-  // Gets the sidebar ids of the modules the user sees; may use inject(); answers a map, a Promise or an Observable of it
-  getSidebarCount: (moduleIds) => inject(Juice).request('myproject', 'getSidebarCount', [moduleIds]),
-  refresh: 'navigation',  // default: read again after every page change; 'load' reads them only when the sidebar loads
-}
-```
-
-The answer is `{ <sidebar id>: number }`: `users`, `exports`, `location`, `categories`, `communications`, or a project module's `path`. A module that is left out (or gets `null`) shows no number, and without `sidebarCount` the sidebar has none. `inject(SidebarService).refreshCounts()` reads them again at any time, e.g. after the project's own screen changed something.
-
-**Modules.** The lib's modules are switched on one by one after the config, `provideJuicebar(config, provideUsers(), …)`.
-A module left out has no routes, no sidebar entry and no code in the bundle. A module's sidebar entry shows to users
-whose role has its sidebar role.
-
-| Function | The module (old juicebox name) | Address | Sidebar role | Options (`options: {…}`) |
-|---|---|---|---|---|
-| `provideUsers()` | Staff accounts: the list with organisation, role and group filters, the create wizard, and a user's details, documents, wallets, roles, channels, groups, sidebar and organisations (`users`) | `/main/users` | `users:role` | `hiddenFields`, `readonlyFields`, `hidePassword`, `hideOrganisationsTab`, `createFromTrainees` (see Users options) |
-| `provideExports()` | Export templates (data source, columns, filters) and their exports to Excel or PDF (`exports`) | `/main/exports` | `data-export:role` | `hiddenFilters`, `downloadTimeoutMs` |
-| `provideLocations()` | Locations: the list, a wizard, and a location's details, attributes, media, documents and seating layout (`location`) | `/main/location` | `locations:role` | `hiddenTabs`, `fields`, `emailHint`, `shortNameMaxLength`, `ownerFilter`, `archivableTypes`, `deletableTypes` |
-| `provideCategories()` | The category tree, a wizard, and a category's details, media and articles (`categories`) | `/main/categories` | `categories:role` | `showInactive`, `confirmDeactivation`, `subcategoriesActive`; the backend's `juicecommerce:categories` configuration has a say too |
-| `provideCommunications()` | E-mail and push: quick send, contents, automations, history (`communications`) | `/main/communications` | `communication:role` | none: the backend's `communications:tabs`, `amgshop` and `communications` configurations switch its parts |
-| `provideConfigurations()` | The backend's configurations in memory and in the database: compared, added, changed and deleted (`configuration`) | `/main/configuration` | `configuration:role` | none |
-
-Each one also takes `componentOverrides` (see Overrides) and `providers`, e.g.
-`provideLocations({ options: { ownerFilter: true, deletableTypes: ['region', 'web'] } })`. The editor shows each
-function's and each option's description too.
-
-**Users options.** These replace the old checks on the project name:
-
-| Option | Effect |
-|---|---|
-| `hiddenFields: ['nickname', 'department']` | Hides these fields in the create wizard, user details and the vendor dialog |
-| `readonlyFields: ['email']` | Makes email read-only on user details |
-| `hidePassword: true` | Hides the password section on user details |
-| `hideOrganisationsTab: true` | Hides the organisations tab |
-| `createFromTrainees: true` | The create wizard picks the email from trainees that have no user profile yet |
-
-**Theme.** `theme` replaces the old juicebox `themes/<project>` folder. Every field is optional; without `theme` the admin is juice orange with the juice logo.
-
-```ts
-theme: {
-  primary: '#243088',                  // the old theme.scss $primary
-  logo: 'assets/logo_small.png',       // sidebar and login page
-  loginImage: 'assets/login_picture.png', // picture behind the login card
-  favicon: 'assets/favicon.ico',
-}
-```
-
-- `primary` colours the main buttons, the active sidebar item, tabs, links, checkboxes and focus rings. The lib works out the shades for light and dark mode, and darkens or lightens the colour where needed so the text on it stays readable (WCAG AA).
-- A user's `attributes.organisationLogo` still replaces the logo in the sidebar.
-- The files go in the project's `public/` (or assets) folder, like the old `themes/<project>/images`.
-- The title still comes from `config.json` `title` (login) and the backend's juicebox options.
-
-**Overrides.** `componentOverrides` can do three things:
-
-- replace a built-in screen;
-- add a tab to user details;
-- add a step to the create-user wizard.
-
-See `COMPONENT_CUSTOMIZATION_GUIDE.md` in the repository.
-
-**Phones.** At 768px and below the admin is laid out for a phone, and a project's own modules follow without code: an `app-data-table` shows its rows as a list, a dialog takes the whole screen, a filter takes the whole line. Where a project's code has a say:
-
-- In a template or a component, `inject(ViewportService).phone()` says whether the screen is a phone's (a signal).
-- In the project's styles: `@use '@juicejs/juicebar/breakpoints' as juicebar;`, then `@include juicebar.phone { … }`.
-- A small dialog (a question, a notice) stays a card: `dialog.open(Component, { phone: 'card' })`.
-- A table whose first column is not the row's name, or whose actions column has another key than `actions`, says so with `listRole` on the column.
-- The data table's own texts (rows per page, sort, no data…) are translated by the lib; a project that wants other words provides `DATA_TABLE_LABELS`.
-- An e-mail with `class="hidden-email"` is shown by a tap on a touch screen, as it is by the pointer elsewhere.
-
-The project's `index.html` needs `<meta name="viewport" content="width=device-width, initial-scale=1">`, which the Angular CLI writes by default.
+`PROJECT_README.md` (in the package, and the `README.md` of every admin made with `ng new` or `ng add`) has everything
+a project needs: running it, the lib's modules and every option, the project's own modules, configuration, theme,
+sidebar numbers, overrides, phones, build and deploy, and updating the lib. `MODULE_GUIDE.md` says how a module is
+built.
 
 ## Development (in this repository)
 
