@@ -98,7 +98,8 @@ export class UserProfileDetailsComponent implements OnInit {
     this.juicebox.navigationEvent({
       location: this.i18n.transform('user_profile'),
       subject: null,
-      link: '/main/users'
+      // As in the old juicebox: the profile has no page to go back to
+      link: null
     });
   }
 

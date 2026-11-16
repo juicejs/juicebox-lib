@@ -107,6 +107,14 @@
                 color: var(--color-secondary);
             }
 
+            &--plain {
+                cursor: default;
+
+                &:hover {
+                    color: var(--color-text-secondary);
+                }
+            }
+
             &:focus-visible {
                 outline: 2px solid var(--color-secondary);
                 outline-offset: 2px;

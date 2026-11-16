@@ -149,7 +149,7 @@ function writeReadme(projectRoot: string, options: NgAddOptions): Rule {
     const path = `${projectRoot === '/' ? '' : projectRoot + '/'}README.md`;
     if (tree.exists(path) && !tree.readText(path).includes('generated using [Angular CLI]')) {
       context.logger.info(`${path} is the project's own, so it stays; the lib's README is node_modules/${LIB}/README.md.`);
-      return;
+      return tree;
     }
     // From ng-new this runs in ng-new's context, so the path names ng-add's folder from either
     const readme = apply(url('../ng-add/files'), [

@@ -16,7 +16,12 @@
                 <div class="workspace-bar">
                     @if (locationTitle()) {
                         <div class="breadcrumbs-section">
-                            <button type="button" class="breadcrumb-title" (click)="goTo(locationLink())">{{ locationTitle() }}</button>
+                            <!-- A page without a link (the profile) has a title that is not clickable -->
+                            @if (locationLink() != null) {
+                                <button type="button" class="breadcrumb-title" (click)="goTo(locationLink())">{{ locationTitle() }}</button>
+                            } @else {
+                                <span class="breadcrumb-title breadcrumb-title--plain">{{ locationTitle() }}</span>
+                            }
                             @if (locationSubject()) {
                                 <span class="breadcrumb-sep" aria-hidden="true">/</span>
                                 <span class="breadcrumb-subject">{{ locationSubject() }}</span>
