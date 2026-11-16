@@ -8,14 +8,20 @@ The Juicebox admin for Angular 22: app shell (login, sidebar, search, profile), 
 # in the project monorepo
 ng new juicebox --style=scss --ssr=false
 cd juicebox
-ng add @juicejs/juicebar
+ng add @juicejs/juicebar@beta
 ```
 
-The registry for `@juicejs` packages is GitHub Packages, so the project needs an `.npmrc`:
+Version 1 is in beta: install it with the `beta` tag, and `npm install @juicejs/juicebar@beta` for a later beta.
+
+The registry for `@juicejs` packages is GitHub Packages, so the project needs an `.npmrc` (before `ng add`):
 
 ```
 @juicejs:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
 ```
+
+`NODE_AUTH_TOKEN` is a GitHub token with `read:packages` of someone with access to `juicejs/juicebox-lib`, set in the
+environment (on a build server, as a secret). Never commit the token itself.
 
 `ng add` sets up the new app:
 

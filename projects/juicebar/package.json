@@ -1,6 +1,6 @@
 {
   "name": "@juicejs/juicebar",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-beta.0",
   "description": "Juicebox admin for Angular: app shell, login, users and exports modules, CDK-based UI components",
   "repository": {
     "type": "git",
