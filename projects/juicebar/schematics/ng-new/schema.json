@@ -30,22 +30,17 @@
     "packageManager": {
       "type": "string",
       "description": "The package manager used to install dependencies",
-      "enum": ["npm", "yarn", "pnpm", "bun"]
+      "enum": [
+        "npm",
+        "yarn",
+        "pnpm",
+        "bun"
+      ]
     },
     "skipInstall": {
       "type": "boolean",
       "description": "Do not install the packages",
       "default": false
-    },
-    "skipGit": {
-      "type": "boolean",
-      "description": "Do not create a git repository (one is never created inside an existing repository)",
-      "default": false
-    },
-    "commit": {
-      "type": "boolean",
-      "description": "Make the first commit in the new git repository",
-      "default": true
     },
     "version": {
       "type": "string",
@@ -56,5 +51,8 @@
       }
     }
   },
-  "required": ["name", "version"]
+  "required": [
+    "name",
+    "version"
+  ]
 }

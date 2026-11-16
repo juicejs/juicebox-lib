@@ -1,5 +1,5 @@
 import { Rule, SchematicContext, Tree, apply, chain, empty, externalSchematic, mergeWith, move } from '@angular-devkit/schematics';
-import { NodePackageInstallTask, RepositoryInitializerTask } from '@angular-devkit/schematics/tasks';
+import { NodePackageInstallTask } from '@angular-devkit/schematics/tasks';
 import { DependencyType, ExistingBehavior, InstallBehavior, addDependency } from '@schematics/angular/utility';
 import { ngAdd } from '../ng-add/index';
 
@@ -12,8 +12,6 @@ interface NgNewOptions {
   appName: string;
   packageManager?: string;
   skipInstall: boolean;
-  skipGit: boolean;
-  commit: boolean;
 }
 
 // The schematics are CommonJS (schematics/package.json); they are compiled without Node's types
@@ -61,12 +59,10 @@ export function ngNew(options: NgNewOptions): Rule {
       },
       move(directory),
     ])),
+    // Unlike Angular's ng new, git is left alone: the admin is made inside the project's own repository
     (_tree: Tree, context: SchematicContext) => {
-      const install = options.skipInstall
-        ? undefined
-        : context.addTask(new NodePackageInstallTask({ workingDirectory: directory, packageManager: options.packageManager }));
-      if (!options.skipGit) {
-        context.addTask(new RepositoryInitializerTask(directory, options.commit ? {} : undefined), install ? [install] : []);
+      if (!options.skipInstall) {
+        context.addTask(new NodePackageInstallTask({ workingDirectory: directory, packageManager: options.packageManager }));
       }
     },
   ]);
