@@ -29,7 +29,9 @@ from `config.json`, which the deploy writes (see Configuration). The app gets:
 - `@juicejs/juicebar` at the same version, and an `.npmrc` that names its registry (without a token);
 - in `angular.json`, the lib styles and assets (with the rich-text editor's icons in `assets/ae-icons/`), output straight
   into `dist/` and a larger bundle budget;
-- `public/config.json`.
+- `public/config.json`;
+- a `README.md` for the project, in place of Angular's: running it, the lib's modules and where to switch them on, its
+  own modules, configuration, deploy and updating the lib.
 
 Version 1 is in beta, so the app pins the exact beta; a later one is `npm install @juicejs/juicebar@1.0.0-beta.N --save-exact`.
 

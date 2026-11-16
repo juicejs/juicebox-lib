@@ -1,0 +1,70 @@
+# <%= appName %>
+
+This project's admin: the Juicebox admin on Angular 22, from the `@juicejs/juicebar` package (set up with
+<%= version %>). The package's own README, for the version installed, is `node_modules/@juicejs/juicebar/README.md`; it
+describes every option.
+
+## Run it
+
+```bash
+npm install
+npm start          # http://localhost:4200
+```
+
+The admin talks to the backend set as `apiUrl` in `src/app/app.config.ts` (`http://localhost:3000` to begin with).
+
+`@juicejs` packages are on GitHub Packages, so installing needs a GitHub token with `read:packages` (of someone with
+access to `juicejs/juicebox-lib`) in your `~/.npmrc`, never in the project:
+
+```
+@juicejs:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=<token>
+```
+
+## Modules
+
+The admin starts without modules. Until it has one the user may open, signing in ends in a logout.
+
+**The lib's modules** are switched on in `src/app/app.config.ts`, after the config:
+`provideJuicebar({ … }, provideUsers(), provideLocations())`. A module's sidebar entry shows to users whose role has its
+sidebar role.
+
+| Add | The module | Sidebar role |
+|---|---|---|
+| `provideUsers()` | Staff accounts: the list, the create wizard, a user's details, roles and groups | `users:role` |
+| `provideExports()` | Export templates and their exports to Excel or PDF | `data-export:role` |
+| `provideLocations()` | Locations: the list, a wizard, a location's details, media and documents | `locations:role` |
+| `provideCategories()` | The category tree, a category's details, media and articles | `categories:role` |
+| `provideCommunications()` | E-mail and push: quick send, contents, automations, history | `communication:role` |
+| `provideConfigurations()` | The backend's configurations | `configuration:role` |
+
+Their options are in the package README (Configuration → Modules), and the editor shows them on each function.
+
+**Your own modules** come from the generator. It writes the module (listing, record page, create dialog, service,
+labels) into `src/app/modules/<name>/` and adds it to `mainRoutes` in `src/app/app.config.ts`, which gives it its
+sidebar entry:
+
+```bash
+ng g @juicejs/juicebar:module orders --label "Orders" --role orders:role --service orders
+```
+
+How a module is built, and what to check before it is done: `node_modules/@juicejs/juicebar/MODULE_GUIDE.md`.
+
+## Configuration
+
+In `src/app/app.config.ts`: `appName`, `loginLanguage` (the login page's language, `de_DE` unless set), `theme` (brand
+colour, logo, login picture, favicon), `authenticator` and `sidebarCount`. Each is described in the package README.
+
+## Build and deploy
+
+```bash
+npm run build      # into dist/
+```
+
+A production build reads the backend's URL from `dist/config.json`, which the deploy writes:
+`{ "url": "https://api.example.com" }`, or `{ "url": "auto" }` when the API is on the admin's own domain.
+
+## Updating the lib
+
+The version is pinned. Another one: `npm install @juicejs/juicebar@<version> --save-exact`;
+`npm view @juicejs/juicebar dist-tags` shows the newest.

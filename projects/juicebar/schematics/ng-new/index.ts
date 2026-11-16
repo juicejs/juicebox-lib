@@ -2,6 +2,7 @@ import { Rule, SchematicContext, Tree, apply, chain, empty, externalSchematic, m
 import { NodePackageInstallTask } from '@angular-devkit/schematics/tasks';
 import { DependencyType, ExistingBehavior, InstallBehavior, addDependency } from '@schematics/angular/utility';
 import { ngAdd } from '../ng-add/index';
+import { packageVersion } from '../package-version';
 
 interface NgNewOptions {
   name: string;
@@ -13,9 +14,6 @@ interface NgNewOptions {
   packageManager?: string;
   skipInstall: boolean;
 }
-
-// The schematics are CommonJS (schematics/package.json); they are compiled without Node's types
-declare function require(id: string): unknown;
 
 const LIB = '@juicejs/juicebar';
 /** Where @juicejs packages are published; the token stays in each developer's ~/.npmrc or a CI secret */
@@ -47,7 +45,7 @@ export function ngNew(options: NgNewOptions): Rule {
         // Installed once, after the move
         skipInstall: true,
       }),
-      addDependency(LIB, ownVersion(), {
+      addDependency(LIB, packageVersion(), {
         type: DependencyType.Default,
         existing: ExistingBehavior.Replace,
         install: InstallBehavior.None,
@@ -66,9 +64,4 @@ export function ngNew(options: NgNewOptions): Rule {
       }
     },
   ]);
-}
-
-/** This package's version (its package.json, two folders up in the built package): the new app installs the same */
-function ownVersion(): string {
-  return (require('../../package.json') as { version: string }).version;
 }
