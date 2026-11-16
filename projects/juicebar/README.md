@@ -1,6 +1,6 @@
 # @juicejs/juicebar
 
-The Juicebox admin for Angular 22: app shell (login, sidebar, search, profile), the users and exports modules, and CDK-based UI components. Each project's monorepo has its own small `juicebox/` app that installs this package and adds the project's own modules.
+The Juicebox admin for Angular 22: app shell (login, sidebar, search, profile), modules a project switches on (users, exports, locations, categories, communications, configurations), and CDK-based UI components. Each project's monorepo has its own small `juicebox/` app that installs this package and adds the project's own modules.
 
 ## New project
 
@@ -23,8 +23,8 @@ It is Angular's `ng new` (SCSS, no server-side rendering) with the admin set up 
 talks to the backend at `http://localhost:3000` (`--api-url` sets another); production builds read the backend's URL
 from `config.json`, which the deploy writes (see Configuration). The app gets:
 
-- `src/main.ts` bootstrapping `JuicebarComponent`, and `src/app/app.config.ts` calling `provideJuicebar(...)` with users
-  and exports; the placeholder root component is removed;
+- `src/main.ts` bootstrapping `JuicebarComponent`, and `src/app/app.config.ts` calling `provideJuicebar(...)` without
+  any module; the placeholder root component is removed;
 - `@juicejs/juicebar` at the same version, and an `.npmrc` that names its registry (without a token);
 - in `angular.json`, the lib styles and assets (with the rich-text editor's icons in `assets/ae-icons/`), output straight
   into `dist/` and a larger bundle budget;
@@ -34,6 +34,11 @@ Version 1 is in beta, so the app pins the exact beta; a later one is `npm instal
 
 An app made with a plain `ng new juicebox --style=scss --ssr=false` gets the same with `ng add @juicejs/juicebar@beta`
 (with the `.npmrc` line in the app first).
+
+The admin starts with the shell only (login, top bar, sidebar, profile). The project adds the lib's modules it uses
+(`provideUsers()`, `provideExports()`, `provideLocations()`, `provideCategories()`, `provideCommunications()`,
+`provideConfigurations()`) and its own (`ng g @juicejs/juicebar:module …`, below). Until it has one the user may open,
+signing in ends in a logout, as in the old juicebox for a user without modules.
 
 Your project's `juicebox/` folder is then mostly `app.config.ts`, `styles.scss`, `config.json` and your own modules.
 

@@ -78,7 +78,7 @@ function configureBuild(projectName: string): Rule {
     // Build straight into dist/ (index.html at dist/index.html); deploy pipelines add dist/config.json
     buildOptions['outputPath'] = { base: 'dist', browser: '' };
 
-    // The admin with users and exports is larger than the defaults for a new app allow
+    // The admin is larger than the defaults for a new app allow, more so with the lib's modules
     const production = build.configurations?.['production'];
     if (production) {
       production['budgets'] = [
@@ -152,7 +152,7 @@ bootstrapApplication(JuicebarComponent, appConfig)
 
 function appConfigTs(options: NgAddOptions): string {
   return `import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideExports, provideJuicebar, provideUsers } from '${LIB}';
+import { provideJuicebar } from '${LIB}';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -168,8 +168,8 @@ export const appConfig: ApplicationConfig = {
         // Routes outside the shell
         modules: [],
       },
-      provideUsers(),
-      provideExports(),
+      // The lib's modules, as the project needs them (from '${LIB}'): provideUsers(), provideExports(),
+      // provideLocations(), provideCategories(), provideCommunications(), provideConfigurations()
     ),
   ],
 };
