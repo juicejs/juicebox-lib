@@ -117,16 +117,26 @@ export class JuiceboxService {
         });
     }
 
+    /**
+     * The results of every search provider the user's roles allow. As in the old juicebox, a provider whose search
+     * fails (e.g. its backend answers with an error) has no results; the others still show.
+     */
     async doSearch(token: string): Promise<Array<any>> {
         this.searchActive.set(true);
         const searchRequests = this.searchProvider
             .filter(provider => this.hasRole(provider.role))
-            .map(provider => provider.provider.search(token).then(results => ({
-                name: provider.name,
-                icon: provider.icon,
-                results: results ?? []
-            })));
-        return Promise.all(searchRequests);
+            .map(provider => Promise.resolve()
+                .then(() => provider.provider.search(token))
+                .then(results => ({
+                    name: provider.name,
+                    icon: provider.icon,
+                    results: results ?? []
+                }))
+                .catch(error => {
+                    console.error(`Search: "${provider.name}" failed`, error);
+                    return null;
+                }));
+        return (await Promise.all(searchRequests)).filter(group => group !== null);
     }
 
     addNextUi() {
