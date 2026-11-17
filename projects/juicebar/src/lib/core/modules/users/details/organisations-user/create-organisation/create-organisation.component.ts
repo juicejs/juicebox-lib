@@ -9,7 +9,8 @@ import { SHARED_IMPORTS } from '../../../../../shared/shared-imports';
 
 /**
  * Creates an organisation (an entity of type `organisation`) with the fields of the old entity wizard's
- * organisation form. Closes with the created organisation, or nothing when cancelled.
+ * organisation form, for a project without the customers module; with it, the users tab opens that module's create
+ * page instead. Closes with the created organisation, or nothing when cancelled.
  */
 @Component({
     selector: 'app-create-organisation',

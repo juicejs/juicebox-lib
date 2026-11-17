@@ -1,7 +1,8 @@
 import { Component, DestroyRef, inject, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
 import { ListingComponent} from '../../../../shared/components/listing/listing.component';
 import { JuiceboxService} from '../../../../shared/services/Juicebox.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ENTITIES_CUSTOMIZATION } from '../../../../../config/base-app.config';
 import { UsersService } from '../../users.service';
 import { ConfirmationDialogComponent} from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { DialogService, ProgressSpinnerComponent } from '../../../../../ui-components';
@@ -51,6 +52,9 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
     private userService = inject(UsersService);
     private dialog = inject(DialogService);
     private helper = inject(HelperService);
+    private router = inject(Router);
+    /** Whether the project has the customers module (provideEntities): its create page then creates the organisation */
+    private readonly hasCustomersModule = inject(ENTITIES_CUSTOMIZATION, { optional: true }) != null;
     protected readonly canUpdateRoles = !!this.juicebox.hasPermission('users:role#update');
 
     constructor() {
@@ -188,7 +192,14 @@ export class OrganisationsUserComponent extends ListingComponent implements OnIn
             return;
         }
 
-        // The old app opened its entity wizard here; the lib has no entities module, so the form is a dialog
+        // As the old juicebox: the customers module's create page, with Organisation as its only type
+        if (this.hasCustomersModule) {
+            const organisation = { name: 'Organisation', prop: 'organisation' };
+            await this.router.navigate(['/main/entities/entity-wizard'], { state: { selectedType: organisation, types: [organisation] } });
+            return;
+        }
+
+        // A project without the customers module has no such page: the same form, as a dialog
         const dialogRef = this.dialog.open(CreateOrganisationComponent, { disableClose: true });
         dialogRef.closed.subscribe(async (created: any) => {
             if (!created) return;
