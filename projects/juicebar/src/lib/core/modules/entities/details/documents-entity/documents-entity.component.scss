@@ -1,0 +1,32 @@
+.documents-bar {
+  margin-bottom: 16px;
+}
+
+.documents-loading {
+  display: flex;
+  justify-content: center;
+  padding: 10vh 0;
+}
+
+.documents-none {
+  margin: 0;
+  padding: 15px;
+  color: var(--color-text-primary);
+}
+
+.documents {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.documents-thumb {
+  height: 50px;
+}
+
+@media (max-width: 768px) {
+  .documents {
+    grid-template-columns: 1fr;
+  }
+}

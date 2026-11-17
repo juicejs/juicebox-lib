@@ -56,3 +56,4 @@ A file store that keeps an uploaded file under a collection and a record, makes 
 - [locations](./locations/juicebar.locations.aim) — the places a project keeps, with their files, documents and a venue's room plans
 - [communications](./communications/juicebar.communications.aim) — the messages sent to customers by e-mail, push notification or SMS: quick sends, contents, automations and their history
 - [configurations](./configurations/juicebar.configurations.aim) — the backend's configurations, in memory and in the database: comparing the two copies, adding, changing and deleting them
+- [entities](./entities/juicebar.entities.aim) — the customers a project keeps, with their groups, addresses, attributes, wallets, files and messages, and an organisation's payment account and API keys

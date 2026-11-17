@@ -1,6 +1,6 @@
 # @juicejs/juicebar
 
-The Juicebox admin for Angular 22: app shell (login, sidebar, search, profile), modules a project switches on (users, exports, locations, categories, communications, configurations), and CDK-based UI components. Each project's monorepo has its own small `juicebox/` app that installs this package and adds the project's own modules.
+The Juicebox admin for Angular 22: app shell (login, sidebar, search, profile), modules a project switches on (users, exports, locations, categories, communications, configurations, customers), and CDK-based UI components. Each project's monorepo has its own small `juicebox/` app that installs this package and adds the project's own modules.
 
 ## New project
 
@@ -39,7 +39,7 @@ An app made with a plain `ng new juicebox --style=scss --ssr=false` gets the sam
 
 The admin starts with the shell only (login, top bar, sidebar, profile). The project adds the lib's modules it uses
 (`provideUsers()`, `provideExports()`, `provideLocations()`, `provideCategories()`, `provideCommunications()`,
-`provideConfigurations()`) and its own (`ng g @juicejs/juicebar:module …`, below). Until it has one the user may open,
+`provideConfigurations()`, `provideEntities()`) and its own (`ng g @juicejs/juicebar:module …`, below). Until it has one the user may open,
 signing in ends in a logout, as in the old juicebox for a user without modules.
 
 Your project's `juicebox/` folder is then mostly `app.config.ts`, `styles.scss`, `config.json` and your own modules.

@@ -1,0 +1,35 @@
+:host {
+  display: block;
+}
+
+.attributes-card {
+  display: block;
+  max-width: 560px;
+}
+
+.attributes-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 24px 24px;
+}
+
+.attribute-date {
+  max-width: 240px;
+}
+
+.attribute-switch {
+  margin-bottom: 16px;
+}
+
+.attribute-note {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.attributes-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+}

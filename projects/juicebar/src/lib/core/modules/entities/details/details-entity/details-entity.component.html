@@ -1,0 +1,158 @@
+@if (loaded()) {
+  <app-card class="entity-card">
+    <form class="entity-form" [formGroup]="entityForm">
+      <div class="field-row">
+        <app-form-field appearance="outline">
+          <app-label>{{ 'type' | translate }}</app-label>
+          <app-select [value]="type()" [disabled]="true" [placeholder]="'type' | translate">
+            @for (option of types(); track option.prop) {
+              <app-option [value]="option.prop">{{ option.name }}</app-option>
+            }
+          </app-select>
+        </app-form-field>
+
+        <app-form-field appearance="outline">
+          <app-label>{{ 'group' | translate }}</app-label>
+          <app-select formControlName="groups" [multiple]="true" [bulkActions]="false" [searchable]="true" [externalSearch]="true"
+                      [placeholder]="'group' | translate"
+                      (opened)="groupsOpened()"
+                      (searchChange)="searchGroups($event)"
+                      (selectionChange)="groupsChanged($event.value)">
+            @for (group of groups(); track group._id) {
+              <app-option [value]="group._id">{{ group.name }}</app-option>
+            }
+          </app-select>
+        </app-form-field>
+      </div>
+
+      <div class="field-row">
+        <app-form-field appearance="outline">
+          <app-label>{{ 'organisation_name' | translate }}</app-label>
+          <input appInput type="text" formControlName="name" readonly [placeholder]="'organisation_name' | translate" />
+        </app-form-field>
+        <app-form-field appearance="outline">
+          <app-label>{{ 'tax_number' | translate }}</app-label>
+          <input appInput type="text" formControlName="taxNumber" [placeholder]="'tax_number' | translate" />
+        </app-form-field>
+      </div>
+
+      <div class="field-row">
+        <app-form-field appearance="outline">
+          <app-label>{{ 'salutation' | translate }}</app-label>
+          <app-select formControlName="salutation" [clearable]="true" [placeholder]="'salutation' | translate">
+            @for (salutation of salutations; track salutation.key) {
+              <app-option [value]="salutation.key">{{ salutation.name }}</app-option>
+            }
+          </app-select>
+        </app-form-field>
+        <app-form-field appearance="outline">
+          <app-label>{{ 'gender' | translate }}</app-label>
+          <app-select formControlName="sex" [clearable]="true" [placeholder]="'gender' | translate">
+            @for (gender of genders; track gender.key) {
+              <app-option [value]="gender.key">{{ gender.name }}</app-option>
+            }
+          </app-select>
+        </app-form-field>
+      </div>
+
+      <div class="field-row field-row--three">
+        <app-form-field appearance="outline">
+          <app-label>{{ 'title' | translate }}</app-label>
+          <input appInput type="text" formControlName="title" [placeholder]="'title' | translate" />
+        </app-form-field>
+        <app-form-field appearance="outline">
+          <app-label>{{ 'firstname' | translate }} *</app-label>
+          <input appInput type="text" formControlName="firstname" [placeholder]="'firstname' | translate" />
+          @if (entityForm.controls.firstname.touched && entityForm.controls.firstname.errors?.['required']) {
+            <app-error>{{ 'must_include_firstname' | translate }}</app-error>
+          }
+        </app-form-field>
+        <app-form-field appearance="outline">
+          <app-label>{{ 'lastname' | translate }} *</app-label>
+          <input appInput type="text" formControlName="lastname" [placeholder]="'lastname' | translate" />
+          @if (entityForm.controls.lastname.touched && entityForm.controls.lastname.errors?.['required']) {
+            <app-error>{{ 'must_include_lastname' | translate }}</app-error>
+          }
+        </app-form-field>
+      </div>
+
+      <div class="field-row">
+        @if (amgShop()) {
+          <div class="field-row field-row--calling">
+            <app-form-field appearance="outline">
+              <input appInput type="text" formControlName="phoneCallingNumber" [attr.aria-label]="'phone' | translate" />
+            </app-form-field>
+            <app-form-field appearance="outline">
+              <app-label>{{ 'phone' | translate }}</app-label>
+              <input appInput type="text" formControlName="phone" [placeholder]="'phone' | translate" (keydown)="allowPhoneKey($event)" />
+            </app-form-field>
+          </div>
+          <div class="field-row field-row--calling">
+            <app-form-field appearance="outline">
+              <input appInput type="text" formControlName="mobilephoneCallingNumber" [attr.aria-label]="'mobilephone' | translate" />
+            </app-form-field>
+            <app-form-field appearance="outline">
+              <app-label>{{ 'mobilephone' | translate }}</app-label>
+              <input appInput type="text" formControlName="mobilephone" [placeholder]="'mobilephone' | translate" (keydown)="allowPhoneKey($event)" />
+            </app-form-field>
+          </div>
+        } @else {
+          <app-form-field appearance="outline">
+            <app-label>{{ 'phone' | translate }}</app-label>
+            <input appInput type="text" formControlName="phone" [placeholder]="'phone' | translate" (keydown)="allowPhoneKey($event)" />
+          </app-form-field>
+          <app-form-field appearance="outline">
+            <app-label>{{ 'mobilephone' | translate }}</app-label>
+            <input appInput type="text" formControlName="mobilephone" [placeholder]="'mobilephone' | translate" (keydown)="allowPhoneKey($event)" />
+          </app-form-field>
+        }
+      </div>
+
+      <app-form-field appearance="outline">
+        <app-label>{{ 'email' | translate }} *</app-label>
+        <input appInput type="text" formControlName="email" [placeholder]="'email' | translate" />
+        @if (entityForm.controls.email.touched && entityForm.controls.email.errors?.['required']) {
+          <app-error>{{ 'must_include_email' | translate }}</app-error>
+        }
+        @if (entityForm.controls.email.touched && entityForm.controls.email.errors?.['pattern']) {
+          <app-error>{{ 'invalid_email' | translate }}</app-error>
+        }
+      </app-form-field>
+
+      <div class="field-row">
+        <app-form-field appearance="outline">
+          <app-label>{{ 'country' | translate }}</app-label>
+          <app-select formControlName="country" [searchable]="true" [clearable]="true" [placeholder]="'country' | translate">
+            @for (country of countries; track country.code) {
+              <app-option [value]="country.code">{{ country.name }}</app-option>
+            }
+          </app-select>
+        </app-form-field>
+        <app-form-field appearance="outline">
+          <app-label>{{ 'languages' | translate }}</app-label>
+          <app-select formControlName="languages" [multiple]="true" [bulkActions]="false" [searchable]="true" [externalSearch]="true"
+                      [placeholder]="'languages' | translate"
+                      (searchChange)="searchLanguages($event)"
+                      (selectionChange)="languagesChanged($event.value)">
+            @for (language of languages(); track language.code) {
+              <app-option [value]="language.code">{{ language.name }}</app-option>
+            }
+          </app-select>
+        </app-form-field>
+      </div>
+
+      <div class="form-actions">
+        <button app-button appearance="raised" color="primary" type="button"
+                [hasPermissions]="'entities:role#updated|update'"
+                [promiseBtn]="updatePromise()"
+                (click)="update()">
+          {{ 'save' | translate }}
+        </button>
+      </div>
+    </form>
+  </app-card>
+
+  @if (additionalAttributes()) {
+    <app-entity-attribute-list class="below-form" />
+  }
+}

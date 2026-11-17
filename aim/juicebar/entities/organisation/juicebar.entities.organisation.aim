@@ -1,0 +1,253 @@
+---
+aim: juicebar.entities.organisation
+kind: intent
+parent: juicebar.entities
+approved_by: Mario
+approved_at: 2026-11-17
+---
+
+# Organisation payment and API access
+
+## Summary
+
+What only a customer of type organisation has. On the Payment tab staff see whether the organisation's account with the payment provider (Stripe) is connected, super admins of customers unlink it, and the organisation's fees are set. On the API Access tab, which only some projects show, super admins see the organisation's API keys, generate one and delete one.
+
+## Requirements
+
+- **PAYWHO** — The Payment tab is shown for an organisation, and not where the project's `hiddenTabs` option has `payment` — from [juicebar#Requirements[CONFIG]]
+- **PAYSTATE** — The tab tells the state of the organisation's payment account. Without an account: "Vendor does not have connected stripe account.". With one, the payment provider is asked whether its registration is finished, a spinner showing meanwhile: "Vendor didn't finish registration of connected stripe account" or "Vendor has connected stripe account".
+- **PAYUNLINK** — Where the organisation has an account, a super admin of customers sees "If you want to unlink and delete this stripe account from your organisation, please click the button below." with "Unlink". It asks "Are you sure you want to unlink Stripe Account from this organization? Payments will no longer be possible for connected vendors" with the organisation's name; confirmed, the account is unlinked at the payment provider and the state is read again.
+- **PAYFEES** — The tab has "Platform fee for organisation in %", with "+ Fees charged by the payment service provider" under it, and "Fee per single article". "Save" is off while the platform fee is under 0 or over 10, or the article fee under 0. It stores the organisation's attributes with the two fees and "Success!" shows; a refusal shows the backend's reason. The backend asks for the `update` permission.
+- **KEYWHO** — The API Access tab is shown for an organisation, where the project's `extraTabs` option has `api-access`, to staff with `superAdmin:role` — from [juicebar#Requirements[CONFIG]]
+- **KEYLIST** — The tab says "Here you can access all the active API access keys, generate new and invalidate existing ones." and lists the organisation's keys: Key name, Created by (the e-mail address of who made it) and Created at (as day.month.year), each with a delete button; without keys, "There are no active keys.".
+- **KEYADD** — "Add new" opens "Generate new API key", which asks "Input the key name." with the note "Minimum of 8 characters."; "Create" is off under 8 characters. The key is generated, the list is read again, and "API Access token" shows the key's token once, with "Please save the token somewhere safe. Because of security reasons you won't be able to see this token again.". When the key can't be generated, "Operation failed." shows.
+- **KEYDELETE** — The delete button deletes the key at once, without a question, and the list is read again.
+
+## Tests
+
+- A private customer shows neither Payment nor API Access.
+- An organisation without an account id shows "Vendor does not have connected stripe account." and no "Unlink".
+- A staff member who is not a super admin of customers sees no "Unlink".
+- A platform fee of 11 switches "Save" off.
+- "Create" is off for the key name "short" and on for "long-enough".
+- The token of a new key is shown once, and the list then has the key with the staff member's e-mail address under Created by.
+
+## View: PaymentTab
+
+### Summary
+
+The Payment tab of an organisation: its payment account's state and its fees.
+
+### Display
+
+- The state of the organisation's payment account, asked from the payment provider where it has one — [reads](aim:juicebar.entities#Record:Customer), [invokes](aim:juicebar.entities#Capability:PaymentAccounts), [satisfies](aim:juicebar.entities.organisation#Requirements[PAYSTATE])
+- "Unlink" with its note, for a super admin of customers, where the organisation has an account — [satisfies](aim:juicebar.entities.organisation#Requirements[PAYUNLINK])
+- The platform fee and the article fee, "Save" off while they are out of range — [satisfies](aim:juicebar.entities.organisation#Requirements[PAYFEES])
+- The tab is shown for an organisation, and not where the project's `hiddenTabs` option has `payment` — [satisfies](aim:juicebar.entities.organisation#Requirements[PAYWHO]), [satisfies](aim:juicebar#Requirements[CONFIG])
+
+### Actions
+
+- Unlink — [exposes](aim:juicebar.entities.organisation#Operation:UnlinkPaymentAccount)
+- Save — [exposes](aim:juicebar.entities.organisation#Operation:SaveOrganisationFees)
+
+### Layout
+
+- The account's state first, then the two fees one under the other, "Save" at the foot.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/payment-entity/payment-entity.component.ts#PaymentEntityComponent` — as: component
+- provenance: inferred
+
+## View: ApiAccessTab
+
+### Summary
+
+The API Access tab of an organisation: its API keys.
+
+### Display
+
+- The intro and the organisation's keys with their name, who made them and when; "There are no active keys." without any — [reads](aim:juicebar.entities.organisation#Record:ApiKey), [satisfies](aim:juicebar.entities.organisation#Requirements[KEYLIST])
+- "Generate new API key" asking for a name of at least 8 characters, then "API Access token" showing the new key's token once — [satisfies](aim:juicebar.entities.organisation#Requirements[KEYADD])
+- The tab is shown for an organisation, where the project's `extraTabs` option has `api-access`, to staff with `superAdmin:role` — [satisfies](aim:juicebar.entities.organisation#Requirements[KEYWHO]), [satisfies](aim:juicebar#Requirements[CONFIG])
+
+### Actions
+
+- Add new — [exposes](aim:juicebar.entities.organisation#Operation:GenerateApiKey)
+- Delete — [exposes](aim:juicebar.entities.organisation#Operation:DeleteApiKey)
+
+### Layout
+
+- The intro above the list, "Add new" under it; delete is an icon button on each key.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/api-access/api-access.component.ts#ApiAccessComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/api-access/key-creation-dialog.component.ts#KeyCreationDialogComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/api-access/key-preview-dialog.component.ts#KeyPreviewDialogComponent` — as: component
+- binds: `service:entities#getOrganisationsApiKeys` — as: handler
+- provenance: inferred
+
+## Operation: UnlinkPaymentAccount
+
+### Summary
+
+A super admin of customers unlinks an organisation's payment account.
+
+### Input
+
+```schema
+organisationId: string required ref(juicebar.entities#Customer.id)
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Expects
+
+- The staff member confirmed the unlinking.
+
+### Ensures
+
+- The payment provider unlinks the organisation's account, and the tab reads the organisation and the account's state again — [invokes](aim:juicebar.entities#Capability:PaymentAccounts), [mutates](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.organisation#Requirements[PAYUNLINK])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/payment-entity/payment-entity.component.ts#PaymentEntityComponent.unlinkAccount` — as: component
+- binds: `service:stripe#unlinkAccountFromVendor` — as: handler
+- provenance: inferred
+
+## Operation: SaveOrganisationFees
+
+### Summary
+
+A staff member saves an organisation's fees.
+
+### Input
+
+```schema
+organisationId: string required ref(juicebar.entities#Customer.id)
+attributes: map(string) required
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Expects
+
+- The platform fee is from 0 to 10 and the article fee not under 0.
+
+### Ensures
+
+- The organisation's attributes are stored as given: those it had, with the platform fee (`fee`) and the article fee (`article_fee`) as set — [mutates](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.organisation#Requirements[PAYFEES])
+- "Success!" shows; a refusal shows the backend's reason — [satisfies](aim:juicebar.entities.organisation#Requirements[PAYFEES])
+- The backend refuses it without the `update` permission, and for an organisation the staff member may not reach — [satisfies](aim:juicebar.entities#Requirements[ENTROLE]), [satisfies](aim:juicebar.entities#Requirements[ENTORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/payment-entity/payment-entity.component.ts#PaymentEntityComponent.update` — as: component
+- binds: `service:entities#updateEntityAttributes` — as: handler
+- provenance: inferred
+
+## Operation: GenerateApiKey
+
+### Summary
+
+A staff member generates an API key for an organisation.
+
+### Input
+
+```schema
+name: string required min(8)
+organisationId: string required ref(juicebar.entities#Customer.id)
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Ensures
+
+- A key of that name is stored for the organisation with who made it and when, and its token is answered once — [mutates](aim:juicebar.entities.organisation#Record:ApiKey), [satisfies](aim:juicebar.entities.organisation#Requirements[KEYADD])
+- The list is read again and the token shown; a failure shows "Operation failed." and no token — [satisfies](aim:juicebar.entities.organisation#Requirements[KEYADD])
+
+### Returns
+
+```schema
+token: string required
+```
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/api-access/api-access.component.ts#ApiAccessComponent.generateKey` — as: component
+- binds: `service:entities#generateOrganisationApiKey` — as: handler
+- provenance: inferred
+
+## Operation: DeleteApiKey
+
+### Summary
+
+A staff member deletes an API key of an organisation.
+
+### Input
+
+```schema
+keyId: string required ref(juicebar.entities.organisation#ApiKey.id)
+organisationId: string required ref(juicebar.entities#Customer.id)
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Ensures
+
+- The key is gone and no longer gives access; the list is read again — [mutates](aim:juicebar.entities.organisation#Record:ApiKey), [satisfies](aim:juicebar.entities.organisation#Requirements[KEYDELETE])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/api-access/api-access.component.ts#ApiAccessComponent.deleteKey` — as: component
+- binds: `service:entities#deleteOrganisationApiKey` — as: handler
+- provenance: inferred
+
+## Record: ApiKey
+
+### Summary
+
+An API key of an organisation, as the project's backend keeps it; the token is shown once, when the key is generated.
+
+### Schema
+
+```schema
+id: string required unique
+name: string required
+created: datetime
+createdBy: part(juicebar.entities.organisation#KeyAuthor)
+```
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/entities.types.ts#ApiKey` — as: model
+- provenance: inferred
+
+## Record: KeyAuthor
+
+### Summary
+
+The staff member who generated an API key.
+
+### Schema
+
+```schema
+id: string
+email: string
+```
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/entities.types.ts#ApiKeyAuthor` — as: model
+- provenance: inferred

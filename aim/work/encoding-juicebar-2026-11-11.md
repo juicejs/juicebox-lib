@@ -11,6 +11,8 @@ This file covers the root, `juicebar.core` and categories. The exports and locat
 
 - [parts/communications.md](./parts/communications.md) — encoded later the same day as the module's specification before it is built in the lib: the old juicebox (master `c6cca1640`) and the Juice 4.4.0 backend as they are now, without Quality Circle's additions (the owner's rulings). Confirmed in Studio on 2026-11-11 on the owner's instruction (`approved_by: Mario`); its bindings still point at the old admin and the backend until the lib's code exists. 8 questions, each a place where the old code contradicts itself.
 
+- [parts/entities.md](./parts/entities.md) — the customers module (the old juicebox's `entities`), encoded on 2026-11-16 before it was built in the lib, with what was left out, where the lib differs from the old admin on purpose, and the owner's answers of 2026-11-17. Confirmed in Studio on 2026-11-17 on the owner's instruction (`approved_by: Mario`).
+
 After the first import, Studio required a few changes that are now in the files: every requirement, the root's included, needs an operation or a view that satisfies it, and a rule may not hang on a view's action.
 
 ## Method and scope

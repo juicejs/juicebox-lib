@@ -1,0 +1,52 @@
+@if (loaded()) {
+  <app-card class="payment-card">
+    <div class="payment-body">
+      @switch (state()) {
+        @case ('checking') {
+          <div class="payment-checking">
+            <p>{{ 'please_wait_stripe' | translate }}</p>
+            <app-progress-spinner />
+          </div>
+        }
+        @case ('none') {
+          <p>{{ 'vendor_not_connected' | translate }}</p>
+        }
+        @case ('unfinished') {
+          <p>{{ 'vendor_registration_unfinished' | translate }}</p>
+        }
+        @case ('connected') {
+          <p>{{ 'vendor_connected' | translate }}</p>
+        }
+      }
+
+      @if (canUnlink && hasAccount() && state() !== 'checking') {
+        <p>{{ 'unlink_and_delete_text' | translate }}</p>
+        <div>
+          <button app-button appearance="raised" color="primary" type="button" (click)="unlinkAccount()">{{ 'unlink' | translate }}</button>
+        </div>
+      }
+
+      <form class="payment-fees" [formGroup]="fees">
+        <app-form-field appearance="outline">
+          <app-label>{{ 'fee' | translate }} *</app-label>
+          <input appInput type="number" min="0" placeholder="3.6" formControlName="fee" />
+        </app-form-field>
+        <p class="payment-note">{{ '025_per_transaction' | translate }}</p>
+
+        <app-form-field appearance="outline">
+          <app-label>{{ 'article_fee' | translate }} *</app-label>
+          <input appInput type="number" min="0" max="10" placeholder="0.25" formControlName="article_fee" />
+        </app-form-field>
+
+        <div>
+          <button app-button appearance="raised" color="primary" type="button"
+                  [disabled]="invalidFee()"
+                  [promiseBtn]="updatePromise()"
+                  (click)="update()">
+            {{ 'save' | translate }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </app-card>
+}

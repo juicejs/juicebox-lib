@@ -1,0 +1,112 @@
+---
+aim: juicebar.entities.create
+kind: intent
+parent: juicebar.entities
+approved_by: Mario
+approved_at: 2026-11-17
+---
+
+# Create a customer
+
+## Summary
+
+The page where staff with the `create` permission add a customer: its type, whether only they see it, its names, contact details, a first address and its languages. An organisation is added on a shorter form. The customer belongs to the organisation the staff member is signed in to.
+
+## Requirements
+
+- **CRTYPE** — The form starts with the type chosen in the listing, or else the first type of the configuration, and a type is required ("You must select a type"). Opened from a user's organisations tab, it has the one type Organisation. Choosing the type Organisation shows the organisation form, any other type the customer form.
+- **CRFORM** — The customer form has: Type, "Customer only visible for me", Company name, Tax number, Salutation (Mr, Mrs), Gender (Male, Female), Title, Firstname, Lastname, Phone, Mobile phone, Email, Street, Postcode, a second street line, City, Country and Languages (German, English, French, Croatian, Italian, and whatever else is typed in). The first name, the last name and the e-mail address are required and the e-mail address must look like one; each tells so under its field once it was left: "You must include a firstname", "You must include a lastname", "You must include an email", "Invalid email". With `amgshop` a calling-number field stands before the phone and before the mobile phone — from [juicebar.entities#Requirements[ENTAMG]]
+- **CRORGFORM** — The organisation form has Type, Company name, Phone, Street, Postcode, a second street line, City and Country; the company name is required.
+- **CRPROTECT** — "Customer only visible for me" starts as the `entities:juicebox:settings` configuration's `default_protected_value` says, off without it. Switched on, the customer is protected by the staff member creating it — from [juicebar.entities#Requirements[ENTPROTECT]]
+- **CRADDRESS** — The street, second street line, postcode, city and country typed in become the customer's first address, with the company name as its name: a business address when a company name was given, a home address otherwise.
+- **CRSTORE** — The salutation and the gender are stored in English whatever the admin's language. What is sent to the backend is what the old admin sent: the form's fields as they stand, the address as one part, a salutation, gender or country never chosen as an empty list, and the calling numbers, which the backend keeps with the customer's attributes.
+- **CRSAVE** — "Create" is shown to staff with the `create` permission and is off while the form is not valid. The customer is stored for the staff member's organisation; "New customer created" shows and the listing opens on its first page. When the backend refuses, "Error" shows with its reason and the form stays. Leaving the page with changes not created asks first.
+
+## Tests
+
+- Opening the page from a listing that shows Commercial customers starts with the type Commercial.
+- With the first name empty, "Create" is off and "You must include a firstname" shows once the field was left.
+- A customer created with the company name "Acme" and the city "Berlin" has one business address in Berlin named Acme.
+- A customer created with "Customer only visible for me" on is protected by the staff member who created it.
+- Choosing the type Organisation shows the organisation form, and an organisation without a company name cannot be created.
+- Opened from a user's organisations tab, the page shows the organisation form and offers no other type.
+- A staff member without `entities:role#create` cannot create a customer on the backend.
+
+## View: CreateCustomerPage
+
+### Summary
+
+The page that creates a customer or an organisation.
+
+### Display
+
+- The customer form, or the organisation form for the type Organisation, starting with the type the page was opened with — [reads](aim:juicebar.entities#Record:CustomerType), [satisfies](aim:juicebar.entities.create#Requirements[CRTYPE]), [satisfies](aim:juicebar.entities.create#Requirements[CRFORM]), [satisfies](aim:juicebar.entities.create#Requirements[CRORGFORM]), [satisfies](aim:juicebar.entities#Requirements[ENTTYPES])
+- "Customer only visible for me", starting as the configuration says — [satisfies](aim:juicebar.entities.create#Requirements[CRPROTECT])
+- The countries of the admin's list in the admin's language — [satisfies](aim:juicebar.entities#Requirements[ENTCOUNTRY])
+- The calling-number fields only with `amgshop` — [satisfies](aim:juicebar.entities#Requirements[ENTAMG]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- "Create" for staff with the `create` permission, off while the form is not valid; leaving with changes asks first — [satisfies](aim:juicebar.entities.create#Requirements[CRSAVE]), [satisfies](aim:juicebar.entities#Requirements[ENTROLE])
+
+### Actions
+
+- Create — [exposes](aim:juicebar.entities.create#Operation:CreateCustomer)
+
+### Layout
+
+- A page of its own, reached from the listing's "Add new"; the breadcrumb leads back to the listing. Type and "Customer only visible for me" stand first, "Create" at the foot.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/wizard/entity-wizard.component.ts#EntityWizardComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/entities/entity-form.ts#newEntityData` — as: component
+- provenance: inferred
+
+## Operation: CreateCustomer
+
+### Summary
+
+A staff member creates a customer or an organisation.
+
+### Input
+
+```schema
+type: string required ref(juicebar.entities#CustomerType.prop)
+salutation: string
+sex: string
+title: string
+firstname: string
+lastname: string
+name: string
+taxNumber: string
+email: string
+phone: string
+mobilephone: string
+phoneCallingNumber: string
+mobilephoneCallingNumber: string
+languages: list(string)
+address: part(juicebar.entities#CustomerAddress)
+protected: boolean
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Expects
+
+- A customer has a first name, a last name and an e-mail address that looks like one; an organisation has a company name.
+
+### Ensures
+
+- The customer is stored with the fields given, for the organisation the staff member is signed in to, its address as its first address: business with a company name, home without — [mutates](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.create#Requirements[CRADDRESS]), [satisfies](aim:juicebar.entities.create#Requirements[CRSTORE]), [satisfies](aim:juicebar.entities#Requirements[ENTORG])
+- With `protected` the customer is protected by the staff member — [satisfies](aim:juicebar.entities.create#Requirements[CRPROTECT]), [satisfies](aim:juicebar.entities#Requirements[ENTPROTECT])
+- The calling numbers are kept with the customer's attributes — [satisfies](aim:juicebar.entities.create#Requirements[CRSTORE])
+- "New customer created" shows and the listing opens on its first page; a refusal shows "Error" with the backend's reason and keeps the form — [satisfies](aim:juicebar.entities.create#Requirements[CRSAVE])
+- The backend refuses it without the `create` permission — [satisfies](aim:juicebar.entities#Requirements[ENTROLE]), [satisfies](aim:juicebar#Requirements[ROLES])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/wizard/entity-wizard.component.ts#EntityWizardComponent.submit` — as: component
+- binds: `service:entities#createEntity` — as: handler
+- provenance: inferred

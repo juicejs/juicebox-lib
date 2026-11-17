@@ -1,0 +1,133 @@
+---
+aim: juicebar.entities.wallets
+kind: intent
+parent: juicebar.entities
+approved_by: Mario
+approved_at: 2026-11-17
+---
+
+# Customer wallets
+
+## Summary
+
+The wallets a customer has on the project's ledger, where the project keeps assets such as tickets. On the Wallets tab staff see a customer's wallets, add one under an asset publisher and delete one. A project without a ledger hides the tab.
+
+## Requirements
+
+- **WALLIST** — The Wallets tab lists the customer's wallets, 10 to a page, with Name and Wallet Address; a wallet address kept with the customer's attributes is listed with them, without a name. Each wallet has a delete button.
+- **WALADD** — "Add wallet" is the tab's button, for staff with the `update` permission. Its dialog, "Create wallet", asks for the Asset publisher, a Name and an Address, with the note "If you dont have wallet, leave empty and the address will be generated". The publishers are the ledger's first 100, and the publisher of the organisation the staff member is signed in to is chosen at first, where there is one. "Add" creates the wallet on the ledger for the customer with the address, the name and the publisher, locked against transfers at level 2; then the dialog closes and the list is read again. "Cancel" and the × close it without adding; a click outside does not close it.
+- **WALDELETE** — The delete button removes the wallet from the customer at once, without a question, and the list is read again.
+- **WALHIDE** — The tab is not shown where the project's `hiddenTabs` option has `wallets` — from [juicebar#Requirements[CONFIG]]
+
+## Tests
+
+- A customer with 12 wallets shows 10 on the first page and 2 on the second.
+- A wallet added with an empty address appears in the list with an address the ledger generated.
+- A staff member without the `update` permission sees no "Add wallet" button.
+- With `hiddenTabs: ['wallets']` an opened customer shows no Wallets tab.
+
+## View: CustomerWallets
+
+### Summary
+
+The Wallets tab: the customer's wallets.
+
+### Display
+
+- The wallets with their name and address, 10 to a page, the attributes' own wallet address among them — [reads](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.wallets#Requirements[WALLIST])
+- "Add wallet" for staff with the `update` permission — [satisfies](aim:juicebar.entities.wallets#Requirements[WALADD]), [satisfies](aim:juicebar.entities#Requirements[ENTROLE])
+- The tab is left out where the project's `hiddenTabs` option has `wallets` — [satisfies](aim:juicebar.entities.wallets#Requirements[WALHIDE]), [satisfies](aim:juicebar#Requirements[CONFIG])
+
+### Actions
+
+- Add wallet — [navigates](aim:juicebar.entities.wallets#View:AddWalletDialog)
+- Delete — [exposes](aim:juicebar.entities.wallets#Operation:DeleteWallet)
+
+### Layout
+
+- "Add wallet" is the page's action; delete is an icon button on each row.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/wallet-entity/wallet-entity.component.ts#WalletEntityComponent` — as: component
+- provenance: inferred
+
+## View: AddWalletDialog
+
+### Summary
+
+The dialog that creates a wallet for the customer.
+
+### Display
+
+- "Create wallet" with the Asset publisher, the staff member's organisation's publisher chosen at first, a Name and an Address with its note; a click outside does not close it — [invokes](aim:juicebar.entities#Capability:WalletLedger), [satisfies](aim:juicebar.entities.wallets#Requirements[WALADD])
+
+### Actions
+
+- Add — [exposes](aim:juicebar.entities.wallets#Operation:CreateWallet)
+- Cancel — [navigates](aim:juicebar.entities.wallets#View:CustomerWallets)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/wallet-entity/add-wallet/add-wallet-dialog.component.ts#AddWalletDialogComponent` — as: component
+- provenance: inferred
+
+## Operation: CreateWallet
+
+### Summary
+
+A staff member creates a wallet for a customer on the ledger.
+
+### Input
+
+```schema
+customerId: string required ref(juicebar.entities#Customer.id)
+publisherId: string
+name: string
+address: string
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Ensures
+
+- The ledger creates the wallet for the customer under the publisher, with the name and the address given or one it generates, locked against transfers at level 2, and the customer has it among its wallets — [invokes](aim:juicebar.entities#Capability:WalletLedger), [mutates](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.wallets#Requirements[WALADD])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/wallet-entity/add-wallet/add-wallet-dialog.component.ts#AddWalletDialogComponent.create` — as: component
+- binds: `service:juicechain:wallets#createWallet` — as: handler
+- provenance: inferred
+
+## Operation: DeleteWallet
+
+### Summary
+
+A staff member removes a wallet from a customer.
+
+### Input
+
+```schema
+customerId: string required ref(juicebar.entities#Customer.id)
+wallet: part(juicebar.entities#Wallet) required
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Ensures
+
+- The ledger removes the wallet from the customer, and the list is read again — [invokes](aim:juicebar.entities#Capability:WalletLedger), [mutates](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.wallets#Requirements[WALDELETE])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/wallet-entity/wallet-entity.component.ts#WalletEntityComponent.remove` — as: component
+- binds: `service:juicechain:wallets#deleteWallet` — as: handler
+- provenance: inferred

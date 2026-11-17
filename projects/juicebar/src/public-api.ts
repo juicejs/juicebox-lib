@@ -33,6 +33,11 @@ export * from './lib/core/modules/locations/locations.providers';
 export * from './lib/core/modules/categories/categories.providers';
 export * from './lib/core/modules/communications/communications.providers';
 export * from './lib/core/modules/configurations/configurations.providers';
+export * from './lib/core/modules/entities/entities.providers';
+// A project's own modules call the customers service, as in the old juicebox, and add listing buttons with
+// EntitiesService.addCustomActionButton
+export * from './lib/core/modules/entities/entities.service';
+export * from './lib/core/modules/entities/entities.types';
 
 // Directives
 export * from './lib/core/shared/directives/PromiseButton';

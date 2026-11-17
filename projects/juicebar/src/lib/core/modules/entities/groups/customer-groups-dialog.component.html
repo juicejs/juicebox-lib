@@ -1,0 +1,48 @@
+<app-dialog-title>{{ 'create_group' | translate }}</app-dialog-title>
+
+<app-dialog-content>
+  <div class="group-add">
+    <app-form-field appearance="outline">
+      <app-label>{{ 'group_name' | translate }}</app-label>
+      <input appInput type="text" [formControl]="groupName" [placeholder]="'group_name' | translate"
+             (keydown.enter)="onEnter($event)" />
+    </app-form-field>
+    <button app-button appearance="raised" color="primary" type="button"
+            [disabled]="!groupName.value"
+            [promiseBtn]="createPromise()"
+            (click)="create()">
+      {{ 'create' | translate }}
+    </button>
+  </div>
+
+  <app-data-table
+    [rows]="rows()"
+    [columns]="columns"
+    [totalCount]="count()"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="pageSizeOptions"
+    [pageIndex]="page() - 1"
+    [emptyMessage]="'no_data_to_display' | translate"
+    (pageChange)="onPage($event)">
+    <ng-template [cellDef]="'actions'" let-row>
+      <div class="dt-row-actions">
+        <button app-button appearance="icon" type="button" class="danger"
+                [attr.aria-label]="('delete' | translate) + ': ' + row.name"
+                [appTooltip]="'delete' | translate"
+                (click)="remove(row)">
+          <app-icon [icon]="'delete'" />
+        </button>
+        <button app-button appearance="icon" type="button"
+                [attr.aria-label]="('edit' | translate) + ': ' + row.name"
+                [appTooltip]="'edit' | translate"
+                (click)="edit(row)">
+          <app-icon [icon]="'edit'" />
+        </button>
+      </div>
+    </ng-template>
+  </app-data-table>
+</app-dialog-content>
+
+<app-dialog-actions align="end">
+  <button app-button type="button" (click)="close()">{{ 'close' | translate }}</button>
+</app-dialog-actions>

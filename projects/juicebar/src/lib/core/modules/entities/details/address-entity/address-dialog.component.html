@@ -1,0 +1,72 @@
+<app-dialog-title>{{ (address ? 'edit_address' : 'address_wizard') | translate }}</app-dialog-title>
+
+<form [formGroup]="form">
+  <app-dialog-content>
+    <app-form-field appearance="outline">
+      <app-label>{{ 'address_type' | translate }} *</app-label>
+      <app-select formControlName="type" [placeholder]="'address_type' | translate">
+        @for (type of types; track type.value) {
+          <app-option [value]="type.value">{{ type.label }}</app-option>
+        }
+      </app-select>
+      @if (form.controls.type.touched && form.controls.type.errors?.['required']) {
+        <app-error>{{ 'must_include_address_type' | translate }}</app-error>
+      }
+    </app-form-field>
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'name' | translate }}</app-label>
+      <input appInput type="text" formControlName="name" [placeholder]="'name' | translate" />
+    </app-form-field>
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'street' | translate }} *</app-label>
+      <input appInput type="text" formControlName="street" aria-required="true" [placeholder]="'street' | translate" />
+      @if (form.controls.street.touched && form.controls.street.errors?.['required']) {
+        <app-error>{{ 'must_include_street' | translate }}</app-error>
+      }
+    </app-form-field>
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'postcode' | translate }} *</app-label>
+      <input appInput type="text" formControlName="postcode" aria-required="true" [placeholder]="'postcode' | translate" />
+      @if (form.controls.postcode.touched && form.controls.postcode.errors?.['required']) {
+        <app-error>{{ 'must_include_postcode' | translate }}</app-error>
+      }
+    </app-form-field>
+
+    @if (address) {
+      <app-form-field appearance="outline">
+        <app-label>{{ 'street' | translate }} 2</app-label>
+        <input appInput type="text" formControlName="street2" [placeholder]="('street' | translate) + ' 2'" />
+      </app-form-field>
+    }
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'city' | translate }} *</app-label>
+      <input appInput type="text" formControlName="city" aria-required="true" [placeholder]="'city' | translate" />
+      @if (form.controls.city.touched && form.controls.city.errors?.['required']) {
+        <app-error>{{ 'must_include_city' | translate }}</app-error>
+      }
+    </app-form-field>
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'country' | translate }} *</app-label>
+      <app-select formControlName="country" [searchable]="true" [placeholder]="'country' | translate">
+        @for (country of countries; track country.code) {
+          <app-option [value]="country.code">{{ country.name }}</app-option>
+        }
+      </app-select>
+      @if (form.controls.country.touched && form.controls.country.errors?.['required']) {
+        <app-error>{{ 'must_include_country' | translate }}</app-error>
+      }
+    </app-form-field>
+  </app-dialog-content>
+
+  <app-dialog-actions align="end">
+    <button app-button type="button" (click)="cancel()">{{ 'cancel' | translate }}</button>
+    <button app-button appearance="raised" color="primary" type="button" [promiseBtn]="savePromise()" (click)="save()">
+      {{ (address ? 'save' : 'add') | translate }}
+    </button>
+  </app-dialog-actions>
+</form>

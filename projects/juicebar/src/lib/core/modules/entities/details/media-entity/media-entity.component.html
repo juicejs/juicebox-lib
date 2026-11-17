@@ -1,0 +1,34 @@
+@if (filters().length) {
+  <div class="media-toolbar">
+    <app-form-field appearance="outline" class="media-filter">
+      <app-label>{{ 'filter' | translate }}</app-label>
+      <app-select [value]="selectedFilter()" [clearable]="true" [placeholder]="'filter' | translate"
+                  (selectionChange)="selectFilter($event.value)">
+        @for (filter of filters(); track filter.prop) {
+          <app-option [value]="filter.prop">{{ filter.name }}</app-option>
+        }
+      </app-select>
+    </app-form-field>
+  </div>
+}
+
+<app-data-table
+  [rows]="rows()"
+  [columns]="columns"
+  [totalCount]="rows().length"
+  [pageSize]="rows().length || 10"
+  [pageSizeOptions]="[]"
+  [emptyMessage]="'no_data_to_display' | translate"
+  (rowClick)="open($event)">
+  <ng-template [cellDef]="'actions'" let-row>
+    <div class="dt-row-actions">
+      <button app-button appearance="icon" type="button" class="danger"
+              [hasPermissions]="'entities:role#delete'"
+              [attr.aria-label]="('delete' | translate) + ': ' + row.fileName"
+              [appTooltip]="'delete' | translate"
+              (click)="$event.stopPropagation(); remove(row)">
+        <app-icon [icon]="'delete'" />
+      </button>
+    </div>
+  </ng-template>
+</app-data-table>

@@ -1,0 +1,50 @@
+<app-dialog-title>{{ 'add_media_to_entity' | translate }}</app-dialog-title>
+
+<form [formGroup]="form">
+  <app-dialog-content>
+    <app-form-field appearance="outline">
+      <app-label>{{ 'media_type' | translate }} *</app-label>
+      <app-select formControlName="mediaType" [placeholder]="'media_type' | translate" (selectionChange)="mediaTypeSelected($event.value)">
+        @for (mediaType of mediaTypes; track mediaType.prop) {
+          <app-option [value]="mediaType.prop">{{ mediaType.name }}</app-option>
+        }
+      </app-select>
+    </app-form-field>
+
+    @if (types().length) {
+      <app-form-field appearance="outline">
+        <app-label>{{ 'type' | translate }} *</app-label>
+        <app-select formControlName="type" [placeholder]="'type' | translate">
+          @for (type of types(); track type.prop) {
+            <app-option [value]="type.prop">{{ type.name }}</app-option>
+          }
+        </app-select>
+      </app-form-field>
+
+      <app-form-field appearance="outline">
+        <app-label>{{ 'file' | translate }} *</app-label>
+        <app-file-input formControlName="file" />
+      </app-form-field>
+
+      <app-form-field appearance="outline">
+        <app-label>{{ 'title' | translate }}</app-label>
+        <input appInput type="text" formControlName="title" />
+      </app-form-field>
+
+      <app-form-field appearance="outline">
+        <app-label>{{ 'description' | translate }}</app-label>
+        <input appInput type="text" formControlName="description" />
+      </app-form-field>
+    }
+  </app-dialog-content>
+
+  <app-dialog-actions align="end">
+    <button app-button type="button" (click)="close()">{{ 'cancel' | translate }}</button>
+    <button app-button appearance="raised" color="primary" type="button"
+            [disabled]="!form.controls.file.value"
+            [promiseBtn]="savePromise()"
+            (click)="submit()">
+      {{ 'save' | translate }}
+    </button>
+  </app-dialog-actions>
+</form>

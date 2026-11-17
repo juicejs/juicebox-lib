@@ -1,0 +1,12 @@
+<app-tabs [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="onTabChange($event)">
+  @for (tab of tabs(); track tab.route) {
+    <app-tab [label]="tab.label" />
+  }
+</app-tabs>
+
+<div class="parent entity-tab">
+  <!-- One outlet per customer: the tabs are created anew when another customer is opened -->
+  @for (id of [entityId()]; track id) {
+    <router-outlet />
+  }
+</div>

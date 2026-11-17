@@ -1,0 +1,39 @@
+<p class="keys-intro">{{ 'api_access_key_list_listing_description_text' | translate }}</p>
+
+<table class="keys">
+  <thead>
+    <tr>
+      <th scope="col">{{ 'api_key_column_name' | translate }}</th>
+      <th scope="col">{{ 'created_by_column_name' | translate }}</th>
+      <th scope="col">{{ 'created_column_name' | translate }}</th>
+      <th scope="col"><span class="visually-hidden">{{ 'actions' | translate }}</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (key of keys(); track key._id) {
+      <tr>
+        <td>{{ key.name }}</td>
+        <td>{{ key.createdBy?.email }}</td>
+        <td>{{ key.created | date: 'dd.MM.yyyy' }}</td>
+        <td class="keys-action">
+          <button app-button appearance="icon" type="button" class="danger"
+                  [disabled]="deleting()"
+                  [attr.aria-label]="('delete' | translate) + ': ' + key.name"
+                  [appTooltip]="'delete' | translate"
+                  (click)="deleteKey(key)">
+            <app-icon [icon]="'delete'" />
+          </button>
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="4" class="keys-empty">{{ 'no_active_keys_table_msg' | translate }}</td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+<button app-button appearance="raised" color="primary" type="button" [disabled]="generating()" (click)="generateKey()">
+  <app-icon [icon]="'add'" />
+  {{ 'add_new' | translate }}
+</button>

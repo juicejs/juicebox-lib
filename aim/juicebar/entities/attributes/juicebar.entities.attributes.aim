@@ -1,0 +1,191 @@
+---
+aim: juicebar.entities.attributes
+kind: intent
+parent: juicebar.entities
+approved_by: Mario
+approved_at: 2026-11-17
+---
+
+# Customer attributes
+
+## Summary
+
+The attribute fields a project keeps for its customers beside the standard ones, type by type: a text, a number, a date, a choice from a list or a switch. On a customer's Attributes tab staff fill in the fields of the customer's type; admins of customers add a field for a type and delete one.
+
+## Requirements
+
+- **ATTRFIELDS** — The Attributes tab shows the attribute fields of the customer's type, each under its name in the admin's language, by its kind: a text or a number to type, a date to pick between 1 January 1920 and today, a choice from the field's values, or a switch. A customer without a type gets the fields of every type. A field kept per language shows and stores the admin's language. The marketing switch of shop customers (`marketing-communication:entity:shop`) has its explanation under it.
+- **ATTRSAVE** — "Save" stores the values that were changed, each under its field's property, a date as noon of the day picked; values not changed are not sent. A value kept per language is stored with the other languages' texts untouched. "Attributes updated" shows; a refusal shows the backend's reason. The backend asks for the `update` permission — from [juicebar#Requirements[LANG]]
+- **ATTRADD** — "Add attribute", shown to staff with `entities:role#admin`, opens a dialog with Required, Name, Label, Type (text, number, date, dropdown), the values separated by commas for a dropdown, and Entity type (Private, Commercial, Public, Organisation, Shop). Name, label, type and entity type are required; the name has at most 15 letters, digits and underscores. "Add" stores the field for the entity type, its label as its name, under the key made of the name, a colon and the entity type's model; a field whose key exists is refused with "attribute with this name and for this entity type already exists", shown in the dialog. The backend asks for the `create` permission.
+- **ATTRDELETE** — "Delete attribute", shown to staff with `entities:role#admin`, opens a dialog with the customer's entity type, which cannot be changed there, and the type's attribute fields to choose one from. "Delete", off until one is chosen, removes the field from the configuration; the values customers hold for it stay stored. A refusal is shown in the dialog. The backend asks for the `admin` permission.
+- **ATTRREAD** — After a field is added or deleted, the tab's fields are read again.
+
+## Tests
+
+- A private customer shows the attribute fields whose model is `entity:private` and no others.
+- Changing only "Segment" and saving sends that one value and shows "Attributes updated".
+- A date picked as 4 May 1990 is stored as noon of that day.
+- Adding the field "segment" for Private twice shows "attribute with this name and for this entity type already exists" the second time.
+- A staff member without `entities:role#admin` sees neither "Add attribute" nor "Delete attribute".
+- Deleting the field "segment" leaves the Segment values of customers stored.
+
+## View: CustomerAttributes
+
+### Summary
+
+The Attributes tab: the attribute fields of the customer's type with the customer's values.
+
+### Display
+
+- The fields of the customer's type, each by its kind, with the customer's values — [reads](aim:juicebar.entities#Record:AttributeField), [reads](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.attributes#Requirements[ATTRFIELDS])
+- "Add attribute" and "Delete attribute" for staff with `entities:role#admin`; the fields read again after either — [satisfies](aim:juicebar.entities.attributes#Requirements[ATTRADD]), [satisfies](aim:juicebar.entities.attributes#Requirements[ATTRDELETE]), [satisfies](aim:juicebar.entities.attributes#Requirements[ATTRREAD])
+
+### Actions
+
+- Save — [exposes](aim:juicebar.entities.attributes#Operation:SaveCustomerAttributes)
+- Add attribute — [navigates](aim:juicebar.entities.attributes#View:AddAttributeDialog)
+- Delete attribute — [navigates](aim:juicebar.entities.attributes#View:DeleteAttributeDialog)
+
+### Layout
+
+- "Add attribute" and "Delete attribute" are the page's actions; the fields stand one under another, "Save" at the foot.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/attributes-entity/attributes-entity.component.ts#AttributesEntityComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/attributes-entity/attribute-list/attribute-list.component.ts#AttributeListComponent` — as: component
+- provenance: inferred
+
+## View: AddAttributeDialog
+
+### Summary
+
+The dialog that adds an attribute field for a customer type.
+
+### Display
+
+- "Add attribute" with Required, Name, Label, Type, the values of a dropdown and Entity type; the required ones tell so once "Add" was pressed, and a refusal shows in the dialog — [satisfies](aim:juicebar.entities.attributes#Requirements[ATTRADD])
+
+### Actions
+
+- Add — [exposes](aim:juicebar.entities.attributes#Operation:AddAttributeField)
+- Cancel — [navigates](aim:juicebar.entities.attributes#View:CustomerAttributes)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/attributes-entity/add-attribute/add-attribute-dialog.component.ts#AddAttributeDialogComponent` — as: component
+- provenance: inferred
+
+## View: DeleteAttributeDialog
+
+### Summary
+
+The dialog that deletes an attribute field of the customer's type.
+
+### Display
+
+- "Delete attribute" with the entity type, not changeable, and the type's fields to choose from; "Delete" off until one is chosen, a refusal shown in the dialog — [reads](aim:juicebar.entities#Record:AttributeField), [satisfies](aim:juicebar.entities.attributes#Requirements[ATTRDELETE])
+
+### Actions
+
+- Delete — [exposes](aim:juicebar.entities.attributes#Operation:DeleteAttributeField)
+- Cancel — [navigates](aim:juicebar.entities.attributes#View:CustomerAttributes)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/attributes-entity/delete-attribute/delete-attribute-dialog.component.ts#DeleteAttributeDialogComponent` — as: component
+- provenance: inferred
+
+## Operation: SaveCustomerAttributes
+
+### Summary
+
+A staff member saves a customer's attribute values.
+
+### Input
+
+```schema
+customerId: string required ref(juicebar.entities#Customer.id)
+values: map(string) required
+language: string required
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Ensures
+
+- Each value given is stored under its property in the customer's attributes, a date field's as a date; the attributes not given stay — [mutates](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.attributes#Requirements[ATTRSAVE])
+- A value kept per language is stored under the given language, the other languages' texts untouched — [satisfies](aim:juicebar.entities.attributes#Requirements[ATTRSAVE]), [satisfies](aim:juicebar#Requirements[LANG])
+- "Attributes updated" shows; a refusal shows the backend's reason — [satisfies](aim:juicebar.entities.attributes#Requirements[ATTRSAVE])
+- The backend refuses it without the `update` permission, and for a customer of another organisation — [satisfies](aim:juicebar.entities#Requirements[ENTROLE]), [satisfies](aim:juicebar.entities#Requirements[ENTORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/attributes-entity/attribute-list/attribute-list.component.ts#AttributeListComponent.submit` — as: component
+- binds: `service:entities#updateEntityAttributes` — as: handler
+- provenance: inferred
+
+## Operation: AddAttributeField
+
+### Summary
+
+An admin of customers adds an attribute field for a customer type.
+
+### Input
+
+```schema
+name: string required max(15)
+label: string required
+datatype: enum(text, number, date, dropdown) required
+values: string
+entityType: string required
+required: boolean
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerAdmin`
+
+### Ensures
+
+- The field is stored as a `juicecommerce:entity:attribute` configuration: its key the name, a colon and the entity type, its name the label, its property the name, its model the entity type, and for a dropdown its values split at the commas — [mutates](aim:juicebar.entities#Record:AttributeField), [satisfies](aim:juicebar.entities.attributes#Requirements[ATTRADD])
+- A key that exists stores nothing and answers "attribute with this name and for this entity type already exists" — [satisfies](aim:juicebar.entities.attributes#Requirements[ATTRADD])
+- The backend refuses it without the `create` permission — [satisfies](aim:juicebar.entities.attributes#Requirements[ATTRADD]), [satisfies](aim:juicebar#Requirements[ROLES])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/attributes-entity/add-attribute/add-attribute-dialog.component.ts#AddAttributeDialogComponent.create` — as: component
+- binds: `service:entities#createAttribute` — as: handler
+- provenance: inferred
+
+## Operation: DeleteAttributeField
+
+### Summary
+
+An admin of customers deletes an attribute field.
+
+### Input
+
+```schema
+key: string required ref(juicebar.entities#AttributeField.key)
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerAdmin`
+
+### Ensures
+
+- The field's configuration is removed from the backend's database and memory; customers keep the values stored for it — [mutates](aim:juicebar.entities#Record:AttributeField), [satisfies](aim:juicebar.entities.attributes#Requirements[ATTRDELETE])
+- A key that is no attribute field removes nothing — [satisfies](aim:juicebar.entities.attributes#Requirements[ATTRDELETE])
+- The backend refuses it without the `admin` permission — [satisfies](aim:juicebar.entities.attributes#Requirements[ATTRDELETE]), [satisfies](aim:juicebar#Requirements[ROLES])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/attributes-entity/delete-attribute/delete-attribute-dialog.component.ts#DeleteAttributeDialogComponent.remove` — as: component
+- binds: `service:entities#deleteAttribute` — as: handler
+- provenance: inferred

@@ -1,0 +1,42 @@
+:host {
+  display: block;
+}
+
+.listing-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 16px;
+  margin-bottom: 8px;
+}
+
+.listing-filter {
+  width: 220px;
+}
+
+.lock {
+  color: var(--color-text-disabled);
+
+  &--on {
+    color: var(--color-error);
+  }
+}
+
+.mark {
+  color: var(--color-text-disabled);
+  vertical-align: middle;
+
+  &--yes {
+    color: var(--color-success);
+  }
+
+  &--no {
+    color: var(--color-error);
+  }
+}
+
+.sap-number {
+  margin-left: 4px;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}

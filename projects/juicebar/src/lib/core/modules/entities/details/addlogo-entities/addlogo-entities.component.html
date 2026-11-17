@@ -1,0 +1,19 @@
+<div class="logo-bar">
+  <input #fileInput type="file" accept="image/*" hidden (change)="upload($event)" />
+  <button app-button appearance="raised" color="primary" type="button" [disabled]="uploading()" (click)="fileInput.click()">
+    {{ 'select_image' | translate }}
+  </button>
+</div>
+
+<app-data-table
+  class="logo-images"
+  [rows]="images()"
+  [columns]="columns"
+  [totalCount]="images().length"
+  [pageSize]="images().length || 10"
+  [pageSizeOptions]="[]"
+  [emptyMessage]="'no_data_to_display' | translate">
+  <ng-template [cellDef]="'image'" let-row>
+    <img class="logo-thumb" [src]="row.url" alt="" />
+  </ng-template>
+</app-data-table>

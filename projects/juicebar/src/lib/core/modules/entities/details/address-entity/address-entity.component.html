@@ -1,0 +1,22 @@
+<app-data-table
+  [rows]="rows()"
+  [columns]="columns"
+  [totalCount]="count()"
+  [pageSize]="pageSize"
+  [pageSizeOptions]="pageSizeOptions"
+  [pageIndex]="page() - 1"
+  [sort]="sort()"
+  [emptyMessage]="'no_data_to_display' | translate"
+  (pageChange)="onPage($event)"
+  (sortChange)="onSort($event)">
+  <ng-template [cellDef]="'actions'" let-row>
+    <div class="dt-row-actions">
+      <button app-button appearance="icon" type="button"
+              [attr.aria-label]="('edit_address' | translate) + ': ' + row.street"
+              [appTooltip]="'edit_address' | translate"
+              (click)="edit(row)">
+        <app-icon [icon]="'edit'" />
+      </button>
+    </div>
+  </ng-template>
+</app-data-table>

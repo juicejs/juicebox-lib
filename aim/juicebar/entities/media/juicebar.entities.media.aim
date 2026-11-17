@@ -1,0 +1,316 @@
+---
+aim: juicebar.entities.media
+kind: intent
+parent: juicebar.entities
+approved_by: Mario
+approved_at: 2026-11-17
+---
+
+# Customer files
+
+## Summary
+
+The files kept with a customer (images, documents and videos), on the Media tab that only some projects show. Staff choose a media type to list the customer's files of that type, add a file, look at one, change its title, description or the file itself, and delete one. The media types and their kinds come from the `entities` configuration.
+
+Two older pages of a customer's files are kept for the projects that link to them; no tab leads to either. One shows the files the customer sent with a form and uploads a file to that form entry; the other shows the customer's images, such as an organisation's logo, and adds one.
+
+## Requirements
+
+- **FILETYPES** — The `entities` configuration's `mediaTypes` gives the media types, each with a name, a value and its kinds; the names are shown in the admin's language where the module's dictionary has them. Without configured media types the tab offers no filter.
+- **FILELIST** — "Filter" offers the media types. Choosing one lists the customer's files of that media type with Name (the file's name), Type (its kind), Size in bytes and File type (its extension); without a choice, and after the choice is cleared, no file is listed. After a file is added, changed or deleted, the customer is read again and the list shows the chosen media type's files.
+- **FILEADD** — "Add new media" opens "Add new media to entity": the Media type, then, once it is chosen, its Type (the kind), the File, a Title and a Description. "Save", off until a file is chosen, stores the file with the customer under the media type and kind, with its title and description in the admin's language; the dialog closes and the list is read again. "Cancel" and the × close it without adding; a click outside does not close it. The backend asks for the `update` permission.
+- **FILEVIEW** — A click on a file opens "Preview media": the file shown as an image, its Title and Description in the admin's language (or else in German), and "Change file". "Save" stores the title and description under the admin's language and, where another file was chosen, replaces the file; the dialog closes and the list is read again. A file that can't be read closes the dialog. Reading a file needs the `read` permission and changing it `update`.
+- **FILEDELETE** — Each file has a delete button, off without the `delete` permission. It asks "Delete media" with the file's name; confirmed, the file is removed from the customer.
+- **DOCLIST** — The form files page, opened by its address `documents-entity`, shows the files the customer sent with a form: the images each as a small picture, which opens the image large when it is clicked, and the other files by their File name with "Download". Without such files it says "There are no customer files!"; a spinner shows until the customer is read.
+- **DOCUPLOAD** — "Upload" on the form files page sends a chosen file to the forms module, for the form entry the customer came in with; then the files are read again.
+- **IMGLIST** — The images page, opened by its address `addlogo-entity`, lists the customer's images, each as a small picture. "Select image" adds a chosen image to the customer; a file that is not an image is not taken. The backend stores the image in three sizes and asks for the `update` permission; its refusal is shown.
+
+## Tests
+
+- With no media type chosen the list is empty; choosing "Image" lists the customer's images.
+- "Save" in the add dialog is off until a file is chosen.
+- A file added as an Image with the title "Front" shows in the list once "Image" is chosen.
+- Saving "Preview media" with another title under German leaves the English title unchanged.
+- Answering Cancel to "Delete media" keeps the file.
+- A customer without form files shows "There are no customer files!" on the form files page.
+- Choosing a PDF with "Select image" adds nothing.
+
+## View: CustomerFiles
+
+### Summary
+
+The Media tab: the filter by media type and the customer's files of the type chosen.
+
+### Display
+
+- "Filter" with the configured media types, and the customer's files of the one chosen with their name, kind, size and file type; none without a choice — [reads](aim:juicebar.entities#Record:Customer), [reads](aim:juicebar.entities#Record:CustomerFile), [satisfies](aim:juicebar.entities.media#Requirements[FILETYPES]), [satisfies](aim:juicebar.entities.media#Requirements[FILELIST])
+- A delete button on each file, off without the `delete` permission, asking "Delete media" with the file's name — [satisfies](aim:juicebar.entities.media#Requirements[FILEDELETE]), [satisfies](aim:juicebar.entities#Requirements[ENTROLE])
+- The tab is shown only where the project's `extraTabs` option has `media` — [satisfies](aim:juicebar#Requirements[CONFIG])
+
+### Actions
+
+- Add new media — [navigates](aim:juicebar.entities.media#View:AddFileDialog)
+- Open a file — [navigates](aim:juicebar.entities.media#View:FilePreviewDialog)
+- Delete — [exposes](aim:juicebar.entities.media#Operation:DeleteCustomerFile)
+
+### Layout
+
+- "Add new media" is the page's action; the filter stands above the list; delete is an icon button on each row.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/media-entity/media-entity.component.ts#MediaEntityComponent` — as: component
+- binds: `configuration:entities` — as: component
+- provenance: inferred
+
+## View: CustomerFormFiles
+
+### Summary
+
+The form files page: the files the customer sent with a form.
+
+### Display
+
+- The customer's form files: the images as small pictures that open large, the other files by name with "Download"; "There are no customer files!" without any, a spinner until the customer is read — [reads](aim:juicebar.entities#Record:Customer), [reads](aim:juicebar.entities#Record:FormFile), [satisfies](aim:juicebar.entities.media#Requirements[DOCLIST])
+
+### Actions
+
+- Upload — [exposes](aim:juicebar.entities.media#Operation:UploadFormFile)
+
+### Layout
+
+- "Upload" above; the images on the left, the other files on the right.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/documents-entity/documents-entity.component.ts#DocumentsEntityComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/documents-entity/image-viewer-dialog.component.ts#ImageViewerDialogComponent` — as: component
+- binds: `service:entities#fetchFile` — as: handler
+- provenance: inferred
+
+## View: CustomerImages
+
+### Summary
+
+The images page: the customer's images, such as an organisation's logo.
+
+### Display
+
+- The customer's images as small pictures, with "Select image" above them — [reads](aim:juicebar.entities#Record:Customer), [reads](aim:juicebar.entities#Record:CustomerImage), [satisfies](aim:juicebar.entities.media#Requirements[IMGLIST])
+
+### Actions
+
+- Select image — [exposes](aim:juicebar.entities.media#Operation:AddCustomerImage)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/addlogo-entities/addlogo-entities.component.ts#AddlogoEntitiesComponent` — as: component
+- provenance: inferred
+
+## View: AddFileDialog
+
+### Summary
+
+The dialog that adds a file to the customer.
+
+### Display
+
+- "Add new media to entity" with Media type and, once it is chosen, Type, File, Title and Description; "Save" off until a file is chosen; a click outside does not close it — [satisfies](aim:juicebar.entities.media#Requirements[FILEADD]), [satisfies](aim:juicebar.entities.media#Requirements[FILETYPES])
+
+### Actions
+
+- Save — [exposes](aim:juicebar.entities.media#Operation:AddCustomerFile)
+- Cancel — [navigates](aim:juicebar.entities.media#View:CustomerFiles)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/media-entity/add-media/add-media-dialog.component.ts#AddMediaDialogComponent` — as: component
+- provenance: inferred
+
+## View: FilePreviewDialog
+
+### Summary
+
+The dialog that shows one file of the customer and changes its title, description or the file.
+
+### Display
+
+- "Preview media" with the file as an image, read for staff with the `read` permission, its Title and Description in the admin's language or else in German, and "Change file"; a file that can't be read closes the dialog — [reads](aim:juicebar.entities#Record:CustomerFile), [satisfies](aim:juicebar.entities.media#Requirements[FILEVIEW]), [satisfies](aim:juicebar.entities#Requirements[ENTROLE])
+
+### Actions
+
+- Save — [exposes](aim:juicebar.entities.media#Operation:UpdateCustomerFile)
+- Cancel — [navigates](aim:juicebar.entities.media#View:CustomerFiles)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/media-entity/preview-media/preview-media-dialog.component.ts#PreviewMediaDialogComponent` — as: component
+- binds: `service:entities#getMedia` — as: handler
+- provenance: inferred
+
+## Operation: AddCustomerFile
+
+### Summary
+
+A staff member adds a file to a customer.
+
+### Input
+
+```schema
+customerId: string required ref(juicebar.entities#Customer.id)
+file: file required
+fileName: string required
+mediaType: string
+type: string
+title: string
+description: string
+language: string required
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Ensures
+
+- The file is kept in the customer's own folder of the media store under its cleaned name, and added to the customer's files with its media type, kind, extension and size, its title and description under the given language — [mutates](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.media#Requirements[FILEADD])
+- The backend refuses it without the `update` permission, and for a customer of another organisation — [satisfies](aim:juicebar.entities#Requirements[ENTROLE]), [satisfies](aim:juicebar.entities#Requirements[ENTORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/media-entity/add-media/add-media-dialog.component.ts#AddMediaDialogComponent.submit` — as: component
+- binds: `service:entities#uploadMedia` — as: handler
+- provenance: inferred
+
+## Operation: UpdateCustomerFile
+
+### Summary
+
+A staff member changes a file's title, description or the file itself.
+
+### Input
+
+```schema
+customerId: string required ref(juicebar.entities#Customer.id)
+fileId: string required
+title: string
+description: string
+language: string required
+file: file
+fileName: string
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Ensures
+
+- The title and the description are stored under the given language, the other languages' texts untouched; a file given replaces the stored one — [mutates](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.media#Requirements[FILEVIEW]), [satisfies](aim:juicebar#Requirements[LANG])
+- The backend refuses it without the `update` permission, and for a customer of another organisation — [satisfies](aim:juicebar.entities#Requirements[ENTROLE]), [satisfies](aim:juicebar.entities#Requirements[ENTORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/media-entity/preview-media/preview-media-dialog.component.ts#PreviewMediaDialogComponent.submit` — as: component
+- binds: `service:entities#updateMedia` — as: handler
+- provenance: inferred
+
+## Operation: DeleteCustomerFile
+
+### Summary
+
+A staff member deletes a file of a customer.
+
+### Input
+
+```schema
+customerId: string required ref(juicebar.entities#Customer.id)
+fileId: string required
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Expects
+
+- The staff member confirmed the deletion.
+
+### Ensures
+
+- The file is removed from the customer's files and the list is read again — [mutates](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.media#Requirements[FILEDELETE])
+- The backend refuses it without the `delete` permission, and for a customer of another organisation — [satisfies](aim:juicebar.entities#Requirements[ENTROLE]), [satisfies](aim:juicebar.entities#Requirements[ENTORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/media-entity/media-entity.component.ts#MediaEntityComponent.remove` — as: component
+- binds: `service:entities#deleteMedia` — as: handler
+- provenance: inferred
+
+## Operation: UploadFormFile
+
+### Summary
+
+A staff member uploads a file for the form entry a customer came in with.
+
+### Input
+
+```schema
+customerId: string required ref(juicebar.entities#Customer.id)
+file: file required
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Ensures
+
+- The file is sent to the forms module for the customer's form entry, and the page reads the customer's files again — [invokes](aim:juicebar.entities#Capability:FormUploads), [satisfies](aim:juicebar.entities.media#Requirements[DOCUPLOAD])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/documents-entity/documents-entity.component.ts#DocumentsEntityComponent.upload` — as: component
+- provenance: inferred
+
+## Operation: AddCustomerImage
+
+### Summary
+
+A staff member adds an image to a customer.
+
+### Input
+
+```schema
+customerId: string required ref(juicebar.entities#Customer.id)
+image: file required
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Expects
+
+- The file is an image.
+
+### Ensures
+
+- The image is stored 320, 640 and 1280 pixels wide and added to the customer's images, and the page reads them again — [mutates](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.media#Requirements[IMGLIST])
+- The backend refuses it without the `update` permission, and for a customer of another organisation; the refusal is shown — [satisfies](aim:juicebar.entities.media#Requirements[IMGLIST]), [satisfies](aim:juicebar.entities#Requirements[ENTROLE]), [satisfies](aim:juicebar.entities#Requirements[ENTORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/addlogo-entities/addlogo-entities.component.ts#AddlogoEntitiesComponent.upload` — as: component
+- binds: `service:entities#uploadLogo` — as: handler
+- provenance: inferred

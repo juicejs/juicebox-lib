@@ -1,0 +1,46 @@
+@if (form(); as attributeForm) {
+  <app-card class="attributes-card">
+    <form class="attributes-form" [formGroup]="attributeForm">
+      @for (field of fields(); track field.property) {
+        @switch (field.attribute.datatype) {
+          @case ('checkbox') {
+            <div class="attribute-switch">
+              <app-slide-toggle [formControlName]="field.property">{{ field.name }}</app-slide-toggle>
+              @if (field.explained) {
+                <p class="attribute-note">{{ 'marketing_communication_explanation' | translate }}</p>
+              }
+            </div>
+          }
+          @case ('date') {
+            <app-form-field appearance="outline" class="attribute-date">
+              <app-label>{{ field.name }}</app-label>
+              <app-datepicker [formControlName]="field.property" [minDate]="minDate" [maxDate]="maxDate" placeholder="dd-mm-yyyy" />
+            </app-form-field>
+          }
+          @case ('dropdown') {
+            <app-form-field appearance="outline">
+              <app-label>{{ field.name }}</app-label>
+              <app-select [formControlName]="field.property" [clearable]="true" [placeholder]="field.name">
+                @for (value of field.attribute.values; track value) {
+                  <app-option [value]="value">{{ value }}</app-option>
+                }
+              </app-select>
+            </app-form-field>
+          }
+          @default {
+            <app-form-field appearance="outline">
+              <app-label>{{ field.name }}</app-label>
+              <input appInput [type]="field.attribute.datatype === 'number' ? 'number' : 'text'" [formControlName]="field.property" />
+            </app-form-field>
+          }
+        }
+      }
+
+      <div class="attributes-actions">
+        <button app-button appearance="raised" color="primary" type="button" [promiseBtn]="savePromise()" (click)="submit()">
+          {{ 'save' | translate }}
+        </button>
+      </div>
+    </form>
+  </app-card>
+}

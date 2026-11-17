@@ -1,0 +1,13 @@
+<app-dialog-title>{{ 'api_access_key_modal_title' | translate }}</app-dialog-title>
+
+<app-dialog-content>
+  <p class="key-text">{{ 'save_api_access_key_warning' | translate }}</p>
+  <app-form-field appearance="outline">
+    <app-label>{{ 'api_access_key_modal_title' | translate }}</app-label>
+    <input appInput type="text" readonly [value]="token" />
+  </app-form-field>
+</app-dialog-content>
+
+<app-dialog-actions align="end">
+  <button app-button type="button" (click)="close()">{{ 'close' | translate }}</button>
+</app-dialog-actions>

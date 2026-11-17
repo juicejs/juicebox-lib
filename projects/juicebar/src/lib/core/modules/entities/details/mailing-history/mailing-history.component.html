@@ -1,0 +1,39 @@
+<div class="history-toolbar">
+  <app-form-field appearance="outline" class="history-provider">
+    <app-label>{{ 'mailing_provider' | translate }}</app-label>
+    <app-select [value]="provider()" (selectionChange)="selectProvider($event.value)">
+      @for (option of providers(); track option.key) {
+        <app-option [value]="option.key" [disabled]="!option.history_available">{{ option.name }}</app-option>
+      }
+    </app-select>
+  </app-form-field>
+</div>
+
+@if (loading()) {
+  <div class="history-loading">
+    <app-progress-spinner />
+  </div>
+} @else if (count()) {
+  <app-data-table
+    [rows]="rows()"
+    [columns]="columns"
+    [totalCount]="count()"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="pageSizeOptions"
+    [pageIndex]="page() - 1"
+    [idKey]="'last_event_time'"
+    (pageChange)="onPage($event)">
+    <ng-template [cellDef]="'last_event_time'" let-row>{{ row.last_event_time | date: 'dd.MM.yy HH:mm' }}</ng-template>
+    <ng-template [cellDef]="'actions'" let-row>
+      <div class="dt-row-actions">
+        <button app-button appearance="icon" type="button"
+                [disabled]="!row.template"
+                [attr.aria-label]="('email_preview' | translate) + ': ' + row.subject"
+                [appTooltip]="'email_preview' | translate"
+                (click)="showContent(row)">
+          <app-icon [icon]="'mail'" />
+        </button>
+      </div>
+    </ng-template>
+  </app-data-table>
+}

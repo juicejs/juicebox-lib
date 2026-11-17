@@ -1,0 +1,68 @@
+---
+aim: juicebar.entities.messages
+kind: intent
+parent: juicebar.entities
+approved_by: Mario
+approved_at: 2026-11-17
+---
+
+# Customer messages
+
+## Summary
+
+What was sent to a customer, for staff who also have the communications role: on the Communication tab the e-mails the project's mailing providers recorded, with whether they were opened and clicked and what they said; on the Push notifications tab the push notifications the project's shop sent. Both tabs only read.
+
+## Requirements
+
+- **MSGROLE** — Both tabs are shown only to staff with `communication:role`. The Push notifications tab is not shown where the project's `hiddenTabs` option has `push-notifications` — from [juicebar#Requirements[CONFIG]]
+- **MAILPROVIDER** — "Mailing provider" offers the project's mailing providers; the first is chosen at first, one is always chosen, and a provider that keeps no history cannot be chosen. Choosing another reads its e-mails.
+- **MAILLIST** — The Communication tab lists the e-mails the chosen provider recorded for the customer, 10 to a page: Name (the subject), Send (when it last heard of the e-mail, as day.month.year hour:minute), Status, Opens Count and Clicks Count. While it reads, a spinner shows; with no e-mails no table shows.
+- **MAILPREVIEW** — Each e-mail has an "E-mail preview" button that opens the e-mail's text in a dialog; it is off where the provider kept no text.
+- **PUSHLIST** — The Push notifications tab lists the push notifications sent to the customer, in the admin's language, 10 to a page (10, 20, 30 or 50 can be chosen): Title, Body, Assets, Offers and Sent (as day.month.year - hour:minute). Body, Assets and Offers show their whole text when pointed at.
+
+## Tests
+
+- A staff member without `communication:role` sees neither tab.
+- A provider without history is listed in "Mailing provider" but cannot be chosen.
+- A customer with 25 recorded e-mails shows 10 on the first page and three pages.
+- The preview button of an e-mail without kept text is off.
+- With `hiddenTabs: ['push-notifications']` an opened customer shows no Push notifications tab.
+
+## View: MailHistoryTab
+
+### Summary
+
+The Communication tab: the e-mails a mailing provider recorded for the customer.
+
+### Display
+
+- "Mailing provider" with the project's providers, the first chosen, those without history not choosable — [invokes](aim:juicebar.entities#Capability:MailHistory), [satisfies](aim:juicebar.entities.messages#Requirements[MAILPROVIDER])
+- The chosen provider's e-mails for the customer with subject, time, status, opens and clicks, 10 to a page — [invokes](aim:juicebar.entities#Capability:MailHistory), [reads](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.messages#Requirements[MAILLIST])
+- "E-mail preview" on each e-mail, off without kept text, opening the text in a dialog — [satisfies](aim:juicebar.entities.messages#Requirements[MAILPREVIEW])
+- The tab is shown only to staff with `communication:role` — [satisfies](aim:juicebar.entities.messages#Requirements[MSGROLE])
+
+### Layout
+
+- The provider choice above the list; the preview button at the end of each row.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/mailing-history/mailing-history.component.ts#MailingHistoryComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/mailing-history/email-preview-dialog.component.ts#EmailPreviewDialogComponent` — as: component
+- provenance: inferred
+
+## View: PushNotificationsTab
+
+### Summary
+
+The Push notifications tab: the push notifications sent to the customer.
+
+### Display
+
+- The notifications with title, body, assets, offers and time, in the admin's language, page by page — [invokes](aim:juicebar.entities#Capability:PushHistory), [reads](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.messages#Requirements[PUSHLIST])
+- The tab is shown only to staff with `communication:role`, and not where the project's `hiddenTabs` option has `push-notifications` — [satisfies](aim:juicebar.entities.messages#Requirements[MSGROLE]), [satisfies](aim:juicebar#Requirements[CONFIG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/push-notifications/push-notifications.component.ts#PushNotificationsComponent` — as: component
+- provenance: inferred

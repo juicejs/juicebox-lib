@@ -1,0 +1,17 @@
+<app-dialog-title>{{ 'generate_api_key_modal_title' | translate }}</app-dialog-title>
+
+<app-dialog-content>
+  <p class="key-text">{{ 'input_the_name_for_the_new_key' | translate }}</p>
+  <app-form-field appearance="outline">
+    <app-label>{{ 'key_name' | translate }}</app-label>
+    <input appInput type="text" [formControl]="keyName" [placeholder]="'key_name' | translate" aria-describedby="key-name-hint" />
+  </app-form-field>
+  <p class="key-text" id="key-name-hint">{{ 'minimum_8_characters' | translate }}</p>
+</app-dialog-content>
+
+<app-dialog-actions align="end">
+  <button app-button type="button" (click)="close()">{{ 'close' | translate }}</button>
+  <button app-button appearance="raised" color="primary" type="button" [disabled]="keyName.value.length < 8" (click)="submit()">
+    {{ 'create' | translate }}
+  </button>
+</app-dialog-actions>

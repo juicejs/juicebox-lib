@@ -1,0 +1,36 @@
+<app-dialog-title>{{ 'delete_attribute' | translate }}</app-dialog-title>
+
+<app-dialog-content>
+  <app-form-field appearance="outline">
+    <app-label>{{ 'entity_type' | translate }}</app-label>
+    <app-select [value]="entityType()" [disabled]="typeFixed" [placeholder]="'entity_type' | translate"
+                (selectionChange)="selectType($event.value)">
+      @for (type of entityTypes; track type.type) {
+        <app-option [value]="type.type">{{ type.name }}</app-option>
+      }
+    </app-select>
+  </app-form-field>
+
+  <app-form-field appearance="outline">
+    <app-label>{{ 'select_attribute' | translate }}</app-label>
+    <app-select [value]="attribute()" [placeholder]="'attribute' | translate" (selectionChange)="attribute.set($event.value)">
+      @for (option of attributes(); track option.key) {
+        <app-option [value]="option.key">{{ option.name }}</app-option>
+      }
+    </app-select>
+  </app-form-field>
+
+  @if (message(); as refusal) {
+    <p class="dialog-refusal" role="alert">{{ refusal }}</p>
+  }
+</app-dialog-content>
+
+<app-dialog-actions align="end">
+  <button app-button type="button" (click)="cancel()">{{ 'cancel' | translate }}</button>
+  <button app-button appearance="raised" color="warn" type="button"
+          [disabled]="!attribute()"
+          [promiseBtn]="deletePromise()"
+          (click)="remove()">
+    {{ 'delete' | translate }}
+  </button>
+</app-dialog-actions>

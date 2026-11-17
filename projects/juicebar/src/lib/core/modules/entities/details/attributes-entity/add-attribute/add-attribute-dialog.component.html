@@ -1,0 +1,67 @@
+<app-dialog-title>{{ 'add_attribute' | translate }}</app-dialog-title>
+
+<form [formGroup]="form">
+  <app-dialog-content>
+    <app-slide-toggle formControlName="required">{{ 'required' | translate }}</app-slide-toggle>
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'name' | translate }} *</app-label>
+      <input appInput type="text" formControlName="name" aria-required="true" [placeholder]="'name' | translate" />
+      @if (form.controls.name.touched && form.controls.name.errors?.['required']) {
+        <app-error>{{ 'must_include_name' | translate }}</app-error>
+      } @else if (form.controls.name.touched && form.controls.name.invalid) {
+        <app-error>{{ 'invalid_attribute_name' | translate }}</app-error>
+      }
+    </app-form-field>
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'label' | translate }} *</app-label>
+      <input appInput type="text" formControlName="label" aria-required="true" [placeholder]="'label' | translate" />
+      @if (form.controls.label.touched && form.controls.label.errors?.['required']) {
+        <app-error>{{ 'must_include_label' | translate }}</app-error>
+      }
+    </app-form-field>
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'type' | translate }} *</app-label>
+      <app-select formControlName="datatype" [placeholder]="'type' | translate" (selectionChange)="datatypeChanged($event.value)">
+        @for (datatype of datatypes; track datatype) {
+          <app-option [value]="datatype">{{ datatype }}</app-option>
+        }
+      </app-select>
+      @if (form.controls.datatype.touched && form.controls.datatype.errors?.['required']) {
+        <app-error>{{ 'must_select_type' | translate }}</app-error>
+      }
+    </app-form-field>
+
+    @if (dropdown()) {
+      <app-form-field appearance="outline">
+        <app-label>{{ 'enter_values_separated_by_comma' | translate }}</app-label>
+        <textarea appInput formControlName="values" [placeholder]="'values' | translate"></textarea>
+      </app-form-field>
+    }
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'entity_type' | translate }} *</app-label>
+      <app-select formControlName="entityType" [placeholder]="'type' | translate">
+        @for (entityType of entityTypes; track entityType.key) {
+          <app-option [value]="entityType.key">{{ entityType.name }}</app-option>
+        }
+      </app-select>
+      @if (form.controls.entityType.touched && form.controls.entityType.errors?.['required']) {
+        <app-error>{{ 'must_select_type' | translate }}</app-error>
+      }
+    </app-form-field>
+
+    @if (message(); as refusal) {
+      <p class="dialog-refusal" role="alert">{{ refusal }}</p>
+    }
+  </app-dialog-content>
+
+  <app-dialog-actions align="end">
+    <button app-button type="button" (click)="cancel()">{{ 'cancel' | translate }}</button>
+    <button app-button appearance="raised" color="primary" type="button" [promiseBtn]="createPromise()" (click)="create()">
+      {{ 'add' | translate }}
+    </button>
+  </app-dialog-actions>
+</form>

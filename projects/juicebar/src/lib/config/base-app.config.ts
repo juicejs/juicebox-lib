@@ -193,6 +193,27 @@ export type ConfigurationsCustomization = ModuleCustomization;
 
 export const CONFIGURATIONS_CUSTOMIZATION = new InjectionToken<ConfigurationsCustomization>('CONFIGURATIONS_CUSTOMIZATION');
 
+/**
+ * Project-specific behaviour of the customers module (the old juicebox `entities`). The old juicebox chose a
+ * customer's tabs by the project's title; here the project says which it uses. As there, the backend's `amgshop`
+ * configuration also has a say: the calling-number fields, the "Customer group" column and other modules' buttons.
+ */
+export interface EntitiesOptions {
+  /** Details tabs this project does not use; they show by default (Payment for organisations only) */
+  hiddenTabs?: Array<'attributes' | 'wallets' | 'push-notifications' | 'payment'>;
+  /**
+   * Details tabs only some projects use; hidden by default: the customer's files (`media`) and an organisation's
+   * API keys (`api-access`, for staff with `superAdmin:role`)
+   */
+  extraTabs?: Array<'media' | 'api-access'>;
+}
+
+export interface EntitiesCustomization extends ModuleCustomization {
+  options?: EntitiesOptions;
+}
+
+export const ENTITIES_CUSTOMIZATION = new InjectionToken<EntitiesCustomization>('ENTITIES_CUSTOMIZATION');
+
 export interface JuicebarFeature {
   routes: Routes;
   providers: EnvironmentProviders;

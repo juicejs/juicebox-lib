@@ -1,0 +1,41 @@
+<div class="documents-bar">
+  <input #fileInput type="file" hidden (change)="upload($event)" />
+  <button app-button appearance="raised" color="primary" type="button" (click)="fileInput.click()">{{ 'upload' | translate }}</button>
+</div>
+
+@if (loading()) {
+  <div class="documents-loading">
+    <app-progress-spinner />
+  </div>
+} @else if (!hasFiles()) {
+  <p class="documents-none">{{ 'no_customer_files' | translate }}</p>
+} @else {
+  <div class="documents">
+    @if (images().length) {
+      <app-data-table
+        [rows]="images()"
+        [columns]="imageColumns"
+        [totalCount]="images().length"
+        [pageSize]="images().length"
+        [pageSizeOptions]="[]"
+        (rowClick)="openImage($event)">
+        <ng-template [cellDef]="'image'" let-row>
+          <img class="documents-thumb" [src]="row.url" [alt]="row.filename" />
+        </ng-template>
+      </app-data-table>
+    }
+
+    @if (documents().length) {
+      <app-data-table
+        [rows]="documents()"
+        [columns]="documentColumns"
+        [totalCount]="documents().length"
+        [pageSize]="documents().length"
+        [pageSizeOptions]="[]">
+        <ng-template [cellDef]="'download'" let-row>
+          <button app-button appearance="flat" type="button" (click)="download(row)">{{ 'download' | translate }}</button>
+        </ng-template>
+      </app-data-table>
+    }
+  </div>
+}

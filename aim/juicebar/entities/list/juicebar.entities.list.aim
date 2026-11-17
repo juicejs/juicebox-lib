@@ -1,0 +1,129 @@
+---
+aim: juicebar.entities.list
+kind: intent
+parent: juicebar.entities
+approved_by: Mario
+approved_at: 2026-11-17
+---
+
+# Customer listing
+
+## Summary
+
+The customers of one type, page by page, in the columns the project configures for that type, with a filter in each column's header, a filter by an attribute's value and, for super admins, by organisation. From here staff open a customer, create one, open the customer groups and delete a customer. The admin's search also finds customers.
+
+## Requirements
+
+- **LISTTYPE** — The listing shows the customers of one type: at first the first type of the configuration, then the type chosen in "Type". Choosing a type starts from the first page with that type's columns and attribute filter. Without configured types the listing stays empty.
+- **LISTPAGE** — The listing shows 10 customers to a page (10, 20, 30 or 50 can be chosen; changing the size starts from the first page), sorted by last name ascending until a column is sorted; sorting keeps the page. Sorting, paging and filtering happen on the backend.
+- **LISTCOLUMNS** — After a first column that shows a red lock for a protected customer and an open lock otherwise, the listing has the columns of the chosen type, each showing the customer's field it names. Six columns are of their own kind: `wallets` shows the address of the customer's first wallet; `groupNames` the names of the customer's groups, separated by commas; `email` the e-mail address; `email-hidden` the e-mail address hidden until it is pointed at; `sap` a green tick with the customer's SAP number, or a red ban sign without one; `activated` a green tick for an activated customer and a grey one otherwise. With `amgshop` a "Customer group" column follows, with the names of the customer's groups — from [juicebar.entities#Requirements[ENTAMG]]
+- **LISTFILTER** — Every column that shows a field has a filter in its header, and so have the group names (which filter `group`) and the e-mail address; the SAP, Activated, wallet and lock columns have none. Half a second after typing pauses the listing follows from its first page, with the customers whose field contains the text; an emptied filter is dropped. The field columns and the e-mail address can be sorted.
+- **LISTORG** — A super admin of customers has an "Organisation" filter that offers the organisations and keeps the customers of the one chosen.
+- **LISTATTRIBUTE** — Where the chosen type has attribute fields, "Filter by attribute" offers them. Choosing one shows "Choose value" with the values the customers of the type hold for it, and choosing a value keeps the customers with that value. "Reset attributes filter", shown while an attribute is chosen, clears both and lists all again.
+- **LISTDELETE** — Each customer has a delete button, except one the backend marked `noDelete`; without the `delete` permission the button is off. It asks "Are you sure you want to delete customer:" with the customer's name; for an organisation, where the staff member has `marketplace:role`, it asks the name and "Are you sure you want to delete organisation? All created content and users will be deleted as well". Confirmed, the customer is deleted, "Success!" shows and the listing starts from its first page; a refusal shows "Error" with the backend's reason. Here a customer is named by its organisation name for an organisation, else by first and last name, else by e-mail address.
+- **LISTOPEN** — A click on a customer opens it on its details. The first field column is a link to the customer, so the browser also opens it in a new tab.
+- **LISTACTIONS** — "Customer groups" and "Add new" are the page's buttons, shown only to staff with the `create` permission. With `amgshop` the buttons other modules registered follow them — from [juicebar.entities#Requirements[ENTAMG]]
+- **SEARCH** — The admin's search finds, for staff with `entities:role`, up to 10 customers whose first name or e-mail address contains the text, each shown with its name (the organisation or company name, or else first and last name), its type and e-mail address, and opened on its details.
+
+## Tests
+
+- 25 private customers show 10 on the first page, sorted by last name.
+- Typing "mei" in the Lastname header leaves, after half a second, the customers whose last name contains "mei", from page 1.
+- A staff member who is not a super admin of customers sees no "Organisation" filter.
+- Choosing the attribute "Segment" and the value "Gold" leaves the customers whose Segment is Gold; "Reset attributes filter" lists all again.
+- Answering Cancel to the delete question deletes nothing.
+- A customer marked `noDelete` has no delete button.
+- Searching "anna" in the admin's search lists customers named Anna under "Entities".
+
+## View: CustomerList
+
+### Summary
+
+The page of the customers module: the filters, and the customers of the chosen type in that type's columns.
+
+### Display
+
+- The customers of the chosen type in the type's columns, page by page, sorted by last name at first, read for staff with `entities:role` — [reads](aim:juicebar.entities#Record:Customer), [reads](aim:juicebar.entities#Record:CustomerType), [satisfies](aim:juicebar.entities.list#Requirements[LISTTYPE]), [satisfies](aim:juicebar.entities.list#Requirements[LISTPAGE]), [satisfies](aim:juicebar.entities.list#Requirements[LISTCOLUMNS]), [satisfies](aim:juicebar.entities#Requirements[ENTTYPES]), [satisfies](aim:juicebar.entities#Requirements[ENTROLE])
+- Only the customers of the staff member's organisation, every organisation's for a super admin, and a protected customer only for its protector and admins where `protection` is on — [satisfies](aim:juicebar.entities#Requirements[ENTORG]), [satisfies](aim:juicebar.entities#Requirements[ENTPROTECT])
+- The names of each customer's groups — [reads](aim:juicebar.entities#Record:CustomerGroup), [satisfies](aim:juicebar.entities.list#Requirements[LISTCOLUMNS])
+- A filter in the header of each field column, of the group names and of the e-mail address — [satisfies](aim:juicebar.entities.list#Requirements[LISTFILTER])
+- "Type"; "Organisation" for super admins; "Filter by attribute", "Choose value" and "Reset attributes filter" where the type has attribute fields — [reads](aim:juicebar.entities#Record:AttributeField), [satisfies](aim:juicebar.entities.list#Requirements[LISTTYPE]), [satisfies](aim:juicebar.entities.list#Requirements[LISTORG]), [satisfies](aim:juicebar.entities.list#Requirements[LISTATTRIBUTE])
+- "Customer groups" and "Add new" for staff with the `create` permission; with `amgshop` the "Customer group" column and the buttons other modules registered — [satisfies](aim:juicebar.entities.list#Requirements[LISTACTIONS]), [satisfies](aim:juicebar.entities#Requirements[ENTAMG]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- A delete button on each customer not marked `noDelete`, off without the `delete` permission, asking before it deletes — [satisfies](aim:juicebar.entities.list#Requirements[LISTDELETE])
+- A customer opens on its details; its first field column is a link to it — [satisfies](aim:juicebar.entities.list#Requirements[LISTOPEN])
+- Every label on the module's screens comes from the customers label dictionary, in the admin's language, with every language's texts the old admin had — [satisfies](aim:juicebar#Requirements[UILABELS])
+
+### Actions
+
+- Add new — [navigates](aim:juicebar.entities.create#View:CreateCustomerPage)
+- Customer groups — [navigates](aim:juicebar.entities.groups#View:CustomerGroupsDialog)
+- Open a customer — [navigates](aim:juicebar.entities.details#View:CustomerDetails)
+- Delete — [exposes](aim:juicebar.entities.list#Operation:DeleteCustomer)
+
+### Layout
+
+- "Customer groups" and "Add new" are the page's actions; the Type, Organisation and attribute filters stand above the table, the column filters in its header; delete is an icon button on each row.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/listing/entities-listing.component.ts#EntitiesListingComponent` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/entities/entities.route.ts#buildEntitiesRoute` — as: route
+- binds: `projects/juicebar/src/lib/core/modules/entities/i18n/entities_dictionary.ts#entitiesDictionary` — as: component
+- binds: `service:entities#fetchEntities` — as: handler
+- binds: `service:entities#searchAttributeValues` — as: handler
+- binds: `service:entities#fetchGroupById` — as: handler
+- provenance: inferred
+
+## View: CustomerSearch
+
+### Summary
+
+The customers among the results of the admin's search.
+
+### Display
+
+- Up to 10 customers whose first name or e-mail address contains the text, each with its name, its type and its e-mail address, under "Entities", for staff with `entities:role` — [reads](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.list#Requirements[SEARCH]), [satisfies](aim:juicebar.entities#Requirements[ENTROLE])
+
+### Actions
+
+- Open a customer — [navigates](aim:juicebar.entities.details#View:CustomerDetails)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/entities.providers.ts#provideEntities` — as: component
+- binds: `service:entities#fetchEntities` — as: handler
+- provenance: inferred
+
+## Operation: DeleteCustomer
+
+### Summary
+
+A staff member deletes a customer from the listing.
+
+### Input
+
+```schema
+customerId: string required ref(juicebar.entities#Customer.id)
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Expects
+
+- The staff member confirmed the deletion.
+
+### Ensures
+
+- The customer is gone, "Success!" shows and the listing is read again from its first page — [mutates](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.list#Requirements[LISTDELETE])
+- A refusal deletes nothing and shows "Error" with the backend's reason — [satisfies](aim:juicebar.entities.list#Requirements[LISTDELETE])
+- The backend refuses it without the `delete` permission, and for a customer of another organisation — [satisfies](aim:juicebar.entities#Requirements[ENTROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.entities#Requirements[ENTORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/listing/entities-listing.component.ts#EntitiesListingComponent.remove` — as: component
+- binds: `service:entities#deleteEntity` — as: handler
+- provenance: inferred

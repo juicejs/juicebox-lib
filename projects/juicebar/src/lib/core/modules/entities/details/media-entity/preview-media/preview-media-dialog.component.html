@@ -1,0 +1,33 @@
+<app-dialog-title>{{ 'preview_media' | translate }}</app-dialog-title>
+
+<form [formGroup]="form">
+  <app-dialog-content>
+    @if (preview(); as url) {
+      <div class="media-preview">
+        <img [src]="url" [alt]="media.fileName" />
+      </div>
+    }
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'title' | translate }}</app-label>
+      <input appInput type="text" formControlName="title" />
+    </app-form-field>
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'description' | translate }}</app-label>
+      <input appInput type="text" formControlName="description" />
+    </app-form-field>
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'change_file' | translate }}</app-label>
+      <app-file-input formControlName="file" [current]="stored" />
+    </app-form-field>
+  </app-dialog-content>
+
+  <app-dialog-actions align="end">
+    <button app-button type="button" (click)="close()">{{ 'cancel' | translate }}</button>
+    <button app-button appearance="raised" color="primary" type="button" [promiseBtn]="savePromise()" (click)="submit()">
+      {{ 'save' | translate }}
+    </button>
+  </app-dialog-actions>
+</form>

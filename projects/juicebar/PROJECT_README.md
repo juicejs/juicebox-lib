@@ -66,6 +66,7 @@ A module left out has no routes, no sidebar entry and no code in the bundle.
 | `provideCategories()` | The category tree, a wizard, and a category's details, media and articles (`categories`) | `/main/categories` | `categories:role` |
 | `provideCommunications()` | E-mail and push: quick send, contents, automations, history (`communications`) | `/main/communications` | `communication:role` |
 | `provideConfigurations()` | The backend's configurations in memory and in the database: compared, added, changed and deleted (`configuration`) | `/main/configuration` | `configuration:role` |
+| `provideEntities()` | Customers: the list by type with column, organisation and attribute filters, customer groups, the create page, and a customer's details, addresses, attributes, wallets, files, e-mail history, push notifications, and an organisation's payment and API keys (`entities`) | `/main/entities` | `entities:role` |
 
 Each takes `{ options, componentOverrides, providers }`, all optional: `options` below, `componentOverrides` under
 Overrides, and `providers` for services the override components need. The editor shows each option's description too.
@@ -114,6 +115,23 @@ and `openCategoriesInNewTab`.
 switch its parts.
 
 **Configurations** has no options.
+
+**Customers**
+
+| Option | Effect |
+|---|---|
+| `hiddenTabs: ['wallets']` | Tabs of a customer this project does not use: `attributes`, `wallets`, `push-notifications`, `payment`. They show by default (Payment for organisations only) |
+| `extraTabs: ['media', 'api-access']` | Tabs only some projects use, hidden by default: the customer's files, and an organisation's API keys (for staff with `superAdmin:role`) |
+
+The old juicebox chose these tabs by the project's title; a project now names them. Its other modules' tabs on a
+customer (tickets, purchases, bookings …) are added with `componentOverrides`: `{routePath: ['details/:id', 'tickets'],
+component, tab: {label: 'tickets', permission: 'ticket-management:role#admin'}}`. The backend's `amgshop` configuration
+switches the calling-number fields, the "Customer group" column and the listing buttons other modules register with
+`EntitiesService.addCustomActionButton()`; `entities:juicebox:settings` gives the customer types and their columns.
+
+Three pages of the old juicebox that no tab leads to are still there for projects that link to them:
+`details/:id/documents-entity` (the files a customer sent with a form), `details/:id/addlogo-entity` (the customer's
+images) and `details/:id/prices-entity` (a placeholder; a project with prices overrides it).
 
 ### The project's own modules
 

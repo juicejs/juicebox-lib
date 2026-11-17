@@ -1,0 +1,163 @@
+---
+aim: juicebar.entities.groups
+kind: intent
+parent: juicebar.entities
+approved_by: Mario
+approved_at: 2026-11-17
+---
+
+# Customer groups
+
+## Summary
+
+The groups an organisation sorts its customers into. Staff open them from the listing's "Customer groups" button, in a dialog: they add a group by its name, rename one and delete one. A customer is put into groups on its details.
+
+## Requirements
+
+- **GRPLIST** — The dialog, titled "Create customer group", lists the groups of the organisation the staff member is signed in to, 10 to a page, each with its name, a delete button and an edit button. "Close" and the × close it.
+- **GRPCREATE** — A group is added by typing its name in "Group name" and pressing "Create" or Enter; "Create" is off while the name is empty, and an empty name shows "Group name is required". The group belongs to the staff member's organisation. Afterwards the field is emptied and the list is read again from its first page. The backend asks for the `update` permission.
+- **GRPRENAME** — The edit button opens a dialog titled "Edit" with the group's name; "Save" is off while the name is empty. Saved, the dialog closes and the list is read again; closed without saving, the name stays as it was. The backend asks for the `delete` permission.
+- **GRPDELETE** — The delete button deletes the group at once, without a question, and the list is read again from its first page. A group that still has customers is not deleted. The backend asks for the `delete` permission.
+- **GRPERROR** — When the backend refuses to add, rename or delete a group, its reason is shown.
+
+## Tests
+
+- 12 groups show 10 on the first page of the dialog and 2 on the second.
+- Pressing Enter in "Group name" with "VIP" typed adds the group VIP and empties the field.
+- Deleting a group that still has customers leaves it in the list and shows the backend's reason.
+- Closing the "Edit" dialog without saving leaves the group's name unchanged in the list.
+
+## View: CustomerGroupsDialog
+
+### Summary
+
+The dialog of the customer groups: a field to add one, and the list.
+
+### Display
+
+- "Group name" with "Create", and the groups of the staff member's organisation, 10 to a page, each with delete and edit — [reads](aim:juicebar.entities#Record:CustomerGroup), [satisfies](aim:juicebar.entities.groups#Requirements[GRPLIST]), [satisfies](aim:juicebar.entities#Requirements[ENTORG])
+- "Create" off while the name is empty — [satisfies](aim:juicebar.entities.groups#Requirements[GRPCREATE])
+- The backend's reason when adding, renaming or deleting is refused — [satisfies](aim:juicebar.entities.groups#Requirements[GRPERROR])
+
+### Actions
+
+- Create — [exposes](aim:juicebar.entities.groups#Operation:CreateCustomerGroup)
+- Delete — [exposes](aim:juicebar.entities.groups#Operation:DeleteCustomerGroup)
+- Edit — [navigates](aim:juicebar.entities.groups#View:RenameCustomerGroupDialog)
+
+### Layout
+
+- The field with its button above the list; delete and edit are icon buttons on each row; "Close" at the foot.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/groups/customer-groups-dialog.component.ts#CustomerGroupsDialogComponent` — as: component
+- binds: `service:entities#fetchEntityGroups` — as: handler
+- provenance: inferred
+
+## View: RenameCustomerGroupDialog
+
+### Summary
+
+The dialog that renames a customer group.
+
+### Display
+
+- "Edit" and the group's name; "Save" off while it is empty — [reads](aim:juicebar.entities#Record:CustomerGroup), [satisfies](aim:juicebar.entities.groups#Requirements[GRPRENAME])
+
+### Actions
+
+- Save — [exposes](aim:juicebar.entities.groups#Operation:RenameCustomerGroup)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/groups/rename-group-dialog.component.ts#RenameGroupDialogComponent` — as: component
+- provenance: inferred
+
+## Operation: CreateCustomerGroup
+
+### Summary
+
+A staff member adds a customer group.
+
+### Input
+
+```schema
+name: string required
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Ensures
+
+- A group of that name is stored for the staff member's organisation, and the list is read again from its first page — [mutates](aim:juicebar.entities#Record:CustomerGroup), [satisfies](aim:juicebar.entities.groups#Requirements[GRPCREATE])
+- The backend refuses it without the `update` permission — [satisfies](aim:juicebar.entities.groups#Requirements[GRPCREATE]), [satisfies](aim:juicebar#Requirements[ROLES])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/groups/customer-groups-dialog.component.ts#CustomerGroupsDialogComponent.create` — as: component
+- binds: `service:entities#createNewEntityGroup` — as: handler
+- provenance: inferred
+
+## Operation: RenameCustomerGroup
+
+### Summary
+
+A staff member renames a customer group.
+
+### Input
+
+```schema
+groupId: string required ref(juicebar.entities#CustomerGroup.id)
+name: string required
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Ensures
+
+- The group has the new name — [mutates](aim:juicebar.entities#Record:CustomerGroup), [satisfies](aim:juicebar.entities.groups#Requirements[GRPRENAME])
+- The backend refuses it without the `delete` permission, and for a group of another organisation — [satisfies](aim:juicebar.entities.groups#Requirements[GRPRENAME]), [satisfies](aim:juicebar.entities#Requirements[ENTORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/groups/rename-group-dialog.component.ts#RenameGroupDialogComponent.save` — as: component
+- binds: `service:entities#updateEntityGroup` — as: handler
+- provenance: inferred
+
+## Operation: DeleteCustomerGroup
+
+### Summary
+
+A staff member deletes a customer group.
+
+### Input
+
+```schema
+groupId: string required ref(juicebar.entities#CustomerGroup.id)
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Ensures
+
+- A group without customers is gone and the list is read again from its first page; a group that still has customers stays — [mutates](aim:juicebar.entities#Record:CustomerGroup), [satisfies](aim:juicebar.entities.groups#Requirements[GRPDELETE])
+- The backend refuses it without the `delete` permission, and for a group of another organisation — [satisfies](aim:juicebar.entities.groups#Requirements[GRPDELETE]), [satisfies](aim:juicebar.entities#Requirements[ENTORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/groups/customer-groups-dialog.component.ts#CustomerGroupsDialogComponent.remove` — as: component
+- binds: `service:entities#deleteEntityGroup` — as: handler
+- provenance: inferred

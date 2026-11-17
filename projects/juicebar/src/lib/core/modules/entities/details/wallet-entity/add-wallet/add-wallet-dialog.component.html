@@ -1,0 +1,37 @@
+<app-dialog-title>{{ 'create_wallet' | translate }}</app-dialog-title>
+
+<form [formGroup]="form">
+  <app-dialog-content>
+    <app-form-field appearance="outline">
+      <app-label>{{ 'asset_publisher' | translate }}</app-label>
+      <app-select formControlName="publisher" [clearable]="true" [placeholder]="'choose_publisher' | translate">
+        @for (publisher of publishers(); track publisher.id) {
+          <app-option [value]="publisher.id">{{ publisher.title }}</app-option>
+        }
+      </app-select>
+      @if (form.controls.publisher.touched && form.controls.publisher.errors?.['required']) {
+        <app-error>{{ 'must_include_publisher' | translate }}</app-error>
+      }
+    </app-form-field>
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'name' | translate }}</app-label>
+      <input appInput type="text" formControlName="name" [placeholder]="'name' | translate" />
+      @if (form.controls.name.touched && form.controls.name.errors?.['required']) {
+        <app-error>{{ 'must_include_a_name' | translate }}</app-error>
+      }
+    </app-form-field>
+
+    <app-form-field appearance="outline">
+      <app-label>{{ 'address' | translate }}</app-label>
+      <input appInput type="text" formControlName="address" [placeholder]="'if_you_dont_have_wallet_leave_empty' | translate" />
+    </app-form-field>
+  </app-dialog-content>
+
+  <app-dialog-actions align="end">
+    <button app-button type="button" (click)="cancel()">{{ 'cancel' | translate }}</button>
+    <button app-button appearance="raised" color="primary" type="button" [promiseBtn]="createPromise()" (click)="create()">
+      {{ 'add' | translate }}
+    </button>
+  </app-dialog-actions>
+</form>

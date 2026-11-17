@@ -1,5 +1,6 @@
 import { EnvironmentProviders, inject, makeEnvironmentProviders, provideEnvironmentInitializer } from '@angular/core';
 import { BASE_APP_CONFIG, BaseAppConfig, USERS_CUSTOMIZATION, EXPORTS_CUSTOMIZATION, LOCATIONS_CUSTOMIZATION, CATEGORIES_CUSTOMIZATION, COMMUNICATIONS_CUSTOMIZATION, CONFIGURATIONS_CUSTOMIZATION } from '../../../config/base-app.config';
+import { ENTITIES_CUSTOMIZATION } from '../../../config/base-app.config';
 import { SidebarService } from '../../shared/services/sidebar.service';
 import { MainTranslationPipe } from './i18n/main.translation';
 
@@ -39,6 +40,11 @@ export function provideMain(): EnvironmentProviders {
       if (inject(CONFIGURATIONS_CUSTOMIZATION, { optional: true }) != null) {
         // The old juicebox's id and address, so staff's sidebar order and links keep working
         sidebarService.registerSidebarItem('configuration', 'configurations', 'configuration:role', 'fa-tools', 'configuration');
+      }
+
+      if (inject(ENTITIES_CUSTOMIZATION, { optional: true }) != null) {
+        // As the old juicebox registered it; the main dictionary reads 'entities' as "Customers"
+        sidebarService.registerSidebarItem('entities', 'entities', 'entities:role', 'fa-address-book', 'entities');
       }
 
       if (config?.mainRoutes) {

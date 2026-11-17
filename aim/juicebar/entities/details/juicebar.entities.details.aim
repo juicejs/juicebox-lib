@@ -1,0 +1,292 @@
+---
+aim: juicebar.entities.details
+kind: intent
+parent: juicebar.entities
+approved_by: Mario
+approved_at: 2026-11-17
+---
+
+# Customer details
+
+## Summary
+
+An opened customer: its tabs, the Details tab where staff change its names, contact details, groups, country and languages, and the Address tab with its addresses. The other tabs are the customer's attributes, wallets, files, messages, and an organisation's payment and API access; a project adds the tabs of its other modules.
+
+## Requirements
+
+- **DETTABS** — An opened customer shows these tabs, in this order: Details; Address; Attributes, for staff with `entities:role#attributes`; Wallets; Media, where the project's `extraTabs` option has `media`; Communication and Push notifications, for staff with `communication:role`; Payment, for an organisation; API Access, for an organisation, where `extraTabs` has `api-access`, for staff with `superAdmin:role`. The project's `hiddenTabs` option takes out Attributes, Wallets, Push notifications or Payment. After them come the tabs the project added for its other modules, each with the permission or the role that shows it. The customer opens on Details — from [juicebar#Requirements[CONFIG]]
+- **DETPAGES** — Three more pages of an opened customer have no tab and are opened by their address, for the projects that link to them: the customer's form files (`documents-entity`), its images (`addlogo-entity`), and a prices page (`prices-entity`) that shows nothing of the customer, where a project with prices puts its own page.
+- **DETHEAD** — The page is headed by the customer's name, and the breadcrumb leads back to the listing as it was left.
+- **DETFORM** — The Details tab shows the customer's Type and its Organisation name, neither of which can be changed here, and lets staff change: Group, Tax number, Salutation (Mr, Mrs, Diverse), Gender (Male, Female, Diverse), Title, Firstname, Lastname, Phone, Mobile phone, Email, Country and Languages (German, English, French, Croatian, Italian, and whatever else is typed in). The phone fields take only digits, "+", "-" and spaces. A first name, last name or e-mail address left empty, and an e-mail address that does not look like one, tell so under their field ("You must include a firstname", "You must include a lastname", "You must include an email", "Invalid email"), but Save does not wait for them: an organisation has no first and last name. With `amgshop` a calling-number field stands before the phone and before the mobile phone — from [juicebar.entities#Requirements[ENTAMG]]
+- **DETGROUPS** — Group holds the customer's groups, any number of them. Opened, it offers the first 10 groups of the organisation; typing offers the first 10 whose name contains the text.
+- **DETSAVE** — "Save" is off without the `updated` or the `update` permission. It stores the fields as they stand; a text field emptied keeps its stored value. Where the country was changed, the customer's first address gets the new country. "Customer successfully updated" shows; a refusal shows the backend's reason. Leaving the tab with changes not saved asks first.
+- **DETATTR** — Where the `entities:juicebox:settings` configuration sets `additionalAttributes`, the customer's attribute values stand under the form, as on the Attributes tab.
+- **ADDRLIST** — The Address tab lists the customer's addresses, 10 to a page: Address type, Name, Street, the second street line, Postcode, City and Country, the country by its name in the admin's language. Each column sorts the list. Each address has an edit button.
+- **ADDRADD** — "Add new address" is the tab's button, for staff with the `update` permission. Its dialog, "Address wizard", asks for the Address type (Shipping address, Invoice address, Home address, Business address), a Name, Street, Postcode, City and Country; all but the name are required and tell so once "Add" is pressed without them ("Street is a required field", "Postcode is a required field", "City is a required field", "Country is required"). Added, the address is active, the dialog closes and the list is read again.
+- **ADDREDIT** — The edit button opens "Edit address" with the address's type, name, street, postcode, second street line, city and country, the same fields required; a click outside does not close it. Saved, the dialog closes and the list is read again. "Cancel" and the × close it without saving.
+- **ADDRERROR** — When the backend refuses to add or change an address, its reason shows and the dialog stays open.
+
+## Tests
+
+- A staff member without `communication:role` sees neither Communication nor Push notifications.
+- Without the `extraTabs` option an opened organisation shows no Media and no API Access tab; with `hiddenTabs: ['wallets']` no Wallets tab.
+- A private customer shows no Payment tab.
+- Saving an organisation that has no first and last name stores its tax number and shows "Customer successfully updated".
+- Changing the country from Germany to France and saving sets the first address's country to France.
+- Typing "vi" in Group offers the groups whose name contains "vi".
+- "Add" in the address dialog without a street shows "Street is a required field" and adds nothing.
+- A staff member without the `update` permission sees no "Add new address" button.
+
+## View: CustomerDetails
+
+### Summary
+
+An opened customer: its name and its tabs.
+
+### Display
+
+- The customer's name as the page's header, read for staff with `entities:role` who may open it — [reads](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.details#Requirements[DETHEAD]), [satisfies](aim:juicebar.entities#Requirements[ENTNAME]), [satisfies](aim:juicebar.entities#Requirements[ENTORG]), [satisfies](aim:juicebar.entities#Requirements[ENTROLE])
+- The tabs the customer's type, the staff member's permissions and roles, and the project's `hiddenTabs` and `extraTabs` options leave, then the tabs the project added — [satisfies](aim:juicebar.entities.details#Requirements[DETTABS]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- The pages without a tab (form files, images, prices) open under the same header by their address — [satisfies](aim:juicebar.entities.details#Requirements[DETPAGES])
+
+### Actions
+
+- Details — [navigates](aim:juicebar.entities.details#View:CustomerDetailsTab)
+- Address — [navigates](aim:juicebar.entities.details#View:CustomerAddresses)
+- Attributes — [navigates](aim:juicebar.entities.attributes#View:CustomerAttributes)
+- Wallets — [navigates](aim:juicebar.entities.wallets#View:CustomerWallets)
+- Media — [navigates](aim:juicebar.entities.media#View:CustomerFiles)
+- Communication — [navigates](aim:juicebar.entities.messages#View:MailHistoryTab)
+- Push notifications — [navigates](aim:juicebar.entities.messages#View:PushNotificationsTab)
+- Payment — [navigates](aim:juicebar.entities.organisation#View:PaymentTab)
+- API Access — [navigates](aim:juicebar.entities.organisation#View:ApiAccessTab)
+- Form files, by its address — [navigates](aim:juicebar.entities.media#View:CustomerFormFiles)
+- Images, by its address — [navigates](aim:juicebar.entities.media#View:CustomerImages)
+
+### Layout
+
+- The tabs in one row under the header; next to the listing's compact list where the screen is wide.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/entity-details.component.ts#EntityDetailsComponent` — as: component
+- binds: `projects/juicebar/src/lib/config/base-app.config.ts#EntitiesOptions` — as: component
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/prices-entity/prices-entity.component.ts#PricesEntityComponent` — as: component
+- binds: `service:entities#fetchEntityById` — as: handler
+- provenance: inferred
+
+## View: CustomerDetailsTab
+
+### Summary
+
+The Details tab: the customer's names, contact details, groups, country and languages.
+
+### Display
+
+- The customer's fields, Type and Organisation name not changeable, the required ones telling so under their field — [reads](aim:juicebar.entities#Record:Customer), [reads](aim:juicebar.entities#Record:CustomerType), [satisfies](aim:juicebar.entities.details#Requirements[DETFORM])
+- Group with the organisation's groups: the first 10, or those whose name contains what is typed — [reads](aim:juicebar.entities#Record:CustomerGroup), [satisfies](aim:juicebar.entities.details#Requirements[DETGROUPS])
+- Country with the first address's country, from the admin's list in the admin's language — [satisfies](aim:juicebar.entities#Requirements[ENTCOUNTRY])
+- The calling-number fields only with `amgshop` — [satisfies](aim:juicebar.entities#Requirements[ENTAMG]), [satisfies](aim:juicebar#Requirements[CONFIG])
+- "Save", off without the `updated` or `update` permission; leaving with changes asks first — [satisfies](aim:juicebar.entities.details#Requirements[DETSAVE]), [satisfies](aim:juicebar.entities#Requirements[ENTROLE])
+- The attribute values under the form where `additionalAttributes` is set — [satisfies](aim:juicebar.entities.details#Requirements[DETATTR])
+
+### Actions
+
+- Save — [exposes](aim:juicebar.entities.details#Operation:UpdateCustomer)
+
+### Layout
+
+- Type and Group first, then the fields two or three to a row, "Save" at the foot.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/details-entity/details-entity.component.ts#DetailsEntityComponent` — as: component
+- binds: `service:entities#fetchEntityGroups` — as: handler
+- provenance: inferred
+
+## View: CustomerAddresses
+
+### Summary
+
+The Address tab: the customer's addresses.
+
+### Display
+
+- The addresses, 10 to a page, with their type, name, street, second street line, postcode, city and country, sorted by the column clicked — [reads](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.details#Requirements[ADDRLIST]), [satisfies](aim:juicebar.entities#Requirements[ENTCOUNTRY])
+- "Add new address" for staff with the `update` permission — [satisfies](aim:juicebar.entities.details#Requirements[ADDRADD]), [satisfies](aim:juicebar.entities#Requirements[ENTROLE])
+
+### Actions
+
+- Add new address — [navigates](aim:juicebar.entities.details#View:AddAddressDialog)
+- Edit address — [navigates](aim:juicebar.entities.details#View:EditAddressDialog)
+
+### Layout
+
+- "Add new address" is the page's action; edit is an icon button on each row.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/address-entity/address-entity.component.ts#AddressEntityComponent` — as: component
+- provenance: inferred
+
+## View: AddAddressDialog
+
+### Summary
+
+The dialog that adds an address to the customer.
+
+### Display
+
+- "Address wizard" with Address type, Name, Street, Postcode, City and Country; the required ones tell so once "Add" was pressed without them — [satisfies](aim:juicebar.entities.details#Requirements[ADDRADD])
+- The backend's reason when it refuses, the dialog staying open — [satisfies](aim:juicebar.entities.details#Requirements[ADDRERROR])
+
+### Actions
+
+- Add — [exposes](aim:juicebar.entities.details#Operation:AddAddress)
+- Cancel — [navigates](aim:juicebar.entities.details#View:CustomerAddresses)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/address-entity/address-dialog.component.ts#AddressDialogComponent` — as: component
+- provenance: inferred
+
+## View: EditAddressDialog
+
+### Summary
+
+The dialog that changes one address of the customer.
+
+### Display
+
+- "Edit address" with the address's type, name, street, postcode, second street line, city and country; a click outside does not close it — [reads](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.details#Requirements[ADDREDIT])
+- The backend's reason when it refuses, the dialog staying open — [satisfies](aim:juicebar.entities.details#Requirements[ADDRERROR])
+
+### Actions
+
+- Save — [exposes](aim:juicebar.entities.details#Operation:UpdateAddress)
+- Cancel — [navigates](aim:juicebar.entities.details#View:CustomerAddresses)
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/address-entity/address-dialog.component.ts#AddressDialogComponent` — as: component
+- provenance: inferred
+
+## Operation: UpdateCustomer
+
+### Summary
+
+A staff member saves a customer's details.
+
+### Input
+
+```schema
+customerId: string required ref(juicebar.entities#Customer.id)
+type: string
+salutation: string
+sex: string
+title: string
+firstname: string
+lastname: string
+name: string
+taxNumber: string
+email: string
+phone: string
+mobilephone: string
+phoneCallingNumber: string
+mobilephoneCallingNumber: string
+groups: list(juicebar.entities#CustomerGroup)
+languages: list(string)
+country: string
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Ensures
+
+- The customer's salutation, title, gender, names, tax number, phones, e-mail address, type, groups and languages are stored as given; a text field given empty keeps its stored value, and the calling numbers are kept with the attributes — [mutates](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.details#Requirements[DETSAVE])
+- Where the country differs from the first address's, that address is stored again with the new country — [mutates](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.details#Requirements[DETSAVE]), [satisfies](aim:juicebar.entities#Requirements[ENTCOUNTRY])
+- "Customer successfully updated" shows; a refusal shows the backend's reason — [satisfies](aim:juicebar.entities.details#Requirements[DETSAVE])
+- The backend refuses it without the `update` permission, and for a customer of another organisation — [satisfies](aim:juicebar.entities#Requirements[ENTROLE]), [satisfies](aim:juicebar#Requirements[ROLES]), [satisfies](aim:juicebar.entities#Requirements[ENTORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/details-entity/details-entity.component.ts#DetailsEntityComponent.update` — as: component
+- binds: `service:entities#updateEntity` — as: handler
+- binds: `service:entities#updateAddress` — as: handler
+- provenance: inferred
+
+## Operation: AddAddress
+
+### Summary
+
+A staff member adds an address to a customer.
+
+### Input
+
+```schema
+customerId: string required ref(juicebar.entities#Customer.id)
+type: string required
+name: string
+street: string required
+postcode: string required
+city: string required
+country: string required
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Ensures
+
+- The address is added to the customer's addresses, active, and the list is read again — [mutates](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.details#Requirements[ADDRADD])
+- The backend refuses it without the `update` permission, and for a customer of another organisation — [satisfies](aim:juicebar.entities#Requirements[ENTROLE]), [satisfies](aim:juicebar.entities#Requirements[ENTORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/address-entity/address-dialog.component.ts#AddressDialogComponent.save` — as: component
+- binds: `service:entities#addAddress` — as: handler
+- provenance: inferred
+
+## Operation: UpdateAddress
+
+### Summary
+
+A staff member changes one address of a customer.
+
+### Input
+
+```schema
+customerId: string required ref(juicebar.entities#Customer.id)
+addressId: string required
+type: string required
+name: string
+street: string required
+street2: string
+postcode: string required
+city: string required
+country: string required
+```
+
+### Authz
+
+- `juicebar.entities#Persona:CustomerEditor`
+- `juicebar.entities#Persona:CustomerAdmin`
+- `juicebar.entities#Persona:CustomerSuperAdmin`
+
+### Ensures
+
+- The fields given replace those of the address with that id; its other fields stay — [mutates](aim:juicebar.entities#Record:Customer), [satisfies](aim:juicebar.entities.details#Requirements[ADDREDIT])
+- The backend refuses it without the `update` permission, and for a customer of another organisation — [satisfies](aim:juicebar.entities#Requirements[ENTROLE]), [satisfies](aim:juicebar.entities#Requirements[ENTORG])
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/details/address-entity/address-dialog.component.ts#AddressDialogComponent.save` — as: component
+- binds: `service:entities#updateAddress` — as: handler
+- provenance: inferred

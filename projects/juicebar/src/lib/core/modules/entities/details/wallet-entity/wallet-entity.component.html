@@ -1,0 +1,21 @@
+<app-data-table
+  [rows]="rows()"
+  [columns]="columns"
+  [totalCount]="count()"
+  [pageSize]="pageSize"
+  [pageSizeOptions]="pageSizeOptions"
+  [pageIndex]="page() - 1"
+  [idKey]="'address'"
+  [emptyMessage]="'no_data_to_display' | translate"
+  (pageChange)="onPage($event)">
+  <ng-template [cellDef]="'actions'" let-row>
+    <div class="dt-row-actions">
+      <button app-button appearance="icon" type="button" class="danger"
+              [attr.aria-label]="('delete' | translate) + ': ' + (row.name || row.address)"
+              [appTooltip]="'delete' | translate"
+              (click)="remove(row)">
+        <app-icon [icon]="'delete'" />
+      </button>
+    </div>
+  </ng-template>
+</app-data-table>

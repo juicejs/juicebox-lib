@@ -1,0 +1,18 @@
+.logo-bar {
+  margin-bottom: 16px;
+}
+
+.logo-images {
+  display: block;
+  max-width: 50%;
+}
+
+.logo-thumb {
+  height: 50px;
+}
+
+@media (max-width: 768px) {
+  .logo-images {
+    max-width: none;
+  }
+}

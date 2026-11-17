@@ -1,0 +1,172 @@
+@if (pane) {
+  <!-- The compact list next to an open customer -->
+  <app-data-table compact
+    [rows]="rows()"
+    [columns]="columns()"
+    [activeId]="pane.activeId()"
+    [totalCount]="count()"
+    [pageSize]="pageSize()"
+    [pageIndex]="page() - 1"
+    [emptyMessage]="'no_data_to_display' | translate"
+    (pageChange)="onPage($event)"
+    (rowClick)="open($event)">
+    <ng-template compactRowDef let-row>
+      <span class="dt-list-title">{{ row.title }}</span>
+      <!-- The e-mail address as the type's own column shows it: hidden until pointed at, or not at all -->
+      @if (row.email && emailShown(); as shown) {
+        <span class="dt-list-subtitle" [class.hidden-email]="shown === 'hidden'">{{ row.email }}</span>
+      }
+    </ng-template>
+  </app-data-table>
+} @else {
+  <div class="parent listing-page">
+    @if (selectedType()) {
+      <div class="listing-toolbar">
+        <app-form-field appearance="outline" class="listing-filter">
+          <app-label>{{ 'type' | translate }}</app-label>
+          <app-select [value]="selectedTypeIndex()" (selectionChange)="selectType($event.value)">
+            @for (option of types(); track $index) {
+              <app-option [value]="$index">{{ option.name }}</app-option>
+            }
+          </app-select>
+        </app-form-field>
+
+        @if (isSuperAdmin) {
+          <app-form-field appearance="outline" class="listing-filter">
+            <app-label>{{ 'organisation' | translate }}</app-label>
+            <app-select [value]="selectedOrganisation()" [clearable]="true" [searchable]="true"
+                        [placeholder]="'organisation' | translate"
+                        (opened)="loadOrganisations()"
+                        (selectionChange)="selectOrganisation($event.value)">
+              @for (organisation of organisations(); track organisation._id) {
+                <app-option [value]="organisation._id">{{ organisation.name }}</app-option>
+              }
+            </app-select>
+          </app-form-field>
+        }
+
+        @if (attributeOptions().length) {
+          <app-form-field appearance="outline" class="listing-filter">
+            <app-label>{{ 'filter_by_attribute' | translate }}</app-label>
+            <app-select [value]="attribute()" [placeholder]="'filter_by_attribute' | translate"
+                        (selectionChange)="selectAttribute($event.value)">
+              @for (option of attributeOptions(); track option.property) {
+                <app-option [value]="option.property">{{ option.name }}</app-option>
+              }
+            </app-select>
+          </app-form-field>
+        }
+
+        @if (attribute()) {
+          <app-form-field appearance="outline" class="listing-filter">
+            <app-label>{{ 'choose_value' | translate }}</app-label>
+            <app-select [value]="value()" [placeholder]="'choose_value' | translate"
+                        (selectionChange)="selectValue($event.value)">
+              @for (option of values(); track option.value) {
+                <app-option [value]="option.value">{{ option.value }}</app-option>
+              }
+            </app-select>
+          </app-form-field>
+
+          <button app-button appearance="flat" type="button" (click)="resetAttributeFilter()">
+            {{ 'reset_attribute_filter' | translate }}
+          </button>
+        }
+      </div>
+    }
+
+    <app-data-table
+      [rows]="rows()"
+      [columns]="columns()"
+      [totalCount]="count()"
+      [pageSize]="pageSize()"
+      [pageIndex]="page() - 1"
+      [pageSizeOptions]="pageSizeOptions"
+      [sort]="sort()"
+      [emptyMessage]="'no_data_to_display' | translate"
+      [rowsPerPageLabel]="'rows_per_page' | translate"
+      (pageChange)="onPage($event)"
+      (sortChange)="onSort($event)"
+      (rowClick)="open($event)">
+
+      <ng-template [headerDef]="lockKey">
+        <app-icon [icon]="'lock'" [attr.aria-label]="'protected' | translate" [appTooltip]="'protected' | translate" />
+      </ng-template>
+      <ng-template [cellDef]="lockKey" let-row>
+        @if (row.protected) {
+          <app-icon [icon]="'lock'" class="lock lock--on" [attr.aria-label]="'protected' | translate" />
+        } @else {
+          <app-icon [icon]="'lock_open'" class="lock" aria-hidden="true" />
+        }
+      </ng-template>
+
+      @for (column of filterColumns(); track column.key) {
+        <ng-template [headerDef]="column.key">
+          <div class="header-wrap">
+            <input class="filter-input" type="text"
+                   [attr.aria-label]="column.label"
+                   [placeholder]="column.label"
+                   [value]="typed()[column.filter!] ?? ''"
+                   (input)="onFilter(column.filter!, $any($event.target).value)"
+                   (click)="$event.stopPropagation()"
+                   (keydown)="$event.stopPropagation()">
+          </div>
+        </ng-template>
+      }
+
+      @for (column of listColumns(); track column.key) {
+        <ng-template [cellDef]="column.key" let-row>
+          @switch (column.kind) {
+            @case ('wallets') {
+              {{ row.wallet }}
+            }
+            @case ('groupNames') {
+              {{ row.groupNames }}
+            }
+            @case ('email') {
+              {{ row.email }}
+            }
+            @case ('emailHidden') {
+              <span class="hidden-email">{{ row.email }}</span>
+            }
+            @case ('sap') {
+              @if (row.sapNumber !== null) {
+                <app-icon [icon]="'check_circle'" class="mark mark--yes" aria-hidden="true" />
+                <span class="sap-number">{{ row.sapNumber }}</span>
+              } @else {
+                <app-icon [icon]="'block'" class="mark mark--no" aria-hidden="true" />
+              }
+            }
+            @case ('activated') {
+              <app-icon [icon]="'check_circle'" class="mark" [class.mark--yes]="row.activated"
+                        [attr.aria-label]="row.activated ? column.label : null" [attr.aria-hidden]="row.activated ? null : true" />
+            }
+            @default {
+              @if (column.key === nameColumn()) {
+                <a class="dt-row-link" [routerLink]="[detailsUrl, row._id, 'details-entity']" (click)="$event.stopPropagation()">{{ row.cells[column.key] }}</a>
+              } @else {
+                {{ row.cells[column.key] }}
+              }
+            }
+          }
+        </ng-template>
+      }
+
+      <ng-template [cellDef]="customerGroupKey" let-row>{{ row.groupNames }}</ng-template>
+
+      <ng-template [cellDef]="'actions'" let-row>
+        <div class="dt-row-actions">
+          @if (row.deletable) {
+            <button app-button appearance="icon" type="button" class="danger"
+                    [hasPermissions]="'entities:role#delete'"
+                    [attr.aria-label]="('delete' | translate) + ': ' + row.name"
+                    [appTooltip]="'delete' | translate"
+                    (click)="$event.stopPropagation(); remove(row)">
+              <app-icon [icon]="'delete'" />
+            </button>
+          }
+        </div>
+      </ng-template>
+    </app-data-table>
+  </div>
+}

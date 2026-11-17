@@ -1,0 +1,17 @@
+<app-dialog-title>{{ 'edit' | translate }}</app-dialog-title>
+
+<app-dialog-content>
+  <app-form-field appearance="outline">
+    <app-label>{{ 'group_name' | translate }}</app-label>
+    <input appInput type="text" [formControl]="name" />
+  </app-form-field>
+</app-dialog-content>
+
+<app-dialog-actions align="end">
+  <button app-button appearance="raised" color="primary" type="button"
+          [disabled]="!name.value"
+          [promiseBtn]="savePromise()"
+          (click)="save()">
+    {{ 'save' | translate }}
+  </button>
+</app-dialog-actions>

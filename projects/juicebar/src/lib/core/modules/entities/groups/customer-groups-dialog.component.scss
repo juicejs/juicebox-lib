@@ -1,0 +1,13 @@
+.group-add {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  app-form-field {
+    flex: 1;
+  }
+
+  button {
+    margin-top: 4px;
+  }
+}

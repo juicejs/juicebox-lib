@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideCategories, provideCommunications, provideConfigurations, provideExports, provideJuicebar, provideLocations, provideUsers } from '@juicejs/juicebar';
+import { provideCategories, provideCommunications, provideConfigurations, provideEntities, provideExports, provideJuicebar, provideLocations, provideUsers } from '@juicejs/juicebar';
 import { environment } from '../environments/environment';
 
 /**
@@ -33,6 +33,8 @@ export const appConfig: ApplicationConfig = {
       provideCategories({options: {showInactive: true, confirmDeactivation: true, subcategoriesActive: true}}),
       provideCommunications(),
       provideConfigurations(),
+      // Quality Circle's customers: no wallets, and the files and API keys of its assets portal
+      provideEntities({options: {hiddenTabs: ['wallets'], extraTabs: ['media', 'api-access']}}),
     ),
   ],
 };

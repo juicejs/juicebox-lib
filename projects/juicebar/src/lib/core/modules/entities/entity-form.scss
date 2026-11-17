@@ -1,0 +1,52 @@
+// The forms of the customers module: the create page, the Details tab and the dialogs
+.entity-card {
+  display: block;
+  max-width: 880px;
+}
+
+.entity-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 24px 24px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+
+  &--three {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  // A calling number before its phone number
+  &--calling {
+    grid-template-columns: minmax(72px, 1fr) 3fr;
+  }
+}
+
+.field-switch {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+// The attribute values under the Details tab's form
+.below-form {
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .field-row,
+  .field-row--three {
+    grid-template-columns: 1fr;
+  }
+}

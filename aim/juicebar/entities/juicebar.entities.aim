@@ -1,0 +1,470 @@
+---
+aim: juicebar.entities
+kind: intent
+parent: juicebar
+approved_by: Mario
+approved_at: 2026-11-17
+---
+
+# Customers
+
+## Summary
+
+The customers a project keeps (the backend calls them entities): private people, companies, public bodies, and the organisations themselves, of the types the project configures. A customer has a type, a salutation, a gender, a title, a first and a last name, a company or organisation name, a tax number, an e-mail address, phone numbers, the languages they speak, the customer groups they are in, addresses, the attribute values the project configures for their type, wallets and files. A customer belongs to the organisation of the staff member who created it. Staff with the customers role list the customers, filter them, create them, keep customer groups, change a customer's details, addresses, attributes, wallets and files, read the e-mails and push notifications sent to them, and delete them. An organisation also has its payment account with its fees, and its API keys.
+
+The parts only some projects use are switched by the project: the tabs an opened customer shows by the options it gives the library, and the calling-number fields, the "Customer group" column and other modules' buttons by the backend's `amgshop` configuration.
+
+## Requirements
+
+- **ENTROLE** — The module needs `entities:role`. Creating a customer needs its `create` permission; changing a customer, its addresses, its attribute values and its files needs `update`; deleting a customer or a file needs `delete`; opening a file needs `read`. The backend refuses each operation without its permission — from [juicebar#Requirements[ROLES]]
+- **ENTORG** — A customer belongs to the organisation the staff member who created it was signed in to. The listing shows staff the customers of the organisation they are signed in to; a customer is opened, changed or deleted only when it belongs to that organisation or is that organisation's own record. A super admin of customers (`entities:role#super-admin`) lists, opens, changes and deletes the customers of every organisation. Where the backend configuration of `entities` sets `strictTenancy` off, opening, changing and deleting are not checked this way.
+- **ENTPROTECT** — A customer created as "Customer only visible for me" is protected by the staff member who created it. Where the backend configuration of `entities` sets `protection` on, the listing shows a protected customer only to that staff member, to admins of customers (`entities:role#admin`) and to super admins; without `protection` everyone with the role sees it.
+- **ENTTYPES** — The `entities:juicebox:settings` configuration gives the customer types: each a name, a value and the columns the listing shows for it. The names are shown in the admin's language where the module's dictionary has them. The customers of type `organisation` are listed only for admins and super admins of customers.
+- **ENTNAME** — The module names a customer by first name and last name; a customer without both by its company or organisation name; a customer with neither has no name.
+- **ENTCOUNTRY** — The countries to choose from are the admin's own list, named in the admin's language. A customer's country is the country of its first address.
+- **ENTAMG** — Where the backend has an `amgshop` configuration, the create and the details form have a calling-number field before the phone and before the mobile phone, kept with the customer's attributes, and the listing has a "Customer group" column and shows the page buttons the project's other modules registered for it. Without the configuration none of them is shown — from [juicebar#Requirements[CONFIG]]
+
+## Tests
+
+- A staff member without `entities:role` cannot read the customers from the backend.
+- A staff member signed in to organisation A cannot open or change a customer created in organisation B.
+- A staff member without `entities:role#admin` choosing the type Organisation gets no rows.
+- With `protection` on, a customer another staff member protected is missing from the listing of a staff member who is not an admin of customers.
+- Without an `amgshop` configuration no calling-number field and no "Customer group" column appears anywhere in the module.
+
+## Dependencies
+
+### Requires
+
+- WalletLedger as Ledger
+- MailHistory as Mails
+- PushHistory as Pushes
+- PaymentAccounts as Payments
+- FormUploads as Forms
+
+## Persona: CustomerEditor
+
+### Summary
+
+A staff member whose role has the customers role.
+
+### Role
+
+- Keeps the organisation's customers — [plays](aim:juicebar.core#Persona:Staff)
+
+### Access
+
+- The customers module — [accesses](aim:juicebar.entities)
+
+## Persona: CustomerAdmin
+
+### Summary
+
+A staff member whose role has `entities:role#admin`: they also see the organisations, the customers other staff protected, and keep the attribute fields.
+
+### Role
+
+- Keeps the organisation's customers, the protected ones and the attribute fields included — [plays](aim:juicebar.core#Persona:Staff)
+
+### Access
+
+- The customers module — [accesses](aim:juicebar.entities)
+
+## Persona: CustomerSuperAdmin
+
+### Summary
+
+A staff member whose role has `entities:role#super-admin` in the organisation they are signed in to: they reach the customers of every organisation.
+
+### Role
+
+- Keeps the customers of every organisation — [plays](aim:juicebar.core#Persona:Staff)
+
+### Access
+
+- The customers module — [accesses](aim:juicebar.entities)
+
+## Record: Customer
+
+### Summary
+
+One customer the project keeps: a person, a company or an organisation.
+
+### Schema
+
+```schema
+id: string required unique
+type: string ref(juicebar.entities#CustomerType.prop)
+salutation: string
+sex: string
+title: string
+firstname: string
+lastname: string
+name: string
+taxNumber: string
+email: string
+phone: string
+mobilephone: string
+languages: list(string)
+groups: list(juicebar.entities#CustomerGroup)
+addresses: list(part(juicebar.entities#CustomerAddress))
+attributes: map(string)
+wallets: list(part(juicebar.entities#Wallet))
+media: list(part(juicebar.entities#CustomerFile))
+images: list(part(juicebar.entities#CustomerImage))
+form_data: string
+organisation_id: string ref(juicebar.core#Organisation.id)
+protected: string
+noDelete: boolean
+created: datetime
+updated: datetime
+```
+
+### Constraints
+
+- `salutation` is `Mr`, `Mrs` or `Diverse` and `sex` is `Male`, `Female` or `Diverse`, stored in English whatever the admin's language; `name` is the company or organisation name.
+- `languages` holds `German`, `English`, `French`, `Croatian`, `Italian` and whatever else staff typed in.
+- `attributes` holds, under each attribute field's `property`, the value given for it, of any JSON shape: a text, a number, a date, a switch, or one text per language. It also holds the calling numbers (`phoneCallingNumber`, `mobilephoneCallingNumber`), an organisation's payment account id (`account_id`) and fees (`fee`, `article_fee`), `activated`, and a wallet address of its own (`wallet`).
+- `attributes` also holds `files`: the files the customer sent with a form, each with its id, its name and its kind of file. `form_data` is the form entry the customer came in with.
+- `protected` is the id of the staff member who protected the customer; `noDelete` is set by the backend for a customer that must stay, never by staff.
+- A customer some backends synchronise carries its number there under `mappings`, such as the SAP customer number.
+
+### Immutable
+
+- `organisation_id`
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/entities.types.ts#Entity` — as: model
+- provenance: inferred
+
+## Record: CustomerAddress
+
+### Summary
+
+One postal address of a customer.
+
+### Schema
+
+```schema
+id: string required
+type: string
+name: string
+street: string
+street2: string
+postcode: string
+city: string
+country: string
+active: boolean
+```
+
+### Constraints
+
+- `type` is `shipping`, `invoice`, `home` or `business`; an address stored without one is `default`. `country` is a country code of the admin's list.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/entities.types.ts#EntityAddress` — as: model
+- provenance: inferred
+
+## Record: CustomerGroup
+
+### Summary
+
+A named group of customers, kept by an organisation.
+
+### Schema
+
+```schema
+id: string required unique
+name: string required
+organisation_id: string ref(juicebar.core#Organisation.id)
+```
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/entities.types.ts#EntityGroup` — as: model
+- provenance: inferred
+
+## Record: CustomerType
+
+### Summary
+
+A type of customer, from the `entities:juicebox:settings` configuration, with the columns the listing shows for it.
+
+### Schema
+
+```schema
+prop: string required unique
+name: string required
+columns: list(part(juicebar.entities#ListColumn))
+```
+
+### Constraints
+
+- A type whose `prop` is empty lists the customers of every type.
+- The configuration's options also hold `default_protected_value`, which switches "Customer only visible for me" on in the create form, and `additionalAttributes`, which shows a customer's attribute values under its details.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/entities.types.ts#EntityType` — as: model
+- binds: `configuration:entities:juicebox:settings` — as: model
+- provenance: inferred
+
+## Record: ListColumn
+
+### Summary
+
+One column of the listing for a customer type.
+
+### Schema
+
+```schema
+name: string required
+prop: string required
+```
+
+### Constraints
+
+- `prop` is the customer's field the column shows, by its path. The values `wallets`, `groupNames`, `email`, `email-hidden`, `sap` and `activated` have a column of their own kind.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/entities.types.ts#EntityColumn` — as: model
+- provenance: inferred
+
+## Record: AttributeField
+
+### Summary
+
+An attribute field the project keeps for the customers of one type: a `juicecommerce:entity:attribute` configuration.
+
+### Schema
+
+```schema
+key: string required unique
+property: string required
+name: string required
+model: string required
+datatype: enum(text, number, date, dropdown, checkbox) required
+values: list(string)
+required: boolean
+internationalization: boolean
+```
+
+### Constraints
+
+- `key` is the property, a colon and the model; `model` is `entity:` and a customer type's value, such as `entity:private`.
+- `values` are the choices of a `dropdown`.
+- Some fields keep their `name` as one text per language.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/entities.types.ts#EntityAttribute` — as: model
+- binds: `configuration:juicecommerce:entity:attribute` — as: model
+- provenance: inferred
+
+## Record: Wallet
+
+### Summary
+
+A wallet of a customer on the project's ledger.
+
+### Schema
+
+```schema
+name: string
+address: string required
+```
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/entities.types.ts#EntityWallet` — as: model
+- provenance: inferred
+
+## Record: CustomerFile
+
+### Summary
+
+One file kept with a customer: an image, a document or a video.
+
+### Schema
+
+```schema
+id: string required
+fileName: string required
+mediaType: string required
+type: string
+title: map(string)
+description: map(string)
+path: string
+attributes: part(juicebar.entities#FileFacts)
+created: datetime
+updated: datetime
+```
+
+### Constraints
+
+- `mediaType` and `type` are a media type and one of its kinds from the `entities` configuration's `mediaTypes`. `title` and `description` hold one text per language.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/entities.types.ts#EntityMedia` — as: model
+- provenance: inferred
+
+## Record: FileFacts
+
+### Summary
+
+What the backend notes about a stored file.
+
+### Schema
+
+```schema
+fileType: string
+fileSize: integer
+```
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/entities.types.ts#EntityMediaAttributes` — as: model
+- provenance: inferred
+
+## Record: CustomerImage
+
+### Summary
+
+An image of a customer, such as an organisation's logo, as the backend stored it in three sizes.
+
+### Schema
+
+```schema
+id: string required
+small: string
+medium: string
+large: string
+```
+
+### Constraints
+
+- `small`, `medium` and `large` are the image's addresses below the backend's own, 320, 640 and 1280 pixels wide.
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/entities.types.ts#EntityImage` — as: model
+- provenance: inferred
+
+## Record: FormFile
+
+### Summary
+
+A file a customer sent with a form, kept with the customer's attributes.
+
+### Schema
+
+```schema
+id: string required
+name: string
+mimetype: string
+```
+
+### Bindings
+
+- binds: `projects/juicebar/src/lib/core/modules/entities/entities.types.ts#EntityFormFile` — as: model
+- provenance: inferred
+
+## Capability: WalletLedger
+
+### Summary
+
+The project's ledger (JuiceChain): its asset publishers, and creating and removing a customer's wallet there.
+
+### Operations
+
+- `FetchPublishers(page, pageSize) -> publishers`
+- `CreateWallet(customerId, wallet) -> wallet`
+- `DeleteWallet(customerId, wallet)`
+
+### Bindings
+
+- binds: `service:juicechain:publishers#fetch` — as: FetchPublishers
+- binds: `service:juicechain:wallets#createWallet` — as: CreateWallet
+- binds: `service:juicechain:wallets#deleteWallet` — as: DeleteWallet
+- provenance: inferred
+
+## Capability: MailHistory
+
+### Summary
+
+What the project's mailing providers recorded about the e-mails sent to a customer.
+
+### Operations
+
+- `GetProviders() -> providers`
+- `FetchHistory(provider, customerId, page, pageSize) -> mails`
+
+### Bindings
+
+- binds: `service:mailing-provider-history#getProviders` — as: GetProviders
+- binds: `service:mailing-provider-history#fetchHistory` — as: FetchHistory
+- provenance: inferred
+
+## Capability: PushHistory
+
+### Summary
+
+The push notifications the project's shop sent to a customer.
+
+### Operations
+
+- `GetPushNotifications(customerId, language, page, pageSize) -> notifications`
+
+### Bindings
+
+- binds: `service:entity:shop:service#getPushNotifications` — as: GetPushNotifications
+- provenance: inferred
+
+## Capability: PaymentAccounts
+
+### Summary
+
+The payment provider's connected accounts (Stripe): whether an organisation's account finished its registration, and unlinking it.
+
+### Operations
+
+- `CheckDetailsSubmitted(organisationId) -> detailsSubmitted`
+- `UnlinkAccount(organisationId)`
+
+### Bindings
+
+- binds: `service:stripe#checkAccountDetailsSubmitted` — as: CheckDetailsSubmitted
+- binds: `service:stripe#unlinkAccountFromVendor` — as: UnlinkAccount
+- provenance: inferred
+
+## Capability: FormUploads
+
+### Summary
+
+The project's forms module, as far as it takes a file for a form entry.
+
+### Operations
+
+- `Upload(formEntryId, file)`
+
+### Bindings
+
+- binds: `/forms/upload/:formEntryId` — as: Upload
+- binds: `projects/juicebar/src/lib/core/modules/entities/entities.service.ts#EntitiesService.uploadFormImage` — as: component
+- provenance: inferred
+
+## Children
+
+- [list](./list/juicebar.entities.list.aim) — the listing of customers with its filters, deleting from it, and the search
+- [groups](./groups/juicebar.entities.groups.aim) — the customer groups
+- [create](./create/juicebar.entities.create.aim) — creating a customer
+- [details](./details/juicebar.entities.details.aim) — an opened customer's tabs, changing its details, and its addresses
+- [attributes](./attributes/juicebar.entities.attributes.aim) — a customer's attribute values, and the attribute fields of a type
+- [media](./media/juicebar.entities.media.aim) — a customer's files
+- [wallets](./wallets/juicebar.entities.wallets.aim) — a customer's wallets
+- [messages](./messages/juicebar.entities.messages.aim) — the e-mails and push notifications sent to a customer
+- [organisation](./organisation/juicebar.entities.organisation.aim) — an organisation's payment account, fees and API keys

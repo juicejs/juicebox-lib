@@ -1,0 +1,22 @@
+<app-data-table
+  [rows]="rows()"
+  [columns]="columns"
+  [totalCount]="count()"
+  [pageSize]="pageSize()"
+  [pageSizeOptions]="pageSizeOptions"
+  [pageIndex]="page() - 1"
+  [idKey]="'date'"
+  [emptyMessage]="'no_data_to_display' | translate"
+  [rowsPerPageLabel]="'rows_per_page' | translate"
+  (pageChange)="onPage($event)">
+  <ng-template [cellDef]="'content.notification.body'" let-row>
+    <span [appTooltip]="row.content?.notification?.body ?? ''">{{ row.content?.notification?.body }}</span>
+  </ng-template>
+  <ng-template [cellDef]="'_assets'" let-row>
+    <span [appTooltip]="row._assets ?? ''">{{ row._assets }}</span>
+  </ng-template>
+  <ng-template [cellDef]="'_offers'" let-row>
+    <span [appTooltip]="row._offers ?? ''">{{ row._offers }}</span>
+  </ng-template>
+  <ng-template [cellDef]="'date'" let-row>{{ row.date | date: 'dd.MM.yy - HH:mm' }}</ng-template>
+</app-data-table>
